@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import AdminSidebar from './components/AdminSidebar';
 
 interface User {
@@ -114,7 +115,7 @@ export default function AdminDashboardPage() {
               </svg>
             </button>
             <div className="h-10 w-10 rounded-full overflow-hidden border-2 border-[#E5DFD3] shadow-sm">
-              <img src="https://ui-avatars.com/api/?name=Admin&background=8B7355&color=fff" alt="แอดมิน" />
+              <Image width={40} height={40} src="https://ui-avatars.com/api/?name=Admin&background=8B7355&color=fff" alt="แอดมิน" />
             </div>
           </div>
         </header>

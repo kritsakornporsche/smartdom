@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import OwnerSidebar from './components/OwnerSidebar';
 
@@ -81,7 +82,7 @@ export default function OwnerDashboard() {
               <span className="text-xs font-bold text-[#5A4D41]">สถานะระบบ: ปกติ</span>
             </div>
             <div className="h-10 w-10 rounded-2xl overflow-hidden border-2 border-white shadow-lg shadow-[#DCD3C6]">
-               <img src="https://ui-avatars.com/api/?name=Owner&background=8B7355&color=fff" alt="Owner" />
+               <Image width={40} height={40} src="https://ui-avatars.com/api/?name=Owner&background=8B7355&color=fff" alt="Owner" />
             </div>
           </div>
         </header>

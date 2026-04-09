@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import OwnerSidebar from '../components/OwnerSidebar';
 
 interface Room {
@@ -17,6 +18,7 @@ export default function RoomsManagement() {
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingRoom, setEditingRoom] = useState<Room | null>(null);
+  const router = useRouter();
 
   // Form State
   const [formData, setFormData] = useState({
@@ -54,7 +56,7 @@ export default function RoomsManagement() {
           fetchRooms(data.dorm.id);
         } else if (data.success && !data.hasDorm) {
           // Redirect if no dorm
-          window.location.href = '/owner/onboarding';
+          router.push('/owner/onboarding');
         }
       } catch (err) {
         console.error(err);

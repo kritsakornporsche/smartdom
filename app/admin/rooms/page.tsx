@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import AdminSidebar from '../components/AdminSidebar';
 
 interface Room {
@@ -176,7 +177,7 @@ export default function AdminRoomsPage() {
               เพิ่มห้องพัก
             </button>
             <div className="h-10 w-10 rounded-full overflow-hidden border-2 border-border shadow-sm">
-              <img src="https://ui-avatars.com/api/?name=Admin&background=c46a4a&color=fff" alt="แอดมิน" />
+              <Image width={40} height={40} src="https://ui-avatars.com/api/?name=Admin&background=c46a4a&color=fff" alt="แอดมิน" />
             </div>
           </div>
         </header>
@@ -213,10 +214,12 @@ export default function AdminRoomsPage() {
                     <div key={room.id} className="group border border-border rounded-2xl overflow-hidden hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 bg-white">
                       <div className="aspect-[4/3] bg-accent/20 relative overflow-hidden">
                         {room.image_url ? (
-                          <img 
+                          <Image 
                             src={room.image_url} 
                             alt={`ห้อง ${room.room_number}`}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                            fill
+                            unoptimized
+                            className="object-cover group-hover:scale-105 transition-transform duration-700"
                           />
                         ) : (
                           <div className="w-full h-full flex flex-col items-center justify-center text-muted-foreground">

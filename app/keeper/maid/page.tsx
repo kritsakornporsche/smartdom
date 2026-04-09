@@ -3,6 +3,7 @@
 import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import Image from 'next/image';
 import KeeperSidebar from '../components/KeeperSidebar';
 import Link from 'next/link';
 
@@ -54,7 +55,7 @@ export default function MaidDashboardPage() {
               ออกจากระบบ
             </button>
             <div className="h-10 w-10 rounded-full overflow-hidden border-2 border-border shadow-sm">
-              <img src={`https://ui-avatars.com/api/?name=${session?.user?.name || 'Maid'}&background=e2aba1&color=fff`} alt="แม่บ้าน" />
+              <Image width={40} height={40} src={`https://ui-avatars.com/api/?name=${session?.user?.name || 'Maid'}&background=e2aba1&color=fff`} alt="แม่บ้าน" />
             </div>
           </div>
         </header>

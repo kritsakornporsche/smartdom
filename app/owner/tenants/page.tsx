@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import OwnerSidebar from '../components/OwnerSidebar';
 
 interface Tenant {
@@ -15,6 +16,7 @@ interface Tenant {
 export default function TenantsManagement() {
   const [tenants, setTenants] = useState<Tenant[]>([]);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   const [ownerDormId, setOwnerDormId] = useState<number | null>(null);
 
@@ -43,7 +45,7 @@ export default function TenantsManagement() {
           setOwnerDormId(data.dorm.id);
           fetchTenants(data.dorm.id);
         } else if (data.success && !data.hasDorm) {
-          window.location.href = '/owner/onboarding';
+          router.push('/owner/onboarding');
         }
       } catch (err) {
         console.error(err);

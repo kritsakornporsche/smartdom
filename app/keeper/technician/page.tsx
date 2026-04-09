@@ -3,6 +3,7 @@
 import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import Image from 'next/image';
 import KeeperSidebar from '../components/KeeperSidebar';
 
 export default function TechnicianDashboardPage() {
@@ -53,7 +54,7 @@ export default function TechnicianDashboardPage() {
               ออกจากระบบ
             </button>
             <div className="h-10 w-10 rounded-full overflow-hidden border-2 border-border shadow-sm">
-              <img src={`https://ui-avatars.com/api/?name=${session?.user?.name || 'Technician'}&background=4f46e5&color=fff`} alt="ช่างซ่อม" />
+              <Image width={40} height={40} src={`https://ui-avatars.com/api/?name=${session?.user?.name || 'Technician'}&background=4f46e5&color=fff`} alt="ช่างซ่อม" />
             </div>
           </div>
         </header>

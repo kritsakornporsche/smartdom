@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { ReactNode } from 'react';
 
 export default function TenantLayout({ children }: { children: ReactNode }) {
@@ -70,7 +71,7 @@ export default function TenantLayout({ children }: { children: ReactNode }) {
             <p className="text-sm text-[#8B7355] mt-0.5">ห้อง 101 • อาคาร A</p>
           </div>
           <div className="h-12 w-12 rounded-full border-2 border-[#DCD3C6] bg-[#F2EFE9] flex items-center justify-center text-[#8B7355] font-bold overflow-hidden shadow-sm">
-             <img src="https://ui-avatars.com/api/?name=Somchai&background=F2EFE9&color=8B7355" alt="Profile" />
+             <Image width={48} height={48} src="https://ui-avatars.com/api/?name=Somchai&background=F2EFE9&color=8B7355" alt="Profile" />
           </div>
         </header>
         <main className="flex-1 overflow-y-auto p-8 relative">

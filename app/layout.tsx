@@ -38,6 +38,8 @@ export const viewport: Viewport = {
   themeColor: "#faf9f6", // Bone color from theme
 };
 
+import SessionProviderWrapper from "./components/SessionProviderWrapper";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -49,7 +51,9 @@ export default function RootLayout({
       className={`${outfit.variable} ${inter.variable} ${notoThai.variable} ${notoThaiLooped.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-background text-foreground font-sans">
-        {children}
+        <SessionProviderWrapper>
+          {children}
+        </SessionProviderWrapper>
       </body>
     </html>
   );

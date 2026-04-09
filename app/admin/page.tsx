@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
+import AdminSidebar from './components/AdminSidebar';
 
 export default function AdminDashboardPage() {
   const [dbStatus, setDbStatus] = useState<'checking' | 'connected' | 'error'>('checking');
@@ -27,170 +27,214 @@ export default function AdminDashboardPage() {
     checkDb();
   }, []);
 
+  const stats = [
+    {
+      label: 'ห้องพักทั้งหมด',
+      value: '120',
+      trend: '+2',
+      trendUp: true,
+      icon: (
+        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+        </svg>
+      ),
+    },
+    {
+      label: 'ผู้ใช้งานระบบ',
+      value: '84',
+      trend: '+5',
+      trendUp: true,
+      icon: (
+        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+        </svg>
+      ),
+    },
+    {
+      label: 'รายได้เดือนนี้',
+      value: '฿142,000',
+      trend: '+12%',
+      trendUp: true,
+      icon: (
+        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      ),
+    },
+  ];
+
   return (
-    <div className="flex h-screen bg-[#F8FAFC] text-slate-800 font-sans">
-      
-      {/* Sidebar */}
-      <aside className="w-64 bg-white border-r border-slate-200 flex flex-col hidden md:flex shrink-0">
-        <div className="h-20 flex items-center px-8 border-b border-slate-100">
-          <div className="flex items-center gap-3">
-            <div className="h-8 w-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white font-bold">
-              S
-            </div>
-            <span className="font-bold text-lg tracking-tight">SmartDom</span>
-          </div>
-        </div>
-        
-        <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
-          <div className="px-4 py-2 text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">เมนูการจัดการ</div>
-          <Link href="/admin" className="flex items-center gap-3 px-4 py-3 bg-indigo-50 text-indigo-600 rounded-xl font-medium">
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
-            </svg>
-            ภาพรวมระบบ (Dashboard)
-          </Link>
-          <Link href="/admin/tenants" className="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-xl font-medium transition-colors">
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-            </svg>
-            ผู้เช่า (Tenants)
-          </Link>
-          <Link href="/admin/rooms" className="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-xl font-medium transition-colors">
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-            </svg>
-            ห้องพัก (Rooms)
-          </Link>
-          <Link href="/admin/billing" className="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-xl font-medium transition-colors">
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-            ข้อมูลการเงิน (Billing)
-          </Link>
-        </nav>
-        
-        <div className="p-4 border-t border-slate-100">
-          <Link href="/" className="flex items-center gap-3 px-4 py-3 text-slate-500 hover:text-slate-700 font-medium transition-colors">
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-            </svg>
-            กลับสู่หน้าหลัก
-          </Link>
-        </div>
-      </aside>
+    <div className="flex h-screen bg-background text-foreground">
+      <AdminSidebar />
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col overflow-hidden">
-        
         {/* Header */}
-        <header className="h-20 bg-white border-b border-slate-200 flex items-center justify-between px-8 shrink-0">
-          <h1 className="text-xl font-bold">ภาพรวมระบบ (Admin Dashboard)</h1>
-          <div className="flex items-center gap-4">
-            <button className="relative w-10 h-10 flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition-colors">
+        <header className="h-20 bg-background border-b border-border flex items-center justify-between px-10 shrink-0">
+          <div>
+            <h1 className="font-display text-xl font-semibold tracking-tight">ภาพรวมระบบ</h1>
+            <p className="text-xs text-muted-foreground font-medium mt-0.5">ยินดีต้อนรับสู่แผงควบคุม SmartDom</p>
+          </div>
+          <div className="flex items-center gap-3">
+            <button className="relative w-10 h-10 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-accent/50 rounded-full transition-colors">
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
               </svg>
-              <span className="absolute top-2 right-2.5 w-2 h-2 bg-rose-500 rounded-full border-2 border-white"></span>
+              <span className="absolute top-2 right-2.5 w-1.5 h-1.5 bg-primary rounded-full border-2 border-background" />
             </button>
-            <div className="h-10 w-10 bg-slate-200 rounded-full border-2 border-white shadow-sm overflow-hidden mix-blend-multiply">
-              <img src="https://ui-avatars.com/api/?name=Admin+User&background=6366f1&color=fff" alt="แอดมิน" />
+            <div className="h-10 w-10 rounded-full overflow-hidden border-2 border-border shadow-sm">
+              <img src="https://ui-avatars.com/api/?name=Admin&background=c46a4a&color=fff" alt="แอดมิน" />
             </div>
           </div>
         </header>
 
         {/* Scrollable Content */}
-        <div className="flex-1 overflow-y-auto p-8">
+        <div className="flex-1 overflow-y-auto p-8 lg:p-10">
           <div className="max-w-5xl mx-auto space-y-8">
-            
-            {/* Database Connection Status Card */}
-            <section className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm">
-              <div className="flex items-start justify-between">
-                <div>
-                  <h2 className="text-lg font-bold mb-1">สถานะฐานข้อมูล (Neon PostgreSQL)</h2>
-                  <p className="text-sm text-slate-500 max-w-lg leading-relaxed">
-                    ตรวจเช็คสถานะการเชื่อมต่อฐานข้อมูลของคุณ หากพบข้อผิดพลาด กรุณาตรวจสอบ URL ในไฟล์ <code className="bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded font-mono text-xs">.env.local</code>
+
+            {/* Database Connection Status */}
+            <section className="bg-white border border-border rounded-3xl p-7 shadow-sm">
+              <div className="flex items-start justify-between gap-6">
+                <div className="flex-1">
+                  <h2 className="font-display text-base font-semibold text-foreground mb-1.5">
+                    สถานะการเชื่อมต่อฐานข้อมูล
+                  </h2>
+                  <p className="text-sm text-muted-foreground leading-relaxed max-w-lg">
+                    ตรวจสอบการเชื่อมต่อ Neon PostgreSQL แบบเรียลไทม์ หากพบข้อผิดพลาด กรุณาตรวจสอบค่าใน{' '}
+                    <code className="bg-accent/60 text-foreground/80 px-1.5 py-0.5 rounded-md font-mono text-xs">.env.local</code>
                   </p>
                 </div>
-                
-                <div className={`flex items-center gap-2.5 px-4 py-2 rounded-xl border ${
-                  dbStatus === 'connected' ? 'bg-emerald-50 border-emerald-100 text-emerald-700' :
-                  dbStatus === 'error' ? 'bg-rose-50 border-rose-100 text-rose-700' :
-                  'bg-blue-50 border-blue-100 text-blue-700'
-                }`}>
-                  <div className="relative flex h-3 w-3">
-                    <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
-                      dbStatus === 'connected' ? 'bg-emerald-400' :
-                      dbStatus === 'error' ? 'bg-rose-400' :
-                      'bg-blue-400'
-                    }`}></span>
-                    <span className={`relative inline-flex rounded-full h-3 w-3 ${
-                      dbStatus === 'connected' ? 'bg-emerald-500' :
-                      dbStatus === 'error' ? 'bg-rose-500' :
-                      'bg-blue-500'
-                    }`}></span>
+
+                <div
+                  className={`flex items-center gap-2.5 px-4 py-2.5 rounded-2xl border shrink-0 ${
+                    dbStatus === 'connected'
+                      ? 'bg-green-50 border-green-200 text-green-700'
+                      : dbStatus === 'error'
+                      ? 'bg-rose-50 border-rose-200 text-rose-700'
+                      : 'bg-accent/30 border-border text-muted-foreground'
+                  }`}
+                >
+                  <div className="relative flex h-2.5 w-2.5">
+                    <span
+                      className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
+                        dbStatus === 'connected' ? 'bg-green-500' : dbStatus === 'error' ? 'bg-rose-500' : 'bg-primary/60'
+                      }`}
+                    />
+                    <span
+                      className={`relative inline-flex rounded-full h-2.5 w-2.5 ${
+                        dbStatus === 'connected' ? 'bg-green-500' : dbStatus === 'error' ? 'bg-rose-500' : 'bg-primary/60'
+                      }`}
+                    />
                   </div>
                   <span className="font-semibold text-sm">
                     {dbStatus === 'connected' && 'เชื่อมต่อสำเร็จ'}
                     {dbStatus === 'checking' && 'กำลังตรวจสอบ...'}
-                    {dbStatus === 'error' && 'การเชื่อมต่อผิดพลาด'}
+                    {dbStatus === 'error' && 'เชื่อมต่อไม่สำเร็จ'}
                   </span>
                 </div>
               </div>
 
               {dbStatus === 'error' && (
-                <div className="mt-4 p-4 bg-rose-50/50 rounded-2xl border border-rose-100/50">
-                  <div className="text-xs font-bold uppercase tracking-wider text-rose-500 mb-1">Error Details</div>
-                  <div className="font-mono text-sm text-rose-700 break-all">{errorDetails}</div>
+                <div className="mt-5 p-4 bg-rose-50 rounded-2xl border border-rose-100">
+                  <div className="text-[10px] font-bold uppercase tracking-widest text-rose-400 mb-1.5">รายละเอียดข้อผิดพลาด</div>
+                  <div className="font-mono text-sm text-rose-700 break-all leading-relaxed">{errorDetails}</div>
                 </div>
               )}
+
+              <div className="mt-5 pt-5 border-t border-border flex items-center gap-8 flex-wrap">
+                {[
+                  { label: 'ฐานข้อมูล', value: 'Neon Serverless PostgreSQL' },
+                  { label: 'ภูมิภาค', value: 'AWS us-east-1' },
+                  { label: 'สถานะ API', value: 'ออนไลน์' },
+                ].map((item) => (
+                  <div key={item.label}>
+                    <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-0.5">{item.label}</div>
+                    <div className="text-sm font-semibold text-foreground">{item.value}</div>
+                  </div>
+                ))}
+              </div>
             </section>
 
-            {/* Quick Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {[
-                { label: 'ห้องพักทั้งหมด', value: '120', trend: '+2', trendUp: true },
-                { label: 'ผู้ใช้งานระบบ', value: '84', trend: '+5', trendUp: true },
-                { label: 'รายได้เดือนนี้', value: '฿142,000', trend: '+12%', trendUp: true },
-              ].map((stat, i) => (
-                <div key={i} className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm relative overflow-hidden group">
-                  <div className="relative z-10">
-                    <h3 className="text-sm font-semibold text-slate-500 mb-2">{stat.label}</h3>
-                    <div className="flex items-end gap-3">
-                      <span className="text-3xl font-bold text-slate-800">{stat.value}</span>
-                      <span className={`flex items-center gap-1 text-sm font-semibold pb-1 ${stat.trendUp ? 'text-emerald-500' : 'text-rose-500'}`}>
-                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                        </svg>
-                        {stat.trend}
-                      </span>
-                    </div>
+            {/* KPI Stats */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+              {stats.map((stat, i) => (
+                <div
+                  key={i}
+                  className="bg-white border border-border rounded-3xl p-7 shadow-sm relative overflow-hidden group hover:-translate-y-0.5 transition-transform"
+                >
+                  <div className="flex items-start justify-between mb-4">
+                    <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">{stat.label}</p>
+                    <div className="p-2 bg-accent/40 rounded-xl text-primary">{stat.icon}</div>
                   </div>
-                  {/* Decorative background shape */}
-                  <div className="absolute -right-6 -bottom-6 w-24 h-24 bg-indigo-50 rounded-full blur-2xl group-hover:bg-indigo-100 transition-colors duration-500 mix-blend-multiply"></div>
+                  <div className="flex items-end gap-3">
+                    <span className="font-display text-3xl font-semibold text-foreground">{stat.value}</span>
+                    <span
+                      className={`flex items-center gap-0.5 text-xs font-bold pb-1 ${
+                        stat.trendUp ? 'text-green-600' : 'text-rose-500'
+                      }`}
+                    >
+                      <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2.5}
+                          d={stat.trendUp ? 'M5 10l7-7m0 0l7 7m-7-7v18' : 'M19 14l-7 7m0 0l-7-7m7 7V3'}
+                        />
+                      </svg>
+                      {stat.trend}
+                    </span>
+                  </div>
+                  {/* Decorative */}
+                  <div className="absolute -right-6 -bottom-6 w-24 h-24 bg-primary/5 rounded-full blur-2xl group-hover:bg-primary/10 transition-colors duration-500" />
                 </div>
               ))}
             </div>
 
-            {/* Placeholder for Next Steps */}
-            <section className="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm text-center">
-              <div className="w-16 h-16 bg-indigo-50 text-indigo-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                </svg>
+            {/* Quick Actions */}
+            <section className="bg-white border border-border rounded-3xl p-7 shadow-sm">
+              <h2 className="font-display text-base font-semibold text-foreground mb-6">การดำเนินการด่วน</h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <Link
+                  href="/admin/rooms"
+                  className="group flex items-center gap-4 p-5 rounded-2xl border border-border hover:border-primary/40 hover:bg-primary/5 transition-all"
+                >
+                  <div className="p-3 bg-accent/50 rounded-xl text-primary group-hover:bg-primary/10 transition-colors">
+                    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                    </svg>
+                  </div>
+                  <div>
+                    <div className="font-semibold text-foreground text-sm">จัดการห้องพัก</div>
+                    <div className="text-xs text-muted-foreground mt-0.5">เพิ่ม แก้ไข หรือลบข้อมูลห้องพัก</div>
+                  </div>
+                  <svg className="w-4 h-4 text-muted-foreground ml-auto opacity-0 group-hover:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </Link>
+
+                <Link
+                  href="/admin/tenants"
+                  className="group flex items-center gap-4 p-5 rounded-2xl border border-border hover:border-primary/40 hover:bg-primary/5 transition-all"
+                >
+                  <div className="p-3 bg-accent/50 rounded-xl text-primary group-hover:bg-primary/10 transition-colors">
+                    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <div className="font-semibold text-foreground text-sm">จัดการผู้เช่า</div>
+                    <div className="text-xs text-muted-foreground mt-0.5">ดูข้อมูลและจัดการผู้เช่าทั้งหมด</div>
+                  </div>
+                  <svg className="w-4 h-4 text-muted-foreground ml-auto opacity-0 group-hover:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </Link>
               </div>
-              <h2 className="text-xl font-bold mb-2 text-slate-800">พร้อมใช้งานระบบจัดการหอพัก!</h2>
-              <p className="text-slate-500 max-w-md mx-auto leading-relaxed">
-                การเชื่อมต่อฐานข้อมูลและตัวจัดการแอดมินเสร็จสมบูรณ์ คุณสามารถจัดการห้องพักและผู้เช่าได้แล้ว
-              </p>
-              <Link href="/admin/rooms" className="inline-block mt-6 bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-6 py-3 rounded-xl transition-colors shadow-sm">
-                ไปที่จัดการห้องพัก
-              </Link>
             </section>
 
           </div>
         </div>
       </main>
-
     </div>
   );
 }

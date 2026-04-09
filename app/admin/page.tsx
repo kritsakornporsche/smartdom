@@ -67,6 +67,12 @@ export default function AdminDashboardPage() {
             </svg>
             ข้อมูลการเงิน (Billing)
           </Link>
+          <Link href="/admin/database" className="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-xl font-medium transition-colors">
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4z" />
+            </svg>
+            ฐานข้อมูลตาราง (Database)
+          </Link>
         </nav>
         
         <div className="p-4 border-t border-slate-100">

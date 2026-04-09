@@ -87,7 +87,6 @@ export default function SigninPage() {
     } catch {
       setError('เกิดข้อผิดพลาด กรุณาลองใหม่');
       setLoadingProvider(null);
->>>>>>> signup
     }
   };
 

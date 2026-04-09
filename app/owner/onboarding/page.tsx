@@ -30,20 +30,38 @@ export default function OwnerOnboarding() {
     const email = localStorage.getItem('userEmail') || 'owner@smartdom.com';
     setOwnerEmail(email);
 
-    const fetchPackages = async () => {
-      const res = await fetch('/api/owner/packages');
-      const data = await res.json();
-      if (data.success) {
-        // Parse features if they are stringified
-        const formatted = data.data.map((p: any) => ({
-          ...p,
-          features: typeof p.features === 'string' ? JSON.parse(p.features) : p.features
-        }));
-        setPackages(formatted);
+    const checkOnboarding = async () => {
+      try {
+        const res = await fetch(`/api/owner/onboarding?email=${email}`);
+        const data = await res.json();
+        if (data.success && data.hasDorm) {
+          router.push('/owner');
+        }
+      } catch (err) {
+        console.error('Error checking onboarding status:', err);
       }
     };
+
+    const fetchPackages = async () => {
+      try {
+        const res = await fetch('/api/owner/packages');
+        const data = await res.json();
+        if (data.success) {
+          const formatted = data.data.map((p: any) => ({
+            ...p,
+            features: typeof p.features === 'string' ? JSON.parse(p.features) : p.features
+          }));
+          setPackages(formatted);
+        }
+      } catch (err) {
+        console.error('Error fetching packages:', err);
+      }
+    };
+
+    checkOnboarding();
     fetchPackages();
-  }, []);
+  }, [router]);
+
 
   const handleDormSubmit = (e: React.FormEvent) => {
     e.preventDefault();

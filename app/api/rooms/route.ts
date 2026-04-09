@@ -5,7 +5,7 @@ export async function GET() {
   try {
     const sql = neon(process.env.DATABASE_URL || '');
     const rooms = await sql`
-      SELECT id, room_number, room_type, price, status, floor, created_at 
+      SELECT id, room_number, room_type, price, status, floor, image_url, created_at 
       FROM rooms 
       ORDER BY room_number ASC
     `;
@@ -20,7 +20,7 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { room_number, room_type, price, status, floor } = body;
+    const { room_number, room_type, price, status, floor, image_url } = body;
 
     // Validate inputs
     if (!room_number || !room_type || price === undefined) {
@@ -36,8 +36,8 @@ export async function POST(request: Request) {
     }
 
     const result = await sql`
-      INSERT INTO rooms (room_number, room_type, price, status, floor)
-      VALUES (${room_number}, ${room_type}, ${price}, ${status || 'Available'}, ${floor || 1})
+      INSERT INTO rooms (room_number, room_type, price, status, floor, image_url)
+      VALUES (${room_number}, ${room_type}, ${price}, ${status || 'Available'}, ${floor || 1}, ${image_url || null})
       RETURNING *
     `;
 

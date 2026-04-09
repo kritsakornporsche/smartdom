@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 interface Room {
   id: number;
@@ -10,6 +11,7 @@ interface Room {
   price: number;
   status: string;
   floor: number;
+  image_url: string | null;
   created_at: string;
 }
 
@@ -18,6 +20,7 @@ export default function AdminRoomsPage() {
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [feedback, setFeedback] = useState({ message: '', type: '' });
+  const [editingId, setEditingId] = useState<number | null>(null);
 
   // Form states
   const [roomNumber, setRoomNumber] = useState('');
@@ -25,6 +28,7 @@ export default function AdminRoomsPage() {
   const [price, setPrice] = useState('');
   const [floor, setFloor] = useState('1');
   const [status, setStatus] = useState('Available');
+  const [imageUrl, setImageUrl] = useState('');
 
   const fetchRooms = async () => {
     try {
@@ -44,36 +48,84 @@ export default function AdminRoomsPage() {
     fetchRooms();
   }, []);
 
-  const handleCreateRoom = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setFeedback({ message: 'Saving...', type: 'info' });
+  const resetForm = () => {
+    setRoomNumber('');
+    setPrice('');
+    setRoomType('Standard');
+    setFloor('1');
+    setStatus('Available');
+    setImageUrl('');
+    setEditingId(null);
+  };
+
+  const openAddModal = () => {
+    resetForm();
+    setIsModalOpen(true);
+  };
+
+  const openEditModal = (room: Room) => {
+    setRoomNumber(room.room_number);
+    setRoomType(room.room_type);
+    setPrice(room.price.toString());
+    setFloor(room.floor.toString());
+    setStatus(room.status);
+    setImageUrl(room.image_url || '');
+    setEditingId(room.id);
+    setIsModalOpen(true);
+    setFeedback({ message: '', type: '' });
+  };
+
+  const handleDeleteRoom = async (id: number, roomNum: string) => {
+    if (!window.confirm(`Are you sure you want to delete room ${roomNum}?`)) {
+      return;
+    }
     
     try {
-      const res = await fetch('/api/rooms', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          room_number: roomNumber,
-          room_type: roomType,
-          price: parseFloat(price),
-          floor: parseInt(floor),
-          status
-        })
-      });
+      const res = await fetch(`/api/rooms/${id}`, { method: 'DELETE' });
       const data = await res.json();
       
       if (data.success) {
-        setFeedback({ message: 'Room created successfully!', type: 'success' });
+        setRooms(rooms.filter(r => r.id !== id));
+      } else {
+        alert(data.message || 'Failed to delete room');
+      }
+    } catch (err) {
+      alert('Connection error');
+    }
+  };
+
+  const handleSaveRoom = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setFeedback({ message: 'Saving...', type: 'info' });
+    
+    const payload = {
+      room_number: roomNumber,
+      room_type: roomType,
+      price: parseFloat(price),
+      floor: parseInt(floor),
+      status,
+      image_url: imageUrl || null
+    };
+
+    try {
+      const url = editingId ? `/api/rooms/${editingId}` : '/api/rooms';
+      const method = editingId ? 'PUT' : 'POST';
+
+      const res = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      
+      const data = await res.json();
+      
+      if (data.success) {
+        setFeedback({ message: `Room ${editingId ? 'updated' : 'created'} successfully!`, type: 'success' });
         setIsModalOpen(false);
         fetchRooms();
-        // Reset form
-        setRoomNumber('');
-        setPrice('');
-        setRoomType('Standard');
-        setFloor('1');
-        setStatus('Available');
+        resetForm();
       } else {
-        setFeedback({ message: data.message || 'Error creating room', type: 'error' });
+        setFeedback({ message: data.message || 'Error saving room', type: 'error' });
       }
     } catch (err) {
       setFeedback({ message: 'Connection error', type: 'error' });
@@ -147,7 +199,7 @@ export default function AdminRoomsPage() {
           <h1 className="text-xl font-bold">Room Management</h1>
           <div className="flex items-center gap-4">
             <button 
-              onClick={() => setIsModalOpen(true)}
+              onClick={openAddModal}
               className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-4 py-2 rounded-xl transition-colors flex items-center gap-2 text-sm shadow-sm"
             >
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
@@ -161,17 +213,18 @@ export default function AdminRoomsPage() {
 
         {/* Scrollable Content */}
         <div className="flex-1 overflow-y-auto p-8">
-          <div className="max-w-5xl mx-auto">
+          <div className="max-w-6xl mx-auto">
             
             {/* Feedback Message */}
             {feedback.message && !isModalOpen && (
-               <div className={`mb-6 p-4 rounded-xl border ${feedback.type === 'success' ? 'bg-emerald-50 text-emerald-800 border-emerald-200' : 'bg-rose-50 text-rose-800 border-rose-200'}`}>
-                 {feedback.message}
+               <div className={`mb-6 p-4 rounded-xl border flex items-center justify-between ${feedback.type === 'success' ? 'bg-emerald-50 text-emerald-800 border-emerald-200' : 'bg-rose-50 text-rose-800 border-rose-200'}`}>
+                 <span>{feedback.message}</span>
+                 <button onClick={() => setFeedback({message: '', type: ''})} className="opacity-50 hover:opacity-100">✕</button>
                </div>
             )}
 
-            {/* Room List */}
-            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+            {/* Room List grid layout (Card style to show image nicely) */}
+            <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-6">
               {loading ? (
                 <div className="p-12 text-center text-slate-500">
                   <svg className="animate-spin h-8 w-8 text-indigo-600 mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
@@ -182,53 +235,64 @@ export default function AdminRoomsPage() {
                   <span className="text-6xl mb-4 block">🏢</span>
                   <h3 className="text-xl font-bold text-slate-700 mb-2">No Rooms Found</h3>
                   <p className="text-slate-500 mb-6 max-w-md mx-auto">Looks like you haven't added any rooms to the database yet. Create your first room to get started.</p>
-                  <button onClick={() => setIsModalOpen(true)} className="bg-indigo-50 text-indigo-600 hover:bg-indigo-100 px-6 py-2.5 rounded-xl font-semibold transition-colors">Add First Room</button>
+                  <button onClick={openAddModal} className="bg-indigo-50 text-indigo-600 hover:bg-indigo-100 px-6 py-2.5 rounded-xl font-semibold transition-colors">Add First Room</button>
                 </div>
               ) : (
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left text-sm whitespace-nowrap">
-                    <thead className="bg-slate-50 border-b border-slate-200">
-                      <tr>
-                        <th className="px-6 py-4 font-semibold text-slate-600">Room</th>
-                        <th className="px-6 py-4 font-semibold text-slate-600">Type</th>
-                        <th className="px-6 py-4 font-semibold text-slate-600">Floor</th>
-                        <th className="px-6 py-4 font-semibold text-slate-600 text-right">Price (THB)</th>
-                        <th className="px-6 py-4 font-semibold text-slate-600 text-center">Status</th>
-                        <th className="px-6 py-4 font-semibold text-slate-600 text-right">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-100">
-                      {rooms.map((room) => (
-                        <tr key={room.id} className="hover:bg-slate-50 transition-colors">
-                          <td className="px-6 py-4 font-bold text-slate-800">
-                            <div className="flex items-center gap-3">
-                               <div className="w-10 h-10 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600 font-bold">
-                                 {room.room_number.substring(0,2)}
-                               </div>
-                               <div>
-                                 {room.room_number}
-                               </div>
-                            </div>
-                          </td>
-                          <td className="px-6 py-4 text-slate-600">{room.room_type}</td>
-                          <td className="px-6 py-4 text-slate-600">Fl. {room.floor}</td>
-                          <td className="px-6 py-4 text-slate-700 font-medium text-right">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                  {rooms.map((room) => (
+                    <div key={room.id} className="group border border-slate-100 rounded-2xl overflow-hidden hover:shadow-lg transition-all duration-300 bg-white">
+                      <div className="aspect-[4/3] bg-slate-100 relative overflow-hidden">
+                        {room.image_url ? (
+                          <img 
+                            src={room.image_url} 
+                            alt={`Room ${room.room_number}`}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex flex-col items-center justify-center text-slate-400">
+                            <svg className="w-10 h-10 mb-2 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                            <span className="text-xs font-medium uppercase tracking-widest opacity-60">No Image</span>
+                          </div>
+                        )}
+                        <div className="absolute top-3 right-3">
+                          <span className={`px-3 py-1 rounded-full text-xs font-bold border backdrop-blur-md shadow-sm ${
+                            room.status === 'Available' ? 'bg-emerald-50/90 text-emerald-700 border-emerald-200' : 
+                            room.status === 'Occupied' ? 'bg-blue-50/90 text-blue-700 border-blue-200' : 
+                            'bg-rose-50/90 text-rose-700 border-rose-200'
+                          }`}>
+                            {room.status}
+                          </span>
+                        </div>
+                      </div>
+                      
+                      <div className="p-5 relative">
+                        <div className="flex justify-between items-start mb-1">
+                          <h3 className="text-lg font-bold text-slate-800">Room {room.room_number}</h3>
+                          <span className="text-sm font-semibold text-indigo-600 bg-indigo-50 px-2.5 py-0.5 rounded-lg border border-indigo-100/50">
                             ฿{Number(room.price).toLocaleString()}
-                          </td>
-                          <td className="px-6 py-4 text-center">
-                            <span className={`px-3 py-1 rounded-full text-xs font-bold border ${getStatusColor(room.status)}`}>
-                              {room.status}
-                            </span>
-                          </td>
-                          <td className="px-6 py-4 text-right">
-                             <button className="text-slate-400 hover:text-indigo-600 transition-colors">
-                               <svg className="w-5 h-5 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
-                             </button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                          </span>
+                        </div>
+                        <div className="text-sm text-slate-500 font-medium mb-4">
+                          {room.room_type} • Floor {room.floor}
+                        </div>
+                        
+                        <div className="flex items-center gap-2 pt-4 border-t border-slate-100">
+                          <button 
+                            onClick={() => openEditModal(room)}
+                            className="flex-1 py-1.5 text-xs font-bold text-slate-600 bg-slate-50 hover:bg-slate-100 rounded-lg transition-colors border border-slate-200"
+                          >
+                            Edit
+                          </button>
+                          <button 
+                            onClick={() => handleDeleteRoom(room.id, room.room_number)}
+                            className="flex-1 py-1.5 text-xs font-bold text-rose-600 bg-rose-50 hover:bg-rose-100 rounded-lg transition-colors border border-rose-200/50"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               )}
             </div>
@@ -237,55 +301,55 @@ export default function AdminRoomsPage() {
         </div>
       </main>
 
-      {/* Add Room Modal */}
+      {/* Add / Edit Room Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl border border-slate-200">
             <div className="px-8 py-6 border-b border-slate-100 flex justify-between items-center">
-              <h2 className="text-xl font-bold text-slate-800">Add New Room</h2>
-              <button onClick={() => setIsModalOpen(false)} className="text-slate-400 hover:text-slate-600 transition-colors">
-                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+              <h2 className="text-xl font-bold text-slate-800">{editingId ? 'Edit Room' : 'Add New Room'}</h2>
+              <button onClick={() => setIsModalOpen(false)} className="text-slate-400 hover:text-slate-600 transition-colors bg-slate-100 hover:bg-slate-200 p-2 rounded-full">
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" /></svg>
               </button>
             </div>
             
-            <form onSubmit={handleCreateRoom} className="p-8">
+            <form onSubmit={handleSaveRoom} className="p-8">
               {feedback.message && feedback.type === 'error' && (
                 <div className="mb-6 p-3 bg-rose-50 border border-rose-100 text-rose-700 rounded-xl text-sm font-medium">
                   {feedback.message}
                 </div>
               )}
 
-              <div className="grid grid-cols-2 gap-6 mb-6">
+              <div className="grid grid-cols-2 gap-5 mb-5">
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">Room Number</label>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Room Number</label>
                   <input 
                     type="text" 
                     required 
                     value={roomNumber}
                     onChange={(e) => setRoomNumber(e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600 outline-none transition-all"
+                    className="w-full px-4 py-2.5 bg-slate-50 rounded-xl border border-slate-200 focus:bg-white focus:ring-2 focus:ring-indigo-600/20 focus:border-indigo-600 outline-none transition-all font-medium text-slate-800"
                     placeholder="e.g. 101"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">Floor</label>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Floor</label>
                   <input 
                     type="number" 
                     required 
                     value={floor}
                     onChange={(e) => setFloor(e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600 outline-none transition-all"
+                    className="w-full px-4 py-2.5 bg-slate-50 rounded-xl border border-slate-200 focus:bg-white focus:ring-2 focus:ring-indigo-600/20 focus:border-indigo-600 outline-none transition-all font-medium text-slate-800"
                     min="1"
                   />
                 </div>
               </div>
 
-              <div className="mb-6">
-                <label className="block text-sm font-semibold text-slate-700 mb-2">Room Type</label>
+              <div className="mb-5">
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Room Type</label>
                 <select 
                   value={roomType}
                   onChange={(e) => setRoomType(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600 outline-none transition-all bg-white"
+                  className="w-full px-4 py-2.5 bg-slate-50 rounded-xl border border-slate-200 focus:bg-white focus:ring-2 focus:ring-indigo-600/20 focus:border-indigo-600 outline-none transition-all font-medium text-slate-800"
                 >
                   <option value="Standard">Standard</option>
                   <option value="Premium">Premium</option>
@@ -294,26 +358,26 @@ export default function AdminRoomsPage() {
                 </select>
               </div>
 
-              <div className="grid grid-cols-2 gap-6 mb-8">
+              <div className="grid grid-cols-2 gap-5 mb-5">
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">Monthly Price (THB)</label>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Price/Month (THB)</label>
                   <input 
                     type="number" 
                     required 
                     value={price}
                     onChange={(e) => setPrice(e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600 outline-none transition-all"
-                    placeholder="e.g. 4500"
+                    className="w-full px-4 py-2.5 bg-slate-50 rounded-xl border border-slate-200 focus:bg-white focus:ring-2 focus:ring-indigo-600/20 focus:border-indigo-600 outline-none transition-all font-medium text-slate-800"
+                    placeholder="4500"
                     min="0"
                     step="100"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">Initial Status</label>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Status</label>
                   <select 
                     value={status}
                     onChange={(e) => setStatus(e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600 outline-none transition-all bg-white"
+                    className="w-full px-4 py-2.5 bg-slate-50 rounded-xl border border-slate-200 focus:bg-white focus:ring-2 focus:ring-indigo-600/20 focus:border-indigo-600 outline-none transition-all font-medium text-slate-800"
                   >
                     <option value="Available">Available</option>
                     <option value="Occupied">Occupied</option>
@@ -322,19 +386,31 @@ export default function AdminRoomsPage() {
                 </div>
               </div>
 
+              <div className="mb-8">
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Image URL</label>
+                <input 
+                  type="url" 
+                  value={imageUrl}
+                  onChange={(e) => setImageUrl(e.target.value)}
+                  className="w-full px-4 py-2.5 bg-slate-50 rounded-xl border border-slate-200 focus:bg-white focus:ring-2 focus:ring-indigo-600/20 focus:border-indigo-600 outline-none transition-all font-medium text-slate-800"
+                  placeholder="https://example.com/room-image.jpg"
+                />
+                <p className="text-[11px] text-slate-400 mt-2 font-medium">Leave blank for no image. You can use standard image URLs.</p>
+              </div>
+
               <div className="flex gap-4">
                 <button 
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="flex-1 px-4 py-3 rounded-xl font-semibold text-slate-600 hover:bg-slate-100 transition-colors"
+                  className="flex-1 py-3.5 rounded-xl font-bold text-slate-500 hover:bg-slate-100 transition-colors"
                 >
                   Cancel
                 </button>
                 <button 
                   type="submit"
-                  className="flex-1 px-4 py-3 rounded-xl font-semibold bg-indigo-600 hover:bg-indigo-700 text-white shadow-md shadow-indigo-200 transition-all"
+                  className="flex-1 py-3.5 rounded-xl font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-200 transition-all active:scale-[0.98]"
                 >
-                  Create Room
+                  {editingId ? 'Save Changes' : 'Create Room'}
                 </button>
               </div>
             </form>

@@ -26,12 +26,20 @@ const roleConfig: Record<Role, { label: string; desc: string; icon: string }> = 
 
 type FormState = 'idle' | 'loading' | 'success' | 'error';
 
+interface CreatedUser {
+  id: number;
+  full_name: string;
+  email: string;
+  role: Role;
+}
+
 export default function SignupPage() {
   const router = useRouter();
   const [step, setStep] = useState<1 | 2>(1);
   const [selectedRole, setSelectedRole] = useState<Role>('tenant');
   const [formState, setFormState] = useState<FormState>('idle');
   const [message, setMessage] = useState('');
+  const [createdUser, setCreatedUser] = useState<CreatedUser | null>(null);
   const [emailAvailable, setEmailAvailable] = useState<boolean | null>(null);
   const [checkingEmail, setCheckingEmail] = useState(false);
   const emailCheckTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -114,8 +122,10 @@ export default function SignupPage() {
       if (data.success) {
         setFormState('success');
         setMessage(data.message);
-        // Redirect to signin after 2.5s
-        setTimeout(() => router.push('/signin'), 2500);
+        setCreatedUser(data.data);
+        // Redirect based on role
+        const redirectPath = selectedRole === 'owner' ? '/admin' : '/signin';
+        setTimeout(() => router.push(redirectPath), 3000);
       } else {
         setFormState('error');
         setMessage(data.message);
@@ -167,16 +177,71 @@ export default function SignupPage() {
         </p>
 
         {/* ── SUCCESS STATE ─────────────────────────────────────────────── */}
-        {formState === 'success' ? (
-          <div className="text-center py-12 space-y-4">
-            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-2">
-              <svg className="w-8 h-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
-              </svg>
+        {formState === 'success' && createdUser ? (
+          <div className="space-y-6">
+            {/* Success Icon */}
+            <div className="text-center">
+              <div className="relative inline-flex">
+                <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center ring-8 ring-green-50">
+                  <svg className="w-10 h-10 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+              </div>
+              <h2 className="font-display text-3xl text-foreground mt-5">ยินดีต้อนรับ!</h2>
+              <p className="text-muted-foreground font-medium mt-2">{message}</p>
             </div>
-            <h2 className="font-display text-2xl text-foreground">สมัครสมาชิกสำเร็จ!</h2>
-            <p className="text-muted-foreground font-medium">{message}</p>
-            <p className="text-xs text-muted-foreground/70">กำลังนำคุณไปหน้าเข้าสู่ระบบ...</p>
+
+            {/* User Info Card */}
+            <div className="bg-accent/30 border border-border rounded-3xl p-6 space-y-4">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-2xl bg-primary flex items-center justify-center text-primary-foreground font-display font-bold text-lg shrink-0">
+                  {createdUser.full_name.charAt(0).toUpperCase()}
+                </div>
+                <div className="min-w-0">
+                  <p className="font-semibold text-foreground truncate">{createdUser.full_name}</p>
+                  <p className="text-sm text-muted-foreground truncate">{createdUser.email}</p>
+                </div>
+                <span className="ml-auto shrink-0 text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-full bg-primary/10 text-primary">
+                  {roleConfig[createdUser.role as Role]?.label ?? createdUser.role}
+                </span>
+              </div>
+
+              <div className="border-t border-border pt-4 space-y-2">
+                {[
+                  { label: 'หมายเลขสมาชิก', value: `#${String(createdUser.id).padStart(5, '0')}` },
+                  { label: 'บทบาท', value: roleConfig[createdUser.role as Role]?.label ?? createdUser.role },
+                ].map((item) => (
+                  <div key={item.label} className="flex justify-between text-sm">
+                    <span className="text-muted-foreground font-medium">{item.label}</span>
+                    <span className="font-semibold text-foreground">{item.value}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* CTA */}
+            {createdUser.role === 'owner' ? (
+              <div className="space-y-3">
+                <button
+                  onClick={() => router.push('/admin')}
+                  className="w-full rounded-full bg-primary py-4 text-xs font-bold uppercase tracking-[0.2em] text-primary-foreground shadow-xl shadow-primary/20 hover:-translate-y-1 transition-all active:scale-95"
+                >
+                  เข้าสู่แผงควบคุมแอดมิน →
+                </button>
+                <p className="text-center text-xs text-muted-foreground">หรือรอสักครู่ ระบบจะพาคุณไปอัตโนมัติ...</p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                <button
+                  onClick={() => router.push('/signin')}
+                  className="w-full rounded-full bg-primary py-4 text-xs font-bold uppercase tracking-[0.2em] text-primary-foreground shadow-xl shadow-primary/20 hover:-translate-y-1 transition-all active:scale-95"
+                >
+                  ไปยังหน้าเข้าสู่ระบบ →
+                </button>
+                <p className="text-center text-xs text-muted-foreground">หรือรอสักครู่ ระบบจะพาคุณไปอัตโนมัติ...</p>
+              </div>
+            )}
           </div>
         ) : (
           <>

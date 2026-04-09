@@ -40,6 +40,7 @@ export async function POST(request: Request) {
     // Determine redirect path based on role
     let redirectUrl = '/';
     if (user.role === 'admin') redirectUrl = '/admin';
+    if (user.role === 'owner') redirectUrl = '/owner';
     if (user.role === 'tenant') redirectUrl = '/tenant';
     if (user.role === 'keeper') redirectUrl = '/keeper'; // Future placeholder
 

@@ -6,6 +6,7 @@ import Line from 'next-auth/providers/line';
 import Credentials from 'next-auth/providers/credentials';
 import { neon } from '@neondatabase/serverless';
 import bcrypt from 'bcryptjs';
+import { authConfig } from './auth.config';
 
 const sql = neon(process.env.DATABASE_URL || '');
 
@@ -31,6 +32,7 @@ async function upsertSocialUser({
 }
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
+  ...authConfig,
   secret: process.env.AUTH_SECRET,
 
   providers: [

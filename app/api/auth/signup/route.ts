@@ -4,18 +4,23 @@ import { neon } from '@neondatabase/serverless';
 const sql = neon(process.env.DATABASE_URL || '');
 
 // ─── Ensure users table exists ────────────────────────────────────────────────
+// ─── Ensure users table & columns exist ──────────────────────────────────────
 async function ensureTable() {
+  // Create table using the existing schema (column: name, not full_name)
   await sql`
     CREATE TABLE IF NOT EXISTS users (
       id          SERIAL PRIMARY KEY,
-      full_name   TEXT        NOT NULL,
-      email       TEXT        NOT NULL UNIQUE,
-      password    TEXT        NOT NULL,
-      role        TEXT        NOT NULL DEFAULT 'tenant'
-                  CHECK (role IN ('tenant', 'keeper', 'owner')),
-      is_active   BOOLEAN     NOT NULL DEFAULT TRUE,
-      created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
+      name        VARCHAR(255) NOT NULL,
+      email       VARCHAR(255) NOT NULL UNIQUE,
+      password    VARCHAR(255) NOT NULL,
+      role        VARCHAR(50)  NOT NULL DEFAULT 'tenant',
+      created_at  TIMESTAMP    DEFAULT NOW()
     )
+  `;
+  // Add is_active column if it doesn't exist yet (safe migration)
+  await sql`
+    ALTER TABLE users
+    ADD COLUMN IF NOT EXISTS is_active BOOLEAN NOT NULL DEFAULT TRUE
   `;
 }
 
@@ -72,23 +77,23 @@ export async function POST(request: Request) {
       );
     }
 
-    // ── Hash password with Web Crypto (no bcrypt needed in Edge/Node) ─────────
+    // ── Hash password ─────────────────────────────────────────────────────────
     const encoder = new TextEncoder();
     const data = encoder.encode(password);
     const hashBuffer = await crypto.subtle.digest('SHA-256', data);
     const hashArray = Array.from(new Uint8Array(hashBuffer));
     const hashedPassword = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 
-    // ── Insert user ───────────────────────────────────────────────────────────
+    // ── Insert user (use 'name' column to match existing DB schema) ───────────
     const result = await sql`
-      INSERT INTO users (full_name, email, password, role)
+      INSERT INTO users (name, email, password, role)
       VALUES (
         ${full_name.trim()},
         ${email.toLowerCase().trim()},
         ${hashedPassword},
         ${role}
       )
-      RETURNING id, full_name, email, role, created_at
+      RETURNING id, name AS full_name, email, role, created_at
     `;
 
     const user = result[0];

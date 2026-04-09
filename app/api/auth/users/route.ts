@@ -4,17 +4,20 @@ import { neon } from '@neondatabase/serverless';
 const sql = neon(process.env.DATABASE_URL || '');
 
 async function ensureTable() {
+  // Match actual DB schema (column: name, not full_name)
   await sql`
     CREATE TABLE IF NOT EXISTS users (
       id          SERIAL PRIMARY KEY,
-      full_name   TEXT        NOT NULL,
-      email       TEXT        NOT NULL UNIQUE,
-      password    TEXT        NOT NULL,
-      role        TEXT        NOT NULL DEFAULT 'tenant'
-                  CHECK (role IN ('tenant', 'keeper', 'owner')),
-      is_active   BOOLEAN     NOT NULL DEFAULT TRUE,
-      created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
+      name        VARCHAR(255) NOT NULL,
+      email       VARCHAR(255) NOT NULL UNIQUE,
+      password    VARCHAR(255) NOT NULL,
+      role        VARCHAR(50)  NOT NULL DEFAULT 'tenant',
+      created_at  TIMESTAMP    DEFAULT NOW()
     )
+  `;
+  await sql`
+    ALTER TABLE users
+    ADD COLUMN IF NOT EXISTS is_active BOOLEAN NOT NULL DEFAULT TRUE
   `;
 }
 
@@ -23,8 +26,9 @@ export async function GET() {
   try {
     await ensureTable();
 
+    // Alias 'name' as 'full_name' so the frontend interface stays consistent
     const users = await sql`
-      SELECT id, full_name, email, role, is_active, created_at
+      SELECT id, name AS full_name, email, role, is_active, created_at
       FROM users
       ORDER BY created_at DESC
     `;

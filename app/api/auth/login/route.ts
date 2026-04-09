@@ -13,10 +13,17 @@ export async function POST(request: Request) {
 
     const sql = neon(process.env.DATABASE_URL || '');
     
-    // Check credentials (plain text demo)
+    // ── Hash password to match signup hashing (SHA-256) ─────────────────────
+    const encoder = new TextEncoder();
+    const dataArr = encoder.encode(password);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', dataArr);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const hashedPassword = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+
+    // Check credentials against hashed password
     const users = await sql`
       SELECT id, name, email, role FROM users 
-      WHERE email = ${email} AND password = ${password}
+      WHERE email = ${email} AND password = ${hashedPassword}
     `;
 
     if (users.length === 0) {
@@ -33,6 +40,7 @@ export async function POST(request: Request) {
     // Determine redirect path based on role
     let redirectUrl = '/';
     if (user.role === 'admin') redirectUrl = '/admin';
+    if (user.role === 'owner') redirectUrl = '/owner';
     if (user.role === 'tenant') redirectUrl = '/tenant';
     if (user.role === 'keeper') redirectUrl = '/keeper'; // Future placeholder
 

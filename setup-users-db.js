@@ -1,5 +1,11 @@
 const { neon } = require('@neondatabase/serverless');
+const crypto = require('crypto');
 require('dotenv').config({ path: '.env.local' });
+
+// SHA-256 helper for Node.js
+function hashPassword(password) {
+  return crypto.createHash('sha256').update(password).digest('hex');
+}
 
 async function initDb() {
   const sql = neon(process.env.DATABASE_URL);
@@ -17,14 +23,14 @@ async function initDb() {
       )
     `;
 
-    console.log('Inserting mock users...');
+    console.log('Inserting mock users with hashed passwords...');
     
     // Check if admin exists
     const adminExists = await sql`SELECT 1 FROM users WHERE email = 'admin@smartdom.com'`;
     if (adminExists.length === 0) {
       await sql`
         INSERT INTO users (email, password, name, role) 
-        VALUES ('admin@smartdom.com', 'admin123', 'ผู้ดูแลระบบ (Admin)', 'admin')
+        VALUES ('admin@smartdom.com', ${hashPassword('admin123')}, 'ผู้ดูแลระบบ (Admin/Owner)', 'admin')
       `;
     }
 
@@ -33,7 +39,7 @@ async function initDb() {
     if (tenantExists.length === 0) {
       await sql`
         INSERT INTO users (email, password, name, role) 
-        VALUES ('tenant@smartdom.com', 'tenant123', 'สมชาย ผู้เช่า (Tenant)', 'tenant')
+        VALUES ('tenant@smartdom.com', ${hashPassword('tenant123')}, 'สมชาย ผู้เช่า (Tenant)', 'tenant')
       `;
     }
 
@@ -42,7 +48,7 @@ async function initDb() {
     if (keeperExists.length === 0) {
       await sql`
         INSERT INTO users (email, password, name, role) 
-        VALUES ('keeper@smartdom.com', 'keeper123', 'สมหญิง แม่บ้าน (Keeper)', 'keeper')
+        VALUES ('keeper@smartdom.com', ${hashPassword('keeper123')}, 'สมหญิง แม่บ้าน (Keeper)', 'keeper')
       `;
     }
 

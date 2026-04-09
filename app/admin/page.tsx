@@ -39,7 +39,7 @@ export default function AdminDashboardPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [summary, setSummary] = useState<UserSummary | null>(null);
   const [loadingUsers, setLoadingUsers] = useState(true);
-  const [lastRefresh, setLastRefresh] = useState<Date>(new Date());
+  const [lastRefresh, setLastRefresh] = useState<Date | null>(null);
 
   // ── Check DB connection ──────────────────────────────────────────────────────
   useEffect(() => {
@@ -202,7 +202,7 @@ export default function AdminDashboardPage() {
                 <div>
                   <h2 className="font-display text-base font-semibold text-foreground">ผู้ใช้งานในระบบ</h2>
                   <p className="text-xs text-muted-foreground mt-0.5">
-                    ดึงข้อมูลจริงจากฐานข้อมูล · อัปเดตล่าสุด {lastRefresh.toLocaleTimeString('th-TH')}
+                    ดึงข้อมูลจริงจากฐานข้อมูล{lastRefresh ? ` · อัปเดตล่าสุด ${lastRefresh.toLocaleTimeString('th-TH')}` : ''}
                   </p>
                 </div>
                 <button

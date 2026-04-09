@@ -3,6 +3,7 @@ import Google from 'next-auth/providers/google';
 import Facebook from 'next-auth/providers/facebook';
 import GitHub from 'next-auth/providers/github';
 import Line from 'next-auth/providers/line';
+import Credentials from 'next-auth/providers/credentials';
 import { neon } from '@neondatabase/serverless';
 
 const sql = neon(process.env.DATABASE_URL || '');
@@ -48,6 +49,46 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       clientId: process.env.LINE_CLIENT_ID!,
       clientSecret: process.env.LINE_CLIENT_SECRET!,
     }),
+    Credentials({
+      name: 'Credentials',
+      credentials: {
+        email: { label: 'Email', type: 'email' },
+        password: { label: 'Password', type: 'password' },
+      },
+      async authorize(credentials) {
+        if (!credentials?.email || !credentials?.password) return null;
+        
+        try {
+          const encoder = new TextEncoder();
+          const data = encoder.encode(credentials.password as string);
+          const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+          const hashArray = Array.from(new Uint8Array(hashBuffer));
+          const hashedPassword = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+
+          const users = await sql`
+            SELECT id, name, email, role, sub_role 
+            FROM users 
+            WHERE email = ${String(credentials.email).toLowerCase().trim()} 
+              AND password = ${hashedPassword}
+              AND is_active = TRUE
+          `;
+
+          if (users.length === 0) return null;
+
+          const user = users[0];
+          return {
+            id: String(user.id),
+            name: user.name,
+            email: user.email,
+            role: user.role,
+            sub_role: user.sub_role,
+          };
+        } catch (e) {
+          console.error('[Authorize Error]', e);
+          return null;
+        }
+      }
+    }),
   ],
 
   pages: {
@@ -68,17 +109,38 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return true;
     },
 
+    async jwt({ token, user, account }) {
+      if (user) {
+        token.role = (user as any).role || 'tenant';
+        token.sub_role = (user as any).sub_role || null;
+      } else if (account?.type === 'oauth') {
+        const users = await sql`SELECT role, sub_role FROM users WHERE email = ${token.email}`;
+        if (users.length > 0) {
+          token.role = users[0].role;
+          token.sub_role = users[0].sub_role;
+        } else {
+          token.role = 'tenant';
+        }
+      }
+      return token;
+    },
+
     async session({ session, token }) {
       if (session.user && token.sub) {
         (session.user as any).id = token.sub;
+        (session.user as any).role = token.role;
+        (session.user as any).sub_role = token.sub_role;
       }
       return session;
     },
 
-    async redirect({ url, baseUrl }) {
-      // Redirect to /admin after social sign-in
+    async redirect({ url, baseUrl, token }) {
+      // By default redirect based on role isn't easy here without token in this scope, wait... JWT token is usually not available in redirect callback.
+      // But we can check url in next middleware or rely on the frontend redirect in signIn route.
+      // The signIn function in app/signin/page.tsx resolves after auth, and then NextAuth can redirect. 
+      // Actually we will handle role-based redirect in middleware or the frontend after login.
       if (url.startsWith(baseUrl)) return url;
-      return baseUrl + '/admin';
+      return baseUrl;
     },
   },
 });

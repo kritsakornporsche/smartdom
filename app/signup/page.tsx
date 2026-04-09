@@ -37,6 +37,7 @@ export default function SignupPage() {
   const router = useRouter();
   const [step, setStep] = useState<1 | 2>(1);
   const [selectedRole, setSelectedRole] = useState<Role>('tenant');
+  const [selectedSubRole, setSelectedSubRole] = useState<'maid' | 'technician'>('maid');
   const [formState, setFormState] = useState<FormState>('idle');
   const [message, setMessage] = useState('');
   const [createdUser, setCreatedUser] = useState<CreatedUser | null>(null);
@@ -114,6 +115,7 @@ export default function SignupPage() {
           email: fields.email,
           password: fields.password,
           role: selectedRole,
+          sub_role: selectedRole === 'keeper' ? selectedSubRole : null,
         }),
       });
 
@@ -123,8 +125,12 @@ export default function SignupPage() {
         setFormState('success');
         setMessage(data.message);
         setCreatedUser(data.data);
-        // Redirect based on role
-        const redirectPath = selectedRole === 'owner' ? '/admin' : '/signin';
+        // Redirect based on role and sub role
+        let redirectPath = '/signin';
+        if (selectedRole === 'owner') redirectPath = '/admin';
+        else if (selectedRole === 'keeper') {
+          redirectPath = selectedSubRole === 'maid' ? '/keeper/maid' : '/keeper/technician';
+        }
         setTimeout(() => router.push(redirectPath), 3000);
       } else {
         setFormState('error');
@@ -364,6 +370,41 @@ export default function SignupPage() {
                       </button>
                     ))}
                   </div>
+                  
+                  {/* Sub-role selector for Keeper */}
+                  {selectedRole === 'keeper' && (
+                    <div className="mt-4 p-4 rounded-2xl bg-accent/30 border border-border/40 space-y-3 animate-in fade-in zoom-in-95 duration-200">
+                      <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground w-full block">
+                        ระบุประเภทพนักงาน
+                      </label>
+                      <div className="flex gap-3">
+                        <button
+                          type="button"
+                          onClick={() => setSelectedSubRole('maid')}
+                          className={`flex-1 flex flex-col items-center justify-center p-3 rounded-xl border transition-all ${
+                            selectedSubRole === 'maid'
+                              ? 'border-primary bg-primary/10 text-primary'
+                              : 'border-border/40 hover:border-border hover:bg-white text-muted-foreground'
+                          }`}
+                        >
+                          <span className="text-xl mb-1">🧹</span>
+                          <span className="text-xs font-bold">แม่บ้าน</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setSelectedSubRole('technician')}
+                          className={`flex-1 flex flex-col items-center justify-center p-3 rounded-xl border transition-all ${
+                            selectedSubRole === 'technician'
+                              ? 'border-primary bg-primary/10 text-primary'
+                              : 'border-border/40 hover:border-border hover:bg-white text-muted-foreground'
+                          }`}
+                        >
+                          <span className="text-xl mb-1">🔧</span>
+                          <span className="text-xs font-bold">ช่างซ่อม</span>
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Password */}

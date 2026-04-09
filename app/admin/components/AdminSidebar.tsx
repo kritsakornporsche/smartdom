@@ -55,20 +55,20 @@ export default function AdminSidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="w-64 bg-background border-r border-border flex flex-col shrink-0">
+    <aside className="w-64 bg-[#FAF8F5] border-r border-[#E5DFD3] flex flex-col shrink-0 shadow-sm">
       {/* Logo */}
-      <div className="h-20 flex items-center px-8 border-b border-border">
+      <div className="h-20 flex items-center px-8 border-b border-[#E5DFD3]">
         <div className="flex items-center gap-3 group cursor-pointer">
-          <div className="h-9 w-9 flex items-center justify-center rounded-xl bg-primary text-primary-foreground font-display font-bold text-base shadow-sm transition-transform group-hover:scale-105">
+          <div className="h-9 w-9 flex items-center justify-center rounded-xl bg-[#8B7355] text-white font-display font-bold text-base shadow-sm transition-transform group-hover:scale-105">
             S
           </div>
-          <span className="font-display font-bold text-base tracking-tight text-foreground">SmartDom</span>
+          <span className="font-display font-bold text-base tracking-tight text-[#3E342B]">SmartDom</span>
         </div>
       </div>
 
       {/* Navigation */}
       <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
-        <p className="px-4 py-2 text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground mb-2">
+        <p className="px-4 py-2 text-[10px] font-bold uppercase tracking-[0.2em] text-[#A08D74] mb-2">
           เมนูการจัดการ
         </p>
         {navItems.map((item) => {
@@ -79,14 +79,14 @@ export default function AdminSidebar() {
               href={item.href}
               className={`flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-sm transition-all ${
                 isActive
-                  ? 'bg-primary/10 text-primary font-semibold'
-                  : 'text-muted-foreground hover:bg-accent/40 hover:text-foreground'
+                  ? 'bg-[#8B7355] text-white shadow-md'
+                  : 'text-[#A08D74] hover:bg-[#F3EFE9] hover:text-[#5A4D41]'
               }`}
             >
-              <span className={isActive ? 'text-primary' : ''}>{item.icon}</span>
+              <span className={isActive ? 'text-white' : ''}>{item.icon}</span>
               {item.label}
               {isActive && (
-                <span className="ml-auto w-1.5 h-1.5 rounded-full bg-primary" />
+                <span className="ml-auto w-1.5 h-1.5 rounded-full bg-white/60" />
               )}
             </Link>
           );
@@ -94,10 +94,10 @@ export default function AdminSidebar() {
       </nav>
 
       {/* Footer */}
-      <div className="p-4 border-t border-border">
+      <div className="p-4 border-t border-[#E5DFD3]">
         <Link
           href="/"
-          className="flex items-center gap-3 px-4 py-3 text-muted-foreground hover:text-foreground rounded-xl font-medium text-sm transition-colors hover:bg-accent/40"
+          className="flex items-center gap-3 px-4 py-3 text-[#A08D74] hover:text-[#5A4D41] rounded-xl font-medium text-sm transition-colors hover:bg-[#F3EFE9]"
         >
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M11 17l-5-5m0 0l5-5m-5 5h12" />

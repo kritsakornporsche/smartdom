@@ -28,10 +28,11 @@ const roleLabel: Record<string, string> = {
 };
 
 const roleBadge: Record<string, string> = {
-  owner: 'bg-primary/10 text-primary',
+  owner: 'bg-[#8B7355]/10 text-[#8B7355]',
   keeper: 'bg-amber-100 text-amber-700',
   tenant: 'bg-green-100 text-green-700',
 };
+
 
 export default function AdminDashboardPage() {
   const [dbStatus, setDbStatus] = useState<'checking' | 'connected' | 'error'>('checking');
@@ -91,73 +92,69 @@ export default function AdminDashboardPage() {
   };
 
   return (
-    <div className="flex h-screen bg-background text-foreground">
+    <div className="flex h-screen bg-[#FDFBF7] text-[#3E342B]">
       <AdminSidebar />
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col overflow-hidden">
         {/* Header */}
-        <header className="h-20 bg-background border-b border-border flex items-center justify-between px-10 shrink-0">
+        <header className="h-20 bg-white/60 backdrop-blur-md border-b border-[#E5DFD3] flex items-center justify-between px-10 shrink-0">
           <div>
-            <h1 className="font-display text-xl font-semibold tracking-tight">ภาพรวมระบบ</h1>
-            <p className="text-xs text-muted-foreground font-medium mt-0.5">ยินดีต้อนรับสู่แผงควบคุม SmartDom</p>
+            <h1 className="font-display text-xl font-bold tracking-tight text-[#3E342B]">ภาพรวมระบบ</h1>
+            <p className="text-[10px] text-[#A08D74] font-bold uppercase tracking-widest mt-0.5">Admin Management System</p>
           </div>
           <div className="flex items-center gap-3">
             <button
               onClick={fetchUsers}
               title="รีเฟรชข้อมูล"
-              className="w-10 h-10 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-accent/50 rounded-full transition-colors"
+              className="w-10 h-10 flex items-center justify-center text-[#A08D74] hover:text-[#3E342B] hover:bg-[#F3EFE9] rounded-full transition-colors"
             >
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
               </svg>
             </button>
-            <button className="relative w-10 h-10 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-accent/50 rounded-full transition-colors">
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-              </svg>
-              <span className="absolute top-2 right-2.5 w-1.5 h-1.5 bg-primary rounded-full border-2 border-background" />
-            </button>
-            <div className="h-10 w-10 rounded-full overflow-hidden border-2 border-border shadow-sm">
-              <img src="https://ui-avatars.com/api/?name=Admin&background=c46a4a&color=fff" alt="แอดมิน" />
+            <div className="h-10 w-10 rounded-full overflow-hidden border-2 border-[#E5DFD3] shadow-sm">
+              <img src="https://ui-avatars.com/api/?name=Admin&background=8B7355&color=fff" alt="แอดมิน" />
             </div>
           </div>
         </header>
+
 
         {/* Scrollable Content */}
         <div className="flex-1 overflow-y-auto p-8 lg:p-10">
           <div className="max-w-5xl mx-auto space-y-8">
 
             {/* ── Database Connection Status ───────────────────────────────── */}
-            <section className="bg-white border border-border rounded-3xl p-7 shadow-sm">
+            <section className="bg-white border border-[#E5DFD3] rounded-3xl p-7 shadow-sm">
               <div className="flex items-start justify-between gap-6">
                 <div className="flex-1">
-                  <h2 className="font-display text-base font-semibold text-foreground mb-1.5">สถานะการเชื่อมต่อฐานข้อมูล</h2>
-                  <p className="text-sm text-muted-foreground leading-relaxed max-w-lg">
+                  <h2 className="font-display text-base font-bold text-[#3E342B] mb-1.5 whitespace-nowrap">สถานะการเชื่อมต่อฐานข้อมูล</h2>
+                  <p className="text-sm text-[#A08D74] leading-relaxed max-w-lg font-medium">
                     ตรวจสอบการเชื่อมต่อ Neon PostgreSQL แบบเรียลไทม์ หากพบข้อผิดพลาด กรุณาตรวจสอบค่าใน{' '}
-                    <code className="bg-accent/60 px-1.5 py-0.5 rounded-md font-mono text-xs">.env.local</code>
+                    <code className="bg-[#FAF8F5] px-1.5 py-0.5 rounded-md font-mono text-xs text-[#8B6A2B] border border-[#E5DFD3]">.env.local</code>
                   </p>
                 </div>
                 <div className={`flex items-center gap-2.5 px-4 py-2.5 rounded-2xl border shrink-0 ${
-                  dbStatus === 'connected' ? 'bg-green-50 border-green-200 text-green-700'
+                  dbStatus === 'connected' ? 'bg-[#F0FDF4] border-emerald-200 text-emerald-700'
                   : dbStatus === 'error' ? 'bg-rose-50 border-rose-200 text-rose-700'
-                  : 'bg-accent/30 border-border text-muted-foreground'
+                  : 'bg-[#F3EFE9] border-[#E5DFD3] text-[#A08D74]'
                 }`}>
                   <div className="relative flex h-2.5 w-2.5">
                     <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
-                      dbStatus === 'connected' ? 'bg-green-500' : dbStatus === 'error' ? 'bg-rose-500' : 'bg-primary/60'
+                      dbStatus === 'connected' ? 'bg-emerald-500' : dbStatus === 'error' ? 'bg-rose-500' : 'bg-[#8B7355]/60'
                     }`} />
                     <span className={`relative inline-flex rounded-full h-2.5 w-2.5 ${
-                      dbStatus === 'connected' ? 'bg-green-500' : dbStatus === 'error' ? 'bg-rose-500' : 'bg-primary/60'
+                      dbStatus === 'connected' ? 'bg-emerald-500' : dbStatus === 'error' ? 'bg-rose-500' : 'bg-[#8B7355]/60'
                     }`} />
                   </div>
-                  <span className="font-semibold text-sm">
-                    {dbStatus === 'connected' && 'เชื่อมต่อสำเร็จ'}
-                    {dbStatus === 'checking' && 'กำลังตรวจสอบ...'}
-                    {dbStatus === 'error' && 'เชื่อมต่อไม่สำเร็จ'}
+                  <span className="font-bold text-sm uppercase tracking-wider">
+                    {dbStatus === 'connected' && 'Online'}
+                    {dbStatus === 'checking' && 'Checking...'}
+                    {dbStatus === 'error' && 'Offline'}
                   </span>
                 </div>
               </div>
+
               {dbStatus === 'error' && (
                 <div className="mt-5 p-4 bg-rose-50 rounded-2xl border border-rose-100">
                   <div className="text-[10px] font-bold uppercase tracking-widest text-rose-400 mb-1.5">รายละเอียดข้อผิดพลาด</div>
@@ -182,39 +179,41 @@ export default function AdminDashboardPage() {
             {summary && (
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {[
-                  { label: 'ผู้ใช้ทั้งหมด', value: summary.total, color: 'text-foreground' },
-                  { label: 'แอดมิน', value: summary.owners, color: 'text-primary' },
-                  { label: 'ผู้ดูแล', value: summary.keepers, color: 'text-amber-600' },
-                  { label: 'ผู้เช่า', value: summary.tenants, color: 'text-green-600' },
+                  { label: 'ผู้ใช้ทั้งหมด', value: summary.total, color: 'text-[#3E342B]' },
+                  { label: 'เจ้าของหอ', value: summary.owners, color: 'text-[#8B6A2B]' },
+                  { label: 'ผู้ดูแล', value: summary.keepers, color: 'text-[#A08D74]' },
+                  { label: 'ผู้เช่า', value: summary.tenants, color: 'text-emerald-600' },
                 ].map((s) => (
-                  <div key={s.label} className="bg-white border border-border rounded-2xl p-5 shadow-sm">
-                    <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">{s.label}</p>
-                    <p className={`font-display text-3xl font-semibold ${s.color}`}>{s.value}</p>
+                  <div key={s.label} className="bg-white border border-[#E5DFD3] rounded-2xl p-5 shadow-sm">
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-[#A08D74] mb-2">{s.label}</p>
+                    <p className={`font-display text-3xl font-bold ${s.color}`}>{s.value}</p>
                   </div>
                 ))}
               </div>
             )}
 
+
             {/* ── Users from DB (real-time) ────────────────────────────────── */}
-            <section className="bg-white border border-border rounded-3xl overflow-hidden shadow-sm">
+            <section className="bg-white border border-[#E5DFD3] rounded-3xl overflow-hidden shadow-sm">
               {/* Table Header */}
-              <div className="flex items-center justify-between px-7 py-5 border-b border-border">
+              <div className="flex items-center justify-between px-7 py-5 border-b border-[#E5DFD3]">
                 <div>
-                  <h2 className="font-display text-base font-semibold text-foreground">ผู้ใช้งานในระบบ</h2>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    ดึงข้อมูลจริงจากฐานข้อมูล{lastRefresh ? ` · อัปเดตล่าสุด ${lastRefresh.toLocaleTimeString('th-TH')}` : ''}
+                  <h2 className="font-display text-base font-bold text-[#3E342B]">ผู้ใช้งานในระบบ</h2>
+                  <p className="text-[10px] text-[#A08D74] font-bold uppercase tracking-widest mt-0.5 whitespace-nowrap">
+                    {lastRefresh ? `อัปเดตล่าสุด ${lastRefresh.toLocaleTimeString('th-TH')}` : 'กำลังดึงข้อมูล...'}
                   </p>
                 </div>
                 <button
                   onClick={fetchUsers}
-                  className="flex items-center gap-2 text-xs font-bold text-primary hover:bg-primary/10 px-4 py-2 rounded-full transition-colors"
+                  className="flex items-center gap-2 text-xs font-bold text-[#8B6A2B] hover:bg-[#F3EFE9] px-4 py-2 rounded-full transition-colors"
                 >
                   <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                   </svg>
-                  รีเฟรช
+                  REFRESH
                 </button>
               </div>
+
 
               {/* Table Body */}
               {loadingUsers ? (
@@ -244,16 +243,17 @@ export default function AdminDashboardPage() {
               ) : (
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm text-left">
-                    <thead className="bg-accent/20 border-b border-border">
+                    <thead className="bg-[#FAF8F5] border-b border-[#E5DFD3]">
                       <tr>
                         {['#', 'ชื่อ-นามสกุล', 'อีเมล', 'บทบาท', 'สถานะ', 'สมัครเมื่อ'].map((h) => (
-                          <th key={h} className="px-6 py-3.5 text-xs font-bold uppercase tracking-wider text-muted-foreground whitespace-nowrap">
+                          <th key={h} className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-[#A08D74] whitespace-nowrap">
                             {h}
                           </th>
                         ))}
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-border">
+                    <tbody className="divide-y divide-[#F3EFE9]">
+
                       {users.map((u) => (
                         <tr key={u.id} className="hover:bg-accent/10 transition-colors">
                           <td className="px-6 py-4 font-mono text-xs text-muted-foreground">

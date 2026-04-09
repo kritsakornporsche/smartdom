@@ -59,33 +59,44 @@ const navItems = [
       </svg>
     ),
   },
+  {
+    href: '/owner/subscription',
+    label: 'แพ็กเกจสมาชิก',
+    icon: (
+      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+      </svg>
+    ),
+  },
 ];
+
 
 export default function OwnerSidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="w-72 bg-gradient-to-b from-[#2D3436] to-[#0984E3] text-white flex flex-col shrink-0 shadow-2xl">
+    <aside className="w-72 bg-[#FAF8F5] border-r border-[#E5DFD3] flex flex-col shrink-0 shadow-sm">
       {/* Brand Profile */}
-      <div className="p-8 border-b border-white/10">
+      <div className="p-8 border-b border-[#E5DFD3]">
         <div className="flex items-center gap-4 mb-6">
-          <div className="h-12 w-12 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center font-bold text-xl shadow-inner border border-white/30">
-            D
+          <div className="h-12 w-12 rounded-2xl bg-[#8B7355] text-white flex items-center justify-center font-bold text-xl shadow-inner border border-[#A08D74]">
+            S
           </div>
           <div>
-            <h2 className="font-bold text-lg tracking-tight">Dorm Owner</h2>
-            <p className="text-xs text-white/60 font-medium">แผงควบคุมเจ้าของหอ</p>
+            <h2 className="font-bold text-lg tracking-tight text-[#3E342B]">SmartDom</h2>
+            <p className="text-[10px] font-black text-[#A08D74] uppercase tracking-[0.15em]">Owner Portal</p>
           </div>
         </div>
         
-        <div className="bg-white/10 rounded-2xl p-4 backdrop-blur-sm border border-white/5">
-           <p className="text-[10px] font-bold uppercase tracking-widest text-white/40 mb-1">หอพักปัจจุบัน</p>
-           <p className="text-sm font-bold truncate">SmartDom Mansion</p>
+        <div className="bg-white rounded-2xl p-4 border border-[#E5DFD3] shadow-sm">
+           <p className="text-[10px] font-bold uppercase tracking-widest text-[#A08D74] mb-1">หอพักปัจจุบัน</p>
+           <p className="text-sm font-bold truncate text-[#5A4D41] opacity-70">กำลังตรวจสอบ...</p>
         </div>
+
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 px-4 py-8 space-y-2 overflow-y-auto">
+      <nav className="flex-1 px-4 py-8 space-y-1.5 overflow-y-auto">
         {navItems.map((item) => {
           const isActive = pathname === item.href;
           return (
@@ -94,8 +105,8 @@ export default function OwnerSidebar() {
               href={item.href}
               className={`flex items-center gap-4 px-6 py-4 rounded-2xl font-bold text-sm transition-all group ${
                 isActive
-                  ? 'bg-white text-[#0984E3] shadow-lg scale-[1.02]'
-                  : 'text-white/70 hover:bg-white/10 hover:text-white'
+                  ? 'bg-[#8B7355] text-white shadow-md'
+                  : 'text-[#A08D74] hover:bg-[#F3EFE9] hover:text-[#5A4D41]'
               }`}
             >
               <span className={`transition-transform duration-300 ${isActive ? 'scale-110' : 'group-hover:rotate-12'}`}>
@@ -103,7 +114,7 @@ export default function OwnerSidebar() {
               </span>
               {item.label}
               {isActive && (
-                <div className="ml-auto w-2 h-2 rounded-full bg-[#0984E3] shadow-sm animate-pulse" />
+                <div className="ml-auto w-1.5 h-1.5 rounded-full bg-white/60" />
               )}
             </Link>
           );
@@ -111,10 +122,10 @@ export default function OwnerSidebar() {
       </nav>
 
       {/* User Session / Logout */}
-      <div className="p-6 border-t border-white/10">
+      <div className="p-6 border-t border-[#E5DFD3]">
         <Link
            href="/signin"
-           className="flex items-center gap-4 px-6 py-4 bg-rose-500/20 hover:bg-rose-500/30 text-rose-200 rounded-2xl font-bold text-sm transition-all border border-rose-500/30"
+           className="flex items-center gap-4 px-6 py-4 text-[#A08D74] hover:text-[#5A4D41] rounded-2xl font-bold text-sm transition-all hover:bg-[#F3EFE9]"
         >
            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />

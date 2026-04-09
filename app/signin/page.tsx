@@ -54,14 +54,7 @@ const socialProviders = [
 
 export default function SigninPage() {
   const router = useRouter();
-<<<<<<< HEAD
   const [loadingProvider, setLoadingProvider] = useState<string | null>(null);
-=======
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
->>>>>>> origin/main
   const [error, setError] = useState('');
 
   const handleSocialLogin = async (providerId: string) => {

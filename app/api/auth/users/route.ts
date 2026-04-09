@@ -17,7 +17,8 @@ async function ensureTable() {
   `;
   await sql`
     ALTER TABLE users
-    ADD COLUMN IF NOT EXISTS is_active BOOLEAN NOT NULL DEFAULT TRUE
+    ADD COLUMN IF NOT EXISTS is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    ADD COLUMN IF NOT EXISTS sub_role VARCHAR(50)
   `;
 }
 
@@ -28,7 +29,7 @@ export async function GET() {
 
     // Alias 'name' as 'full_name' so the frontend interface stays consistent
     const users = await sql`
-      SELECT id, name AS full_name, email, role, is_active, created_at
+      SELECT id, name AS full_name, email, role, sub_role, is_active, created_at
       FROM users
       ORDER BY created_at DESC
     `;

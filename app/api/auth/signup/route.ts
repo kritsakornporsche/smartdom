@@ -17,10 +17,11 @@ async function ensureTable() {
       created_at  TIMESTAMP    DEFAULT NOW()
     )
   `;
-  // Add is_active column if it doesn't exist yet (safe migration)
+  // Add is_active and sub_role columns if they don't exist yet (safe migration)
   await sql`
     ALTER TABLE users
-    ADD COLUMN IF NOT EXISTS is_active BOOLEAN NOT NULL DEFAULT TRUE
+    ADD COLUMN IF NOT EXISTS is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    ADD COLUMN IF NOT EXISTS sub_role VARCHAR(50)
   `;
 }
 
@@ -28,7 +29,7 @@ async function ensureTable() {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { full_name, email, password, role = 'tenant' } = body;
+    const { full_name, email, password, role = 'tenant', sub_role = null } = body;
 
     // ── Validate required fields ──────────────────────────────────────────────
     if (!full_name || !email || !password) {
@@ -64,6 +65,16 @@ export async function POST(request: Request) {
       );
     }
 
+    if (role === 'keeper') {
+      const validSubRoles = ['maid', 'technician'];
+      if (!validSubRoles.includes(sub_role)) {
+        return NextResponse.json(
+          { success: false, message: 'กรุณาระบุประเภทบุคลากรให้ถูกต้อง (แม่บ้าน หรือ ช่างซ่อม)' },
+          { status: 400 }
+        );
+      }
+    }
+
     await ensureTable();
 
     // ── Check duplicate email ─────────────────────────────────────────────────
@@ -86,14 +97,15 @@ export async function POST(request: Request) {
 
     // ── Insert user (use 'name' column to match existing DB schema) ───────────
     const result = await sql`
-      INSERT INTO users (name, email, password, role)
+      INSERT INTO users (name, email, password, role, sub_role)
       VALUES (
         ${full_name.trim()},
         ${email.toLowerCase().trim()},
         ${hashedPassword},
-        ${role}
+        ${role},
+        ${role === 'keeper' ? sub_role : null}
       )
-      RETURNING id, name AS full_name, email, role, created_at
+      RETURNING id, name AS full_name, email, role, sub_role, created_at
     `;
 
     const user = result[0];
@@ -107,6 +119,7 @@ export async function POST(request: Request) {
           full_name: user.full_name,
           email: user.email,
           role: user.role,
+          sub_role: user.sub_role,
           created_at: user.created_at,
         },
       },

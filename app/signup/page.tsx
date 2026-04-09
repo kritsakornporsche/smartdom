@@ -1,16 +1,18 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { signIn } from 'next-auth/react';
 
-type Role = 'tenant' | 'owner';
+type Role = 'guest' | 'owner';
 
 
 const roleConfig: Record<Role, { label: string; desc: string; icon: string }> = {
-  tenant: {
-    label: 'ผู้เช่า',
-    desc: 'จัดการห้องพัก ชำระค่าเช่า และแจ้งซ่อมแซม',
+  guest: {
+    label: 'แขก',
+    desc: 'เลือกดูและจองห้องพัก',
     icon: '🏠',
   },
   owner: {
@@ -31,9 +33,20 @@ interface CreatedUser {
 }
 
 export default function SignupPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <SignupContent />
+    </Suspense>
+  );
+}
+
+function SignupContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get('callbackUrl');
+
   const [step, setStep] = useState<1 | 2>(1);
-  const [selectedRole, setSelectedRole] = useState<Role>('tenant');
+  const [selectedRole, setSelectedRole] = useState<Role>('guest');
   const [selectedSubRole, setSelectedSubRole] = useState<'maid' | 'technician'>('maid');
   const [formState, setFormState] = useState<FormState>('idle');
   const [message, setMessage] = useState('');
@@ -119,13 +132,25 @@ export default function SignupPage() {
       const data = await res.json();
 
       if (data.success) {
+        // Auto sign in after success
+        await signIn('credentials', {
+           email: fields.email,
+           password: fields.password,
+           redirect: false
+        });
+
         setFormState('success');
         setMessage(data.message);
         setCreatedUser(data.data);
-        // Redirect based on role
-        const redirectPath = selectedRole === 'owner' ? '/owner' : '/signin';
+        // Redirect based on role and callback
+        let redirectPath = selectedRole === 'owner' ? '/owner' : '/explore';
+        if (callbackUrl && selectedRole === 'guest') {
+          redirectPath = callbackUrl;
+        } else if (selectedRole === 'guest') {
+           redirectPath = '/explore';
+        }
 
-        setTimeout(() => router.push(redirectPath), 3000);
+        setTimeout(() => router.push(redirectPath), 2000);
 
       } else {
         setFormState('error');
@@ -228,23 +253,20 @@ export default function SignupPage() {
             {createdUser.role === 'owner' ? (
               <div className="space-y-3">
                 <button
-                  onClick={() => router.push('/owner')}
+                  onClick={() => {
+                    const path = callbackUrl && (createdUser.role as string) === 'guest' ? callbackUrl : (createdUser.role === 'owner' ? '/owner' : '/explore');
+                    router.push(path);
+                  }}
                   className="w-full rounded-full bg-primary py-4 text-xs font-bold uppercase tracking-[0.2em] text-primary-foreground shadow-xl shadow-primary/20 hover:-translate-y-1 transition-all active:scale-95"
                 >
-                  เข้าสู่แผงควบคุมเจ้าของหอพัก →
+                  เริ่มใช้งาน SmartDom ทันที →
                 </button>
 
                 <p className="text-center text-xs text-muted-foreground">หรือรอสักครู่ ระบบจะพาคุณไปอัตโนมัติ...</p>
               </div>
             ) : (
               <div className="space-y-3">
-                <button
-                  onClick={() => router.push('/signin')}
-                  className="w-full rounded-full bg-primary py-4 text-xs font-bold uppercase tracking-[0.2em] text-primary-foreground shadow-xl shadow-primary/20 hover:-translate-y-1 transition-all active:scale-95"
-                >
-                  ไปยังหน้าเข้าสู่ระบบ →
-                </button>
-                <p className="text-center text-xs text-muted-foreground">หรือรอสักครู่ ระบบจะพาคุณไปอัตโนมัติ...</p>
+                <p className="text-center text-xs text-muted-foreground">ระบบจะพาคุณไปดำเนินการต่ออัตโนมัติ...</p>
               </div>
             )}
           </div>
@@ -500,7 +522,7 @@ export default function SignupPage() {
             {/* ── Link to signin ─────────────────────────────────────────── */}
             <p className="text-center text-[10px] font-bold uppercase tracking-[0.2em] text-[#A08D74] mt-8">
               มีบัญชีอยู่แล้ว?{' '}
-              <Link href="/signin" className="text-[#8B6A2B] font-bold hover:underline">
+              <Link href={`/signin${callbackUrl ? `?callbackUrl=${encodeURIComponent(callbackUrl)}` : ''}`} className="text-[#8B6A2B] font-bold hover:underline">
                 เข้าสู่ระบบที่นี่
               </Link>
             </p>

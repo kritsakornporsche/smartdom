@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Metadata } from "next";
+import Navbar from "./components/Navbar";
 
 export const metadata: Metadata = {
   title: "SmartDom | Experience Minimal & Sustainable Living",
@@ -10,29 +11,7 @@ export const metadata: Metadata = {
 export default function Home() {
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground scroll-smooth">
-      {/* Navigation */}
-      <nav className="fixed top-0 w-full z-50 bg-background/60 backdrop-blur-xl border-b border-border/40">
-        <div className="mx-auto max-w-7xl px-8">
-          <div className="flex h-20 items-center justify-between">
-            <div className="flex items-center gap-4 group cursor-pointer">
-              <div className="h-10 w-10 flex items-center justify-center rounded-2xl bg-primary text-primary-foreground font-display font-bold shadow-soft transition-transform group-hover:scale-105">
-                S
-              </div>
-              <span className="text-lg font-display font-bold tracking-tight uppercase">SmartDom</span>
-            </div>
-            
-            <div className="hidden md:flex items-center gap-12">
-              <Link href="#features" className="text-xs font-bold uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors">คุณสมบัติ</Link>
-              <Link href="#roles" className="text-xs font-bold uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors">ระบบ</Link>
-              <div className="h-4 w-px bg-border/60" />
-              <Link href="/signin" className="text-sm font-semibold hover:text-primary transition-colors text-foreground">เข้าสู่ระบบ</Link>
-              <Link href="/signup" className="rounded-full bg-foreground px-8 py-2.5 text-xs font-bold uppercase tracking-widest text-background hover:bg-primary hover:text-primary-foreground transition-all shadow-xl">
-                เริ่มต้นเลย
-              </Link>
-            </div>
-          </div>
-        </div>
-      </nav>
+      <Navbar />
 
       {/* Hero Section */}
       <section className="relative pt-48 pb-32 lg:pt-60 lg:pb-48 overflow-hidden">
@@ -64,10 +43,11 @@ export default function Home() {
               เริ่มต้นใช้งานฟรี
             </Link>
             <Link
-              href="#features"
-              className="w-full sm:w-auto rounded-full border border-border/60 bg-white/40 px-12 py-5 text-sm font-bold uppercase tracking-widest text-foreground hover:bg-background transition-all"
+              href="/explore"
+              className="w-full sm:w-auto rounded-full border border-border/60 bg-white/40 px-12 py-5 text-sm font-bold uppercase tracking-widest text-foreground hover:bg-background transition-all group/btn"
             >
-              สำรวจคุณสมบัติ
+              ดูหอพักทั้งหมด 
+              <span className="ml-3 inline-block transition-transform group-hover/btn:translate-x-1">→</span>
             </Link>
           </div>
         </div>

@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useSession, signOut } from 'next-auth/react';
 
 const navItems = [
   {
@@ -73,6 +74,7 @@ const navItems = [
 
 export default function OwnerSidebar() {
   const pathname = usePathname();
+  const { data: session } = useSession();
 
   return (
     <aside className="w-72 bg-[#FAF8F5] border-r border-[#E5DFD3] flex flex-col shrink-0 shadow-sm">
@@ -83,8 +85,8 @@ export default function OwnerSidebar() {
             S
           </div>
           <div>
-            <h2 className="font-bold text-lg tracking-tight text-[#3E342B]">SmartDom</h2>
-            <p className="text-[10px] font-black text-[#A08D74] uppercase tracking-[0.15em]">Owner Portal</p>
+            <h2 className="font-bold text-lg tracking-tight text-[#3E342B]">{session?.user?.name || 'SmartDom'}</h2>
+            <p className="text-[10px] font-black text-[#A08D74] uppercase tracking-[0.15em]">{session?.user?.role || 'Owner'} Portal</p>
           </div>
         </div>
         
@@ -123,15 +125,15 @@ export default function OwnerSidebar() {
 
       {/* User Session / Logout */}
       <div className="p-6 border-t border-[#E5DFD3]">
-        <Link
-           href="/signin"
-           className="flex items-center gap-4 px-6 py-4 text-[#A08D74] hover:text-[#5A4D41] rounded-2xl font-bold text-sm transition-all hover:bg-[#F3EFE9]"
+        <button
+           onClick={() => signOut({ callbackUrl: '/' })}
+           className="w-full flex items-center gap-4 px-6 py-4 text-[#A08D74] hover:text-[#5A4D41] rounded-2xl font-bold text-sm transition-all hover:bg-[#F3EFE9]"
         >
            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
            </svg>
            ออกจากระบบ
-        </Link>
+        </button>
       </div>
     </aside>
   );

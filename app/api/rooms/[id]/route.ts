@@ -1,6 +1,24 @@
 import { NextResponse } from 'next/server';
 import { neon } from '@neondatabase/serverless';
 
+export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
+  try {
+    const resolvedParams = await params;
+    const id = resolvedParams.id;
+    const sql = neon(process.env.DATABASE_URL || '');
+    
+    const result = await sql`SELECT id, room_number, room_type, price, status, floor, image_url, dorm_id FROM rooms WHERE id = ${id}`;
+    
+    if (result.length === 0) {
+      return NextResponse.json({ success: false, message: 'Room not found' }, { status: 404 });
+    }
+    
+    return NextResponse.json({ success: true, data: result[0] }, { status: 200 });
+  } catch (error: any) {
+    return NextResponse.json({ success: false, message: 'Failed to fetch room', error: error.message }, { status: 500 });
+  }
+}
+
 export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const resolvedParams = await params;

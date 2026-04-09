@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { neon } from '@neondatabase/serverless';
+import bcrypt from 'bcryptjs';
 
 const sql = neon(process.env.DATABASE_URL || '');
 
@@ -13,7 +14,7 @@ async function ensureTable() {
       name        VARCHAR(255) NOT NULL,
       email       VARCHAR(255) NOT NULL UNIQUE,
       password    VARCHAR(255) NOT NULL,
-      role        VARCHAR(50)  NOT NULL DEFAULT 'tenant',
+      role        VARCHAR(50)  NOT NULL DEFAULT 'guest',
       created_at  TIMESTAMP    DEFAULT NOW()
     )
   `;
@@ -29,7 +30,7 @@ async function ensureTable() {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { full_name, email, password, role = 'tenant', sub_role = null } = body;
+    const { full_name, email, password, role = 'guest', sub_role = null } = body;
 
     // ── Validate required fields ──────────────────────────────────────────────
     if (!full_name || !email || !password) {
@@ -57,7 +58,7 @@ export async function POST(request: Request) {
     }
 
     // ── Validate role ─────────────────────────────────────────────────────────
-    const validRoles = ['tenant', 'keeper', 'owner'];
+    const validRoles = ['guest', 'tenant', 'keeper', 'owner'];
     if (!validRoles.includes(role)) {
       return NextResponse.json(
         { success: false, message: 'ประเภทผู้ใช้งานไม่ถูกต้อง' },
@@ -88,12 +89,8 @@ export async function POST(request: Request) {
       );
     }
 
-    // ── Hash password ─────────────────────────────────────────────────────────
-    const encoder = new TextEncoder();
-    const data = encoder.encode(password);
-    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    const hashedPassword = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    // ── Hash password with BCrypt ─────────────────────────────────────────────
+    const hashedPassword = await bcrypt.hash(password, 12);
 
     // ── Insert user (use 'name' column to match existing DB schema) ───────────
     const result = await sql`

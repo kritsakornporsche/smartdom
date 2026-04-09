@@ -1,19 +1,23 @@
 const { neon } = require('@neondatabase/serverless');
-const crypto = require('crypto');
+const bcrypt = require('bcryptjs');
 require('dotenv').config({ path: '.env.local' });
 
-// SHA-256 helper for Node.js
 function hashPassword(password) {
-  return crypto.createHash('sha256').update(password).digest('hex');
+  return bcrypt.hashSync(password, 10);
 }
 
 async function seedSmartDom() {
   const sql = neon(process.env.DATABASE_URL);
 
   try {
-    console.log('🚀 Starting Full Database Seeding...');
+    // 1. Clear Existing Data
+    console.log('--- Clearing existing database ---');
+    await sql`DROP TABLE IF EXISTS tenants CASCADE`;
+    await sql`DROP TABLE IF EXISTS rooms CASCADE`;
+    await sql`DROP TABLE IF EXISTS dormitory_profile CASCADE`;
+    await sql`DROP TABLE IF EXISTS users CASCADE`;
 
-    // 1. Ensure Table Structure
+    // 2. Ensure Table Structure
     console.log('--- Ensuring table structures ---');
     
     // Users table
@@ -23,7 +27,9 @@ async function seedSmartDom() {
         email VARCHAR(255) UNIQUE NOT NULL,
         password VARCHAR(255) NOT NULL,
         name VARCHAR(255) NOT NULL,
-        role VARCHAR(50) NOT NULL,
+        role VARCHAR(50) NOT NULL DEFAULT 'guest',
+        is_active BOOLEAN NOT NULL DEFAULT TRUE,
+        sub_role VARCHAR(50),
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
     `;
@@ -32,7 +38,7 @@ async function seedSmartDom() {
     await sql`
       CREATE TABLE IF NOT EXISTS dormitory_profile (
         id SERIAL PRIMARY KEY,
-        name VARCHAR(255) NOT NULL,
+        name VARCHAR(255) UNIQUE NOT NULL,
         address TEXT,
         phone VARCHAR(50),
         tax_id VARCHAR(50),
@@ -75,16 +81,16 @@ async function seedSmartDom() {
     await sql`ALTER TABLE tenants ADD COLUMN IF NOT EXISTS user_id INTEGER UNIQUE REFERENCES users(id)`;
 
 
-    // 2. Seed Owner (Admin)
-    console.log('--- Seeding Owner/Admin ---');
-    const adminEmail = 'admin@smartdom.com';
-    const hashedAdminPass = hashPassword('admin123');
+    // 2. Seed Owner
+    console.log('--- Seeding Owner ---');
+    const adminEmail = 'owner@smartdom.com';
+    const hashedAdminPass = hashPassword('owner123');
     let admin = await sql`SELECT id FROM users WHERE email = ${adminEmail} LIMIT 1`;
     
     if (admin.length === 0) {
       admin = await sql`
         INSERT INTO users (email, password, name, role) 
-        VALUES (${adminEmail}, ${hashedAdminPass}, 'เจ้าของหอพัก (Owner)', 'admin')
+        VALUES (${adminEmail}, ${hashedAdminPass}, 'คุณกฤษฎา (เจ้าของหอพัก)', 'owner')
         RETURNING id
       `;
     }
@@ -98,10 +104,10 @@ async function seedSmartDom() {
       dorm = await sql`
         INSERT INTO dormitory_profile (name, address, phone, tax_id, owner_id)
         VALUES (
-          'SmartDom Mansion',
-          '888 ถนนพระราม 9 แขวงห้วยขวาง เขตห้วยขวาง กรุงเทพฯ 10310',
-          '088-999-8888',
-          '1102030405060',
+          'SmartDom Grand Residence',
+          '99/1 ซอยอารีย์ ถนนพหลโยธิน แขวงสามเสนใน เขตพญาไท กรุงเทพฯ 10400',
+          '02-123-4567',
+          '0123456789012',
           ${adminId}
         )
         RETURNING id
@@ -166,7 +172,7 @@ async function seedSmartDom() {
 
     console.log('✅ Full Database Seeding Complete!');
     console.log('Summary:');
-    console.log('- Dormitory: SmartDom Mansion (Owner: admin@smartdom.com)');
+    console.log('- Dormitory: SmartDom Grand Residence (Owner: owner@smartdom.com)');
     console.log('- Rooms: 10 rooms created (101-105, 201-205)');
     console.log('- Tenants: 3 tenants moved in (101, 102, 201)');
 

@@ -5,6 +5,7 @@ import GitHub from 'next-auth/providers/github';
 import Line from 'next-auth/providers/line';
 import Credentials from 'next-auth/providers/credentials';
 import { neon } from '@neondatabase/serverless';
+import bcrypt from 'bcryptjs';
 
 const sql = neon(process.env.DATABASE_URL || '');
 
@@ -59,23 +60,19 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         if (!credentials?.email || !credentials?.password) return null;
         
         try {
-          const encoder = new TextEncoder();
-          const data = encoder.encode(credentials.password as string);
-          const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-          const hashArray = Array.from(new Uint8Array(hashBuffer));
-          const hashedPassword = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-
           const users = await sql`
-            SELECT id, name, email, role, sub_role 
+            SELECT id, name, email, password, role, sub_role 
             FROM users 
             WHERE email = ${String(credentials.email).toLowerCase().trim()} 
-              AND password = ${hashedPassword}
               AND is_active = TRUE
           `;
-
+          
           if (users.length === 0) return null;
-
           const user = users[0];
+
+          // ── Verify BCrypt Password ──────────────────────────────────────────
+          const isValid = await bcrypt.compare(credentials.password as string, user.password);
+          if (!isValid) return null;
           return {
             id: String(user.id),
             name: user.name,
@@ -111,8 +108,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
     async jwt({ token, user, account }) {
       if (user) {
-        token.role = (user as any).role || 'tenant';
+        token.role = (user as any).role || 'guest';
         token.sub_role = (user as any).sub_role || null;
+        token.name = user.name;
       } else if (account?.type === 'oauth') {
         const users = await sql`SELECT role, sub_role FROM users WHERE email = ${token.email}`;
         if (users.length > 0) {
@@ -126,10 +124,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     },
 
     async session({ session, token }) {
-      if (session.user && token.sub) {
+      if (session.user) {
         (session.user as any).id = token.sub;
         (session.user as any).role = token.role;
         (session.user as any).sub_role = token.sub_role;
+        session.user.name = token.name;
       }
       return session;
     },

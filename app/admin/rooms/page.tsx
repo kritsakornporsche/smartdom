@@ -137,6 +137,7 @@ export default function AdminRoomsPage() {
     // English mapping fallback for backwards compat if data was entered in English
     if (status === 'Available' || status === 'ว่าง') return 'bg-emerald-100 text-emerald-700 border-emerald-200';
     if (status === 'Occupied' || status === 'มีผู้เช่า') return 'bg-blue-100 text-blue-700 border-blue-200';
+    if (status === 'Reserved' || status === 'ติดจอง') return 'bg-amber-100 text-amber-700 border-amber-200';
     if (status === 'Maintenance' || status === 'ปิดปรับปรุง') return 'bg-rose-100 text-rose-700 border-rose-200';
     return 'bg-gray-100 text-gray-700 border-gray-200';
   };
@@ -144,6 +145,7 @@ export default function AdminRoomsPage() {
   const getDisplayStatus = (status: string) => {
     if (status === 'Available') return 'ว่าง';
     if (status === 'Occupied') return 'มีผู้เช่า';
+    if (status === 'Reserved') return 'ติดจอง';
     if (status === 'Maintenance') return 'ปิดปรับปรุง';
     return status;
   };
@@ -349,6 +351,7 @@ export default function AdminRoomsPage() {
                     className="w-full rounded-2xl border border-border/40 bg-background px-5 py-3.5 text-sm font-medium focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
                   >
                     <option value="ว่าง">ว่าง</option>
+                    <option value="ติดจอง">ติดจอง</option>
                     <option value="มีผู้เช่า">มีผู้เช่า</option>
                     <option value="ปิดปรับปรุง">ปิดปรับปรุง</option>
                   </select>

@@ -1,11 +1,24 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { signIn } from 'next-auth/react';
 
 export default function SignInPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <SignInContent />
+    </Suspense>
+  );
+}
+
+function SignInContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get('callbackUrl');
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -35,26 +48,30 @@ export default function SignInPage() {
     setError('');
 
     try {
-      const res = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
+      const result = await signIn('credentials', {
+        email,
+        password,
+        redirect: false,
       });
 
-      const data = await res.json();
-
-      if (data.success) {
-        // Save email for onboarding and persistence check
+      if (result?.error) {
+        setError('อีเมลหรือรหัสผ่านไม่ถูกต้อง');
+      } else {
         if (typeof window !== 'undefined') {
           localStorage.setItem('userEmail', email);
         }
-        // Redirect to the role-specific dashboard
-        router.push(data.redirectUrl);
+        
+        // Use our API to get the correct redirect URL based on role
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password }),
+        });
+        const data = await res.json();
+        
+        const path = callbackUrl || data.redirectUrl || '/explore';
+        router.push(path);
         router.refresh();
-      } else {
-        setError(data.message || 'รหัสผ่านไม่ถูกต้อง');
       }
     } catch (err: any) {
       setError('เกิดข้อผิดพลาดในการเชื่อมต่อ');
@@ -153,7 +170,7 @@ export default function SignInPage() {
           </div>
 
           <div className="mt-8 text-center">
-             <Link href="/signup" className="text-xs font-bold text-[#A08D74] hover:text-[#8B7355] uppercase tracking-widest">ยังไม่มีบัญชี? สมัครสมาชิกที่นี่</Link>
+             <Link href={`/signup${callbackUrl ? `?callbackUrl=${encodeURIComponent(callbackUrl)}` : ''}`} className="text-xs font-bold text-[#A08D74] hover:text-[#8B7355] uppercase tracking-widest">ยังไม่มีบัญชี? สมัครสมาชิกที่นี่</Link>
           </div>
 
         </div>

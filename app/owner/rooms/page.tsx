@@ -161,12 +161,12 @@ export default function RoomsManagement() {
                         </td>
                         <td className="px-8 py-5 font-bold text-[#5A4D41]">฿{Number(room.price).toLocaleString()}</td>
                         <td className="px-8 py-5 text-[#A08D74] font-medium">ชั้น {room.floor}</td>
-                        <td className="px-8 py-5">
-                           <span className={`flex items-center gap-1.5 text-xs font-bold ${room.status === 'Available' ? 'text-emerald-600' : 'text-amber-600'}`}>
-                             <span className={`w-1.5 h-1.5 rounded-full ${room.status === 'Available' ? 'bg-emerald-500' : 'bg-amber-500'}`} />
-                             {room.status === 'Available' ? 'ว่าง' : 'มีผู้เช่า'}
-                           </span>
-                        </td>
+                         <td className="px-8 py-5">
+                            <span className={`flex items-center gap-1.5 text-xs font-bold ${room.status === 'Available' ? 'text-emerald-600' : room.status === 'Reserved' || room.status === 'ติดจอง' ? 'text-amber-500' : 'text-blue-600'}`}>
+                              <span className={`w-1.5 h-1.5 rounded-full ${room.status === 'Available' ? 'bg-emerald-500' : room.status === 'Reserved' || room.status === 'ติดจอง' ? 'bg-amber-500' : 'bg-blue-500'}`} />
+                              {room.status === 'Available' ? 'ว่าง' : room.status === 'Reserved' || room.status === 'ติดจอง' ? 'ติดจอง' : 'มีผู้เช่า'}
+                            </span>
+                         </td>
                         <td className="px-8 py-5">
                            <div className="flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                               <button onClick={() => handleEdit(room)} className="p-2 text-[#8B7355] hover:bg-[#F3EFE9] rounded-lg transition-colors">

@@ -2,12 +2,14 @@
 
 import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import KeeperSidebar from '../components/KeeperSidebar';
 import Link from 'next/link';
 
 export default function MaidDashboardPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const [currentTime, setCurrentTime] = useState<string>('');
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -20,83 +22,111 @@ export default function MaidDashboardPage() {
     }
   }, [status, session, router]);
 
+  useEffect(() => {
+    setCurrentTime(new Date().toLocaleTimeString('th-TH'));
+    const timer = setInterval(() => {
+      setCurrentTime(new Date().toLocaleTimeString('th-TH'));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
   if (status === 'loading') {
-    return <div className="min-h-screen flex items-center justify-center">กำลังโหลด...</div>;
+    return <div className="flex h-screen items-center justify-center bg-secondary/5 font-display text-muted-foreground">กำลังโหลดระบบ...</div>;
   }
 
   return (
-    <div className="min-h-screen bg-rose-50/30 font-sans text-rose-950">
-      {/* Header */}
-      <header className="bg-white border-b border-rose-100 px-6 py-4 flex items-center justify-between sticky top-0 z-10 shadow-sm">
-        <div className="flex items-center gap-4">
-          <div className="w-10 h-10 bg-rose-500 rounded-full flex items-center justify-center text-white font-bold shadow-md">
-            M
-          </div>
+    <div className="flex h-screen bg-secondary/5">
+      <KeeperSidebar />
+      
+      <main className="flex-1 flex flex-col h-screen min-w-0">
+        {/* Header */}
+        <header className="h-20 bg-background border-b border-border flex items-center justify-between px-10 shrink-0">
           <div>
-            <h1 className="font-bold text-lg leading-tight">ระบบจัดการแม่บ้าน</h1>
-            <p className="text-xs text-rose-500 font-medium tracking-wide">SMARTDOM MAID PANEL</p>
+            <h1 className="font-display text-xl font-semibold tracking-tight">ภาพรวมงานแม่บ้าน</h1>
+            <p className="text-xs text-muted-foreground font-medium mt-0.5">ยินดีต้อนรับสู่แผงควบคุม Maid Panel</p>
           </div>
-        </div>
-        <div className="flex items-center gap-4">
-          <span className="text-sm font-semibold hidden sm:inline-block">คุณ {session?.user?.name}</span>
-          <button 
-            onClick={() => signOut({ callbackUrl: '/signin' })}
-            className="text-xs font-bold bg-rose-100 text-rose-700 px-4 py-2 rounded-full hover:bg-rose-200 transition"
-          >
-            ออกจากระบบ
-          </button>
-        </div>
-      </header>
+          <div className="flex items-center gap-4">
+            <div className="text-xs font-medium text-muted-foreground hidden sm:block">เวลาปัจจบัน: {currentTime}</div>
+            <button
+              onClick={() => signOut({ callbackUrl: '/signin' })}
+              className="text-xs font-semibold text-rose-600 hover:text-rose-700 bg-rose-50 border border-rose-100 hover:bg-rose-100 transition-colors px-4 py-2 rounded-xl"
+            >
+              ออกจากระบบ
+            </button>
+            <div className="h-10 w-10 rounded-full overflow-hidden border-2 border-border shadow-sm">
+              <img src={`https://ui-avatars.com/api/?name=${session?.user?.name || 'Maid'}&background=e2aba1&color=fff`} alt="แม่บ้าน" />
+            </div>
+          </div>
+        </header>
 
-      {/* Main Content */}
-      <main className="max-w-5xl mx-auto p-6 space-y-6">
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-white p-6 rounded-3xl border border-rose-100 shadow-sm">
-            <h3 className="text-rose-400 font-bold text-xs uppercase tracking-wider mb-2">งานทำความสะอาดวันนี้</h3>
-            <p className="text-4xl font-black text-rose-600">5 <span className="text-lg text-rose-400 font-medium">ห้อง</span></p>
-          </div>
-          <div className="bg-white p-6 rounded-3xl border border-rose-100 shadow-sm">
-            <h3 className="text-amber-400 font-bold text-xs uppercase tracking-wider mb-2">กำลังรอดำเนินการ</h3>
-            <p className="text-4xl font-black text-amber-500">2 <span className="text-lg text-amber-400 font-medium">ห้อง</span></p>
-          </div>
-          <div className="bg-white p-6 rounded-3xl border border-rose-100 shadow-sm">
-            <h3 className="text-emerald-400 font-bold text-xs uppercase tracking-wider mb-2">เสร็จสิ้นแล้ว</h3>
-            <p className="text-4xl font-black text-emerald-500">3 <span className="text-lg text-emerald-400 font-medium">ห้อง</span></p>
-          </div>
-        </div>
+        {/* Scrollable Content */}
+        <div className="flex-1 overflow-y-auto p-8 lg:p-10">
+          <div className="max-w-5xl mx-auto space-y-8">
 
-        <section className="bg-white rounded-3xl border border-rose-100 shadow-sm overflow-hidden">
-          <div className="px-6 py-5 border-b border-rose-100 flex items-center justify-between">
-            <h2 className="font-bold text-lg">รายการห้องที่ต้องทำความสะอาด</h2>
-            <span className="text-xs font-bold text-rose-500 bg-rose-50 px-3 py-1 rounded-full">อัปเดตล่าสุด: ตอนนี้</span>
-          </div>
-          <div className="p-0">
-            <ul className="divide-y divide-rose-50">
-              {[
-                { room: '101', status: 'รอทำความสะอาด', type: 'ย้ายออก', color: 'text-amber-500 bg-amber-50 border-amber-100' },
-                { room: '205', status: 'ร้องขอพิเศษ', type: 'ทำความสะอาดรายสัปดาห์', color: 'text-rose-500 bg-rose-50 border-rose-100' },
-                { room: '302', status: 'เสร็จสิ้น', type: 'ทำความสะอาดรายสัปดาห์', color: 'text-emerald-500 bg-emerald-50 border-emerald-100' },
-              ].map((task, i) => (
-                <li key={i} className="flex flex-col sm:flex-row sm:items-center justify-between p-6 hover:bg-rose-50/50 transition-colors gap-4">
-                  <div>
-                    <div className="flex items-center gap-3 mb-1">
-                      <span className="text-xl font-black">ห้อง {task.room}</span>
-                      <span className={`text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-md border ${task.color}`}>
-                        {task.status}
-                      </span>
+            {/* Stats Row */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="bg-background border border-border shadow-sm p-6 rounded-3xl flex flex-col">
+                <span className="text-sm font-semibold text-foreground">งานทำความสะอาดวันนี้</span>
+                <div className="mt-4 flex items-baseline gap-2">
+                  <span className="text-4xl font-display font-semibold">5</span>
+                  <span className="text-sm text-muted-foreground font-medium">ห้อง</span>
+                </div>
+              </div>
+              <div className="bg-background border border-border shadow-sm p-6 rounded-3xl flex flex-col">
+                <span className="text-sm font-semibold text-foreground">กำลังดำเนินการ</span>
+                <div className="mt-4 flex items-baseline gap-2">
+                  <span className="text-4xl font-display font-semibold text-amber-500">2</span>
+                  <span className="text-sm text-amber-500/70 font-medium">ห้อง</span>
+                </div>
+              </div>
+              <div className="bg-background border border-border shadow-sm p-6 rounded-3xl flex flex-col">
+                <span className="text-sm font-semibold text-foreground">เสร็จสิ้นแล้ว</span>
+                <div className="mt-4 flex items-baseline gap-2">
+                  <span className="text-4xl font-display font-semibold text-green-500">3</span>
+                  <span className="text-sm text-green-500/70 font-medium">ห้อง</span>
+                </div>
+              </div>
+            </div>
+
+            {/* List */}
+            <section className="bg-background border border-border rounded-3xl shadow-sm overflow-hidden">
+              <div className="px-7 py-5 border-b border-border flex items-center justify-between">
+                <div>
+                  <h2 className="font-display text-base font-semibold text-foreground">รายการห้องพัก (คิวงาน)</h2>
+                  <p className="text-xs text-muted-foreground mt-0.5">รายชื่อห้องที่ต้องเข้าไปทำความสะอาด</p>
+                </div>
+              </div>
+              <div className="divide-y divide-border/50">
+                {[
+                  { room: '101', status: 'รอทำความสะอาด', type: 'ย้ายออก', bg: 'bg-amber-100 text-amber-700' },
+                  { room: '205', status: 'ร้องขอพิเศษ', type: 'ทำความสะอาดรายสัปดาห์', bg: 'bg-primary/10 text-primary' },
+                  { room: '302', status: 'เสร็จสิ้น', type: 'ทำความสะอาดรายสัปดาห์', bg: 'bg-green-100 text-green-700' },
+                ].map((task, i) => (
+                  <div key={i} className="px-7 py-5 flex items-center gap-6 hover:bg-accent/40 transition-colors">
+                    <div className="h-12 w-12 rounded-2xl bg-secondary/20 flex flex-col items-center justify-center shrink-0">
+                      <span className="text-[10px] font-bold text-muted-foreground uppercase leading-none mb-1">ห้อง</span>
+                      <span className="text-sm font-black text-foreground leading-none">{task.room}</span>
                     </div>
-                    <p className="text-sm text-rose-600/70 font-medium">ประเภท: {task.type}</p>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-sm font-semibold text-foreground truncate">{task.type}</h3>
+                      <div className="flex items-center gap-3 mt-1.5">
+                        <span className={`px-2.5 py-0.5 rounded-md text-[10px] font-bold tracking-wider uppercase ${task.bg}`}>
+                          {task.status}
+                        </span>
+                      </div>
+                    </div>
+                    <div>
+                      <button className="text-xs font-semibold px-4 py-2 bg-primary text-primary-foreground rounded-xl shadow-sm hover:-translate-y-0.5 transition-transform active:scale-95">
+                        จัดการ
+                      </button>
+                    </div>
                   </div>
-                  <button className="whitespace-nowrap px-6 py-2.5 bg-rose-500 hover:bg-rose-600 text-white text-sm font-bold rounded-xl shadow-md shadow-rose-500/20 transition-transform active:scale-95">
-                    อัปเดตสถานะ
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </section>
+                ))}
+              </div>
+            </section>
 
+          </div>
+        </div>
       </main>
     </div>
   );

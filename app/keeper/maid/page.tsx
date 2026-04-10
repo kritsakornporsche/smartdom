@@ -62,6 +62,7 @@ export default function MaidDashboardPage() {
   }, []);
 
   const fetchData = async () => {
+    setLoadingData(true);
     try {
       const res = await fetch('/api/keeper/maid/jobs');
       const json = await res.json();
@@ -69,7 +70,7 @@ export default function MaidDashboardPage() {
     } catch (err) {
       console.error('Error fetching maid jobs:', err);
     } finally {
-      setLoadingData(false);
+      setTimeout(() => setLoadingData(false), 300);
     }
   };
 
@@ -151,13 +152,22 @@ export default function MaidDashboardPage() {
             </div>
 
             {/* List */}
-            <section className="bg-[#FAF8F5] border border-[#E5DFD3] rounded-3xl shadow-sm overflow-hidden">
+            <section id="jobs-list" className="bg-[#FAF8F5] border border-[#E5DFD3] rounded-3xl shadow-sm overflow-hidden scroll-mt-6">
               <div className="px-7 py-5 border-b border-[#E5DFD3] flex items-center justify-between bg-white">
                 <div>
                   <h2 className="font-display text-base font-bold text-[#3E342B]">รายการห้องพัก (คิวงาน)</h2>
                   <p className="text-xs text-[#A08D74] mt-0.5">รายชื่อห้องที่ต้องเข้าไปทำความสะอาด</p>
                 </div>
-                <button onClick={fetchData} className="text-xs font-semibold text-[#8B7355] hover:text-[#5A4D41]">รีเฟรชข้อมูล</button>
+                <button 
+                  onClick={fetchData} 
+                  disabled={loadingData}
+                  className={`text-xs font-semibold hover:text-[#5A4D41] flex items-center gap-1 transition-all ${loadingData ? 'text-[#A08D74] opacity-50 cursor-not-allowed' : 'text-[#8B7355]'}`}
+                >
+                  <svg className={`w-3.5 h-3.5 ${loadingData ? 'animate-spin' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                  </svg>
+                  {loadingData ? 'กำลังโหลด...' : 'รีเฟรชข้อมูล'}
+                </button>
               </div>
               
               {loadingData ? (

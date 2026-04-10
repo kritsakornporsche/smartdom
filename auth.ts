@@ -113,13 +113,28 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         token.role = (user as any).role || 'guest';
         token.sub_role = (user as any).sub_role || null;
         token.name = user.name;
-      } else if (account?.type === 'oauth') {
-        const users = await sql`SELECT role, sub_role FROM users WHERE email = ${token.email}`;
-        if (users.length > 0) {
-          token.role = users[0].role;
-          token.sub_role = users[0].sub_role;
-        } else {
-          token.role = 'tenant';
+      } else {
+        // Dynamic Role Refresh: 
+        // Re-check DB for guest and tenant roles to ensure session matches DB state (e.g. after Move Out or Check In)
+        if (['guest', 'tenant'].includes(token.role as string) && token.email) {
+          try {
+            const users = await sql`SELECT role, sub_role FROM users WHERE email = ${token.email}`;
+            if (users.length > 0) {
+              token.role = users[0].role;
+              token.sub_role = users[0].sub_role;
+            }
+          } catch (e) {
+            console.error('[JWT Role Refresh Error]', e);
+          }
+        } else if (account?.type === 'oauth') {
+          // Re-check for social logins if role is somehow missing
+          const users = await sql`SELECT role, sub_role FROM users WHERE email = ${token.email}`;
+          if (users.length > 0) {
+            token.role = users[0].role;
+            token.sub_role = users[0].sub_role;
+          } else {
+            token.role = 'tenant';
+          }
         }
       }
       return token;

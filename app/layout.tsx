@@ -39,6 +39,7 @@ export const viewport: Viewport = {
 };
 
 import SessionProviderWrapper from "./components/SessionProviderWrapper";
+import { Toaster } from "sonner";
 
 export default function RootLayout({
   children,
@@ -50,7 +51,8 @@ export default function RootLayout({
       lang="th"
       className={`${outfit.variable} ${inter.variable} ${notoThai.variable} ${notoThaiLooped.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-background text-foreground font-sans">
+      <body className="min-h-full flex flex-col bg-[#FDFBF7] text-[#3E342B] font-sans selection:bg-[#8B7355]/20 selection:text-[#8B7355]">
+        <Toaster position="top-center" expand={true} richColors />
         <SessionProviderWrapper>
           {children}
         </SessionProviderWrapper>

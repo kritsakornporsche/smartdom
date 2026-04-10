@@ -56,7 +56,6 @@ async function initDb() {
       )
     `;
 
-    console.log('Creating contracts table...');
     await sql`
       CREATE TABLE IF NOT EXISTS contracts (
         id SERIAL PRIMARY KEY,
@@ -65,6 +64,7 @@ async function initDb() {
         start_date DATE NOT NULL,
         end_date DATE NOT NULL,
         deposit_amount DECIMAL(10, 2),
+        signature_data TEXT,
         status VARCHAR(50) DEFAULT 'Active',
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )

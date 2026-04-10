@@ -7,7 +7,20 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
     const id = resolvedParams.id;
     const sql = neon(process.env.DATABASE_URL || '');
     
-    const result = await sql`SELECT id, room_number, room_type, price, status, floor, image_url, dorm_id FROM rooms WHERE id = ${id}`;
+    // Fetch room with dorm, owner and keeper info
+    const result = await sql`
+      SELECT 
+        r.*, 
+        d.name as dorm_name, d.address as dorm_address, d.phone as dorm_phone,
+        u.name as owner_name,
+        k.name as keeper_name, k.phone as keeper_phone, k.email as keeper_email
+      FROM rooms r
+      JOIN dormitory_profile d ON r.dorm_id = d.id
+      JOIN users u ON d.owner_id = u.id
+      LEFT JOIN keepers k ON d.id = k.dorm_id
+      WHERE r.id = ${id}
+      LIMIT 1
+    `;
     
     if (result.length === 0) {
       return NextResponse.json({ success: false, message: 'Room not found' }, { status: 404 });

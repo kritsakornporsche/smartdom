@@ -1,12 +1,14 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { neon } from '@neondatabase/serverless';
+import { auth } from '@/auth';
 
-export async function GET(req: Request) {
+const sql = neon(process.env.DATABASE_URL || '');
+
+export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const dormId = searchParams.get('dormId');
 
   try {
-    const sql = neon(process.env.DATABASE_URL || '');
     let rooms;
     if (dormId) {
       rooms = await sql`
@@ -23,26 +25,27 @@ export async function GET(req: Request) {
       `;
     }
     
-    return NextResponse.json({ success: true, data: rooms }, { status: 200 });
+    return NextResponse.json({ success: true, data: rooms });
 
   } catch (error: any) {
-    console.error('Error fetching rooms:', error);
-    return NextResponse.json({ success: false, message: 'Failed to fetch rooms', error: error.message }, { status: 500 });
+    console.error('[API Rooms GET Error]', error);
+    return NextResponse.json({ success: false, message: 'Failed to fetch rooms' }, { status: 500 });
   }
 }
 
-export async function POST(request: Request) {
+export async function POST(req: NextRequest) {
   try {
-    const body = await request.json();
+    const session = await auth();
+    if (!session || (session.user as any).role !== 'owner') {
+      return NextResponse.json({ success: false, message: 'Unauthorized: Only owners can create rooms' }, { status: 401 });
+    }
+
+    const body = await req.json();
     const { room_number, room_type, price, status, floor, image_url, dorm_id } = body;
 
-
-    // Validate inputs
     if (!room_number || !room_type || price === undefined) {
       return NextResponse.json({ success: false, message: 'Missing required fields' }, { status: 400 });
     }
-
-    const sql = neon(process.env.DATABASE_URL || '');
     
     // Check if room number already exists
     const existing = await sql`SELECT id FROM rooms WHERE room_number = ${room_number}`;
@@ -56,10 +59,14 @@ export async function POST(request: Request) {
       RETURNING *
     `;
 
+    return NextResponse.json({ 
+      success: true, 
+      message: 'Room created successfully', 
+      data: result[0] 
+    }, { status: 201 });
 
-    return NextResponse.json({ success: true, message: 'Room created successfully', data: result[0] }, { status: 201 });
   } catch (error: any) {
-    console.error('Error creating room:', error);
-    return NextResponse.json({ success: false, message: 'Failed to create room', error: error.message }, { status: 500 });
+    console.error('[API Rooms POST Error]', error);
+    return NextResponse.json({ success: false, message: 'Failed to create room' }, { status: 500 });
   }
 }

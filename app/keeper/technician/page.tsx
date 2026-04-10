@@ -69,8 +69,27 @@ export default function TechnicianDashboardPage() {
     }
   };
 
+  const updateStatus = async (id: number, newStatus: string) => {
+    try {
+      const res = await fetch('/api/keeper/technician/jobs', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, status: newStatus }),
+      });
+      const json = await res.json();
+      if (json.success) {
+        fetchData(); // Refresh the data
+      } else {
+        alert('เกิดข้อผิดพลาด: ' + json.message);
+      }
+    } catch (err) {
+      console.error('Error updating status:', err);
+      alert('ไม่สามารถอัปเดตสถานะได้ ติดต่อผู้ดูแลระบบ');
+    }
+  };
+
   if (status === 'loading') {
-    return <div className="flex h-screen items-center justify-center bg-secondary/5 font-display text-muted-foreground">กำลังโหลดระบบ...</div>;
+    return <div className="flex h-screen items-center justify-center bg-[#FDFBF7] font-display text-[#A08D74] tracking-wider">กำลังโหลดระบบ...</div>;
   }
 
   return (
@@ -170,10 +189,21 @@ export default function TechnicianDashboardPage() {
                           </span>
                         </div>
                       </div>
-                      <div>
-                        {task.status !== 'completed' && (
-                          <button className="text-xs font-semibold px-4 py-2 bg-[#8B7355] text-white rounded-xl shadow-sm hover:focus:ring-2 hover:bg-[#5A4D41] transition-all">
+                      <div className="flex gap-2">
+                        {task.status === 'pending' && (
+                          <button 
+                            onClick={() => updateStatus(task.id, 'in_progress')}
+                            className="text-xs font-semibold px-4 py-2 bg-[#8B7355] text-white rounded-xl shadow-sm hover:focus:ring-2 hover:bg-[#5A4D41] transition-all"
+                          >
                             รับงานซ่อม
+                          </button>
+                        )}
+                        {task.status === 'in_progress' && (
+                          <button 
+                            onClick={() => updateStatus(task.id, 'completed')}
+                            className="text-xs font-semibold px-4 py-2 bg-emerald-600 text-white rounded-xl shadow-sm hover:focus:ring-2 hover:bg-emerald-700 transition-all"
+                          >
+                            ซ่อมเสร็จแล้ว
                           </button>
                         )}
                       </div>

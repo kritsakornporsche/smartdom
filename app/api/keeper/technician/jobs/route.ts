@@ -56,3 +56,33 @@ export async function GET() {
     return NextResponse.json({ success: false, message: 'Internal Server Error' }, { status: 500 });
   }
 }
+
+export async function PATCH(request: Request) {
+  try {
+    const session = await auth();
+    if (!session?.user || (session.user as any).role !== 'keeper' || (session.user as any).sub_role !== 'technician') {
+      return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
+    }
+
+    const body = await request.json();
+    const { id, status } = body;
+
+    if (!id || !status) {
+      return NextResponse.json({ success: false, message: 'Missing ID or Status' }, { status: 400 });
+    }
+
+    const sql = neon(process.env.DATABASE_URL || '');
+    
+    // Update the status of the job
+    await sql`
+      UPDATE maintenance_jobs 
+      SET status = ${status}, updated_at = NOW() 
+      WHERE id = ${id}
+    `;
+
+    return NextResponse.json({ success: true, message: 'Job status updated' });
+  } catch (error: any) {
+    console.error('API Error updating job:', error);
+    return NextResponse.json({ success: false, message: 'Internal Server Error' }, { status: 500 });
+  }
+}

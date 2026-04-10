@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { signIn } from 'next-auth/react';
 
-type Role = 'guest' | 'owner';
+type Role = 'guest' | 'keeper' | 'owner';
 
 
 const roleConfig: Record<Role, { label: string; desc: string; icon: string }> = {
@@ -14,6 +14,11 @@ const roleConfig: Record<Role, { label: string; desc: string; icon: string }> = 
     label: 'แขก',
     desc: 'เลือกดูและจองห้องพัก',
     icon: '🏠',
+  },
+  keeper: {
+    label: 'ผู้ดูแล',
+    desc: 'สำหรับพนักงาน ช่างซ่อม และแม่บ้าน',
+    icon: '👷',
   },
   owner: {
     label: 'เจ้าของหอพัก',

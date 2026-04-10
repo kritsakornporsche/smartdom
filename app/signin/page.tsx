@@ -159,15 +159,6 @@ function SignInContent() {
           </form>
 
 
-          {/* Helper details for testing */}
-          <div className="mt-8 pt-6 border-t border-[#E5DFD3]">
-            <h3 className="text-xs font-bold text-[#A08D74] uppercase tracking-wider mb-3 text-center">บัญชีทดสอบ (Demo Accounts)</h3>
-            <div className="space-y-2 text-sm text-[#5A4D41] bg-[#FAF8F5] p-4 rounded-xl border border-[#E5DFD3]">
-              <div className="flex justify-between"><span>Admin:</span> <span className="font-mono text-xs">admin@smartdom.com / admin123</span></div>
-              <div className="flex justify-between"><span>Owner:</span> <span className="font-mono text-xs">owner@smartdom.com / owner123</span></div>
-              <div className="flex justify-between"><span>Tenant:</span> <span className="font-mono text-xs">tenant@smartdom.com / tenant123</span></div>
-            </div>
-          </div>
 
           <div className="mt-8 text-center">
              <Link href={`/signup${callbackUrl ? `?callbackUrl=${encodeURIComponent(callbackUrl)}` : ''}`} className="text-xs font-bold text-[#A08D74] hover:text-[#8B7355] uppercase tracking-widest">ยังไม่มีบัญชี? สมัครสมาชิกที่นี่</Link>

@@ -149,10 +149,12 @@ function SignupContent() {
         setCreatedUser(data.data);
         // Redirect based on role and callback
         let redirectPath = selectedRole === 'owner' ? '/owner' : '/explore';
-        if (callbackUrl && selectedRole === 'guest') {
+        if (selectedRole === 'keeper') {
+          if (selectedSubRole === 'maid') redirectPath = '/keeper/maid';
+          else if (selectedSubRole === 'technician') redirectPath = '/keeper/technician';
+          else redirectPath = '/keeper';
+        } else if (callbackUrl && selectedRole === 'guest') {
           redirectPath = callbackUrl;
-        } else if (selectedRole === 'guest') {
-           redirectPath = '/explore';
         }
 
         setTimeout(() => router.push(redirectPath), 2000);

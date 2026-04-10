@@ -25,7 +25,7 @@ export default function KeeperSidebar() {
         ),
       },
       {
-        href: '/keeper/maid#jobs-list',
+        href: '/keeper/maid/jobs',
         label: 'บันทึกทำความสะอาด',
         icon: (
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -46,7 +46,7 @@ export default function KeeperSidebar() {
         ),
       },
       {
-        href: '/keeper/technician#jobs-list',
+        href: '/keeper/technician/jobs',
         label: 'รายการแจ้งซ่อม',
         icon: (
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

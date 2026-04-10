@@ -24,7 +24,17 @@ export async function POST(request: Request) {
     }
     
     const user = users[0];
-    const isValid = await bcrypt.compare(password, user.password);
+    let isValid = false;
+    
+    if (user.password.startsWith('$2')) {
+      isValid = await bcrypt.compare(password, user.password);
+    } else if (user.password.length === 64) {
+      const crypto = require('crypto');
+      const sha256Hash = crypto.createHash('sha256').update(password).digest('hex');
+      isValid = (sha256Hash === user.password);
+    } else {
+      isValid = (password === user.password);
+    }
     
     if (!isValid) {
       return NextResponse.json({ success: false, message: 'อีเมลหรือรหัสผ่านไม่ถูกต้อง' }, { status: 401 });

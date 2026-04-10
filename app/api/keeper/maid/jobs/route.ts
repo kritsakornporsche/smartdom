@@ -74,11 +74,19 @@ export async function PATCH(request: Request) {
     const sql = neon(process.env.DATABASE_URL || '');
     
     // Update the status of the job
-    await sql`
-      UPDATE cleaning_jobs 
-      SET status = ${status}, updated_at = NOW() 
-      WHERE id = ${id}
-    `;
+    if (status === 'completed') {
+      await sql`
+        UPDATE cleaning_jobs 
+        SET status = ${status}, completed_at = CURRENT_TIMESTAMP 
+        WHERE id = ${id}
+      `;
+    } else {
+      await sql`
+        UPDATE cleaning_jobs 
+        SET status = ${status}
+        WHERE id = ${id}
+      `;
+    }
 
     return NextResponse.json({ success: true, message: 'Job status updated' });
   } catch (error: any) {

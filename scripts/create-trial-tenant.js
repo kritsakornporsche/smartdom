@@ -16,11 +16,12 @@ async function createTrialTenant() {
     // 1. Check if user already exists
     const existingUser = await sql`SELECT id FROM users WHERE email = ${trialEmail}`;
     if (existingUser.length > 0) {
-        console.log('Trial account already exists. Updating password...');
+        console.log('Trial account already exists. Updating password and resetting role...');
         const hashedPassword = await bcrypt.hash(trialPassword, 10);
-        await sql`UPDATE users SET password = ${hashedPassword} WHERE email = ${trialEmail}`;
+        await sql`UPDATE users SET password = ${hashedPassword}, role = ${role} WHERE email = ${trialEmail}`;
         console.log('Login Email:', trialEmail);
         console.log('New Password:', trialPassword);
+        console.log('Role Reset:', role);
         return;
     }
 

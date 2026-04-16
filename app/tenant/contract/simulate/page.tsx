@@ -1,70 +1,133 @@
 'use client';
 
-import ContractSimulator from '@/app/components/ContractSimulator';
+import { useState } from 'react';
 import Link from 'next/link';
-import { useSession } from 'next-auth/react';
-import { cn } from '@/lib/utils';
 
-export default function TenantContractSimulate() {
-  const { data: session } = useSession();
+export default function ContractSimulatePage() {
+  const [months, setMonths] = useState(12);
+  const [roomRate, setRoomRate] = useState(5000);
+  const [depositMonths, setDepositMonths] = useState(2);
+  const [advanceMonths, setAdvanceMonths] = useState(1);
+
+  const depositTotal = roomRate * depositMonths;
+  const advanceTotal = roomRate * advanceMonths;
+  const totalRequired = depositTotal + advanceTotal;
 
   return (
-    <div className="min-h-screen bg-background pt-32 pb-24 px-8">
-      <div className="max-w-7xl mx-auto">
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-8 animate-reveal">
-          <div className="space-y-4">
-            <h1 className="text-4xl lg:text-5xl font-display font-black tracking-tight tracking-[-0.03em]">ระบบจำลองสัญญาเช่า</h1>
-            <p className="text-muted-foreground font-medium flex items-center gap-3">
-              <span className="w-1.5 h-1.5 bg-primary rounded-full animate-pulse" />
-              คำนวณค่าใช้จ่ายและวางแผนการเข้าพักล่วงหน้าด้วยระบบดิจิทัล
-            </p>
-          </div>
-          <Link 
-            href="/tenant" 
-            className={cn(
-              "self-start px-8 py-4 bg-secondary/10 border border-border/40 rounded-2xl",
-              "text-[10px] font-black uppercase tracking-[0.2em] text-foreground/60 transition-all",
-              "hover:bg-secondary/20 hover:text-foreground hover:scale-105 active:scale-95"
-            )}
-          >
-            ย้อนกลับ
+    <div className="p-8 lg:p-10 max-w-4xl mx-auto hidden-scrollbar">
+      <div className="space-y-10 pb-16">
+        
+        <header>
+          <Link href="/tenant" className="inline-flex items-center gap-2 text-sm font-bold text-[#A08D74] hover:text-[#8B7355] mb-6 transition-colors">
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+            กลับสู่หน้าหลัก
           </Link>
-        </div>
+          <h1 className="text-3xl font-black text-[#3E342B] tracking-tight mb-2">จำลองสัญญาเช่า (Simulator)</h1>
+          <p className="text-[#8B7355] font-medium text-lg">คำนวณค่าใช้จ่ายล่วงหน้า สำหรับการต่อสัญญาหรือเปลี่ยนห้องพัก</p>
+        </header>
 
-        <div className="animate-reveal [animation-delay:200ms]">
-          <ContractSimulator 
-            roomNumber="A101"
-            initialPrice={5500}
-          />
-        </div>
-
-        <div className="mt-24 grid md:grid-cols-3 gap-8 animate-reveal [animation-delay:400ms]">
-          {[
-            {
-              title: "วางแผนล่วงหน้า",
-              desc: "ทราบยอดค่าใช้จ่ายวันแรก (Upfront Cost) ได้ทันที เพื่อเตรียมความพร้อมทางการเงินก่อนการทำสัญญาจริง",
-              icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-            },
-            {
-              title: "โปร่งใส แม่นยำ",
-              desc: "ระบบคำนวณตามมาตรฐานสัญญาเช่าของ SmartDom ช่วยให้คุณมั่นใจในทุกตัวเลขและเงื่อนไขที่กำหนดไว้",
-              icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.012 11.955 11.955 0 01-1.382 11.213 11.955 11.955 0 0010 5.831 11.955 11.955 0 0010-5.831 11.955 11.955 0 01-1.382-11.213z" />
-            },
-            {
-              title: "หมายเหตุเพิ่มเติม",
-              desc: "ค่าใช้จ่ายทำสัญญาจริงอาจมีการปรับความแตกต่างเล็กน้อยตามแพ็กเกจเสริมหรือรอบค่าน้ำ-ไฟที่คุณเลือก",
-              icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            }
-          ].map((item, i) => (
-            <div key={i} className="group p-10 bg-white rounded-[3rem] border border-border/40 space-y-6 transition-all duration-500 hover:shadow-2xl hover:shadow-black/5 hover:-translate-y-2">
-              <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary transition-transform duration-500 group-hover:scale-110">
-                 <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">{item.icon}</svg>
+        <div className="grid md:grid-cols-5 gap-8">
+          {/* Controls */}
+          <div className="md:col-span-3 space-y-8 bg-white p-8 md:p-10 rounded-[2.5rem] border border-[#E5DFD3] shadow-sm">
+            <div>
+              <label className="block text-[11px] font-bold text-[#A08D74] uppercase tracking-widest mb-4">ค่าเช่าห้องต่อเดือน (บาท)</label>
+              <div className="flex items-center gap-4">
+                <input 
+                  type="range" 
+                  min="2000" max="15000" step="500" 
+                  value={roomRate}
+                  onChange={(e) => setRoomRate(Number(e.target.value))}
+                  className="w-full accent-[#8B6A2B]"
+                />
+                <span className="font-black text-xl text-[#3E342B] w-24 text-right">฿{roomRate.toLocaleString()}</span>
               </div>
-              <h4 className="text-xl font-display font-black tracking-tight">{item.title}</h4>
-              <p className="text-sm text-muted-foreground leading-relaxed font-medium opacity-80">{item.desc}</p>
             </div>
-          ))}
+
+            <div className="grid grid-cols-2 gap-6">
+              <div>
+                <label className="block text-[11px] font-bold text-[#A08D74] uppercase tracking-widest mb-3">เงินประกัน (เดือน)</label>
+                <div className="flex rounded-xl overflow-hidden border border-[#DCD3C6]">
+                   {[1, 2, 3].map(m => (
+                     <button
+                        key={`dep-${m}`}
+                        onClick={() => setDepositMonths(m)}
+                        className={`flex-1 py-3 text-sm font-bold transition-colors ${depositMonths === m ? 'bg-[#8B6A2B] text-white' : 'bg-[#FAF8F5] text-[#8B7355] hover:bg-[#F2EFE9]'}`}
+                     >
+                        {m}
+                     </button>
+                   ))}
+                </div>
+              </div>
+              <div>
+                <label className="block text-[11px] font-bold text-[#A08D74] uppercase tracking-widest mb-3">ล่วงหน้า (เดือน)</label>
+                <div className="flex rounded-xl overflow-hidden border border-[#DCD3C6]">
+                   {[1, 2].map(m => (
+                     <button
+                        key={`adv-${m}`}
+                        onClick={() => setAdvanceMonths(m)}
+                        className={`flex-1 py-3 text-sm font-bold transition-colors ${advanceMonths === m ? 'bg-[#8B6A2B] text-white' : 'bg-[#FAF8F5] text-[#8B7355] hover:bg-[#F2EFE9]'}`}
+                     >
+                        {m}
+                     </button>
+                   ))}
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-[11px] font-bold text-[#A08D74] uppercase tracking-widest mb-4">ระยะเวลาสัญญา (เดือน)</label>
+              <input 
+                type="range" 
+                min="1" max="24" step="1" 
+                value={months}
+                onChange={(e) => setMonths(Number(e.target.value))}
+                className="w-full accent-[#8B6A2B]"
+              />
+              <div className="flex justify-between text-xs font-bold text-[#A08D74] mt-2">
+                <span>1 เดือน</span>
+                <span className="text-[#8B6A2B] text-base">{months} เดือน</span>
+                <span>24 เดือน</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Results Summary */}
+          <div className="md:col-span-2 space-y-6">
+            <div className="bg-[#3E342B] rounded-[2.5rem] p-8 md:p-10 text-white shadow-xl shadow-[#3E342B]/20 overflow-hidden relative">
+              <div className="absolute top-0 right-0 w-48 h-48 bg-white/5 rounded-full -mr-24 -mt-24 blur-2xl"></div>
+              
+              <h3 className="text-sm font-bold text-white/60 tracking-widest uppercase mb-8">สรุปค่าใช้จ่ายวันทำสัญญา</h3>
+              
+              <div className="space-y-6 relative z-10">
+                <div className="flex justify-between items-end border-b border-white/10 pb-4">
+                  <div>
+                    <p className="text-xs text-white/60 mb-1">เงินประกัน ({depositMonths} เดือน)</p>
+                    <p className="text-lg font-bold">฿{depositTotal.toLocaleString()}</p>
+                  </div>
+                </div>
+                <div className="flex justify-between items-end border-b border-white/10 pb-4">
+                  <div>
+                    <p className="text-xs text-white/60 mb-1">ค่าเช่าล่วงหน้า ({advanceMonths} เดือน)</p>
+                    <p className="text-lg font-bold">฿{advanceTotal.toLocaleString()}</p>
+                  </div>
+                </div>
+                
+                <div className="pt-4">
+                  <p className="text-xs text-[#A08D74] font-bold uppercase tracking-widest mb-2">ยอดรวมที่ต้องชำระ (Total)</p>
+                  <p className="text-4xl md:text-5xl font-black text-[#8B6A2B]">฿{totalRequired.toLocaleString()}</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-[#FFF9F9] border border-rose-100 rounded-3xl p-6 flex gap-4">
+                <svg className="w-6 h-6 shrink-0 text-rose-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                <p className="text-sm text-rose-800 font-medium leading-relaxed">
+                  <strong>หมายเหตุ:</strong> ข้อมูลนี้เป็นเพียงการจำลองเพื่อการวางแผนเบื้องต้นเท่านั้น โปรดติดต่อผู้ดูแลหอพักเพื่อตรวจสอบห้องว่างและราคาจริงก่อนทำสัญญา
+                </p>
+            </div>
+          </div>
         </div>
+
       </div>
     </div>
   );

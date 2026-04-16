@@ -119,7 +119,6 @@ export default async function TenantContract({ searchParams }: { searchParams: P
                       <img 
                         src={contract.signature_data} 
                         alt="Signature" 
-                        crossOrigin="anonymous"
                         className="h-24 w-auto" 
                       />
                     ) : (

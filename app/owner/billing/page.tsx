@@ -323,8 +323,8 @@ export default function OwnerBillingPage() {
       {/* Batch Billing Modal */}
       {isBatchModalOpen && (
         <div className="fixed inset-0 bg-[#3E342B]/40 backdrop-blur-sm z-50 flex items-center justify-center p-6 overflow-y-auto">
-           <div className="bg-white rounded-[40px] w-full max-w-xl overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-300 border border-[#E5DFD3]">
-              <div className="bg-[#3E342B] p-10 text-white relative">
+           <div className="bg-white rounded-[40px] w-full max-w-xl shadow-2xl animate-in fade-in zoom-in-95 duration-300 border border-[#E5DFD3]">
+              <div className="bg-[#3E342B] p-10 text-white relative rounded-t-[40px]">
                  <button onClick={() => setIsBatchModalOpen(false)} className="absolute top-8 right-8 text-white/50 hover:text-white transition-colors">
                     <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
                  </button>
@@ -398,8 +398,8 @@ export default function OwnerBillingPage() {
       {/* Issuing Bill Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-[#3E342B]/40 backdrop-blur-sm z-50 flex items-center justify-center p-6 sm:p-10 overflow-y-auto">
-           <div className="bg-white rounded-[40px] w-full max-w-xl overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-300 border border-[#E5DFD3]">
-              <div className="bg-[#3E342B] p-10 text-white relative">
+           <div className="bg-white rounded-[40px] w-full max-w-xl shadow-2xl animate-in fade-in zoom-in-95 duration-300 border border-[#E5DFD3]">
+              <div className="bg-[#3E342B] p-10 text-white relative rounded-t-[40px]">
                  <button onClick={() => setIsModalOpen(false)} className="absolute top-8 right-8 text-white/50 hover:text-white transition-colors">
                     <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
                  </button>

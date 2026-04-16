@@ -58,47 +58,8 @@ export default function ContractPDFButton({ contractId, targetId, signatureData 
             target.style.width = element.offsetWidth + 'px';
             target.style.margin = '0';
             target.style.padding = '40px';
-
-            // SPECIAL FIX FOR SIGNATURE: Use the prop data directly to create a canvas
-            // This is the most robust way to ensure the signature is visible
-            if (signatureData) {
-              const signatureImg = target.querySelector('img[alt="Signature"]') as HTMLImageElement;
-              const canvas = clonedDoc.createElement('canvas');
-              const ctx = canvas.getContext('2d');
-              
-              // Load the data URL into an image object FIRST to get dimensions
-              const tempImg = new Image();
-              tempImg.src = signatureData;
-              
-              const imgWidth = 800; // High res internal width
-              const imgHeight = 400; // High res internal height
-              
-              canvas.width = imgWidth;
-              canvas.height = imgHeight;
-              
-              if (ctx) {
-                // Background should be transparent or match the box
-                ctx.drawImage(tempImg, 0, 0, imgWidth, imgHeight);
-                
-                // Style the canvas to match the original image display
-                canvas.style.width = '192px'; // w-48 equivalent
-                canvas.style.height = '96px'; // h-24 equivalent
-                canvas.style.WebkitFilter = 'none';
-                canvas.style.filter = 'none';
-                
-                if (signatureImg) {
-                  signatureImg.parentNode?.replaceChild(canvas, signatureImg);
-                } else {
-                  // If image was missing entirely, append to a known container or div
-                  const signatureContainer = target.querySelector('.inline-block.p-4.border.rounded-2xl');
-                  if (signatureContainer) {
-                    signatureContainer.innerHTML = '';
-                    signatureContainer.appendChild(canvas);
-                  }
-                }
-              }
-            }
           }
+
         }
       });
 

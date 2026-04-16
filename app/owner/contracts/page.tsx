@@ -219,8 +219,8 @@ export default function OwnerContractsPage() {
       {/* Creation Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-[#3E342B]/60 backdrop-blur-md z-50 flex items-center justify-center p-6 overflow-y-auto">
-           <div className="bg-white rounded-[3rem] w-full max-w-2xl overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-500 border border-[#E5DFD3]">
-              <div className="bg-[#FAF8F5] border-b border-[#F3EFE9] p-10 flex items-center justify-between">
+           <div className="bg-white rounded-[3rem] w-full max-w-2xl shadow-2xl animate-in fade-in zoom-in-95 duration-500 border border-[#E5DFD3]">
+              <div className="bg-[#FAF8F5] border-b border-[#F3EFE9] p-10 flex items-center justify-between rounded-t-[3rem]">
                  <div>
                     <h2 className="text-3xl font-black text-[#3E342B]">สร้างสัญญาอัตโนมัติ</h2>
                     <p className="text-[#8B7355] font-bold text-xs uppercase tracking-[0.2em] mt-2">SmartDom Auto-Contract Engine</p>

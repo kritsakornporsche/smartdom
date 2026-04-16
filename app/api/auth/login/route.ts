@@ -15,7 +15,7 @@ export async function POST(request: Request) {
     
     // Check credentials
     const users = await sql`
-      SELECT id, name, email, password, role FROM users 
+      SELECT id, name, email, password, role, sub_role FROM users 
       WHERE email = ${email}
     `;
  
@@ -24,21 +24,32 @@ export async function POST(request: Request) {
     }
     
     const user = users[0];
-    const isValid = await bcrypt.compare(password, user.password);
+    let isValid = false;
+    
+    if (user.password.startsWith('$2')) {
+      isValid = await bcrypt.compare(password, user.password);
+    } else if (user.password.length === 64) {
+      const crypto = require('crypto');
+      const sha256Hash = crypto.createHash('sha256').update(password).digest('hex');
+      isValid = (sha256Hash === user.password);
+    } else {
+      isValid = (password === user.password);
+    }
     
     if (!isValid) {
       return NextResponse.json({ success: false, message: 'อีเมลหรือรหัสผ่านไม่ถูกต้อง' }, { status: 401 });
     }
-
-    // NextAuth will handle the actual secure session cookie via auth.ts
-    // We return role-based redirect information back to the signin page
 
     // Determine redirect path based on role
     let redirectUrl = '/explore';
     if (user.role === 'admin') redirectUrl = '/admin';
     if (user.role === 'owner') redirectUrl = '/owner';
     if (user.role === 'tenant') redirectUrl = '/tenant';
-    if (user.role === 'keeper') redirectUrl = '/keeper'; // Future placeholder
+    if (user.role === 'keeper') {
+      if (user.sub_role === 'maid') redirectUrl = '/keeper/maid';
+      else if (user.sub_role === 'technician') redirectUrl = '/keeper/technician';
+      else redirectUrl = '/keeper';
+    }
 
     return NextResponse.json({ 
       success: true, 

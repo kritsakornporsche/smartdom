@@ -28,10 +28,20 @@ export async function GET() {
         m.urgency,
         m.status, 
         m.created_at,
+        m.completed_at,
+        m.notes,
+        m.photo_url,
+        m.tenant_notes,
         r.room_number 
       FROM maintenance_jobs m
       JOIN rooms r ON m.room_id = r.id
       ORDER BY 
+        CASE 
+          WHEN m.status = 'pending' THEN 1
+          WHEN m.status = 'in_progress' THEN 2
+          WHEN m.status = 'waiting_parts' THEN 3
+          ELSE 4
+        END,
         CASE 
           WHEN m.urgency = 'rush' THEN 1
           WHEN m.urgency = 'high' THEN 2
@@ -65,7 +75,7 @@ export async function PATCH(request: Request) {
     }
 
     const body = await request.json();
-    const { id, status } = body;
+    const { id, status, notes, photo_url } = body;
 
     if (!id || !status) {
       return NextResponse.json({ success: false, message: 'Missing ID or Status' }, { status: 400 });
@@ -77,7 +87,11 @@ export async function PATCH(request: Request) {
     if (status === 'completed') {
       await sql`
         UPDATE maintenance_jobs 
-        SET status = ${status}, completed_at = CURRENT_TIMESTAMP 
+        SET 
+          status = ${status}, 
+          completed_at = CURRENT_TIMESTAMP,
+          notes = ${notes || null},
+          photo_url = ${photo_url || null}
         WHERE id = ${id}
       `;
     } else {

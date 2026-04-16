@@ -28,6 +28,9 @@ export async function GET() {
         c.status, 
         c.job_type, 
         c.created_at,
+        c.completed_at,
+        c.notes,
+        c.photo_url,
         r.room_number 
       FROM cleaning_jobs c
       JOIN rooms r ON c.room_id = r.id
@@ -65,7 +68,7 @@ export async function PATCH(request: Request) {
     }
 
     const body = await request.json();
-    const { id, status } = body;
+    const { id, status, notes, photo_url } = body;
 
     if (!id || !status) {
       return NextResponse.json({ success: false, message: 'Missing ID or Status' }, { status: 400 });
@@ -77,7 +80,11 @@ export async function PATCH(request: Request) {
     if (status === 'completed') {
       await sql`
         UPDATE cleaning_jobs 
-        SET status = ${status}, completed_at = CURRENT_TIMESTAMP 
+        SET 
+          status = ${status}, 
+          completed_at = CURRENT_TIMESTAMP,
+          notes = ${notes || null},
+          photo_url = ${photo_url || null}
         WHERE id = ${id}
       `;
     } else {

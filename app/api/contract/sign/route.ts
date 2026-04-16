@@ -52,35 +52,18 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Tenant context could not be resolved' }, { status: 400 });
     }
 
-    // 3. Persist contract and update room status atomically
-    // We use sequential queries for simplicity with neon-serverless for now, 
-    // though a single transaction block is preferred for production.
+    // 3. Persist contract with 'PendingOwnerSignature' status.
+    // The owner must sign later to finalize the tenant approval.
     try {
       // Save the digital contract
       await sql`
         INSERT INTO contracts (tenant_id, room_id, start_date, end_date, deposit_amount, signature_data, status)
-        VALUES (${tenantId}, ${roomId}, ${startDate}, ${endDate}, ${depositAmount}, ${signatureData}, 'Active')
+        VALUES (${tenantId}, ${roomId}, ${startDate}, ${endDate}, ${depositAmount}, ${signatureData}, 'PendingOwnerSignature')
       `;
-
-      // Update room to occupied
-      await sql`
-        UPDATE rooms 
-        SET status = 'Occupied' 
-        WHERE id = ${roomId}
-      `;
-
-      // Update user role to tenant if they were a guest
-      if (session?.user?.email) {
-        await sql`
-          UPDATE users 
-          SET role = 'tenant' 
-          WHERE email = ${session.user.email} AND role = 'guest'
-        `;
-      }
 
       return NextResponse.json({ 
         success: true, 
-        message: 'Contract successfully signed and room status updated' 
+        message: 'Contract signed. pending owner approval.' 
       });
     } catch (dbError) {
       console.error('[DB Transaction Error]', dbError);

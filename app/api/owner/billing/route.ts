@@ -26,7 +26,7 @@ export async function GET(req: Request) {
         r.room_number
       FROM bills b
       JOIN tenants t ON b.tenant_id = t.id
-      JOIN rooms r ON t.room_id = r.id
+      JOIN rooms r ON r.id = COALESCE(t.room_id, (SELECT room_id FROM contracts WHERE tenant_id = t.id AND status = 'Active' LIMIT 1))
       WHERE r.dorm_id = ${parseInt(dormId)}
       ORDER BY b.due_date DESC, b.created_at DESC
     `;

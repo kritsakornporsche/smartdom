@@ -14,7 +14,7 @@ export async function GET(req: Request) {
       query = await sql`
         SELECT t.id, t.name, t.email, t.phone, t.status, r.room_number
         FROM tenants t
-        JOIN rooms r ON t.room_id = r.id
+        JOIN rooms r ON r.id = COALESCE(t.room_id, (SELECT room_id FROM contracts WHERE tenant_id = t.id AND status = 'Active' LIMIT 1))
         WHERE r.dorm_id = ${parseInt(dormId)}
         ORDER BY r.room_number ASC
       `;
@@ -22,7 +22,7 @@ export async function GET(req: Request) {
       query = await sql`
         SELECT t.id, t.name, t.email, t.phone, t.status, r.room_number
         FROM tenants t
-        LEFT JOIN rooms r ON t.room_id = r.id
+        LEFT JOIN rooms r ON r.id = COALESCE(t.room_id, (SELECT room_id FROM contracts WHERE tenant_id = t.id AND status = 'Active' LIMIT 1))
         ORDER BY r.room_number ASC
       `;
     }

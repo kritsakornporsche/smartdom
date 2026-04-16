@@ -150,14 +150,9 @@ export default function RoomBookingPage({ params }: { params: Promise<{ id: stri
       const data = await res.json();
       if (!data.success) throw new Error(data.message);
 
-      // 2. Update role from guest to tenant
-      await fetch('/api/auth/update-role', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ newRole: 'tenant' })
-      });
+      // Note: User role remains "guest" until owner signs.
       
-      // Navigate to Check-in step
+      // Navigate to 'Waiting for Owner' step
       setStep(4);
     } catch (e: any) {
       console.error(e);
@@ -245,7 +240,7 @@ export default function RoomBookingPage({ params }: { params: Promise<{ id: stri
             { id: 1, name: 'Inquiry', label: 'สอบถาม' },
             { id: 2, name: 'Booking', label: 'จองห้อง' },
             { id: 3, name: 'Contract', label: 'ทำสัญญา' },
-            { id: 4, name: 'Check-in', label: 'ย้ายเข้า' }
+            { id: 4, name: 'Approval', label: 'รออนุมัติ' }
           ].map((s, i) => (
             <div key={s.id} className="flex items-center shrink-0">
               <div className={`flex flex-col items-center gap-4 transition-all duration-700 ${step >= s.id ? 'opacity-100 scale-110' : 'opacity-20 translate-y-2'}`}>
@@ -540,37 +535,26 @@ export default function RoomBookingPage({ params }: { params: Promise<{ id: stri
                {step === 4 && (
                  <div className="animateIn-slideup space-y-10">
                    <div>
-                     <h3 className="text-3xl font-display font-black tracking-tight mb-3 text-foreground ornament">ส่งมอบห้องพัก</h3>
-                     <p className="text-muted-foreground text-sm font-black uppercase tracking-widest opacity-60">ตรวจสอบสภาพห้องและย้ายเข้า</p>
+                     <h3 className="text-3xl font-display font-black tracking-tight mb-3 text-foreground ornament">รอการอนุมัติจากเจ้าของหอ</h3>
+                     <p className="text-muted-foreground text-sm font-black uppercase tracking-widest opacity-60">กรุณารอเจ้าหน้าที่ตรวจสอบและเซ็นอนุมัติสัญญา</p>
                    </div>
                    
-                   <div className="space-y-2">
-                     {[
-                       'จดมิเตอร์ไฟฟ้า: 1,240 หน่วย',
-                       'จดมิเตอร์น้ำ: 345 หน่วย',
-                       'ตรวจสอบสภาพเฟอร์นิเจอร์: เรียบร้อย',
-                       'รับกุญแจและคีย์การ์ด: เรียบร้อย'
-                     ].map((item, i) => (
-                       <div key={i} className="flex items-center gap-6 py-5 border-b border-border transition-all hover:bg-secondary/30 px-4 rounded-2xl group">
-                          <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary shadow-sm group-hover:scale-110 transition-transform">
-                             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={4} d="M5 13l4 4L19 7" />
-                             </svg>
-                          </div>
-                          <span className="text-xs font-black uppercase tracking-[0.2em] text-foreground">{item}</span>
-                       </div>
-                     ))}
+                   <div className="p-8 bg-amber-50/50 rounded-[3rem] border border-amber-100 flex flex-col items-center justify-center text-center space-y-5">
+                      <div className="w-20 h-20 rounded-full bg-amber-100 flex items-center justify-center text-amber-500 mb-2 animate-pulse shadow-inner">
+                         <svg className="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                         </svg>
+                      </div>
+                      <h4 className="text-2xl font-black text-amber-800 tracking-tight">ระบบกำลังดำเนินการ</h4>
+                      <p className="text-amber-700/80 font-black text-xs uppercase tracking-widest leading-relaxed">
+                         เมื่อเจ้าของหอพักเซ็นสัญญากลับ <br className="hidden lg:block"/> ระบบจะเปลี่ยนสถานะคุณเป็น "ผู้เช่า" อัตโนมัติ <br className="hidden lg:block"/> และคุณจะสามารถเข้าสู่ระบบเพื่อใช้งานหน้าแดชบอร์ดได้
+                      </p>
                    </div>
-
                    <div className="pt-8">
-                     <button 
-                       onClick={handleCheckIn}
-                       disabled={isProcessing}
-                       className="w-full py-6 bg-foreground text-background rounded-full text-[11px] font-black uppercase tracking-[0.2em] hover:scale-[1.05] active:scale-95 shadow-2xl shadow-black/30 transition-all hover:brightness-125"
-                     >
-                       {isProcessing ? 'กำลังบันทึกข้อมูล...' : 'เสร็จสมบูรณ์ และเข้าพัก'}
-                     </button>
-                     <p className="text-center mt-8 text-[10px] font-black text-primary uppercase tracking-[0.4em] animate-pulse">Welcome to your new home</p>
+                     <Link href="/explore" className="w-full inline-flex justify-center items-center py-6 bg-secondary text-foreground hover:bg-secondary/80 rounded-full text-[11px] font-black uppercase tracking-[0.2em] hover:scale-[1.02] active:scale-95 shadow-md transition-all">
+                       กลับไปหน้าสำรวจหอพัก
+                     </Link>
+                     <p className="text-center mt-8 text-[9px] font-black text-muted-foreground uppercase tracking-[0.4em]">Thank You for choosing SmartDom</p>
                    </div>
                  </div>
                )}

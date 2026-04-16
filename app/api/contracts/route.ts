@@ -13,21 +13,15 @@ export async function POST(req: NextRequest) {
     const sql = neon(process.env.DATABASE_URL || '');
 
     // 1. Resolve tenant identity (Create if missing)
-    let tenantId;
     const userEmail = session.user.email;
-    const tenants = await sql`SELECT id FROM tenants WHERE email = ${userEmail} LIMIT 1`;
-    
-    if (tenants.length > 0) {
-      tenantId = tenants[0].id;
-    } else {
-      // Atomic insert of tenant based on user session
-      const newTenants = await sql`
-        INSERT INTO tenants (name, email, status)
-        VALUES (${tenantName || session.user.name}, ${userEmail}, 'Active')
-        RETURNING id
-      `;
-      tenantId = newTenants.length > 0 ? newTenants[0].id : null;
-    }
+    const resolvedTenants = await sql`
+      INSERT INTO tenants (name, email, status)
+      VALUES (${tenantName || session.user.name}, ${userEmail}, 'Active')
+      ON CONFLICT (email) DO UPDATE 
+      SET name = COALESCE(EXCLUDED.name, tenants.name)
+      RETURNING id
+    `;
+    const tenantId = resolvedTenants.length > 0 ? resolvedTenants[0].id : null;
 
     if (!tenantId) {
       return NextResponse.json({ success: false, message: 'Failed to resolve tenant identity' }, { status: 400 });
@@ -50,19 +44,15 @@ export async function POST(req: NextRequest) {
         ${endDate}, 
         ${depositAmount}, 
         ${signature}, 
-        'Active'
+        'PendingOwnerSignature'
       ) RETURNING id
     `;
 
     // 3. Update room status to Reserved
     await sql`UPDATE rooms SET status = 'Reserved' WHERE id = ${roomId}`;
 
-    // 4. Update user role to tenant
-    await sql`
-      UPDATE users 
-      SET role = 'tenant' 
-      WHERE email = ${userEmail} AND role = 'guest'
-    `;
+    // Note: User role is explicitly NOT upgraded here. 
+    // They must wait for the owner to sign the contract.
 
     return NextResponse.json({ 
       success: true, 

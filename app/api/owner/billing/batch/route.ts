@@ -12,12 +12,15 @@ export async function POST(req: Request) {
 
     const sql = neon(process.env.DATABASE_URL || '');
     
-    // 1. Find all active tenants in this dormitory and their current room prices
+    // 1. Find all active tenants in this dormitory via their active contracts
     const activeTenants = await sql`
       SELECT t.id as tenant_id, r.price as amount
       FROM tenants t
-      JOIN rooms r ON t.room_id = r.id
-      WHERE r.dorm_id = ${parseInt(dormId)} AND t.status = 'Active'
+      JOIN contracts c ON c.tenant_id = t.id
+      JOIN rooms r ON c.room_id = r.id
+      WHERE r.dorm_id = ${parseInt(dormId)} 
+      AND t.status = 'Active'
+      AND c.status = 'Active'
     `;
 
     if (activeTenants.length === 0) {

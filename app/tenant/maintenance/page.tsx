@@ -52,10 +52,7 @@ export default function TenantMaintenancePage() {
 
   const fetchRequests = async () => {
     try {
-      const res = await fetch('/api/tenant/maintenance/history'); // I'll create this helper next or use a better route
-      // Wait, I can just use a server component style if I want, but let's go with client for the interactive form
-      const res2 = await fetch('/api/keeper/technician/jobs'); // Actually, let's create a dedicated tenant one
-      const apiRes = await fetch('/api/tenant/maintenance/list'); // I'll create this
+      const apiRes = await fetch('/api/tenant/maintenance/list');
       const json = await apiRes.json();
       if (json.success) setRequests(json.data);
     } catch (err) {

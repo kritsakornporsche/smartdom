@@ -16,12 +16,14 @@ export async function POST(request: Request) {
 
     const sql = neon(process.env.DATABASE_URL || '');
     
-    // Find tenant ID and room_number
+    // Find tenant ID and room_number using COALESCE to handle data migration gaps
     const tenantRes = await sql`
-      SELECT t.id, r.room_number 
-      FROM tenants t 
-      JOIN rooms r ON t.room_id = r.id 
+      SELECT t.id, COALESCE(t.room_id, c.room_id) as room_id, r.room_number
+      FROM tenants t
+      LEFT JOIN contracts c ON t.id = c.tenant_id AND c.status = 'Active'
+      LEFT JOIN rooms r ON r.id = COALESCE(t.room_id, c.room_id)
       WHERE t.email = ${session.user.email}
+      LIMIT 1
     `;
 
     if (tenantRes.length === 0) {

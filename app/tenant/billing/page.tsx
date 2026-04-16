@@ -14,6 +14,12 @@ interface Bill {
 }
 
 export default function TenantBillingPage() {
+  const { status } = useSession();
+  const router = useRouter();
+  
+  const [bills, setBills] = useState<Bill[]>([]);
+  const [loading, setLoading] = useState(true);
+  
   const [selectedBill, setSelectedBill] = useState<Bill | null>(null);
   const [modalType, setModalType] = useState<'qr' | 'upload' | null>(null);
   const [uploading, setUploading] = useState(false);

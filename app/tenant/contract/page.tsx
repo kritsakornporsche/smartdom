@@ -2,7 +2,6 @@ import { neon } from '@neondatabase/serverless';
 import { auth } from '@/auth';
 import Link from 'next/link';
 import ContractPDFButton from '@/components/ContractPDFButton';
-import SignatureRenderer from '@/components/SignatureRenderer';
 
 async function getContractData(selectedId?: string) {
   const session = await auth();
@@ -117,7 +116,18 @@ export default async function TenantContract({ searchParams }: { searchParams: P
                   <p className="text-[11px] text-[#A08D74] font-bold uppercase tracking-widest mb-4 font-mono">ลายมือชื่ออิเล็กทรอนิกส์</p>
                   <div className="inline-block p-4 border border-[#E5DFD3] rounded-2xl bg-[#FAF8F5]">
                     {contract.signature_data ? (
-                      <SignatureRenderer dataUrl={contract.signature_data} />
+                      <div 
+                        style={{ 
+                          backgroundImage: `url(${contract.signature_data})`, 
+                          backgroundSize: 'contain', 
+                          backgroundRepeat: 'no-repeat', 
+                          backgroundPosition: 'center',
+                          height: '96px', 
+                          width: '192px' 
+                        }} 
+                        className="opacity-100"
+                        title="Signature"
+                      />
                     ) : (
                       <div className="h-24 w-48 flex items-center justify-center italic text-[#C2B7A8]">No Signature</div>
                     )}

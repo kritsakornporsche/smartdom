@@ -142,6 +142,15 @@ export default function KeeperSidebar() {
       {/* Footer */}
       <div className="p-4 border-t border-[#E5DFD3] bg-white/50">
         <Link
+          href="/profile"
+          className="flex items-center gap-3 px-4 py-3 text-[#A08D74] hover:text-[#5A4D41] rounded-2xl font-bold text-xs transition-colors hover:bg-white"
+        >
+          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+          </svg>
+          ตั้งค่าโปรไฟล์
+        </Link>
+        <Link
           href="/"
           className="flex items-center gap-3 px-4 py-3 text-[#A08D74] hover:text-[#5A4D41] rounded-2xl font-bold text-xs transition-colors hover:bg-white"
         >

@@ -7,13 +7,18 @@ import { useRouter } from 'next/navigation';
 import { signIn } from 'next-auth/react';
 import { cn } from '@/lib/utils';
 
-type Role = 'guest' | 'owner';
+type Role = 'guest' | 'keeper' | 'owner';
 
 const roleConfig: Record<Role, { label: string; desc: string; icon: string }> = {
   guest: {
     label: 'แขก',
     desc: 'เลือกดูและจองห้องพัก',
     icon: '🏠',
+  },
+  keeper: {
+    label: 'ผู้ดูแล',
+    desc: 'สำหรับพนักงาน ช่างซ่อม และแม่บ้าน',
+    icon: '👷',
   },
   owner: {
     label: 'เจ้าของหอพัก',
@@ -38,6 +43,7 @@ export default function SignupContent() {
 
   const [step, setStep] = useState<1 | 2>(1);
   const [selectedRole, setSelectedRole] = useState<Role>('guest');
+  const [selectedSubRole, setSelectedSubRole] = useState<'maid' | 'technician'>('maid');
   const [formState, setFormState] = useState<FormState>('idle');
   const [message, setMessage] = useState('');
   const [createdUser, setCreatedUser] = useState<CreatedUser | null>(null);
@@ -117,6 +123,7 @@ export default function SignupContent() {
           email: fields.email,
           password: fields.password,
           role: selectedRole,
+          sub_role: selectedRole === 'keeper' ? selectedSubRole : null,
         }),
       });
 
@@ -134,7 +141,11 @@ export default function SignupContent() {
         setCreatedUser(data.data);
         
         let redirectPath = selectedRole === 'owner' ? '/owner' : '/explore';
-        if (callbackUrl && selectedRole === 'guest') {
+        if (selectedRole === 'keeper') {
+          if (selectedSubRole === 'maid') redirectPath = '/keeper/maid';
+          else if (selectedSubRole === 'technician') redirectPath = '/keeper/technician';
+          else redirectPath = '/keeper';
+        } else if (callbackUrl && selectedRole === 'guest') {
           redirectPath = callbackUrl;
         }
 
@@ -150,10 +161,10 @@ export default function SignupContent() {
   };
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center bg-background px-6 py-20 overflow-hidden">
+    <div className="relative flex min-h-screen items-center justify-center bg-[#FAF8F5] px-6 py-20 overflow-hidden">
       {/* Decorative blobs */}
-      <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/4 w-[600px] h-[600px] bg-secondary rounded-full blur-3xl pointer-events-none opacity-50" />
-      <div className="absolute bottom-0 left-0 translate-y-1/2 -translate-x-1/4 w-[500px] h-[500px] bg-accent rounded-full blur-3xl pointer-events-none opacity-30" />
+      <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/4 w-[600px] h-[600px] bg-primary/5 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-0 left-0 translate-y-1/2 -translate-x-1/4 w-[500px] h-[500px] bg-accent/10 rounded-full blur-3xl pointer-events-none" />
 
       <Link
         href="/"
@@ -265,6 +276,43 @@ export default function SignupContent() {
                       </button>
                     ))}
                   </div>
+
+                  {/* Sub-role selector for Keeper */}
+                  {selectedRole === 'keeper' && (
+                    <div className="mt-4 p-4 rounded-3xl bg-secondary/30 border border-border space-y-3 animate-in fade-in zoom-in-95 duration-500">
+                      <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground w-full block pl-2">
+                        ระบุประเภทพนักงาน
+                      </label>
+                      <div className="flex gap-3">
+                        <button
+                          type="button"
+                          onClick={() => setSelectedSubRole('maid')}
+                          className={cn(
+                            "flex-1 flex flex-col items-center justify-center p-4 rounded-2xl border transition-all duration-300",
+                            selectedSubRole === 'maid'
+                              ? "border-primary bg-white shadow-sm scale-[1.02] text-primary"
+                              : "border-border bg-background/50 hover:bg-white text-muted-foreground"
+                          )}
+                        >
+                          <span className="text-2xl mb-1">🧹</span>
+                          <span className="text-[10px] font-black uppercase tracking-widest">แม่บ้าน</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setSelectedSubRole('technician')}
+                          className={cn(
+                            "flex-1 flex flex-col items-center justify-center p-4 rounded-2xl border transition-all duration-300",
+                            selectedSubRole === 'technician'
+                              ? "border-primary bg-white shadow-sm scale-[1.02] text-primary"
+                              : "border-border bg-background/50 hover:bg-white text-muted-foreground"
+                          )}
+                        >
+                          <span className="text-2xl mb-1">🔧</span>
+                          <span className="text-[10px] font-black uppercase tracking-widest">ช่างซ่อม</span>
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 <div className="space-y-4">

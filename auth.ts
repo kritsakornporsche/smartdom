@@ -72,8 +72,18 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           if (users.length === 0) return null;
           const user = users[0];
 
-          // ── Verify BCrypt Password ──────────────────────────────────────────
-          const isValid = await bcrypt.compare(credentials.password as string, user.password);
+          // ── Verify BCrypt Password or Legacy SHA-256 ─────────────────────
+          let isValid = false;
+          if (user.password.startsWith('$2')) {
+            isValid = await bcrypt.compare(credentials.password as string, user.password);
+          } else if (user.password.length === 64) {
+            const crypto = require('crypto');
+            const sha256Hash = crypto.createHash('sha256').update(credentials.password as string).digest('hex');
+            isValid = (sha256Hash === user.password);
+          } else {
+            isValid = (credentials.password === user.password);
+          }
+
           if (!isValid) return null;
           return {
             id: String(user.id),

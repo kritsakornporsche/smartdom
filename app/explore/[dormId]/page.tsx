@@ -55,6 +55,19 @@ export default function GuestDormRoomsPage({ params }: { params: Promise<{ dormI
     return typeMatch && statusMatch;
   });
 
+  const getFirstImage = (imageParam: string | null) => {
+    if (!imageParam) return '/modern_dorm_room_2_1775739199686.png';
+    try {
+      if (imageParam.startsWith('[') && imageParam.endsWith(']')) {
+        const images = JSON.parse(imageParam);
+        return images[0] || '/modern_dorm_room_2_1775739199686.png';
+      }
+      return imageParam;
+    } catch (e) {
+      return imageParam;
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background px-6 lg:px-12 py-12 lg:py-24 max-w-7xl mx-auto">
       <Link href="/explore" className="inline-flex items-center gap-3 text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors mb-12 group">
@@ -111,7 +124,7 @@ export default function GuestDormRoomsPage({ params }: { params: Promise<{ dormI
             >
               <div className="absolute inset-0 z-0">
                 <Image 
-                  src={room.image_url || '/modern_dorm_room_2_1775739199686.png'} 
+                  src={getFirstImage(room.image_url)} 
                   alt={room.room_number} 
                   fill 
                   className="object-cover transition-transform duration-[2000ms] group-hover:scale-110 opacity-95 group-hover:opacity-100"

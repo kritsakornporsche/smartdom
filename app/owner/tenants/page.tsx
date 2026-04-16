@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import OwnerSidebar from '../components/OwnerSidebar';
+
 
 interface Tenant {
   id: number;
@@ -56,11 +56,8 @@ export default function TenantsManagement() {
 
 
   return (
-    <div className="flex h-screen bg-[#FDFBF7]">
-      <OwnerSidebar />
-
-      <main className="flex-1 flex flex-col overflow-hidden">
-        <header className="h-20 bg-white/60 backdrop-blur-md border-b border-[#E5DFD3] flex items-center justify-between px-10 shrink-0">
+    <div className="flex-1 flex flex-col overflow-hidden">
+      <header className="h-20 bg-white/60 backdrop-blur-md border-b border-[#E5DFD3] flex items-center justify-between px-10 shrink-0">
           <div className="flex flex-col">
             <h1 className="text-xl font-black text-[#3E342B]">ทะเบียนผู้เช่า</h1>
             <p className="text-[10px] font-bold text-[#A08D74] uppercase tracking-widest">รายชื่อและข้อมูลติดต่อผู้เช่าทั่งหมด</p>
@@ -101,10 +98,9 @@ export default function TenantsManagement() {
                     ))}
                   </tbody>
                </table>
-            </div>
           </div>
         </div>
-      </main>
+      </div>
     </div>
   );
 }

@@ -59,6 +59,15 @@ export default function Home() {
               <span className="ml-4 inline-block transition-transform group-hover/btn:translate-x-2">→</span>
             </Link>
           </div>
+
+          <div className="mt-10 animate-reveal" style={{ animationDelay: '0.4s' }}>
+             <Link 
+               href="/signin" 
+               className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground hover:text-primary transition-all inline-flex items-center gap-3 group"
+             >
+               มีบัญชีอยู่แล้ว? <span className="text-foreground group-hover:text-primary border-b border-border group-hover:border-primary transition-all">เข้าสู่ระบบที่นี่</span>
+             </Link>
+          </div>
         </div>
       </section>
 

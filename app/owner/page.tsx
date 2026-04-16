@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import OwnerSidebar from './components/OwnerSidebar';
+
 
 
 interface Stats {
@@ -126,12 +126,16 @@ export default function OwnerDashboard() {
           {/* KPI Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
-              { label: 'ห้องเช่าทั้งหมด', value: stats.totalRooms, icon: '🏢', color: 'bg-[#A08D74]' },
-              { label: 'ห้องที่มีผู้เช่า', value: stats.occupiedRooms, icon: '🔑', color: 'bg-[#8B7355]' },
-              { label: 'จำนวนผู้เช่า', value: stats.totalTenants, icon: '👥', color: 'bg-[#C2B280]' },
-              { label: 'รอดำเนินการซ่อม', value: stats.pendingMaintenance, icon: '🛠️', color: 'bg-[#A26D52]' },
+              { label: 'ห้องเช่าทั้งหมด', value: stats.totalRooms, icon: '🏢', color: 'bg-[#A08D74]', href: '/owner/rooms' },
+              { label: 'ห้องที่มีผู้เช่า', value: stats.occupiedRooms, icon: '🔑', color: 'bg-[#8B7355]', href: '/owner/rooms' },
+              { label: 'จำนวนผู้เช่า', value: stats.totalTenants, icon: '👥', color: 'bg-[#C2B280]', href: '/owner/tenants' },
+              { label: 'รอดำเนินการซ่อม', value: stats.pendingMaintenance, icon: '🛠️', color: 'bg-[#A26D52]', href: '/owner/maintenance' },
             ].map((item, i) => (
-              <div key={i} className="bg-white p-6 rounded-[28px] shadow-lg shadow-[#DCD3C6]/20 border border-[#E5DFD3] flex items-center gap-5 hover:-translate-y-1 transition-transform duration-300">
+              <div 
+                key={i} 
+                onClick={() => item.href && router.push(item.href)}
+                className={`bg-white p-6 rounded-[28px] shadow-lg shadow-[#DCD3C6]/20 border border-[#E5DFD3] flex items-center gap-5 hover:-translate-y-1 transition-transform duration-300 cursor-pointer hover:border-[#8B7355]`}
+              >
                 <div className={`w-14 h-14 ${item.color} rounded-2xl flex items-center justify-center text-2xl shadow-lg shadow-black/5`}>
                   {item.icon}
                 </div>

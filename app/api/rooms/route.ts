@@ -47,10 +47,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: false, message: 'Missing required fields' }, { status: 400 });
     }
     
-    // Check if room number already exists
-    const existing = await sql`SELECT id FROM rooms WHERE room_number = ${room_number}`;
+    // Check if room number already exists IN THE SAME DORMITORY
+    const existing = await sql`SELECT id FROM rooms WHERE room_number = ${room_number} AND dorm_id = ${dorm_id}`;
     if (existing.length > 0) {
-      return NextResponse.json({ success: false, message: 'Room number already exists' }, { status: 409 });
+      return NextResponse.json({ success: false, message: 'Room number already exists in this dormitory' }, { status: 409 });
     }
 
     const result = await sql`
@@ -67,6 +67,6 @@ export async function POST(req: NextRequest) {
 
   } catch (error: any) {
     console.error('[API Rooms POST Error]', error);
-    return NextResponse.json({ success: false, message: 'Failed to create room' }, { status: 500 });
+    return NextResponse.json({ success: false, message: 'Failed to create room', error: error.message }, { status: 500 });
   }
 }

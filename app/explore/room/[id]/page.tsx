@@ -21,8 +21,21 @@ export default function RoomBookingPage({ params }: { params: Promise<{ id: stri
   const [bookingData, setBookingData] = useState({ name: '', phone: '', email: '' });
   const [isProcessing, setIsProcessing] = useState(false);
   const [showSimulator, setShowSimulator] = useState(false);
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
 
   const router = useRouter();
+
+  const getImagesArray = (imageParam: string | null) => {
+    if (!imageParam) return ['/modern_dorm_room_2_1775739199686.png'];
+    try {
+      if (imageParam.startsWith('[') && imageParam.endsWith(']')) {
+        return JSON.parse(imageParam);
+      }
+      return [imageParam];
+    } catch (e) {
+      return [imageParam];
+    }
+  };
 
   useEffect(() => {
     async function fetchRoom() {
@@ -217,6 +230,8 @@ export default function RoomBookingPage({ params }: { params: Promise<{ id: stri
   const contractEndDate = new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString().split('T')[0];
   const totalDeposit = Number(room.price) * 2;
 
+  const images = getImagesArray(room?.image_url);
+
   return (
     <div className="min-h-screen bg-background">
       <div className="max-w-7xl mx-auto px-6 lg:px-12 py-12 lg:py-24">
@@ -246,18 +261,55 @@ export default function RoomBookingPage({ params }: { params: Promise<{ id: stri
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-32 items-start">
           <div className="lg:col-span-7 space-y-16 animate-reveal">
-             <div className="relative aspect-[4/3] rounded-[5rem] overflow-hidden shadow-2xl group premium-shadow">
-               <Image 
-                 src={room.image_url || '/modern_dorm_room_2_1775739199686.png'} 
-                 alt={room.room_number} 
-                 fill 
-                 className="object-cover transition-transform duration-[2000ms] group-hover:scale-110"
-               />
-               <div className="absolute top-10 left-10">
+             <div className="relative aspect-[4/3] rounded-[5rem] overflow-hidden shadow-2xl group premium-shadow bg-secondary">
+               {images.map((img: string, idx: number) => (
+                 <div 
+                   key={idx} 
+                   className={`absolute inset-0 transition-all duration-1000 ease-in-out ${idx === activeImageIndex ? 'opacity-100 scale-100 rotate-0' : 'opacity-0 scale-110 rotate-1 pointer-events-none'}`}
+                 >
+                   <Image 
+                     src={img} 
+                     alt={`${room.room_number} - Image ${idx + 1}`} 
+                     fill 
+                     className="object-cover"
+                   />
+                 </div>
+               ))}
+               
+               <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent pointer-events-none" />
+
+               <div className="absolute top-10 left-10 z-20">
                  <div className="px-8 py-3 bg-white/20 backdrop-blur-xl rounded-full text-[11px] font-black uppercase tracking-widest text-white border border-white/20 shadow-2xl">
                    Room {room.room_number}
                  </div>
                </div>
+
+               {images.length > 1 && (
+                 <>
+                   <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-20 flex gap-3">
+                     {images.map((_: any, idx: number) => (
+                       <button
+                         key={idx}
+                         onClick={() => setActiveImageIndex(idx)}
+                         className={`h-1.5 rounded-full transition-all duration-500 ${idx === activeImageIndex ? 'w-10 bg-primary shadow-lg shadow-primary/40' : 'w-2 bg-white/40 hover:bg-white/60'}`}
+                       />
+                     ))}
+                   </div>
+
+                   <button 
+                     onClick={() => setActiveImageIndex((prev) => (prev > 0 ? prev - 1 : images.length - 1))}
+                     className="absolute left-6 top-1/2 -translate-y-1/2 w-14 h-14 rounded-full bg-white/10 backdrop-blur-xl border border-white/20 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all hover:bg-white/30"
+                   >
+                     <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M15 19l-7-7 7-7" /></svg>
+                   </button>
+                   <button 
+                     onClick={() => setActiveImageIndex((prev) => (prev < images.length - 1 ? prev + 1 : 0))}
+                     className="absolute right-6 top-1/2 -translate-y-1/2 w-14 h-14 rounded-full bg-white/10 backdrop-blur-xl border border-white/20 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all hover:bg-white/30"
+                   >
+                     <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M9 5l7 7-7 7" /></svg>
+                   </button>
+                 </>
+               )}
              </div>
              
              <div className="space-y-10">

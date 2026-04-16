@@ -45,10 +45,17 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
 
     const sql = neon(process.env.DATABASE_URL || '');
     
-    // Check if room number already exists for a DIFFERENT room
-    const existing = await sql`SELECT id FROM rooms WHERE room_number = ${room_number} AND id != ${id}`;
+    // Get the dorm_id of the room being updated
+    const roomInfo = await sql`SELECT dorm_id FROM rooms WHERE id = ${id}`;
+    if (roomInfo.length === 0) {
+      return NextResponse.json({ success: false, message: 'Room not found' }, { status: 404 });
+    }
+    const dorm_id = roomInfo[0].dorm_id;
+
+    // Check if room number already exists for a DIFFERENT room IN THE SAME DORMITORY
+    const existing = await sql`SELECT id FROM rooms WHERE room_number = ${room_number} AND dorm_id = ${dorm_id} AND id != ${id}`;
     if (existing.length > 0) {
-      return NextResponse.json({ success: false, message: 'Room number already exists' }, { status: 409 });
+      return NextResponse.json({ success: false, message: 'Room number already exists in this dormitory' }, { status: 409 });
     }
 
     const result = await sql`

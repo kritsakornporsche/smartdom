@@ -158,6 +158,19 @@ export default function AdminRoomsPage() {
     return type;
   };
 
+  const getFirstImage = (imageParam: string | null) => {
+    if (!imageParam) return null;
+    try {
+      if (imageParam.startsWith('[') && imageParam.endsWith(']')) {
+        const images = JSON.parse(imageParam);
+        return images[0] || null;
+      }
+      return imageParam;
+    } catch (e) {
+      return imageParam;
+    }
+  };
+
   return (
     <div className="flex h-screen bg-background text-foreground">
       <AdminSidebar />
@@ -212,29 +225,31 @@ export default function AdminRoomsPage() {
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                  {rooms.map((room) => (
-                    <div key={room.id} className="group border border-border rounded-2xl overflow-hidden hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 bg-white">
-                      <div className="aspect-[4/3] bg-accent/20 relative overflow-hidden">
-                        {room.image_url ? (
-                          <Image 
-                            src={room.image_url} 
-                            alt={`ห้อง ${room.room_number}`}
-                            fill
-                            unoptimized
-                            className="object-cover group-hover:scale-105 transition-transform duration-700"
-                          />
-                        ) : (
-                          <div className="w-full h-full flex flex-col items-center justify-center text-muted-foreground">
-                            <svg className="w-10 h-10 mb-2 opacity-40" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-                            <span className="text-xs font-medium uppercase tracking-widest opacity-50">ไม่มีรูปภาพ</span>
+                  {rooms.map((room) => {
+                    const displayImage = getFirstImage(room.image_url);
+                    return (
+                      <div key={room.id} className="group border border-border rounded-2xl overflow-hidden hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 bg-white">
+                        <div className="aspect-[4/3] bg-accent/20 relative overflow-hidden">
+                          {displayImage ? (
+                            <Image 
+                              src={displayImage} 
+                              alt={`ห้อง ${room.room_number}`}
+                              fill
+                              unoptimized
+                              className="object-cover group-hover:scale-105 transition-transform duration-700"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex flex-col items-center justify-center text-muted-foreground">
+                              <svg className="w-10 h-10 mb-2 opacity-40" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                              <span className="text-xs font-medium uppercase tracking-widest opacity-50">ไม่มีรูปภาพ</span>
+                            </div>
+                          )}
+                          <div className="absolute top-3 right-3">
+                            <span className={`px-3 py-1 rounded-full text-xs font-bold border backdrop-blur-md shadow-sm ${getStatusColor(room.status)}`}>
+                              {getDisplayStatus(room.status)}
+                            </span>
                           </div>
-                        )}
-                        <div className="absolute top-3 right-3">
-                          <span className={`px-3 py-1 rounded-full text-xs font-bold border backdrop-blur-md shadow-sm ${getStatusColor(room.status)}`}>
-                            {getDisplayStatus(room.status)}
-                          </span>
                         </div>
-                      </div>
                       
                       <div className="p-5">
                         <div className="flex justify-between items-start mb-1">

@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
+import { useState, useEffect } from 'react';
 
 const navItems = [
   {
@@ -84,6 +85,35 @@ const navItems = [
 export default function OwnerSidebar() {
   const pathname = usePathname();
   const { data: session } = useSession();
+  const [dormName, setDormName] = useState<string | null>(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    if (session?.user?.email) {
+      fetch(`/api/owner/onboarding?email=${session.user.email}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.success && data.hasDorm) {
+            setDormName(data.dorm.name);
+          }
+        });
+    }
+  }, [session]);
+
+  if (!mounted) return (
+    <aside className="w-72 bg-[#FAF8F5] border-r border-[#E5DFD3] flex flex-col shrink-0">
+      <div className="p-8 border-b border-[#E5DFD3] animate-pulse">
+        <div className="flex items-center gap-4 mb-6">
+          <div className="h-12 w-12 rounded-2xl bg-[#E5DFD3]" />
+          <div className="space-y-2">
+            <div className="h-4 w-24 bg-[#E5DFD3] rounded" />
+            <div className="h-2 w-16 bg-[#E5DFD3] rounded" />
+          </div>
+        </div>
+      </div>
+    </aside>
+  );
 
   return (
     <aside className="w-72 bg-[#FAF8F5] border-r border-[#E5DFD3] flex flex-col shrink-0 shadow-sm">
@@ -101,7 +131,11 @@ export default function OwnerSidebar() {
         
         <div className="bg-white rounded-2xl p-4 border border-[#E5DFD3] shadow-sm">
            <p className="text-[10px] font-bold uppercase tracking-widest text-[#A08D74] mb-1">หอพักปัจจุบัน</p>
-           <p className="text-sm font-bold truncate text-[#5A4D41] opacity-70">กำลังตรวจสอบ...</p>
+           {dormName ? (
+             <p className="text-sm font-bold truncate text-[#5A4D41]">{dormName}</p>
+           ) : (
+             <p className="text-sm font-bold truncate text-[#5A4D41] opacity-40">ไม่มีข้อมูลหอพัก</p>
+           )}
         </div>
 
       </div>

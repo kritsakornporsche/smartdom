@@ -36,17 +36,19 @@ export default function Navbar() {
         </Link>
         
         {/* Navigation Links */}
-        <div className="hidden md:flex items-center gap-8 lg:gap-10">
-          <Link href="/explore" className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground hover:text-primary transition-all hover:translate-y-[-1px]">
-            สำรวจหอพัก
-          </Link>
-          <div className="h-4 w-px bg-border/40" />
+        <div className="flex items-center gap-4 lg:gap-10">
+          <div className="hidden md:flex items-center gap-8 lg:gap-10">
+            <Link href="/explore" className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground hover:text-primary transition-all hover:translate-y-[-1px]">
+              สำรวจหอพัก
+            </Link>
+            <div className="h-4 w-px bg-border/40" />
+          </div>
           
           {status === 'loading' ? (
             <div className="w-20 h-4 bg-muted/40 animate-pulse rounded-full" />
           ) : session ? (
-            <div className="flex items-center gap-6">
-              <div className="flex flex-col items-end">
+            <div className="flex items-center gap-4 lg:gap-6">
+              <div className="hidden sm:flex flex-col items-end">
                 <span className="text-[11px] font-black text-foreground leading-none mb-1">
                   {session.user?.name || session.user?.email || 'ไม่มีชื่อผู้ใช้'}
                 </span>
@@ -57,34 +59,62 @@ export default function Navbar() {
                    </span>
                 </div>
               </div>
-              <div className="h-8 w-px bg-border/40" />
+              <div className="hidden sm:block h-8 w-px bg-border/40" />
+              
+              {session && (
+                <Link 
+                  href={
+                    (session.user as any)?.role === 'Admin' ? '/admin' :
+                    (session.user as any)?.role === 'Owner' ? '/owner' :
+                    (session.user as any)?.role === 'Keeper' ? '/keeper' :
+                    '/tenant'
+                  }
+                  className={cn(
+                    "rounded-xl bg-primary/10 px-4 py-2 text-[10px] font-black uppercase tracking-[0.1em] text-primary",
+                    "hover:bg-primary hover:text-primary-foreground transition-all duration-300",
+                    "shadow-sm hover:shadow-md hover:scale-[1.05] active:scale-95 flex items-center gap-2"
+                  )}
+                >
+                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                  </svg>
+                   <span className="hidden xs:inline">ไปที่แดชบอร์ด</span>
+                </Link>
+              )}
+
               <button 
                 onClick={() => signOut({ callbackUrl: '/' })}
                 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-destructive transition-all hover:translate-y-[-1px]"
               >
-                ออกจากระบบ
+                {session ? 'ออก' : 'ออกจากระบบ'}
               </button>
             </div>
           ) : (
-            <div className="flex items-center gap-6 lg:gap-8">
-              <Link href="/signin" className="text-[10px] font-black uppercase tracking-widest hover:text-primary transition-all text-foreground hover:translate-y-[-1px]">
+            <div className="flex items-center gap-3 lg:gap-4">
+              <Link 
+                href="/signin" 
+                className={cn(
+                  "px-5 py-2.5 rounded-full border border-border text-[10px] font-black uppercase tracking-widest transition-all duration-300",
+                  "hover:bg-secondary hover:border-primary/20 hover:text-primary hover:-translate-y-0.5 active:scale-95"
+                )}
+              >
                 เข้าสู่ระบบ
               </Link>
               <Link 
                 href="/signup" 
                 className={cn(
-                  "rounded-full bg-foreground px-8 py-3.5 text-[10px] font-black uppercase tracking-[0.2em] text-background",
+                  "rounded-full bg-foreground px-6 sm:px-8 py-2.5 sm:py-3 text-[10px] font-black uppercase tracking-[0.2em] text-background",
                   "hover:bg-primary hover:text-primary-foreground transition-all duration-500",
                   "shadow-xl shadow-foreground/5 hover:shadow-primary/20 hover:scale-[1.05] active:scale-95"
                 )}
               >
-                เริ่มต้นเลย
+                เริ่มเลิย
               </Link>
             </div>
           )}
         </div>
 
-        {/* Mobile Menu Trigger (Visual Only for now) */}
+        {/* Mobile Menu Trigger - Still visual but integrated better */}
         <button className="md:hidden h-10 w-10 flex flex-col items-center justify-center gap-1.5 bg-secondary/50 rounded-2xl hover:bg-secondary transition-all active:scale-95">
            <div className="w-5 h-0.5 bg-foreground/70 rounded-full" />
            <div className="w-4 h-0.5 bg-foreground/70 rounded-full self-start ml-[7px]" />

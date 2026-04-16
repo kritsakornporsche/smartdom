@@ -52,8 +52,8 @@ export default async function TenantDashboard() {
   const { unpaidBills, recentMaintenance, roomInfo } = await getDashboardData();
 
   return (
-    <div className="p-10 md:p-16">
-      <div className="max-w-7xl mx-auto pb-16 space-y-12">
+    <div className="p-8 lg:p-10 hidden-scrollbar">
+      <div className="max-w-6xl mx-auto pb-16 space-y-10">
         
         {/* Welcome Section with Room Summary */}
         <section className="relative overflow-hidden bg-white rounded-[3rem] border border-[#E5DFD3] p-12 shadow-2xl shadow-[#3E342B]/5">

@@ -44,7 +44,7 @@ export default function TenantBillingPage() {
   const unpaidCount = bills.filter(b => b.status === 'Unpaid').length;
 
   return (
-    <div className="p-10 md:p-16">
+    <div className="p-8 lg:p-10">
       <div className="max-w-5xl mx-auto pb-16 space-y-12">
         <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
           <div className="space-y-2">

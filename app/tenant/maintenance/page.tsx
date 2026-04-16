@@ -75,7 +75,7 @@ export default function TenantMaintenancePage() {
   if (status === 'loading') return null;
 
   return (
-    <div className="p-10 md:p-16">
+    <div className="p-8 lg:p-10">
       <div className="max-w-4xl mx-auto pb-16 space-y-12">
         <header className="flex justify-between items-end">
           <div>

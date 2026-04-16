@@ -33,7 +33,7 @@ export default async function TenantContract({ searchParams }: { searchParams: P
   const { current: contract, all: contracts } = await getContractData(params.id);
 
   return (
-    <div className="p-10 md:p-16 max-w-7xl mx-auto">
+    <div className="p-8 lg:p-10 max-w-6xl mx-auto">
       <div className="space-y-12 pb-16">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div className="relative">

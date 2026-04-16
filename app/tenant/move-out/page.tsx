@@ -1,6 +1,9 @@
 import { neon } from '@neondatabase/serverless';
 import { auth } from '@/auth';
 
+import MoveOutForm from './components/MoveOutForm';
+import CancelRequestButton from './components/CancelRequestButton';
+
 async function getMoveOutData() {
   const session = await auth();
   if (!session?.user?.email) return null;
@@ -23,7 +26,7 @@ export default async function TenantMoveOut() {
   const request = await getMoveOutData();
 
   return (
-    <div className="p-10 md:p-16 max-w-7xl mx-auto">
+    <div className="p-8 lg:p-10 max-w-6xl mx-auto">
       <div className="space-y-12 pb-16">
         <div className="relative">
           <div className="absolute -left-4 top-1/2 -translate-y-1/2 w-1 h-12 bg-[#8B6A2B] rounded-full opacity-20"></div>
@@ -81,9 +84,7 @@ export default async function TenantMoveOut() {
               </div>
 
               <div className="flex flex-col sm:flex-row gap-4 border-t border-[#E5DFD3] pt-8">
-                <button className="flex-1 bg-white hover:bg-rose-50 text-rose-600 border border-rose-100 font-bold py-3.5 px-4 rounded-xl transition-all shadow-sm flex items-center justify-center gap-2">
-                  ยกเลิกคำร้อง (Cancel Request)
-                </button>
+                {request.status === 'Pending' && <CancelRequestButton requestId={request.id} />}
                 <button className="flex-1 bg-[#F2EFE9] text-[#5A4D41] font-bold py-3.5 px-4 rounded-xl cursor-default opacity-50">
                   รอการติดต่อกลับจากผู้ดูแล
                 </button>
@@ -91,52 +92,7 @@ export default async function TenantMoveOut() {
             </div>
           </div>
         ) : (
-          <form className="bg-white rounded-3xl border border-[#E5DFD3] p-8 md:p-12 shadow-sm">
-            <div className="mb-10">
-               <div className="bg-[#FFF9F9] border border-rose-100 rounded-2xl p-6 text-sm text-rose-800 flex gap-4">
-                 <div className="shrink-0 bg-rose-100 h-10 w-10 rounded-full flex items-center justify-center text-rose-600">
-                    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
-                 </div>
-                 <div>
-                   <strong className="block text-base mb-1 font-bold">เงื่อนไขการคืนเงินประกัน</strong>
-                   ทางหอพักกำหนดให้มีการแจ้งย้ายออกล่วงหน้าอย่างน้อย <span className="font-bold underline decoration-rose-200 decoration-2">30 วัน</span> ก่อนถึงกำหนดสัญญา มิเช่นนั้นอาจมีการหักเงินประกันตามที่ระบุไว้ในสัญญาเช่า
-                 </div>
-               </div>
-            </div>
-
-            <div className="grid sm:grid-cols-2 gap-8 mb-8">
-              <div>
-                <label className="block text-[11px] font-bold text-[#A08D74] uppercase tracking-wider mb-2 font-mono ml-1">วันที่ต้องการย้ายออก</label>
-                <input 
-                  type="date" 
-                  className="w-full px-5 py-4 bg-[#FAF8F5] rounded-2xl border border-[#DCD3C6] focus:bg-white focus:ring-4 focus:ring-[#8B6A2B]/10 focus:border-[#8B6A2B] outline-none transition-all text-[#3E342B] font-bold"
-                />
-              </div>
-              <div>
-                <label className="block text-[11px] font-bold text-[#A08D74] uppercase tracking-wider mb-2 font-mono ml-1">เบอร์โทรศัพท์ติดต่อกลับ</label>
-                <input 
-                  type="tel" 
-                  className="w-full px-5 py-4 bg-[#FAF8F5] rounded-2xl border border-[#DCD3C6] focus:bg-white focus:ring-4 focus:ring-[#8B6A2B]/10 focus:border-[#8B6A2B] outline-none transition-all text-[#3E342B] font-bold"
-                  placeholder="08X-XXX-XXXX"
-                />
-              </div>
-            </div>
-
-            <div className="mb-10">
-              <label className="block text-[11px] font-bold text-[#A08D74] uppercase tracking-wider mb-2 font-mono ml-1">เหตุผลที่ต้องการย้ายออก</label>
-              <textarea 
-                rows={4}
-                className="w-full px-5 py-4 bg-[#FAF8F5] rounded-2xl border border-[#DCD3C6] focus:bg-white focus:ring-4 focus:ring-[#8B6A2B]/10 focus:border-[#8B6A2B] outline-none transition-all text-[#3E342B] font-medium resize-none leading-relaxed"
-                placeholder="ระบุเหตุผลเบื้องต้นเพื่อให้เรานำไปพัฒนาบริการ..."
-              ></textarea>
-            </div>
-
-            <div className="flex gap-4 border-t border-[#E5DFD3] pt-10">
-              <button type="submit" className="flex-1 bg-[#8B6A2B] hover:bg-[#725724] text-white font-bold py-4 px-8 rounded-2xl transition-all shadow-xl shadow-[#8B6A2B]/20 active:scale-[0.98] text-lg">
-                ยืนยันการส่งเรื่องแจ้งย้ายออก
-              </button>
-            </div>
-          </form>
+          <MoveOutForm />
         )}
       </div>
     </div>

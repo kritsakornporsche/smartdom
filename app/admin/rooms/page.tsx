@@ -396,15 +396,16 @@ export default function AdminRoomsPage() {
       {/* เพิ่ม/แก้ไขห้องพัก Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-foreground/30 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-background rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl border border-border">
-            <div className="px-8 py-6 border-b border-border flex justify-between items-center">
+          <div className="bg-background rounded-3xl w-full max-w-lg max-h-[90vh] overflow-hidden shadow-2xl border border-border flex flex-col">
+            <div className="px-8 py-6 border-b border-border flex justify-between items-center shrink-0">
               <h2 className="font-display text-xl font-semibold text-foreground">{editingId ? 'แก้ไขข้อมูลห้องพัก' : 'เพิ่มห้องพักใหม่'}</h2>
               <button onClick={() => setIsModalOpen(false)} className="text-muted-foreground hover:text-foreground transition-colors bg-accent/50 hover:bg-accent p-2 rounded-full">
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" /></svg>
               </button>
             </div>
             
-            <form onSubmit={handleSaveRoom} className="p-8 space-y-5">
+            <div className="flex-1 overflow-y-auto custom-scrollbar">
+              <form onSubmit={handleSaveRoom} className="p-8 space-y-6">
               {feedback.message && feedback.type === 'error' && (
                 <div className="p-4 bg-rose-50 border border-rose-100 text-rose-700 rounded-2xl text-sm font-medium">
                   {feedback.message}
@@ -581,6 +582,7 @@ export default function AdminRoomsPage() {
                 </button>
               </div>
             </form>
+            </div>
           </div>
         </div>
       )}

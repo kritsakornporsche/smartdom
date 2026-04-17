@@ -55,6 +55,7 @@ export default function MaidDashboardPage() {
   const [isFinishing, setIsFinishing] = useState(false);
   const [finishNotes, setFinishNotes] = useState('');
   const [finishPhoto, setFinishPhoto] = useState('');
+  const [isUploading, setIsUploading] = useState(false);
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -84,6 +85,33 @@ export default function MaidDashboardPage() {
     }, 1000);
     return () => clearInterval(timer);
   }, []);
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || e.target.files.length === 0) return;
+    const file = e.target.files[0];
+    
+    setIsUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+      const data = await res.json();
+      if (data.success) {
+        setFinishPhoto(data.url);
+      } else {
+        alert('Upload failed: ' + data.message);
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Error uploading file');
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
   const fetchData = async (showLoading = true) => {
     if (showLoading) setLoadingData(true);
@@ -352,17 +380,27 @@ export default function MaidDashboardPage() {
                     </div>
                     <div>
                       <label className="block text-xs font-bold uppercase tracking-wider text-[#A08D74] mb-2">อัปโหลดรูปภาพหลักฐานทำงานเสร็จ (Proof of Work)</label>
-                      <div className="w-full border-2 border-dashed border-[#E5DFD3] rounded-2xl p-6 flex flex-col items-center justify-center bg-[#FAF8F5] hover:bg-[#F3EFE9] transition-colors cursor-pointer group relative">
-                          <span className="text-3xl mb-2 opacity-50 group-hover:scale-110 transition-transform">📸</span>
-                          <span className="text-xs font-bold text-[#A08D74] text-center mb-3">คลิกเพื่ออัปโหลด รูปภาพหลังทำความสะอาด</span>
-                          <input 
-                              type="text" 
-                              value={finishPhoto}
-                              onChange={(e) => setFinishPhoto(e.target.value)}
-                              placeholder="หรือใส่ลิ้งก์ URL รูปภาพ เช่น https://imgur.com/done.jpg"
-                              className="w-full bg-white border border-[#E5DFD3] rounded-xl px-4 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-emerald-500/30"
-                          />
-                      </div>
+                      <label className="w-full border-2 border-dashed border-[#E5DFD3] rounded-2xl p-6 flex flex-col items-center justify-center bg-[#FAF8F5] hover:bg-[#F3EFE9] transition-colors cursor-pointer group relative overflow-hidden h-40">
+                          {finishPhoto ? (
+                              <div className="relative w-full h-full">
+                                  <Image src={finishPhoto} alt="Proof" fill className="object-contain" />
+                                  <div className="absolute top-0 right-0 bg-rose-500 text-white rounded-full w-6 h-6 flex items-center justify-center cursor-pointer z-10" onClick={(e) => { e.preventDefault(); setFinishPhoto(''); }}>✕</div>
+                              </div>
+                          ) : isUploading ? (
+                              <div className="text-[#A08D74] font-bold text-sm animate-pulse">กำลังอัปโหลดรูปภาพ...</div>
+                          ) : (
+                              <>
+                                  <span className="text-3xl mb-2 opacity-50 group-hover:scale-110 transition-transform">📸</span>
+                                  <span className="text-xs font-bold text-[#A08D74] text-center mb-3">คลิกเพื่ออัปโหลด รูปภาพหลังทำความสะอาด</span>
+                                  <input 
+                                      type="file" 
+                                      accept="image/*"
+                                      onChange={handleFileUpload}
+                                      className="hidden"
+                                  />
+                              </>
+                          )}
+                      </label>
                     </div>
                     <div className="flex gap-3 pt-4">
                        <button 
@@ -416,12 +454,12 @@ export default function MaidDashboardPage() {
                             {selectedJob.photo_url && (
                                 <div>
                                     <h4 className="text-xs font-bold uppercase tracking-wider text-[#A08D74] mb-2">หลักฐานงาน:</h4>
-                                    {selectedJob.photo_url.startsWith('http') ? (
-                                        <div className="rounded-2xl overflow-hidden border border-[#E5DFD3] relative h-40 w-full">
+                                    {selectedJob.photo_url.startsWith('http') || selectedJob.photo_url.startsWith('/') ? (
+                                        <div className="rounded-2xl overflow-hidden border border-[#E5DFD3] relative h-40 w-full mb-2">
                                             <Image src={selectedJob.photo_url} alt="Evidence" fill className="object-cover" />
                                         </div>
                                     ) : (
-                                        <p className="text-sm text-[#3E342B] italic">{selectedJob.photo_url}</p>
+                                        <p className="text-sm text-blue-600 underline font-medium">{selectedJob.photo_url}</p>
                                     )}
                                 </div>
                             )}

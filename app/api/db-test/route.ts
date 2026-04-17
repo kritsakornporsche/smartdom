@@ -20,12 +20,12 @@ export async function GET() {
       time: result.rows[0].time 
     }, { status: 200 });
 
-  } catch (error: any) {
+  } catch (error) {
     console.error('Database connection error:', error);
     return NextResponse.json({ 
       success: false, 
       message: 'Database connection failed', 
-      error: error.message 
+      error: error instanceof Error ? error.message : 'Unknown error' 
     }, { status: 500 });
   }
 }

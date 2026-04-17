@@ -7,7 +7,7 @@ export default function NotFound() {
       <div className="relative -mt-20">
         <h2 className="mb-4 text-4xl font-bold tracking-tight text-white">Page Not Found</h2>
         <p className="mb-8 max-w-md text-gray-400">
-          The page you're looking for doesn't exist or has been moved to another dimension.
+          The page you&apos;re looking for doesn&apos;t exist or has been moved to another dimension.
         </p>
         <Link
           href="/"

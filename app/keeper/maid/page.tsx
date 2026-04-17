@@ -4,6 +4,7 @@ import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState, useMemo } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import KeeperSidebar from '../components/KeeperSidebar';
 
 interface MaidJob {
@@ -350,14 +351,18 @@ export default function MaidDashboardPage() {
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-bold uppercase tracking-wider text-[#A08D74] mb-2">ลิ้งก์รูปภาพหลักฐาน (หรือระบุข้อความ)</label>
-                      <input 
-                        type="text" 
-                        value={finishPhoto}
-                        onChange={(e) => setFinishPhoto(e.target.value)}
-                        placeholder="https://images.com/done.jpg"
-                        className="w-full bg-[#FAF8F5] border border-[#E5DFD3] rounded-2xl px-4 py-3 text-sm focus:outline-none"
-                      />
+                      <label className="block text-xs font-bold uppercase tracking-wider text-[#A08D74] mb-2">อัปโหลดรูปภาพหลักฐานทำงานเสร็จ (Proof of Work)</label>
+                      <div className="w-full border-2 border-dashed border-[#E5DFD3] rounded-2xl p-6 flex flex-col items-center justify-center bg-[#FAF8F5] hover:bg-[#F3EFE9] transition-colors cursor-pointer group relative">
+                          <span className="text-3xl mb-2 opacity-50 group-hover:scale-110 transition-transform">📸</span>
+                          <span className="text-xs font-bold text-[#A08D74] text-center mb-3">คลิกเพื่ออัปโหลด รูปภาพหลังทำความสะอาด</span>
+                          <input 
+                              type="text" 
+                              value={finishPhoto}
+                              onChange={(e) => setFinishPhoto(e.target.value)}
+                              placeholder="หรือใส่ลิ้งก์ URL รูปภาพ เช่น https://imgur.com/done.jpg"
+                              className="w-full bg-white border border-[#E5DFD3] rounded-xl px-4 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-emerald-500/30"
+                          />
+                      </div>
                     </div>
                     <div className="flex gap-3 pt-4">
                        <button 
@@ -423,11 +428,21 @@ export default function MaidDashboardPage() {
                          </div>
                     )}
 
-                    <div className="pt-4">
+                    <div className="pt-4 space-y-3">
+                        <Link 
+                            href={`/keeper/chat?room=${selectedJob.room_number}`}
+                            className="flex items-center justify-center gap-2 w-full px-4 py-3 rounded-2xl border-2 border-[#8B7355] text-[#8B7355] text-sm font-bold shadow-sm hover:bg-[#8B7355] hover:text-white transition-all group"
+                        >
+                            <svg className="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                            </svg>
+                            ส่งข้อความถึงผู้เช่า
+                        </Link>
+
                         {selectedJob.status === 'pending' && (
                             <button 
                                 onClick={() => updateStatus(selectedJob.id, 'in_progress')}
-                                className="w-full px-4 py-4 rounded-2xl bg-[#8B7355] text-white text-sm font-bold shadow-lg shadow-[#8B7355]/20"
+                                className="w-full px-4 py-4 rounded-2xl bg-[#8B7355] text-white text-sm font-bold shadow-lg shadow-[#8B7355]/20 hover:bg-[#5A4D41] transition-all"
                             >
                                 เริ่มดำเนินการทันที
                             </button>
@@ -435,15 +450,15 @@ export default function MaidDashboardPage() {
                         {selectedJob.status === 'in_progress' && (
                             <button 
                                 onClick={() => setIsFinishing(true)}
-                                className="w-full px-4 py-4 rounded-2xl bg-emerald-600 text-white text-sm font-bold shadow-lg shadow-emerald-600/20"
+                                className="w-full px-4 py-4 rounded-2xl bg-emerald-600 text-white text-sm font-bold shadow-lg shadow-emerald-600/20 hover:bg-emerald-700 transition-all"
                             >
-                                ดำเนินการเสร็จสิ้น
+                                ดำเนินการเสร็จสิ้น (แนบหลักฐาน)
                             </button>
                         )}
                         {selectedJob.status === 'completed' && (
                             <button 
                                 onClick={() => setSelectedJob(null)}
-                                className="w-full px-4 py-4 rounded-2xl border border-[#E5DFD3] text-[#A08D74] text-sm font-bold hover:bg-[#FAF8F5]"
+                                className="w-full px-4 py-4 rounded-2xl border border-[#E5DFD3] text-[#A08D74] text-sm font-bold hover:bg-[#FAF8F5] transition-all"
                             >
                                 ปิดหน้าต่าง
                             </button>

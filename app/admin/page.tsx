@@ -11,7 +11,8 @@ export default function AdminDashboardPage() {
   const [data, setData] = useState({
     totalRooms: 0,
     totalTenants: 0,
-    monthlyIncome: 0
+    monthlyIncome: 0,
+    revenueHistory: [] as { month: string; revenue: number }[]
   });
 
   useEffect(() => {
@@ -207,6 +208,62 @@ export default function AdminDashboardPage() {
                 </div>
               ))}
             </div>
+
+            {/* Revenue Summary Chart */}
+            <section className="bg-white border border-border rounded-3xl p-7 shadow-sm">
+              <div className="flex items-center justify-between mb-10">
+                <div>
+                  <h2 className="font-display text-base font-semibold text-foreground">สรุปรายได้รายเดือน</h2>
+                  <p className="text-xs text-muted-foreground font-medium mt-1">เปรียบเทียบผลประกอบการในรอบ 6 เดือนที่ผ่านมา</p>
+                </div>
+                <div className="flex items-center gap-2">
+                   <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-green-50 text-[10px] font-black uppercase text-green-600 border border-green-200 tracking-widest">
+                      Real-time Data
+                   </div>
+                </div>
+              </div>
+
+              {loading ? (
+                <div className="h-64 flex items-center justify-center bg-accent/10 rounded-2xl animate-pulse">
+                   <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">กำลังคิดคำนวณข้อมูล...</span>
+                </div>
+              ) : (
+                <div className="h-64 flex items-end gap-4 lg:gap-8 px-4">
+                  {data.revenueHistory.map((item, idx) => {
+                    const maxRevenue = Math.max(...data.revenueHistory.map(h => h.revenue), 1000);
+                    const heightPercent = (item.revenue / maxRevenue) * 100;
+                    
+                    return (
+                      <div key={idx} className="flex-1 flex flex-col items-center group relative h-full justify-end">
+                        {/* Tooltip */}
+                        <div className="absolute -top-10 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none scale-90 group-hover:scale-100 z-10">
+                           <div className="bg-foreground text-background text-[10px] font-black px-3 py-1.5 rounded-lg shadow-xl whitespace-nowrap">
+                             ฿{item.revenue.toLocaleString()}
+                           </div>
+                        </div>
+
+                        {/* Bar */}
+                        <div 
+                           style={{ height: `${Math.max(heightPercent, 5)}%` }} // Minimum height for visibility
+                           className={`w-full max-w-[40px] rounded-t-xl transition-all duration-700 delay-[100ms] cursor-pointer relative overflow-hidden ${
+                             idx === data.revenueHistory.length - 1 
+                               ? 'bg-primary shadow-lg shadow-primary/20' 
+                               : 'bg-accent/60 group-hover:bg-accent/80'
+                           }`}
+                        >
+                           <div className="absolute inset-x-0 top-0 h-10 bg-gradient-to-b from-white/20 to-transparent" />
+                        </div>
+                        
+                        {/* Month Label */}
+                        <div className="mt-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground group-hover:text-primary transition-colors">
+                          {item.month}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </section>
 
             {/* Quick Actions */}
             <section className="bg-white border border-border rounded-3xl p-7 shadow-sm">

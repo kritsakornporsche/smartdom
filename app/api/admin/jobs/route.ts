@@ -30,7 +30,7 @@ export async function GET() {
         maintenance: maintenanceJobs
       }
     }, { status: 200 });
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error fetching admin jobs:', error);
     return NextResponse.json({ 
       success: false, 
@@ -61,7 +61,7 @@ export async function PATCH(request: Request) {
     `;
     
     return NextResponse.json({ success: true, message: 'Status updated successfully', data: result[0] });
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error updating job status:', error);
     return NextResponse.json({ success: false, message: 'Failed to update status' }, { status: 500 });
   }

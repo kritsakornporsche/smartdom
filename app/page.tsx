@@ -168,7 +168,7 @@ export default function Home() {
               <h2 className="text-xs font-bold tracking-[0.3em] uppercase text-primary mb-6">Atmosphere</h2>
               <p className="text-4xl lg:text-6xl font-display leading-[0.9] mb-8">บรรยากาศที่ <br/> ออกแบบมาเพื่อคุณ</p>
               <p className="text-muted-foreground text-lg font-medium mb-12 hidden md:block">
-                เราไม่ได้แค่จัดการห้องพัก แต่เราดูแลทุกองค์ประกอบที่ทำให้คำว่า 'บ้าน' สมบูรณ์แบบที่สุด
+                เราไม่ได้แค่จัดการห้องพัก แต่เราดูแลทุกองค์ประกอบที่ทำให้คำว่า &apos;บ้าน&apos; สมบูรณ์แบบที่สุด
               </p>
               <div>
                  <Link href="/signup" className="inline-flex items-center gap-4 px-8 py-4 rounded-full bg-primary text-primary-foreground text-xs font-bold uppercase tracking-widest hover:-translate-y-1 transition-all">

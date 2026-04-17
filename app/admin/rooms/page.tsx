@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
 import AdminSidebar from '../components/AdminSidebar';
 
 interface Room {
@@ -12,7 +11,14 @@ interface Room {
   status: string;
   floor: number;
   image_url: string | null;
+  tenant_id: number | null;
+  tenant_name: string | null;
   created_at: string;
+}
+
+interface Tenant {
+  id: number;
+  name: string;
 }
 
 export default function AdminRoomsPage() {
@@ -21,11 +27,7 @@ export default function AdminRoomsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [feedback, setFeedback] = useState({ message: '', type: '' });
   const [editingId, setEditingId] = useState<number | null>(null);
-
-  // Filter & Search states
-  const [searchQuery, setSearchQuery] = useState('');
-  const [filterStatus, setFilterStatus] = useState('all');
-  const [uploadingImage, setUploadingImage] = useState(false);
+  const [tenants, setTenants] = useState<Tenant[]>([]);
 
   // Form states
   const [roomNumber, setRoomNumber] = useState('');
@@ -34,6 +36,13 @@ export default function AdminRoomsPage() {
   const [floor, setFloor] = useState('1');
   const [status, setStatus] = useState('ว่าง');
   const [imageUrl, setImageUrl] = useState('');
+  const [tenantId, setTenantId] = useState<string>('');
+  const [uploading, setUploading] = useState(false);
+
+  // Search and Filter states
+  const [searchTerm, setSearchTerm] = useState('');
+  const [floorFilter, setFloorFilter] = useState('all');
+  const [statusFilter, setStatusFilter] = useState('all');
 
   const fetchRooms = async () => {
     try {
@@ -42,15 +51,37 @@ export default function AdminRoomsPage() {
       if (data.success) {
         setRooms(data.data);
       }
-    } catch (err) {
-      console.error('Error fetching rooms:', err);
+    } catch {
+      console.error('Error fetching rooms');
     } finally {
       setLoading(false);
     }
   };
 
+  const fetchTenants = async () => {
+    try {
+      const res = await fetch('/api/admin/tenants');
+      const data = await res.json();
+      if (data.success) {
+        setTenants(data.data);
+      }
+    } catch (err) {
+      console.error('Error fetching tenants:', err);
+    }
+  };
+
+  const filteredRooms = rooms.filter(room => {
+    const matchesSearch = room.room_number.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesFloor = floorFilter === 'all' || room.floor.toString() === floorFilter;
+    const matchesStatus = statusFilter === 'all' || room.status === statusFilter;
+    return matchesSearch && matchesFloor && matchesStatus;
+  });
+
+  const uniqueFloors = Array.from(new Set(rooms.map(room => room.floor.toString()))).sort((a, b) => parseInt(a) - parseInt(b));
+
   useEffect(() => {
     fetchRooms();
+    fetchTenants();
   }, []);
 
   const resetForm = () => {
@@ -60,6 +91,7 @@ export default function AdminRoomsPage() {
     setFloor('1');
     setStatus('ว่าง');
     setImageUrl('');
+    setTenantId('');
     setEditingId(null);
   };
 
@@ -75,6 +107,7 @@ export default function AdminRoomsPage() {
     setFloor(room.floor.toString());
     setStatus(room.status);
     setImageUrl(room.image_url || '');
+    setTenantId(room.tenant_id?.toString() || '');
     setEditingId(room.id);
     setIsModalOpen(true);
     setFeedback({ message: '', type: '' });
@@ -94,8 +127,34 @@ export default function AdminRoomsPage() {
       } else {
         alert(data.message || 'เกิดข้อผิดพลาดในการลบห้องพัก');
       }
-    } catch (err) {
+    } catch {
       alert('เกิดข้อผิดพลาดในการเชื่อมต่อเครือข่าย');
+    }
+  };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+      const data = await res.json();
+      if (data.success) {
+        setImageUrl(data.url);
+      } else {
+        alert(data.message || 'อัปโหลดล้มเหลว');
+      }
+    } catch {
+      alert('เกิดข้อผิดพลาดในการอัปโหลด');
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -109,7 +168,8 @@ export default function AdminRoomsPage() {
       price: parseFloat(price),
       floor: parseInt(floor),
       status,
-      image_url: imageUrl || null
+      image_url: imageUrl || null,
+      tenant_id: status === 'มีผู้เช่า' ? (tenantId ? parseInt(tenantId) : null) : null
     };
 
     try {
@@ -132,7 +192,7 @@ export default function AdminRoomsPage() {
       } else {
         setFeedback({ message: data.message || 'เกิดข้อผิดพลาดในการบันทึกข้อมูล', type: 'error' });
       }
-    } catch (err) {
+    } catch {
       setFeedback({ message: 'เกิดข้อผิดพลาดในการเชื่อมต่อเครือข่าย', type: 'error' });
     }
   };
@@ -158,38 +218,6 @@ export default function AdminRoomsPage() {
     if (type === 'Suite') return 'สวีท (Suite)';
     if (type === 'Economy') return 'ห้องประหยัด (Economy)';
     return type;
-  };
-
-  const filteredRooms = rooms.filter(room => {
-    const matchesSearch = room.room_number.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesStatus = filterStatus === 'all' || room.status === filterStatus;
-    return matchesSearch && matchesStatus;
-  });
-
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    setUploadingImage(true);
-    const formData = new FormData();
-    formData.append('file', file);
-
-    try {
-      const res = await fetch('/api/upload', {
-        method: 'POST',
-        body: formData,
-      });
-      const data = await res.json();
-      if (data.success) {
-        setImageUrl(data.url);
-      } else {
-        alert(data.message || 'เกิดข้อผิดพลาดในการอัปโหลดรูปภาพ');
-      }
-    } catch (err) {
-      alert('ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์อัปโหลดได้');
-    } finally {
-      setUploadingImage(false);
-    }
   };
 
   return (
@@ -222,6 +250,40 @@ export default function AdminRoomsPage() {
         <div className="flex-1 overflow-y-auto p-8 lg:p-10">
           <div className="max-w-6xl mx-auto">
             
+            {/* Search and Filters */}
+            <div className="flex flex-col md:flex-row gap-4 mb-8 bg-white p-5 rounded-3xl border border-border shadow-sm">
+              <div className="flex-1 relative">
+                <svg className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                <input 
+                  type="text" 
+                  placeholder="ค้นหาเลขห้อง..." 
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full pl-11 pr-5 py-3 rounded-2xl border border-border bg-background text-sm font-medium focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
+                />
+              </div>
+              <div className="flex gap-4">
+                <select 
+                  value={floorFilter}
+                  onChange={(e) => setFloorFilter(e.target.value)}
+                  className="rounded-2xl border border-border bg-background px-5 py-3 text-sm font-medium focus:border-primary outline-none min-w-[120px]"
+                >
+                  <option value="all">ทุกชั้น</option>
+                  {uniqueFloors.map(f => <option key={f} value={f}>ชั้น {f}</option>)}
+                </select>
+                <select 
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                  className="rounded-2xl border border-border bg-background px-5 py-3 text-sm font-medium focus:border-primary outline-none min-w-[140px]"
+                >
+                  <option value="all">ทุกสถานะ</option>
+                  <option value="ว่าง">ว่าง</option>
+                  <option value="มีผู้เช่า">มีผู้เช่า</option>
+                  <option value="ปิดปรับปรุง">ปิดปรับปรุง</option>
+                </select>
+              </div>
+            </div>
+            
             {/* Feedback Message */}
             {feedback.message && !isModalOpen && (
                <div className={`mb-6 p-4 rounded-2xl border flex items-center justify-between text-sm font-medium ${feedback.type === 'success' ? 'bg-green-50 text-green-800 border-green-200' : 'bg-rose-50 text-rose-800 border-rose-200'}`}>
@@ -237,47 +299,16 @@ export default function AdminRoomsPage() {
                   <svg className="animate-spin h-8 w-8 text-primary mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
                   กำลังโหลดข้อมูล...
                 </div>
-              ) : rooms.length === 0 ? (
+              ) : filteredRooms.length === 0 ? (
                 <div className="p-16 text-center">
-                  <span className="text-6xl mb-4 block">🏢</span>
-                  <h3 className="font-display text-xl font-semibold text-foreground mb-2">ไม่พบข้อมูลห้องพัก</h3>
-                  <p className="text-muted-foreground mb-6 max-w-md mx-auto">ยังไม่มีข้อมูลห้องพักในระบบ เริ่มเพิ่มห้องพักห้องแรกของคุณได้เลย</p>
-                  <button onClick={openAddModal} className="bg-primary/10 text-primary hover:bg-primary/20 px-6 py-2.5 rounded-full font-semibold transition-colors text-sm">เพิ่มห้องพักห้องแรก</button>
+                  <span className="text-6xl mb-4 block">🔍</span>
+                  <h3 className="font-display text-xl font-semibold text-foreground mb-2">ไม่พบห้องที่คุณต้องการ</h3>
+                  <p className="text-muted-foreground mb-6 max-w-md mx-auto">ลองเปลี่ยนคำค้นหาหรือตัวกรองใหม่อีกครั้ง</p>
+                  <button onClick={() => {setSearchTerm(''); setFloorFilter('all'); setStatusFilter('all');}} className="text-primary font-bold hover:underline">ล้างตัวกรองทั้งหมด</button>
                 </div>
               ) : (
-                <>
-                  <div className="flex flex-col sm:flex-row gap-4 mb-6">
-                    <div className="relative flex-1 max-w-sm">
-                      <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                      </svg>
-                      <input 
-                        type="text" 
-                        placeholder="ค้นหาเบอร์ห้อง..." 
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full pl-9 pr-4 py-2 bg-accent/20 border border-border rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all"
-                      />
-                    </div>
-                    <select 
-                      value={filterStatus}
-                      onChange={(e) => setFilterStatus(e.target.value)}
-                      className="px-4 py-2 bg-accent/20 border border-border rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all"
-                    >
-                      <option value="all">สถานะทั้งหมด</option>
-                      <option value="ว่าง">ว่าง</option>
-                      <option value="มีผู้เช่า">มีผู้เช่า</option>
-                      <option value="ปิดปรับปรุง">ปิดปรับปรุง</option>
-                    </select>
-                  </div>
-
-                  {filteredRooms.length === 0 ? (
-                    <div className="p-10 text-center border border-dashed border-border rounded-2xl">
-                      <p className="text-muted-foreground">ไม่พบห้องพักที่ตรงกับเงื่อนไขการค้นหา</p>
-                    </div>
-                  ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                      {filteredRooms.map((room) => (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                  {filteredRooms.map((room) => (
                     <div key={room.id} className="group border border-border rounded-2xl overflow-hidden hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 bg-white">
                       <div className="aspect-[4/3] bg-accent/20 relative overflow-hidden">
                         {room.image_url ? (
@@ -310,6 +341,13 @@ export default function AdminRoomsPage() {
                           {getDisplayRoomType(room.room_type)} · ชั้น {room.floor}
                         </div>
                         
+                        {room.status === 'มีผู้เช่า' && room.tenant_name && (
+                          <div className="flex items-center gap-2 mb-4 bg-primary/5 p-2 rounded-xl border border-primary/10">
+                            <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center text-[10px] text-primary">👤</div>
+                            <span className="text-[11px] font-bold text-primary truncate">ผู้เช่า: {room.tenant_name}</span>
+                          </div>
+                        )}
+                        
                         <div className="flex items-center gap-2 pt-4 border-t border-border">
                           <button 
                             onClick={() => openEditModal(room)}
@@ -327,10 +365,8 @@ export default function AdminRoomsPage() {
                       </div>
                     </div>
                   ))}
-                  </div>
-                )}
-              </>
-            )}
+                </div>
+              )}
             </div>
 
           </div>
@@ -422,46 +458,63 @@ export default function AdminRoomsPage() {
                 </div>
               </div>
 
+              {status === 'มีผู้เช่า' && (
+                <div className="animate-in fade-in slide-in-from-top-2 duration-300">
+                  <label className="block text-xs font-bold uppercase tracking-widest text-primary mb-2">ระบุผู้เช่า</label>
+                  <select 
+                    value={tenantId}
+                    onChange={(e) => setTenantId(e.target.value)}
+                    className="w-full rounded-2xl border border-border/40 bg-background px-5 py-3.5 text-sm font-medium focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
+                  >
+                    <option value="">-- เลือกผู้เช่า --</option>
+                    {tenants.map(t => (
+                      <option key={t.id} value={t.id}>{t.name}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
               <div>
                 <label className="block text-xs font-bold uppercase tracking-widest text-primary mb-2">รูปภาพห้องพัก</label>
-                {!imageUrl ? (
-                  <div className="relative border-2 border-dashed border-border rounded-2xl p-6 text-center hover:bg-accent/20 transition-colors">
+                <div className="flex flex-col gap-4">
+                  {imageUrl && (
+                    <div className="relative w-full aspect-video rounded-2xl overflow-hidden border border-border group">
+                      <img src={imageUrl} alt="Room preview" className="w-full h-full object-cover" />
+                      <button 
+                        type="button"
+                        onClick={() => setImageUrl('')}
+                        className="absolute top-2 right-2 p-1.5 bg-rose-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" /></svg>
+                      </button>
+                    </div>
+                  )}
+                  <div className="relative">
                     <input 
                       type="file" 
                       accept="image/*"
-                      onChange={handleImageUpload}
-                      disabled={uploadingImage}
-                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
+                      onChange={handleFileUpload}
+                      className="hidden"
+                      id="room-image-upload"
                     />
-                    <div className="text-muted-foreground">
-                      {uploadingImage ? (
-                        <span className="flex items-center justify-center gap-2">
-                          <svg className="animate-spin w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v0A8 8 0 014 12h4z"></path></svg>
-                          กำลังอัปโหลด...
-                        </span>
+                    <label 
+                      htmlFor="room-image-upload"
+                      className={`flex flex-col items-center justify-center p-8 rounded-2xl border-2 border-dashed transition-all cursor-pointer ${
+                        uploading ? 'border-primary bg-primary/5 opacity-50' : 'border-border hover:border-primary/50 hover:bg-primary/5'
+                      }`}
+                    >
+                      {uploading ? (
+                        <svg className="animate-spin h-6 w-6 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
                       ) : (
-                        <div className="flex flex-col items-center justify-center gap-2">
-                          <svg className="w-8 h-8 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-                          <span className="text-sm font-medium">คลิกหรือลากไฟล์ภาพมาที่นี่เพื่ออัปโหลด</span>
-                        </div>
+                        <>
+                          <svg className="w-8 h-8 text-muted-foreground mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                          <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">อัปโหลดรูปภาพ</span>
+                          <span className="text-[10px] text-muted-foreground/60 mt-1 uppercase tracking-tight">PNG, JPG, WEBP (สูงสุด 5MB)</span>
+                        </>
                       )}
-                    </div>
+                    </label>
                   </div>
-                ) : (
-                  <div className="relative w-full h-48 rounded-2xl overflow-hidden border border-border group">
-                    <img src={imageUrl} alt="Room" className="w-full h-full object-cover" />
-                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                      <button 
-                        type="button" 
-                        onClick={() => setImageUrl('')}
-                        className="bg-rose-500 text-white font-semibold text-sm px-4 py-2 rounded-full hover:bg-rose-600 transition-colors shadow-sm"
-                      >
-                        ลบรูปภาพ
-                      </button>
-                    </div>
-                  </div>
-                )}
-                <p className="text-[11px] text-muted-foreground mt-2 font-medium">ไฟล์ภาพจะถูกอัปโหลดขึ้นเซิร์ฟเวอร์ทันที</p>
+                </div>
               </div>
 
               <div className="flex gap-4 pt-2">

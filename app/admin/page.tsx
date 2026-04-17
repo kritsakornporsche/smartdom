@@ -7,31 +7,49 @@ import AdminSidebar from './components/AdminSidebar';
 export default function AdminDashboardPage() {
   const [dbStatus, setDbStatus] = useState<'checking' | 'connected' | 'error'>('checking');
   const [errorDetails, setErrorDetails] = useState<string>('');
+  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState({
+    totalRooms: 0,
+    totalTenants: 0,
+    monthlyIncome: 0
+  });
 
   useEffect(() => {
-    async function checkDb() {
+    async function fetchData() {
       try {
-        const res = await fetch('/api/db-test');
-        const data = await res.json();
-        if (data.success) {
+        const [dbRes, statsRes] = await Promise.all([
+          fetch('/api/db-test'),
+          fetch('/api/admin/stats')
+        ]);
+        
+        const dbData = await dbRes.json();
+        const statsData = await statsRes.json();
+        
+        if (dbData.success) {
           setDbStatus('connected');
         } else {
           setDbStatus('error');
-          setErrorDetails(data.error);
+          setErrorDetails(dbData.error);
+        }
+        
+        if (statsData.success) {
+          setData(statsData.data);
         }
       } catch (err: any) {
         setDbStatus('error');
         setErrorDetails(err.message);
+      } finally {
+        setLoading(false);
       }
     }
-    checkDb();
+    fetchData();
   }, []);
 
   const stats = [
     {
       label: 'ห้องพักทั้งหมด',
-      value: '120',
-      trend: '+2',
+      value: loading ? '...' : data.totalRooms.toString(),
+      trend: '+0',
       trendUp: true,
       icon: (
         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -40,9 +58,9 @@ export default function AdminDashboardPage() {
       ),
     },
     {
-      label: 'ผู้ใช้งานระบบ',
-      value: '84',
-      trend: '+5',
+      label: 'ผู้เช่าทั้งหมด',
+      value: loading ? '...' : data.totalTenants.toString(),
+      trend: '+0',
       trendUp: true,
       icon: (
         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -52,8 +70,8 @@ export default function AdminDashboardPage() {
     },
     {
       label: 'รายได้เดือนนี้',
-      value: '฿142,000',
-      trend: '+12%',
+      value: loading ? '...' : `฿${data.monthlyIncome.toLocaleString()}`,
+      trend: '0%',
       trendUp: true,
       icon: (
         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

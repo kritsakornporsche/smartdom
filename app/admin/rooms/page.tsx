@@ -22,6 +22,11 @@ export default function AdminRoomsPage() {
   const [feedback, setFeedback] = useState({ message: '', type: '' });
   const [editingId, setEditingId] = useState<number | null>(null);
 
+  // Filter & Search states
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filterStatus, setFilterStatus] = useState('all');
+  const [uploadingImage, setUploadingImage] = useState(false);
+
   // Form states
   const [roomNumber, setRoomNumber] = useState('');
   const [roomType, setRoomType] = useState('Standard');
@@ -155,6 +160,38 @@ export default function AdminRoomsPage() {
     return type;
   };
 
+  const filteredRooms = rooms.filter(room => {
+    const matchesSearch = room.room_number.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesStatus = filterStatus === 'all' || room.status === filterStatus;
+    return matchesSearch && matchesStatus;
+  });
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingImage(true);
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+      const data = await res.json();
+      if (data.success) {
+        setImageUrl(data.url);
+      } else {
+        alert(data.message || 'เกิดข้อผิดพลาดในการอัปโหลดรูปภาพ');
+      }
+    } catch (err) {
+      alert('ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์อัปโหลดได้');
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
   return (
     <div className="flex h-screen bg-background text-foreground">
       <AdminSidebar />
@@ -208,8 +245,39 @@ export default function AdminRoomsPage() {
                   <button onClick={openAddModal} className="bg-primary/10 text-primary hover:bg-primary/20 px-6 py-2.5 rounded-full font-semibold transition-colors text-sm">เพิ่มห้องพักห้องแรก</button>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                  {rooms.map((room) => (
+                <>
+                  <div className="flex flex-col sm:flex-row gap-4 mb-6">
+                    <div className="relative flex-1 max-w-sm">
+                      <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                      </svg>
+                      <input 
+                        type="text" 
+                        placeholder="ค้นหาเบอร์ห้อง..." 
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="w-full pl-9 pr-4 py-2 bg-accent/20 border border-border rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all"
+                      />
+                    </div>
+                    <select 
+                      value={filterStatus}
+                      onChange={(e) => setFilterStatus(e.target.value)}
+                      className="px-4 py-2 bg-accent/20 border border-border rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all"
+                    >
+                      <option value="all">สถานะทั้งหมด</option>
+                      <option value="ว่าง">ว่าง</option>
+                      <option value="มีผู้เช่า">มีผู้เช่า</option>
+                      <option value="ปิดปรับปรุง">ปิดปรับปรุง</option>
+                    </select>
+                  </div>
+
+                  {filteredRooms.length === 0 ? (
+                    <div className="p-10 text-center border border-dashed border-border rounded-2xl">
+                      <p className="text-muted-foreground">ไม่พบห้องพักที่ตรงกับเงื่อนไขการค้นหา</p>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                      {filteredRooms.map((room) => (
                     <div key={room.id} className="group border border-border rounded-2xl overflow-hidden hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 bg-white">
                       <div className="aspect-[4/3] bg-accent/20 relative overflow-hidden">
                         {room.image_url ? (
@@ -259,8 +327,10 @@ export default function AdminRoomsPage() {
                       </div>
                     </div>
                   ))}
-                </div>
-              )}
+                  </div>
+                )}
+              </>
+            )}
             </div>
 
           </div>
@@ -353,15 +423,45 @@ export default function AdminRoomsPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase tracking-widest text-primary mb-2">ลิงก์รูปภาพ</label>
-                <input 
-                  type="url" 
-                  value={imageUrl}
-                  onChange={(e) => setImageUrl(e.target.value)}
-                  className="w-full rounded-2xl border border-border/40 bg-background px-5 py-3.5 text-sm font-medium focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-muted-foreground/40"
-                  placeholder="https://example.com/image.jpg"
-                />
-                <p className="text-[11px] text-muted-foreground mt-2 font-medium">เว้นว่างได้หากไม่มีรูปภาพ</p>
+                <label className="block text-xs font-bold uppercase tracking-widest text-primary mb-2">รูปภาพห้องพัก</label>
+                {!imageUrl ? (
+                  <div className="relative border-2 border-dashed border-border rounded-2xl p-6 text-center hover:bg-accent/20 transition-colors">
+                    <input 
+                      type="file" 
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      disabled={uploadingImage}
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
+                    />
+                    <div className="text-muted-foreground">
+                      {uploadingImage ? (
+                        <span className="flex items-center justify-center gap-2">
+                          <svg className="animate-spin w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v0A8 8 0 014 12h4z"></path></svg>
+                          กำลังอัปโหลด...
+                        </span>
+                      ) : (
+                        <div className="flex flex-col items-center justify-center gap-2">
+                          <svg className="w-8 h-8 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                          <span className="text-sm font-medium">คลิกหรือลากไฟล์ภาพมาที่นี่เพื่ออัปโหลด</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="relative w-full h-48 rounded-2xl overflow-hidden border border-border group">
+                    <img src={imageUrl} alt="Room" className="w-full h-full object-cover" />
+                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                      <button 
+                        type="button" 
+                        onClick={() => setImageUrl('')}
+                        className="bg-rose-500 text-white font-semibold text-sm px-4 py-2 rounded-full hover:bg-rose-600 transition-colors shadow-sm"
+                      >
+                        ลบรูปภาพ
+                      </button>
+                    </div>
+                  </div>
+                )}
+                <p className="text-[11px] text-muted-foreground mt-2 font-medium">ไฟล์ภาพจะถูกอัปโหลดขึ้นเซิร์ฟเวอร์ทันที</p>
               </div>
 
               <div className="flex gap-4 pt-2">

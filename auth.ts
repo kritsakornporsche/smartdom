@@ -3,7 +3,10 @@ import Google from 'next-auth/providers/google';
 import Facebook from 'next-auth/providers/facebook';
 import GitHub from 'next-auth/providers/github';
 import Line from 'next-auth/providers/line';
+import Credentials from 'next-auth/providers/credentials';
 import { neon } from '@neondatabase/serverless';
+import bcrypt from 'bcryptjs';
+import { authConfig } from './auth.config';
 
 const sql = neon(process.env.DATABASE_URL || '');
 
@@ -29,6 +32,7 @@ async function upsertSocialUser({
 }
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
+  ...authConfig,
   secret: process.env.AUTH_SECRET,
 
   providers: [
@@ -47,6 +51,52 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     Line({
       clientId: process.env.LINE_CLIENT_ID!,
       clientSecret: process.env.LINE_CLIENT_SECRET!,
+    }),
+    Credentials({
+      name: 'Credentials',
+      credentials: {
+        email: { label: 'Email', type: 'email' },
+        password: { label: 'Password', type: 'password' },
+      },
+      async authorize(credentials) {
+        if (!credentials?.email || !credentials?.password) return null;
+        
+        try {
+          const users = await sql`
+            SELECT id, name, email, password, role, sub_role 
+            FROM users 
+            WHERE email = ${String(credentials.email).toLowerCase().trim()} 
+              AND is_active = TRUE
+          `;
+          
+          if (users.length === 0) return null;
+          const user = users[0];
+
+          // ── Verify BCrypt Password or Legacy SHA-256 ─────────────────────
+          let isValid = false;
+          if (user.password.startsWith('$2')) {
+            isValid = await bcrypt.compare(credentials.password as string, user.password);
+          } else if (user.password.length === 64) {
+            const crypto = require('crypto');
+            const sha256Hash = crypto.createHash('sha256').update(credentials.password as string).digest('hex');
+            isValid = (sha256Hash === user.password);
+          } else {
+            isValid = (credentials.password === user.password);
+          }
+
+          if (!isValid) return null;
+          return {
+            id: String(user.id),
+            name: user.name,
+            email: user.email,
+            role: user.role,
+            sub_role: user.sub_role,
+          };
+        } catch (e) {
+          console.error('[Authorize Error]', e);
+          return null;
+        }
+      }
     }),
   ],
 
@@ -68,17 +118,55 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return true;
     },
 
+    async jwt({ token, user, account }) {
+      if (user) {
+        token.role = (user as any).role || 'guest';
+        token.sub_role = (user as any).sub_role || null;
+        token.name = user.name;
+      } else {
+        // Dynamic Role Refresh: 
+        // Re-check DB for guest and tenant roles to ensure session matches DB state (e.g. after Move Out or Check In)
+        if (['guest', 'tenant'].includes(token.role as string) && token.email) {
+          try {
+            const users = await sql`SELECT role, sub_role FROM users WHERE email = ${token.email}`;
+            if (users.length > 0) {
+              token.role = users[0].role;
+              token.sub_role = users[0].sub_role;
+            }
+          } catch (e) {
+            console.error('[JWT Role Refresh Error]', e);
+          }
+        } else if (account?.type === 'oauth') {
+          // Re-check for social logins if role is somehow missing
+          const users = await sql`SELECT role, sub_role FROM users WHERE email = ${token.email}`;
+          if (users.length > 0) {
+            token.role = users[0].role;
+            token.sub_role = users[0].sub_role;
+          } else {
+            token.role = 'tenant';
+          }
+        }
+      }
+      return token;
+    },
+
     async session({ session, token }) {
-      if (session.user && token.sub) {
+      if (session.user) {
         (session.user as any).id = token.sub;
+        (session.user as any).role = token.role;
+        (session.user as any).sub_role = token.sub_role;
+        session.user.name = token.name;
       }
       return session;
     },
 
-    async redirect({ url, baseUrl }) {
-      // Redirect to /admin after social sign-in
+    async redirect({ url, baseUrl, token }) {
+      // By default redirect based on role isn't easy here without token in this scope, wait... JWT token is usually not available in redirect callback.
+      // But we can check url in next middleware or rely on the frontend redirect in signIn route.
+      // The signIn function in app/signin/page.tsx resolves after auth, and then NextAuth can redirect. 
+      // Actually we will handle role-based redirect in middleware or the frontend after login.
       if (url.startsWith(baseUrl)) return url;
-      return baseUrl + '/admin';
+      return baseUrl;
     },
   },
 });

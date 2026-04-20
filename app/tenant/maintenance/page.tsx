@@ -10,6 +10,7 @@ interface MaintenanceRequest {
   description: string;
   status: string;
   created_at: string;
+  image_url: string;
 }
 
 export default function TenantMaintenancePage() {
@@ -23,7 +24,24 @@ export default function TenantMaintenancePage() {
   const [issueType, setIssueType] = useState('ทั่วไป');
   const [description, setDescription] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [imageUrl, setImageUrl] = useState('');
+  const [uploadingImage, setUploadingImage] = useState(false);
 
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      alert('ไฟล์รูปภาพต้องมีขนาดไม่เกิน 5MB');
+      return;
+    }
+    setUploadingImage(true);
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      setImageUrl(event.target?.result as string);
+      setUploadingImage(false);
+    };
+    reader.readAsDataURL(file);
+  };
   useEffect(() => {
     if (status === 'unauthenticated') {
       router.push('/signin');
@@ -34,10 +52,7 @@ export default function TenantMaintenancePage() {
 
   const fetchRequests = async () => {
     try {
-      const res = await fetch('/api/tenant/maintenance/history'); // I'll create this helper next or use a better route
-      // Wait, I can just use a server component style if I want, but let's go with client for the interactive form
-      const res2 = await fetch('/api/keeper/technician/jobs'); // Actually, let's create a dedicated tenant one
-      const apiRes = await fetch('/api/tenant/maintenance/list'); // I'll create this
+      const apiRes = await fetch('/api/tenant/maintenance/list');
       const json = await apiRes.json();
       if (json.success) setRequests(json.data);
     } catch (err) {
@@ -54,13 +69,14 @@ export default function TenantMaintenancePage() {
       const res = await fetch('/api/tenant/maintenance', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ issue_type: issueType, description }),
+        body: JSON.stringify({ issue_type: issueType, description, image_url: imageUrl }),
       });
       const json = await res.json();
       if (json.success) {
         setShowForm(false);
         setDescription('');
         setIssueType('ทั่วไป');
+        setImageUrl('');
         fetchRequests();
       } else {
         alert(json.message);
@@ -121,6 +137,31 @@ export default function TenantMaintenancePage() {
                     required
                 />
               </div>
+              <div className="space-y-2">
+                <label className="text-[10px] font-black uppercase tracking-widest text-[#A08D74] px-1">แนบรูปภาพ (ถ้ามี)</label>
+                <div className={`mt-2 flex justify-center rounded-2xl border-2 border-dashed px-6 pt-5 pb-6 ${imageUrl ? 'border-[#8B7355] bg-[#FAF8F5]' : 'border-[#E5DFD3] hover:border-[#8B7355]'} transition-colors relative`}>
+                  <div className="space-y-1 text-center">
+                    {imageUrl ? (
+                      <div className="relative w-full h-48 mx-auto overflow-hidden rounded-xl">
+                        <img src={imageUrl} alt="Preview" className="object-cover w-full h-full" />
+                        <span className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 hover:opacity-100 transition-opacity text-white text-xs font-bold rounded-xl cursor-pointer pointer-events-none">คลิกเพื่อเปลี่ยนรูปภาพ</span>
+                      </div>
+                    ) : (
+                      <svg className={`mx-auto h-12 w-12 text-[#DCD3C6] ${uploadingImage ? 'animate-bounce' : ''}`} stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
+                        <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    )}
+                    <div className="flex text-sm text-[#8B7355] justify-center mt-2">
+                       <input id="file-upload" name="file-upload" type="file" className="sr-only" onChange={handleImageUpload} accept="image/*" disabled={uploadingImage} />
+                       <label htmlFor="file-upload" className="relative cursor-pointer rounded-md font-bold text-center w-full focus-within:outline-none focus-within:ring-2 focus-within:ring-[#8B7355] focus-within:ring-offset-2">
+                         <span>{uploadingImage ? 'กำลังอัปโหลด...' : imageUrl ? 'เปลี่ยนรูปภาพ' : 'คลิกเพื่ออัปโหลดไฟล์'}</span>
+                       </label>
+                    </div>
+                    {!imageUrl && <p className="text-xs text-[#A08D74] mt-1">PNG, JPG ขนาดไม่เกิน 5MB</p>}
+                  </div>
+                  <input type="file" accept="image/*" onChange={handleImageUpload} disabled={uploadingImage} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed" />
+                </div>
+              </div>
               <div className="flex gap-4 pt-4">
                 <button 
                   type="button" 
@@ -175,6 +216,12 @@ export default function TenantMaintenancePage() {
                        </div>
                      </div>
                      
+                     {req.image_url && (
+                        <div className="shrink-0 ml-0 md:ml-4 mb-4 md:mb-0 w-full md:w-32 h-32 rounded-2xl overflow-hidden border border-[#E5DFD3]">
+                           <img src={req.image_url} alt="Damage" className="w-full h-full object-cover" />
+                        </div>
+                     )}
+
                      <div className="shrink-0">
                         <span className={`inline-block px-6 py-2.5 text-[10px] font-black uppercase tracking-[0.15em] rounded-full border-2 ${
                           req.status === 'Pending' ? 'bg-[#FAF3E8] text-[#D4A373] border-[#E9C46A]' :

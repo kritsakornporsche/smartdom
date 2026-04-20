@@ -171,32 +171,56 @@ export default async function TenantDashboard() {
               <div className="flex items-center justify-between mb-8">
                 <h2 className="text-2xl font-black text-[#3E342B] flex items-center gap-4">
                   <div className="w-3 h-8 bg-primary rounded-full"></div>
-                  เครื่องมือและทางลัด
+                  บริการและทางลัด
                 </h2>
               </div>
               
               <div className="grid gap-6 md:grid-cols-2">
-                <Link href="/tenant/contract/simulate" className="group bg-white rounded-[2.5rem] border border-[#E5DFD3] p-10 shadow-sm hover:border-primary/30 hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 overflow-hidden relative">
+                <Link href="/tenant/parcels" className="group bg-white rounded-[2.5rem] border border-[#E5DFD3] p-8 shadow-sm hover:border-primary/30 hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 overflow-hidden relative">
                   <div className="absolute -right-8 -bottom-8 w-32 h-32 bg-primary/5 rounded-full blur-2xl group-hover:bg-primary/10 transition-colors"></div>
-                  <div className="flex items-start gap-6 relative z-10">
-                    <div className="w-16 h-16 bg-primary/10 rounded-[1.25rem] flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all duration-700 shadow-inner">
-                      <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M11 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>
+                  <div className="flex items-start gap-5 relative z-10">
+                    <div className="min-w-[64px] h-16 bg-[#FFF4E5] rounded-[1.25rem] flex items-center justify-center text-[#FF9800] group-hover:bg-[#FF9800] group-hover:text-white transition-all duration-700 shadow-inner text-3xl">
+                      📦
                     </div>
                     <div>
-                      <h3 className="text-xl font-black text-[#3E342B] mb-2">จำลองสัญญาเช่า</h3>
-                      <p className="text-sm text-[#8B7355] leading-relaxed font-medium">คำนวณเงินประกันและค่างวดล่วงหน้า เพื่อวางแผนการย้ายเข้าหรืออาศัยอยู่ต่ออย่างมั่นใจ</p>
+                      <h3 className="text-xl font-black text-[#3E342B] mb-1.5 line-clamp-1">จัดการพัสดุ <span className="inline-block ml-2 w-2 h-2 bg-[#FF9800] rounded-full animate-pulse"></span></h3>
+                      <p className="text-xs text-[#8B7355] leading-relaxed font-medium line-clamp-2">ติดตามสถานะพัสดุและจดหมายที่จัดส่งถึงคุณแบบเรียลไทม์</p>
                     </div>
                   </div>
                 </Link>
-                
-                <Link href="/tenant/maintenance" className="group bg-[#FAF8F5] rounded-[2.5rem] border border-[#E5DFD3] p-10 shadow-sm hover:border-accent/30 hover:shadow-2xl hover:-translate-y-2 transition-all duration-500">
-                  <div className="flex items-start gap-6 relative z-10">
-                    <div className="w-16 h-16 bg-accent/10 rounded-[1.25rem] flex items-center justify-center text-accent group-hover:bg-accent group-hover:text-white transition-all duration-700">
+
+                <Link href="/tenant/vehicles" className="group bg-[#FAF8F5] rounded-[2.5rem] border border-[#E5DFD3] p-8 shadow-sm hover:border-primary/30 hover:shadow-2xl hover:-translate-y-2 transition-all duration-500">
+                  <div className="flex items-start gap-5 relative z-10">
+                    <div className="min-w-[64px] h-16 bg-[#E3F2FD] rounded-[1.25rem] flex items-center justify-center text-[#2196F3] group-hover:bg-[#2196F3] group-hover:text-white transition-all duration-700 text-3xl">
+                      🚗
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-black text-[#3E342B] mb-1.5 line-clamp-1">ยานพาหนะและการจอด</h3>
+                      <p className="text-xs text-[#8B7355] leading-relaxed font-medium line-clamp-2">ลงทะเบียนป้ายทะเบียนรถ และตรวจสอบสิทธิ์การจอด</p>
+                    </div>
+                  </div>
+                </Link>
+
+                <Link href="/tenant/maintenance" className="group bg-white rounded-[2.5rem] border border-[#E5DFD3] p-8 shadow-sm hover:border-accent/30 hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 overflow-hidden relative">
+                  <div className="flex items-start gap-5 relative z-10">
+                    <div className="min-w-[64px] h-16 bg-accent/10 rounded-[1.25rem] flex items-center justify-center text-accent group-hover:bg-accent group-hover:text-white transition-all duration-700 shadow-inner">
                       <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" /></svg>
                     </div>
                     <div>
-                      <h3 className="text-xl font-black text-[#3E342B] mb-2">แจ้งปัญหาการใช้งาน</h3>
-                      <p className="text-sm text-[#8B7355] leading-relaxed font-medium">พบกระเบื้องแตก น้ำรั่ว หรือไฟดับ? แจ้งเราได้ทันทีผ่านระบบออนไลน์ 24 ชม.</p>
+                      <h3 className="text-xl font-black text-[#3E342B] mb-1.5 line-clamp-1">แจ้งซ่อม</h3>
+                      <p className="text-xs text-[#8B7355] leading-relaxed font-medium line-clamp-2">พบกระเบื้องแตก น้ำรั่ว ไฟดับ แจ้งเราได้ตลอดเวลา</p>
+                    </div>
+                  </div>
+                </Link>
+
+                <Link href="/tenant/rules" className="group bg-[#FAF8F5] rounded-[2.5rem] border border-[#E5DFD3] p-8 shadow-sm hover:border-primary/30 hover:shadow-2xl hover:-translate-y-2 transition-all duration-500">
+                  <div className="flex items-start gap-5 relative z-10">
+                    <div className="min-w-[64px] h-16 bg-[#FCE4EC] rounded-[1.25rem] flex items-center justify-center text-[#E91E63] group-hover:bg-[#E91E63] group-hover:text-white transition-all duration-700">
+                       <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-black text-[#3E342B] mb-1.5 line-clamp-1">คู่มือและเบอร์ฉุกเฉิน</h3>
+                      <p className="text-xs text-[#8B7355] leading-relaxed font-medium line-clamp-2">คู่มือการอยู่อาศัยและการติดต่อขอความช่วยเหลือด่วน</p>
                     </div>
                   </div>
                 </Link>

@@ -9,7 +9,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    const { issue_type, description, photo_url } = await request.json();
+    const { issue_type, description, image_url } = await request.json();
     if (!description) {
       return NextResponse.json({ success: false, message: 'Description is required' }, { status: 400 });
     }
@@ -34,8 +34,8 @@ export async function POST(request: Request) {
     const roomNumber = tenantRes[0].room_number;
 
     const result = await sql`
-      INSERT INTO maintenance_requests (tenant_id, room_number, issue_type, description, status)
-      VALUES (${tenantId}, ${roomNumber}, ${issue_type}, ${description}, 'Pending')
+      INSERT INTO maintenance_requests (tenant_id, room_number, issue_type, description, image_url, status)
+      VALUES (${tenantId}, ${roomNumber}, ${issue_type}, ${description}, ${image_url || null}, 'Pending')
       RETURNING *
     `;
 

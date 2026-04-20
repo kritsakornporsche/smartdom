@@ -9,14 +9,16 @@ export async function GET(req: NextRequest) {
   const dormId = searchParams.get('dormId');
 
   try {
-    // Quick migration to ensure tenant_id exists
+    // Migration logic to ensure all columns exist
     await sql`ALTER TABLE rooms ADD COLUMN IF NOT EXISTS tenant_id INTEGER REFERENCES users(id)`;
     await sql`ALTER TABLE rooms ADD COLUMN IF NOT EXISTS dorm_id INTEGER REFERENCES dormitories(id)`;
+    await sql`ALTER TABLE rooms ADD COLUMN IF NOT EXISTS images TEXT[] DEFAULT '{}'`;
+    await sql`ALTER TABLE rooms ADD COLUMN IF NOT EXISTS amenities TEXT[] DEFAULT '{}'`;
 
     let rooms;
     if (dormId) {
       rooms = await sql`
-        SELECT r.id, r.room_number, r.room_type, r.price, r.status, r.floor, r.image_url, r.created_at, r.tenant_id, u.full_name as tenant_name
+        SELECT r.id, r.room_number, r.room_type, r.price, r.status, r.floor, r.image_url, r.images, r.amenities, r.created_at, r.tenant_id, u.full_name as tenant_name
         FROM rooms r
         LEFT JOIN users u ON r.tenant_id = u.id
         WHERE r.dorm_id = ${parseInt(dormId)}
@@ -24,7 +26,7 @@ export async function GET(req: NextRequest) {
       `;
     } else {
       rooms = await sql`
-        SELECT r.id, r.room_number, r.room_type, r.price, r.status, r.floor, r.image_url, r.created_at, r.tenant_id, u.full_name as tenant_name
+        SELECT r.id, r.room_number, r.room_type, r.price, r.status, r.floor, r.image_url, r.images, r.amenities, r.created_at, r.tenant_id, u.full_name as tenant_name
         FROM rooms r
         LEFT JOIN users u ON r.tenant_id = u.id
         ORDER BY r.room_number ASC
@@ -47,7 +49,7 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { room_number, room_type, price, status, floor, image_url, dorm_id, tenant_id } = body;
+    const { room_number, room_type, price, status, floor, image_url, images, amenities, dorm_id, tenant_id } = body;
 
     if (!room_number || !room_type || price === undefined) {
       return NextResponse.json({ success: false, message: 'Missing required fields' }, { status: 400 });
@@ -62,8 +64,8 @@ export async function POST(req: NextRequest) {
     }
 
     const result = await sql`
-      INSERT INTO rooms (room_number, room_type, price, status, floor, image_url, dorm_id, tenant_id)
-      VALUES (${room_number}, ${room_type}, ${price}, ${status || 'Available'}, ${floor || 1}, ${image_url || null}, ${dorm_id || null}, ${tenant_id || null})
+      INSERT INTO rooms (room_number, room_type, price, status, floor, image_url, images, amenities, dorm_id, tenant_id)
+      VALUES (${room_number}, ${room_type}, ${price}, ${status || 'Available'}, ${floor || 1}, ${image_url || null}, ${images || '{}'}, ${amenities || '{}'}, ${dorm_id || null}, ${tenant_id || null})
       RETURNING *
     `;
 

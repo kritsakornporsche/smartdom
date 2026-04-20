@@ -4,6 +4,7 @@ import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState, useMemo } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import KeeperSidebar from '../components/KeeperSidebar';
 
 interface MaidJob {
@@ -54,6 +55,7 @@ export default function MaidDashboardPage() {
   const [isFinishing, setIsFinishing] = useState(false);
   const [finishNotes, setFinishNotes] = useState('');
   const [finishPhoto, setFinishPhoto] = useState('');
+  const [isUploading, setIsUploading] = useState(false);
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -83,6 +85,33 @@ export default function MaidDashboardPage() {
     }, 1000);
     return () => clearInterval(timer);
   }, []);
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || e.target.files.length === 0) return;
+    const file = e.target.files[0];
+    
+    setIsUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+      const data = await res.json();
+      if (data.success) {
+        setFinishPhoto(data.url);
+      } else {
+        alert('Upload failed: ' + data.message);
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Error uploading file');
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
   const fetchData = async (showLoading = true) => {
     if (showLoading) setLoadingData(true);
@@ -350,14 +379,28 @@ export default function MaidDashboardPage() {
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-bold uppercase tracking-wider text-[#A08D74] mb-2">ลิ้งก์รูปภาพหลักฐาน (หรือระบุข้อความ)</label>
-                      <input 
-                        type="text" 
-                        value={finishPhoto}
-                        onChange={(e) => setFinishPhoto(e.target.value)}
-                        placeholder="https://images.com/done.jpg"
-                        className="w-full bg-[#FAF8F5] border border-[#E5DFD3] rounded-2xl px-4 py-3 text-sm focus:outline-none"
-                      />
+                      <label className="block text-xs font-bold uppercase tracking-wider text-[#A08D74] mb-2">อัปโหลดรูปภาพหลักฐานทำงานเสร็จ (Proof of Work)</label>
+                      <label className="w-full border-2 border-dashed border-[#E5DFD3] rounded-2xl p-6 flex flex-col items-center justify-center bg-[#FAF8F5] hover:bg-[#F3EFE9] transition-colors cursor-pointer group relative overflow-hidden h-40">
+                          {finishPhoto ? (
+                              <div className="relative w-full h-full">
+                                  <Image src={finishPhoto} alt="Proof" fill className="object-contain" />
+                                  <div className="absolute top-0 right-0 bg-rose-500 text-white rounded-full w-6 h-6 flex items-center justify-center cursor-pointer z-10" onClick={(e) => { e.preventDefault(); setFinishPhoto(''); }}>✕</div>
+                              </div>
+                          ) : isUploading ? (
+                              <div className="text-[#A08D74] font-bold text-sm animate-pulse">กำลังอัปโหลดรูปภาพ...</div>
+                          ) : (
+                              <>
+                                  <span className="text-3xl mb-2 opacity-50 group-hover:scale-110 transition-transform">📸</span>
+                                  <span className="text-xs font-bold text-[#A08D74] text-center mb-3">คลิกเพื่ออัปโหลด รูปภาพหลังทำความสะอาด</span>
+                                  <input 
+                                      type="file" 
+                                      accept="image/*"
+                                      onChange={handleFileUpload}
+                                      className="hidden"
+                                  />
+                              </>
+                          )}
+                      </label>
                     </div>
                     <div className="flex gap-3 pt-4">
                        <button 
@@ -411,23 +454,33 @@ export default function MaidDashboardPage() {
                             {selectedJob.photo_url && (
                                 <div>
                                     <h4 className="text-xs font-bold uppercase tracking-wider text-[#A08D74] mb-2">หลักฐานงาน:</h4>
-                                    {selectedJob.photo_url.startsWith('http') ? (
-                                        <div className="rounded-2xl overflow-hidden border border-[#E5DFD3] relative h-40 w-full">
+                                    {selectedJob.photo_url.startsWith('http') || selectedJob.photo_url.startsWith('/') ? (
+                                        <div className="rounded-2xl overflow-hidden border border-[#E5DFD3] relative h-40 w-full mb-2">
                                             <Image src={selectedJob.photo_url} alt="Evidence" fill className="object-cover" />
                                         </div>
                                     ) : (
-                                        <p className="text-sm text-[#3E342B] italic">{selectedJob.photo_url}</p>
+                                        <p className="text-sm text-blue-600 underline font-medium">{selectedJob.photo_url}</p>
                                     )}
                                 </div>
                             )}
                          </div>
                     )}
 
-                    <div className="pt-4">
+                    <div className="pt-4 space-y-3">
+                        <Link 
+                            href={`/keeper/chat?room=${selectedJob.room_number}`}
+                            className="flex items-center justify-center gap-2 w-full px-4 py-3 rounded-2xl border-2 border-[#8B7355] text-[#8B7355] text-sm font-bold shadow-sm hover:bg-[#8B7355] hover:text-white transition-all group"
+                        >
+                            <svg className="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                            </svg>
+                            ส่งข้อความถึงผู้เช่า
+                        </Link>
+
                         {selectedJob.status === 'pending' && (
                             <button 
                                 onClick={() => updateStatus(selectedJob.id, 'in_progress')}
-                                className="w-full px-4 py-4 rounded-2xl bg-[#8B7355] text-white text-sm font-bold shadow-lg shadow-[#8B7355]/20"
+                                className="w-full px-4 py-4 rounded-2xl bg-[#8B7355] text-white text-sm font-bold shadow-lg shadow-[#8B7355]/20 hover:bg-[#5A4D41] transition-all"
                             >
                                 เริ่มดำเนินการทันที
                             </button>
@@ -435,15 +488,15 @@ export default function MaidDashboardPage() {
                         {selectedJob.status === 'in_progress' && (
                             <button 
                                 onClick={() => setIsFinishing(true)}
-                                className="w-full px-4 py-4 rounded-2xl bg-emerald-600 text-white text-sm font-bold shadow-lg shadow-emerald-600/20"
+                                className="w-full px-4 py-4 rounded-2xl bg-emerald-600 text-white text-sm font-bold shadow-lg shadow-emerald-600/20 hover:bg-emerald-700 transition-all"
                             >
-                                ดำเนินการเสร็จสิ้น
+                                ดำเนินการเสร็จสิ้น (แนบหลักฐาน)
                             </button>
                         )}
                         {selectedJob.status === 'completed' && (
                             <button 
                                 onClick={() => setSelectedJob(null)}
-                                className="w-full px-4 py-4 rounded-2xl border border-[#E5DFD3] text-[#A08D74] text-sm font-bold hover:bg-[#FAF8F5]"
+                                className="w-full px-4 py-4 rounded-2xl border border-[#E5DFD3] text-[#A08D74] text-sm font-bold hover:bg-[#FAF8F5] transition-all"
                             >
                                 ปิดหน้าต่าง
                             </button>

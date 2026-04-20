@@ -34,8 +34,28 @@ export default function KeeperSidebar() {
     }
   }, [subRole]);
 
-  // Define nav items based on subRole
-  let navItems: { href: string; label: string; icon: JSX.Element; badge?: number }[] = [];
+  const commonNavItems = [
+    {
+      href: '/keeper/schedule',
+      label: 'ตารางงาน (Schedule)',
+      icon: (
+        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+        </svg>
+      )
+    },
+    {
+      href: '/keeper/supplies',
+      label: 'เบิกวัสดุ/อุปกรณ์',
+      icon: (
+        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+        </svg>
+      )
+    }
+  ];
+
+  let navItems: any[] = [];
 
   if (subRole === 'maid') {
     navItems = [
@@ -58,6 +78,7 @@ export default function KeeperSidebar() {
           </svg>
         ),
       },
+      ...commonNavItems
     ];
   } else if (subRole === 'technician') {
     navItems = [
@@ -81,6 +102,7 @@ export default function KeeperSidebar() {
           </svg>
         ),
       },
+      ...commonNavItems
     ];
   }
 

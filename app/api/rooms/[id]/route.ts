@@ -37,7 +37,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
     const resolvedParams = await params;
     const id = resolvedParams.id;
     const body = await request.json();
-    const { room_number, room_type, price, status, floor, image_url } = body;
+    const { room_number, room_type, price, status, floor, image_url, tenant_id } = body;
 
     if (!id || !room_number || !room_type || price === undefined) {
       return NextResponse.json({ success: false, message: 'Missing required fields' }, { status: 400 });
@@ -65,7 +65,8 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
           price = ${price}, 
           status = ${status}, 
           floor = ${floor}, 
-          image_url = ${image_url || null}
+          image_url = ${image_url || null},
+          tenant_id = ${tenant_id || null}
       WHERE id = ${id}
       RETURNING *
     `;
@@ -75,9 +76,9 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
     }
 
     return NextResponse.json({ success: true, message: 'Room updated successfully', data: result[0] }, { status: 200 });
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error updating room:', error);
-    return NextResponse.json({ success: false, message: 'Failed to update room', error: error.message }, { status: 500 });
+    return NextResponse.json({ success: false, message: 'Failed to update room', error: error instanceof Error ? error.message : 'Unknown error' }, { status: 500 });
   }
 }
 
@@ -103,8 +104,8 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
     }
 
     return NextResponse.json({ success: true, message: 'Room deleted successfully' }, { status: 200 });
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error deleting room:', error);
-    return NextResponse.json({ success: false, message: 'Failed to delete room', error: error.message }, { status: 500 });
+    return NextResponse.json({ success: false, message: 'Failed to delete room', error: error instanceof Error ? error.message : 'Unknown error' }, { status: 500 });
   }
 }

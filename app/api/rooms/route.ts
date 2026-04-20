@@ -9,19 +9,25 @@ export async function GET(req: NextRequest) {
   const dormId = searchParams.get('dormId');
 
   try {
+    // Quick migration to ensure tenant_id exists
+    await sql`ALTER TABLE rooms ADD COLUMN IF NOT EXISTS tenant_id INTEGER REFERENCES users(id)`;
+    await sql`ALTER TABLE rooms ADD COLUMN IF NOT EXISTS dorm_id INTEGER REFERENCES dormitories(id)`;
+
     let rooms;
     if (dormId) {
       rooms = await sql`
-        SELECT id, room_number, room_type, price, status, floor, image_url, created_at 
-        FROM rooms 
-        WHERE dorm_id = ${parseInt(dormId)}
-        ORDER BY room_number ASC
+        SELECT r.id, r.room_number, r.room_type, r.price, r.status, r.floor, r.image_url, r.created_at, r.tenant_id, u.full_name as tenant_name
+        FROM rooms r
+        LEFT JOIN users u ON r.tenant_id = u.id
+        WHERE r.dorm_id = ${parseInt(dormId)}
+        ORDER BY r.room_number ASC
       `;
     } else {
       rooms = await sql`
-        SELECT id, room_number, room_type, price, status, floor, image_url, created_at 
-        FROM rooms 
-        ORDER BY room_number ASC
+        SELECT r.id, r.room_number, r.room_type, r.price, r.status, r.floor, r.image_url, r.created_at, r.tenant_id, u.full_name as tenant_name
+        FROM rooms r
+        LEFT JOIN users u ON r.tenant_id = u.id
+        ORDER BY r.room_number ASC
       `;
     }
     
@@ -29,7 +35,7 @@ export async function GET(req: NextRequest) {
 
   } catch (error: any) {
     console.error('[API Rooms GET Error]', error);
-    return NextResponse.json({ success: false, message: 'Failed to fetch rooms' }, { status: 500 });
+    return NextResponse.json({ success: false, message: 'Failed to fetch rooms', error: error.message }, { status: 500 });
   }
 }
 
@@ -41,21 +47,23 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { room_number, room_type, price, status, floor, image_url, dorm_id } = body;
+    const { room_number, room_type, price, status, floor, image_url, dorm_id, tenant_id } = body;
 
     if (!room_number || !room_type || price === undefined) {
       return NextResponse.json({ success: false, message: 'Missing required fields' }, { status: 400 });
     }
     
     // Check if room number already exists IN THE SAME DORMITORY
-    const existing = await sql`SELECT id FROM rooms WHERE room_number = ${room_number} AND dorm_id = ${dorm_id}`;
-    if (existing.length > 0) {
-      return NextResponse.json({ success: false, message: 'Room number already exists in this dormitory' }, { status: 409 });
+    if (dorm_id) {
+        const existing = await sql`SELECT id FROM rooms WHERE room_number = ${room_number} AND dorm_id = ${dorm_id}`;
+        if (existing.length > 0) {
+            return NextResponse.json({ success: false, message: 'Room number already exists in this dormitory' }, { status: 409 });
+        }
     }
 
     const result = await sql`
-      INSERT INTO rooms (room_number, room_type, price, status, floor, image_url, dorm_id)
-      VALUES (${room_number}, ${room_type}, ${price}, ${status || 'Available'}, ${floor || 1}, ${image_url || null}, ${dorm_id || null})
+      INSERT INTO rooms (room_number, room_type, price, status, floor, image_url, dorm_id, tenant_id)
+      VALUES (${room_number}, ${room_type}, ${price}, ${status || 'Available'}, ${floor || 1}, ${image_url || null}, ${dorm_id || null}, ${tenant_id || null})
       RETURNING *
     `;
 

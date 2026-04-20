@@ -112,6 +112,79 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Features Showcase */}
+      <section id="features" className="py-32 lg:py-48 relative overflow-hidden">
+        <div className="mx-auto max-w-7xl px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-24 items-center">
+            <div className="order-2 lg:order-1 relative group">
+              <div className="absolute inset-0 bg-primary/10 rounded-[3rem] -rotate-3 scale-105 blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+              <div className="relative aspect-[4/5] rounded-[3rem] overflow-hidden border border-border/40 shadow-2xl">
+                <Image
+                  src="/mockup.png"
+                  alt="SmartDom Mobile App Mockup"
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                  className="object-cover transition-transform duration-1000 group-hover:scale-110"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-background/20 to-transparent" />
+              </div>
+            </div>
+            
+            <div className="order-1 lg:order-2 space-y-12">
+              <h2 className="text-4xl lg:text-5xl font-display leading-tight">รายละเอียดที่สร้าง <br/> ความแตกต่างอย่างลึกซึ้ง</h2>
+              
+              <div className="space-y-10">
+                {[
+                  { title: "Smart Contracts", detail: "กระบวนการทางเอกสารที่โปร่งใสและตรวจสอบได้ทุกเมื่อผ่านระบบดิจิทัล" },
+                  { title: "Effortless Billing", detail: "ความเรียบง่ายที่มาพร้อมความแม่นยำ จัดการบิลและรายรับ-รายจ่ายได้อัตโนมัติ" },
+                  { title: "Active Maintenance", detail: "ใส่ใจในคุณภาพชีวิตด้วยระบบแจ้งซ่อมที่รวดเร็วและเป็นขั้นเป็นตอน" }
+                ].map((f, i) => (
+                  <div key={i} className="group relative pl-8 border-l border-border/40 hover:border-primary transition-colors">
+                    <div className="absolute top-0 left-[-2px] h-0 group-hover:h-full w-1 bg-primary transition-all duration-500" />
+                    <h4 className="text-xl font-display mb-2">{f.title}</h4>
+                    <p className="text-muted-foreground font-medium leading-relaxed">{f.detail}</p>
+                  </div>
+                ))}
+              </div>
+              
+              <div className="pt-8">
+                <Link href="#" className="inline-flex items-center gap-4 group">
+                   <span className="h-px w-12 bg-border group-hover:w-20 group-hover:bg-primary transition-all duration-500 text-foreground" />
+                   <span className="text-xs font-bold uppercase tracking-widest">เรียนรู้เพิ่มเติมเกี่ยวกับเรา</span>
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Inspiration Section */}
+      <section className="py-32 lg:py-48 bg-background relative overflow-hidden">
+        <div className="mx-auto max-w-7xl px-8">
+          <div className="relative rounded-[4rem] overflow-hidden aspect-[21/9] group shadow-2xl">
+            <Image
+              src="/room.png"
+              alt="Premium Living Space Managed by SmartDom"
+              fill
+              className="object-cover transition-transform duration-[2000ms] group-hover:scale-105"
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-background/80 via-background/20 to-transparent" />
+            <div className="absolute inset-y-0 left-0 flex flex-col justify-center px-12 lg:px-24 max-w-2xl">
+              <h2 className="text-xs font-bold tracking-[0.3em] uppercase text-primary mb-6">Atmosphere</h2>
+              <p className="text-4xl lg:text-6xl font-display leading-[0.9] mb-8">บรรยากาศที่ <br/> ออกแบบมาเพื่อคุณ</p>
+              <p className="text-muted-foreground text-lg font-medium mb-12 hidden md:block">
+                เราไม่ได้แค่จัดการห้องพัก แต่เราดูแลทุกองค์ประกอบที่ทำให้คำว่า &apos;บ้าน&apos; สมบูรณ์แบบที่สุด
+              </p>
+              <div>
+                 <Link href="/signup" className="inline-flex items-center gap-4 px-8 py-4 rounded-full bg-primary text-primary-foreground text-xs font-bold uppercase tracking-widest hover:-translate-y-1 transition-all">
+                    จองห้องพักในฝัน
+                 </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Pricing Section */}
       <section id="pricing" className="py-32 lg:py-56 bg-background border-y border-border">
         <div className="mx-auto max-w-7xl px-8">

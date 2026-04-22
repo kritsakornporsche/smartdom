@@ -66,7 +66,7 @@ export default function PremiumDatePicker({ date, onChange, label }: PremiumDate
 
   return (
     <div className="relative w-full" ref={containerRef}>
-      {label && <label className="block text-[10px] font-black text-[#A08D74] uppercase tracking-widest mb-3 ml-1">{label}</label>}
+      {label && <label className="block text-sm font-black text-[#A08D74] uppercase tracking-wider mb-3 ml-1">{label}</label>}
       
       {/* Input Trigger */}
       <div 
@@ -91,7 +91,7 @@ export default function PremiumDatePicker({ date, onChange, label }: PremiumDate
             </button>
             <div className="text-center">
               <p className="text-sm font-black text-[#3E342B]">{months[currentView.getMonth()]}</p>
-              <p className="text-[10px] font-black text-[#A08D74]">{currentView.getFullYear() + 543}</p>
+              <p className="text-sm font-black text-[#A08D74]">{currentView.getFullYear() + 543}</p>
             </div>
             <button type="button" onClick={() => changeMonth(1)} className="p-2 hover:bg-[#FAF8F5] rounded-xl text-[#8B7355] transition-all active:scale-90">
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
@@ -101,7 +101,7 @@ export default function PremiumDatePicker({ date, onChange, label }: PremiumDate
           {/* Grid Header */}
           <div className="grid grid-cols-7 gap-1 mb-2">
             {['อา', 'จ', 'อ', 'พ', 'พฤ', 'ศ', 'ส'].map((day) => (
-              <div key={day} className="text-[10px] font-black text-[#DCD3C6] text-center uppercase py-2">{day}</div>
+              <div key={day} className="text-sm font-black text-[#DCD3C6] text-center uppercase py-2">{day}</div>
             ))}
           </div>
 
@@ -136,7 +136,7 @@ export default function PremiumDatePicker({ date, onChange, label }: PremiumDate
               <button 
                 type="button" 
                 onClick={() => { onChange(''); setIsOpen(false); }}
-                className="text-[10px] font-black text-[#A08D74] hover:text-[#5A4D41] uppercase tracking-widest"
+                className="text-sm font-black text-[#A08D74] hover:text-[#5A4D41] uppercase tracking-wider"
               >
                 ล้างวัน
               </button>
@@ -149,7 +149,7 @@ export default function PremiumDatePicker({ date, onChange, label }: PremiumDate
                    onChange(local.toISOString().split('T')[0]);
                    setIsOpen(false);
                 }}
-                className="text-[10px] font-black text-[#8B6A2B] hover:text-[#725724] uppercase tracking-widest"
+                className="text-sm font-black text-[#8B6A2B] hover:text-[#725724] uppercase tracking-wider"
               >
                 วันนี้
               </button>

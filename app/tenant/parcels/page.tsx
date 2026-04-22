@@ -16,10 +16,10 @@ export default function ParcelsPage() {
         {/* Header Section */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
           <div>
-            <Link href="/tenant" className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-[#A08D74] hover:text-[#3E342B] transition-colors mb-4">
+            <Link href="/tenant" className="inline-flex items-center gap-2 text-sm font-black uppercase tracking-wider text-[#A08D74] hover:text-[#3E342B] transition-colors mb-4">
               <span className="w-6 h-px bg-[#A08D74]"></span> กลับหน้าหลัก
             </Link>
-            <h1 className="text-4xl md:text-5xl font-black text-[#3E342B] tracking-tight">
+            <h1 className="text-2xl md:text-3xl font-black text-[#3E342B] tracking-tight">
               จัดการพัสดุ
             </h1>
             <p className="text-[#8B7355] font-medium mt-3">
@@ -59,7 +59,7 @@ export default function ParcelsPage() {
                       </div>
                     </div>
                     <div className="text-left md:text-right">
-                      <p className="text-[10px] font-black uppercase tracking-widest text-[#A08D74] mb-1">วันที่มาถึง</p>
+                      <p className="text-sm font-black uppercase tracking-wider text-[#A08D74] mb-1">วันที่มาถึง</p>
                       <p className="text-[#3E342B] font-bold">{new Date(parcel.arrival_date).toLocaleString('th-TH')}</p>
                       <button className="mt-3 px-6 py-2 bg-[#3E342B] text-white rounded-xl text-sm font-bold shadow-lg shadow-[#3E342B]/20 hover:bg-[#2A231D] transition-colors">
                         รับพัสดุแล้ว
@@ -85,7 +85,7 @@ export default function ParcelsPage() {
                     </div>
                     <div className="text-right">
                       <p className="text-xs text-[#4CAF50] font-bold mb-1">✅ รับแล้ว</p>
-                      <p className="text-[11px] text-[#A08D74]">{new Date(parcel.arrival_date).toLocaleDateString('th-TH')}</p>
+                      <p className="text-sm text-[#A08D74]">{new Date(parcel.arrival_date).toLocaleDateString('th-TH')}</p>
                     </div>
                  </div>
               ))}

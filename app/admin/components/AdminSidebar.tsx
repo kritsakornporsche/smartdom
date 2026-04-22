@@ -95,7 +95,7 @@ export default function AdminSidebar() {
 
       {/* Navigation */}
       <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
-        <p className="px-4 py-2 text-[10px] font-bold uppercase tracking-[0.2em] text-[#A08D74] mb-2">
+        <p className="px-4 py-2 text-sm font-bold uppercase tracking-wide text-[#A08D74] mb-2">
           เมนูการจัดการ
         </p>
         {navItems.map((item) => {

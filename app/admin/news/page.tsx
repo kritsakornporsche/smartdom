@@ -112,7 +112,7 @@ export default function AdminNewsPage() {
               <div className="text-center py-20 animate-pulse text-[#A08D74]">กําลังโหลดข่าวสาร...</div>
             ) : news.length === 0 ? (
               <div className="bg-white border border-[#E5DFD3] rounded-[40px] p-20 text-center space-y-4">
-                <div className="text-4xl">📢</div>
+                <div className="text-2xl">📢</div>
                 <p className="text-[#A08D74] font-medium">ยังไม่มีประกาศข่าวสารในขณะนี้</p>
               </div>
             ) : (
@@ -120,17 +120,17 @@ export default function AdminNewsPage() {
                 {news.map((item) => (
                   <div key={item.id} className="bg-white border border-[#E5DFD3] rounded-[32px] p-8 shadow-sm hover:shadow-md transition-shadow relative group">
                     <div className="flex justify-between items-start mb-4">
-                      <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${getCategoryColor(item.category)}`}>
+                      <span className={`px-3 py-1 rounded-full text-sm font-black uppercase tracking-wider border ${getCategoryColor(item.category)}`}>
                         {item.category}
                       </span>
-                      <span className="text-[10px] font-bold text-[#A08D74]">
+                      <span className="text-sm font-bold text-[#A08D74]">
                         {new Date(item.created_at).toLocaleDateString('th-TH', { 
                           year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' 
                         })} โดย {item.author_name}
                       </span>
                     </div>
                     <h3 className="text-lg font-bold text-[#3E342B] mb-3">{item.title}</h3>
-                    <p className="text-[#5A4D41] text-sm leading-relaxed whitespace-pre-wrap">{item.content}</p>
+                    <p className="text-[#5A4D41] text-sm leading-normal whitespace-pre-wrap">{item.content}</p>
                   </div>
                 ))}
               </div>
@@ -146,7 +146,7 @@ export default function AdminNewsPage() {
               <h2 className="text-2xl font-display font-bold text-[#3E342B] mb-8">สร้างข่าวสารใหม่</h2>
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase tracking-wider text-[#A08D74]">หัวข้อประกาศ</label>
+                  <label className="text-sm font-black uppercase tracking-wider text-[#A08D74]">หัวข้อประกาศ</label>
                   <input 
                     type="text" 
                     value={formData.title}
@@ -157,7 +157,7 @@ export default function AdminNewsPage() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase tracking-wider text-[#A08D74]">หมวดหมู่</label>
+                  <label className="text-sm font-black uppercase tracking-wider text-[#A08D74]">หมวดหมู่</label>
                   <select 
                     value={formData.category}
                     onChange={e => setFormData({...formData, category: e.target.value})}
@@ -170,7 +170,7 @@ export default function AdminNewsPage() {
                   </select>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase tracking-wider text-[#A08D74]">เนื้อหาประกาศ</label>
+                  <label className="text-sm font-black uppercase tracking-wider text-[#A08D74]">เนื้อหาประกาศ</label>
                   <textarea 
                     value={formData.content}
                     onChange={e => setFormData({...formData, content: e.target.value})}

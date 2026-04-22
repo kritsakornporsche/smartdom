@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 
 interface Keeper {
   id: number;
@@ -13,6 +14,7 @@ interface Keeper {
 }
 
 export default function KeepersManagement() {
+  const { data: session, status } = useSession();
   const router = useRouter();
   const [keepers, setKeepers] = useState<Keeper[]>([]);
   const [loading, setLoading] = useState(true);
@@ -31,10 +33,16 @@ export default function KeepersManagement() {
 
 
   useEffect(() => {
+    if (status === 'loading') return;
+    if (status === 'unauthenticated') {
+      router.push('/signin');
+      return;
+    }
+
     const fetchDormData = async () => {
-      const email = localStorage.getItem('userEmail') || 'owner@smartdom.com';
+      if (!session?.user?.email) return;
       try {
-        const res = await fetch(`/api/owner/onboarding?email=${email}`);
+        const res = await fetch(`/api/owner/onboarding?email=${session.user.email}`);
         const data = await res.json();
         if (data.success && data.hasDorm) {
           setDormId(data.dorm.id);
@@ -47,7 +55,7 @@ export default function KeepersManagement() {
       }
     };
     fetchDormData();
-  }, [router]);
+  }, [router, session, status]);
 
   const fetchKeepers = async (id: number) => {
     try {
@@ -125,7 +133,7 @@ export default function KeepersManagement() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FDFBF7] p-8 text-[#3E342B]">
+    <div className="flex-1 overflow-y-auto bg-[#FDFBF7] p-8 text-[#3E342B] scroll-smooth custom-scrollbar">
       <div className="max-w-6xl mx-auto">
         <header className="flex justify-between items-center mb-10">
           <div>
@@ -218,7 +226,7 @@ export default function KeepersManagement() {
               
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase text-[#A08D74]">ชื่อ-นามสกุล</label>
+                  <label className="text-sm font-black uppercase text-[#A08D74]">ชื่อ-นามสกุล</label>
                   <input 
                     required
                     value={formData.name}
@@ -230,7 +238,7 @@ export default function KeepersManagement() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase text-[#A08D74]">เบอร์โทรศัพท์</label>
+                    <label className="text-sm font-black uppercase text-[#A08D74]">เบอร์โทรศัพท์</label>
                     <input 
                       value={formData.phone}
                       onChange={(e) => setFormData({...formData, phone: e.target.value})}
@@ -239,7 +247,7 @@ export default function KeepersManagement() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase text-[#A08D74]">ตำแหน่ง</label>
+                    <label className="text-sm font-black uppercase text-[#A08D74]">ตำแหน่ง</label>
                     <select 
                       value={formData.position}
                       onChange={(e) => setFormData({...formData, position: e.target.value})}
@@ -252,7 +260,7 @@ export default function KeepersManagement() {
                 </div>
 
                   <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase text-[#A08D74]">อีเมล (ใช้เป็น Username)</label>
+                    <label className="text-sm font-black uppercase text-[#A08D74]">อีเมล (ใช้เป็น Username)</label>
                     <input 
                       type="email"
                       required
@@ -265,7 +273,7 @@ export default function KeepersManagement() {
 
                   {!editingKeeper && (
                     <div className="space-y-2">
-                      <label className="text-[10px] font-black uppercase text-[#A08D74]">รหัสผ่านสำหรับเจ้าหน้าที่</label>
+                      <label className="text-sm font-black uppercase text-[#A08D74]">รหัสผ่านสำหรับเจ้าหน้าที่</label>
                       <input 
                         type="password"
                         required
@@ -274,7 +282,7 @@ export default function KeepersManagement() {
                         className="w-full px-6 py-4 bg-[#FAF8F5] border border-[#DCD3C6] rounded-2xl focus:bg-white focus:border-[#8B7355] outline-none"
                         placeholder="••••••••"
                       />
-                      <p className="text-[9px] text-[#A08D74] ml-1">* เจ้าหน้าที่สามารถใช้ Email และรหัสผ่านนี้ล็อกอินเข้าสู่ระบบได้</p>
+                      <p className="text-xs text-[#A08D74] ml-1">* เจ้าหน้าที่สามารถใช้ Email และรหัสผ่านนี้ล็อกอินเข้าสู่ระบบได้</p>
                     </div>
                   )}
 

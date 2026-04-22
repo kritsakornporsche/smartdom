@@ -20,6 +20,9 @@ export async function GET(request: Request) {
     
     // Security: Check if user belongs to this conversation
     const userResult = await sql`SELECT id FROM users WHERE email = ${session.user.email} LIMIT 1`;
+    if (userResult.length === 0) {
+      return NextResponse.json({ success: false, message: 'User not found' }, { status: 404 });
+    }
     const userId = userResult[0].id;
 
     const convCheck = await sql`
@@ -55,6 +58,9 @@ export async function POST(request: Request) {
     const sql = neon(process.env.DATABASE_URL || '');
 
     const userResult = await sql`SELECT id FROM users WHERE email = ${session.user.email} LIMIT 1`;
+    if (userResult.length === 0) {
+      return NextResponse.json({ success: false, message: 'User not found' }, { status: 404 });
+    }
     const userId = userResult[0].id;
 
     // Security check

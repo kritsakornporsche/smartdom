@@ -87,7 +87,7 @@ export default function ContractSimulator({ initialPrice = 5000, roomNumber = 'A
       <div className="flex justify-between items-start">
         <div className="space-y-2">
           <h2 className="text-3xl font-black tracking-tight italic">ระบบจำลองสัญญา</h2>
-          <p className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Smart Contract Simulator</p>
+          <p className="text-sm font-black uppercase tracking-wider text-primary">Smart Contract Simulator</p>
         </div>
         {onClose && (
           <button 
@@ -105,7 +105,7 @@ export default function ContractSimulator({ initialPrice = 5000, roomNumber = 'A
         {/* Controls */}
         <div className="lg:col-span-7 space-y-10">
           <div className="space-y-5">
-            <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-primary/60">ค่าเช่ารายเดือน (฿)</label>
+            <label className="block text-sm font-black uppercase tracking-wide text-primary/60">ค่าเช่ารายเดือน (฿)</label>
             <div className="relative group">
               <input 
                 type="number" 
@@ -113,13 +113,13 @@ export default function ContractSimulator({ initialPrice = 5000, roomNumber = 'A
                 onChange={(e) => setPrice(Number(e.target.value))}
                 className="w-full px-8 py-5 rounded-2xl bg-secondary/10 border border-transparent focus:border-primary/30 focus:bg-white outline-none font-black text-xl transition-all duration-500 shadow-sm group-hover:shadow-md"
               />
-              <div className="absolute right-8 top-1/2 -translate-y-1/2 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Baht</div>
+              <div className="absolute right-8 top-1/2 -translate-y-1/2 text-sm font-black uppercase tracking-wider text-muted-foreground">Baht</div>
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-6">
             <div className="space-y-5">
-              <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-primary/60">เงินประกัน (เดือน)</label>
+              <label className="block text-sm font-black uppercase tracking-wide text-primary/60">เงินประกัน (เดือน)</label>
               <select 
                 value={depositMonths}
                 onChange={(e) => setDepositMonths(Number(e.target.value))}
@@ -131,7 +131,7 @@ export default function ContractSimulator({ initialPrice = 5000, roomNumber = 'A
               </select>
             </div>
             <div className="space-y-5">
-              <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-primary/60">จ่ายล่วงหน้า (เดือน)</label>
+              <label className="block text-sm font-black uppercase tracking-wide text-primary/60">จ่ายล่วงหน้า (เดือน)</label>
               <select 
                 value={advanceMonths}
                 onChange={(e) => setAdvanceMonths(Number(e.target.value))}
@@ -146,7 +146,7 @@ export default function ContractSimulator({ initialPrice = 5000, roomNumber = 'A
 
           <div className="space-y-6">
             <div className="flex justify-between items-end">
-              <label className="text-[10px] font-black uppercase tracking-[0.2em] text-primary/60">ระยะเวลาสัญญา</label>
+              <label className="text-sm font-black uppercase tracking-wide text-primary/60">ระยะเวลาสัญญา</label>
               <span className="text-sm font-black text-primary">{contractMonths} เดือน</span>
             </div>
             <input 
@@ -157,14 +157,14 @@ export default function ContractSimulator({ initialPrice = 5000, roomNumber = 'A
               onChange={(e) => setContractMonths(Number(e.target.value))}
               className="w-full h-1.5 bg-secondary/20 rounded-full appearance-none cursor-pointer accent-primary transition-all"
             />
-            <div className="flex justify-between text-[8px] font-black uppercase tracking-widest text-muted-foreground/40">
+            <div className="flex justify-between text-[8px] font-black uppercase tracking-wider text-muted-foreground/40">
               <span>1 Month</span>
               <span>24 Months</span>
             </div>
           </div>
 
           <div className="space-y-5">
-            <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-primary/60">วันที่เริ่มเข้าพัก</label>
+            <label className="block text-sm font-black uppercase tracking-wide text-primary/60">วันที่เริ่มเข้าพัก</label>
             <input 
               type="date" 
               value={startDate}
@@ -181,21 +181,21 @@ export default function ContractSimulator({ initialPrice = 5000, roomNumber = 'A
           
           <div className="relative z-10 space-y-14">
             <div>
-              <p className="text-[10px] font-black uppercase tracking-[0.3em] text-background/40 mb-4">ยอดที่ต้องชำระวันทำสัญญา</p>
-              <h3 className="text-6xl font-display font-black tracking-tighter">฿{totalUpfront.toLocaleString()}</h3>
+              <p className="text-sm font-black uppercase tracking-wider text-background/40 mb-4">ยอดที่ต้องชำระวันทำสัญญา</p>
+              <h3 className="text-2xl font-display font-black tracking-tighter">฿{totalUpfront.toLocaleString()}</h3>
             </div>
 
             <div className="space-y-8 pt-12 border-t border-background/10">
               <div className="flex justify-between items-center">
-                <span className="text-[10px] font-black uppercase tracking-[0.1em] text-background/40">ค่าเช่าเฉลี่ยตามจริง</span>
+                <span className="text-sm font-black uppercase tracking-normal text-background/40">ค่าเช่าเฉลี่ยตามจริง</span>
                 <span className="text-sm font-black">฿{proRatedRent.toLocaleString()}</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-[10px] font-black uppercase tracking-[0.1em] text-background/40">เงินประกัน ({depositMonths} ด.)</span>
+                <span className="text-sm font-black uppercase tracking-normal text-background/40">เงินประกัน ({depositMonths} ด.)</span>
                 <span className="text-sm font-black">฿{depositAmount.toLocaleString()}</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-[10px] font-black uppercase tracking-[0.1em] text-background/40">สิ้นสุดสัญญา</span>
+                <span className="text-sm font-black uppercase tracking-normal text-background/40">สิ้นสุดสัญญา</span>
                 <span className="text-sm font-black">{new Date(endDate).toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
               </div>
             </div>
@@ -203,7 +203,7 @@ export default function ContractSimulator({ initialPrice = 5000, roomNumber = 'A
 
           <div className="relative z-10 pt-16 space-y-8">
             <div className="bg-background/5 rounded-2xl p-5 border border-background/10 backdrop-blur-sm">
-              <p className="text-[9px] font-bold leading-relaxed italic text-background/40 text-pretty">
+              <p className="text-xs font-bold leading-normal italic text-background/40 text-pretty">
                 * ข้อมูลนี้เป็นการคำนวณเบื้องต้น รายละเอียดสุดท้ายจะถูกระบุในสัญญาอิเล็กทรอนิกส์หลังจากท่านยืนยันข้อมูล
               </p>
             </div>
@@ -212,7 +212,7 @@ export default function ContractSimulator({ initialPrice = 5000, roomNumber = 'A
               onClick={() => setShowSigner(true)}
               disabled={isSubmitting}
               className={cn(
-                "w-full py-6 bg-primary text-primary-foreground rounded-full text-[10px] font-black uppercase tracking-[0.3em]",
+                "w-full py-6 bg-primary text-primary-foreground rounded-full text-sm font-black uppercase tracking-wider",
                 "hover:bg-white hover:text-foreground hover:scale-[1.02] active:scale-95 transition-all duration-500 shadow-2xl shadow-primary/20",
                 "disabled:opacity-50 disabled:cursor-not-allowed"
               )}

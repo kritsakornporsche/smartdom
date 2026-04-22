@@ -20,12 +20,12 @@ export default function DormRulesCard() {
             <div className="text-[#A08D74] font-black text-xs pt-1 group-hover:text-[#8B7355] transition-colors">{idx + 1}.</div>
             <div className="space-y-1">
                 <h4 className="text-sm font-bold text-[#3E342B] group-hover:text-[#8B7355] transition-colors">{rule.title}</h4>
-                <p className="text-xs text-[#8B7355] leading-relaxed font-medium">{rule.content}</p>
+                <p className="text-xs text-[#8B7355] leading-normal font-medium">{rule.content}</p>
             </div>
           </div>
         ))}
       </div>
-      <button className="w-full mt-10 py-3.5 border border-[#8B7355]/20 text-[#8B7355] rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-[#8B7355] hover:text-white transition-all">
+      <button className="w-full mt-10 py-3.5 border border-[#8B7355]/20 text-[#8B7355] rounded-2xl text-xs font-black uppercase tracking-wider hover:bg-[#8B7355] hover:text-white transition-all">
         ดูระเบียบฉบับเต็ม
       </button>
     </div>

@@ -8,10 +8,10 @@ export default function RulesPage() {
         {/* Header Section */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
           <div>
-            <Link href="/tenant" className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-[#A08D74] hover:text-[#3E342B] transition-colors mb-4">
+            <Link href="/tenant" className="inline-flex items-center gap-2 text-sm font-black uppercase tracking-wider text-[#A08D74] hover:text-[#3E342B] transition-colors mb-4">
               <span className="w-6 h-px bg-[#A08D74]"></span> กลับหน้าหลัก
             </Link>
-            <h1 className="text-4xl md:text-5xl font-black text-[#3E342B] tracking-tight">
+            <h1 className="text-2xl md:text-3xl font-black text-[#3E342B] tracking-tight">
               สมุดคู่มือผู้เช่า
             </h1>
             <p className="text-[#8B7355] font-medium mt-3">
@@ -54,7 +54,7 @@ export default function RulesPage() {
                  <div className="w-12 h-12 bg-[#FAF8F5] rounded-xl flex items-center justify-center shrink-0 text-xl font-black text-[#A08D74]">1</div>
                  <div>
                     <h3 className="text-xl font-black text-[#3E342B] mb-2">ห้ามส่งเสียงดังหลังเวลา 22:00 น.</h3>
-                    <p className="text-[#8B7355] leading-relaxed">เพื่อความสงบเรียบร้อยและไม่รบกวนผู้พักอาศัยห้องอื่น ขอความร่วมมือในการงดใช้เสียงดัง งดปาร์ตี้หรือเปิดเพลงเสียงดังในยามวิกาล</p>
+                    <p className="text-[#8B7355] leading-normal">เพื่อความสงบเรียบร้อยและไม่รบกวนผู้พักอาศัยห้องอื่น ขอความร่วมมือในการงดใช้เสียงดัง งดปาร์ตี้หรือเปิดเพลงเสียงดังในยามวิกาล</p>
                  </div>
               </div>
 
@@ -62,7 +62,7 @@ export default function RulesPage() {
                  <div className="w-12 h-12 bg-[#FAF8F5] rounded-xl flex items-center justify-center shrink-0 text-xl font-black text-[#A08D74]">2</div>
                  <div>
                     <h3 className="text-xl font-black text-[#3E342B] mb-2">ห้ามเลี้ยงสัตว์ทุกชนิด</h3>
-                    <p className="text-[#8B7355] leading-relaxed">ไม่อนุญาตให้เลี้ยงสัตว์ทุกชนิดภายในห้องพักและบริเวณหอพัก เพื่อรักษาความสะอาดและป้องกันปัญหาด้านภูมิแพ้ของผู้พักอาศัยท่านอื่น หากฝ่าฝืนจะมีการปรับตามระเบียบ</p>
+                    <p className="text-[#8B7355] leading-normal">ไม่อนุญาตให้เลี้ยงสัตว์ทุกชนิดภายในห้องพักและบริเวณหอพัก เพื่อรักษาความสะอาดและป้องกันปัญหาด้านภูมิแพ้ของผู้พักอาศัยท่านอื่น หากฝ่าฝืนจะมีการปรับตามระเบียบ</p>
                  </div>
               </div>
 
@@ -70,7 +70,7 @@ export default function RulesPage() {
                  <div className="w-12 h-12 bg-[#FAF8F5] rounded-xl flex items-center justify-center shrink-0 text-xl font-black text-[#A08D74]">3</div>
                  <div>
                     <h3 className="text-xl font-black text-[#3E342B] mb-2">รักษาความสะอาดพื้นที่ส่วนรวม</h3>
-                    <p className="text-[#8B7355] leading-relaxed">กรุณานำขยะมาทิ้งในจุดที่จัดเตรียมไว้ให้ งดวางถุงขยะหน้าห้องพัก และช่วยกันรักษาความสะอาดบริเวณทางเดินและห้องซักล้างส่วนกลาง</p>
+                    <p className="text-[#8B7355] leading-normal">กรุณานำขยะมาทิ้งในจุดที่จัดเตรียมไว้ให้ งดวางถุงขยะหน้าห้องพัก และช่วยกันรักษาความสะอาดบริเวณทางเดินและห้องซักล้างส่วนกลาง</p>
                  </div>
               </div>
 
@@ -78,7 +78,7 @@ export default function RulesPage() {
                  <div className="w-12 h-12 bg-[#FAF8F5] rounded-xl flex items-center justify-center shrink-0 text-xl font-black text-[#A08D74]">4</div>
                  <div>
                     <h3 className="text-xl font-black text-[#3E342B] mb-2">การจอดรถและการใช้ยานพาหนะ</h3>
-                    <p className="text-[#8B7355] leading-relaxed">จอดรถในช่องที่กำหนดไว้เท่านั้น ห้ามจอดขวางทางเข้า-ออก และต้องลงทะเบียนป้ายทะเบียนรถกับทางนิติบุคคลล่วงหน้าเสมอ (1 คันต่อ 1 ห้องพัก)</p>
+                    <p className="text-[#8B7355] leading-normal">จอดรถในช่องที่กำหนดไว้เท่านั้น ห้ามจอดขวางทางเข้า-ออก และต้องลงทะเบียนป้ายทะเบียนรถกับทางนิติบุคคลล่วงหน้าเสมอ (1 คันต่อ 1 ห้องพัก)</p>
                  </div>
               </div>
            </div>

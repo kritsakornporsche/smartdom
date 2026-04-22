@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 
 
 interface Tenant {
@@ -14,6 +15,7 @@ interface Tenant {
 }
 
 export default function TenantsManagement() {
+  const { data: session, status } = useSession();
   const [tenants, setTenants] = useState<Tenant[]>([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
@@ -36,10 +38,16 @@ export default function TenantsManagement() {
   };
 
   useEffect(() => {
+    if (status === 'loading') return;
+    if (status === 'unauthenticated') {
+      router.push('/signin');
+      return;
+    }
+
     const init = async () => {
-      const email = localStorage.getItem('userEmail') || 'owner@smartdom.com';
+      if (!session?.user?.email) return;
       try {
-        const res = await fetch(`/api/owner/onboarding?email=${email}`);
+        const res = await fetch(`/api/owner/onboarding?email=${session.user.email}`);
         const data = await res.json();
         if (data.success && data.hasDorm) {
           setOwnerDormId(data.dorm.id);
@@ -52,7 +60,7 @@ export default function TenantsManagement() {
       }
     };
     init();
-  }, []);
+  }, [router, session, status]);
 
 
   return (
@@ -60,21 +68,21 @@ export default function TenantsManagement() {
       <header className="h-20 bg-white/60 backdrop-blur-md border-b border-[#E5DFD3] flex items-center justify-between px-10 shrink-0">
           <div className="flex flex-col">
             <h1 className="text-xl font-black text-[#3E342B]">ทะเบียนผู้เช่า</h1>
-            <p className="text-[10px] font-bold text-[#A08D74] uppercase tracking-widest">รายชื่อและข้อมูลติดต่อผู้เช่าทั่งหมด</p>
+            <p className="text-sm font-bold text-[#A08D74] uppercase tracking-wider">รายชื่อและข้อมูลติดต่อผู้เช่าทั่งหมด</p>
           </div>
         </header>
 
-        <div className="flex-1 overflow-y-auto p-10">
+        <div className="flex-1 overflow-y-auto p-10 scroll-smooth custom-scrollbar">
           <div className="max-w-6xl mx-auto">
             <div className="bg-white rounded-[32px] overflow-hidden shadow-xl border border-[#E5DFD3] shadow-[#DCD3C6]/10">
                <table className="w-full text-left border-collapse">
                   <thead className="bg-[#FAF8F5] border-b border-[#E5DFD3]">
                     <tr>
-                      <th className="px-8 py-5 text-[10px] font-bold text-[#A08D74] uppercase tracking-widest">ชื่อ-นามสกุล</th>
-                      <th className="px-8 py-5 text-[10px] font-bold text-[#A08D74] uppercase tracking-widest">ห้อง</th>
-                      <th className="px-8 py-5 text-[10px] font-bold text-[#A08D74] uppercase tracking-widest">เบอร์โทรศัพท์</th>
-                      <th className="px-8 py-5 text-[10px] font-bold text-[#A08D74] uppercase tracking-widest">อีเมล</th>
-                      <th className="px-8 py-5 text-[10px] font-bold text-[#A08D74] uppercase tracking-widest">สถานะ</th>
+                      <th className="px-8 py-5 text-sm font-bold text-[#A08D74] uppercase tracking-wider">ชื่อ-นามสกุล</th>
+                      <th className="px-8 py-5 text-sm font-bold text-[#A08D74] uppercase tracking-wider">ห้อง</th>
+                      <th className="px-8 py-5 text-sm font-bold text-[#A08D74] uppercase tracking-wider">เบอร์โทรศัพท์</th>
+                      <th className="px-8 py-5 text-sm font-bold text-[#A08D74] uppercase tracking-wider">อีเมล</th>
+                      <th className="px-8 py-5 text-sm font-bold text-[#A08D74] uppercase tracking-wider">สถานะ</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-[#F3EFE9]">

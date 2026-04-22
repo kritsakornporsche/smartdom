@@ -44,7 +44,7 @@ export default async function TenantMoveOut() {
 
         {request ? (
           <div className="bg-white rounded-3xl border border-[#E5DFD3] shadow-sm overflow-hidden">
-            <div className={`p-4 border-b text-center font-bold tracking-widest uppercase text-[10px] ${
+            <div className={`p-4 border-b text-center font-bold tracking-wider uppercase text-sm ${
               request.status === 'Pending' ? 'bg-[#FAF8F5] text-[#8B6A2B] border-[#E5DFD3]' : 
               request.status === 'Approved' ? 'bg-[#F0F4F0] text-[#4CAF50] border-[#E0E0E0]' :
               'bg-rose-50 text-rose-700 border-rose-100'
@@ -55,7 +55,7 @@ export default async function TenantMoveOut() {
             <div className="p-8 md:p-12">
               <div className="grid sm:grid-cols-2 gap-8 mb-12">
                 <div className="bg-[#FAF8F5] p-6 rounded-2xl border border-[#F2EFE9]">
-                  <p className="text-[11px] text-[#A08D74] font-bold uppercase tracking-widest mb-1 font-mono text-center">วันที่ต้องการย้ายออก</p>
+                  <p className="text-sm text-[#A08D74] font-bold uppercase tracking-wider mb-1 font-mono text-center">วันที่ต้องการย้ายออก</p>
                   <div className="text-2xl font-serif text-[#3E342B] text-center mt-2">
                     {new Date(request.desired_date).toLocaleDateString('th-TH', { 
                       year: 'numeric', 
@@ -65,7 +65,7 @@ export default async function TenantMoveOut() {
                   </div>
                 </div>
                 <div className="bg-[#FAF8F5] p-6 rounded-2xl border border-[#F2EFE9]">
-                  <p className="text-[11px] text-[#A08D74] font-bold uppercase tracking-widest mb-1 font-mono text-center">วันที่ส่งคำร้อง</p>
+                  <p className="text-sm text-[#A08D74] font-bold uppercase tracking-wider mb-1 font-mono text-center">วันที่ส่งคำร้อง</p>
                   <div className="text-2xl font-serif text-[#3E342B] text-center mt-2">
                     {new Date(request.created_at).toLocaleDateString('th-TH', { 
                       year: 'numeric', 
@@ -77,7 +77,7 @@ export default async function TenantMoveOut() {
               </div>
 
               <div className="mb-12">
-                <p className="text-[11px] text-[#A08D74] font-bold uppercase tracking-widest mb-4 font-mono">เหตุผลการย้ายออก</p>
+                <p className="text-sm text-[#A08D74] font-bold uppercase tracking-wider mb-4 font-mono">เหตุผลการย้ายออก</p>
                 <div className="bg-[#FDFBF7] border border-[#E5DFD3] rounded-2xl p-6 text-[#5A4D41] italic">
                   "{request.reason || 'ไม่ได้ระบุเหตุผล'}"
                 </div>

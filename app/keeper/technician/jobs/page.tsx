@@ -117,7 +117,7 @@ export default function TechnicianJobsPage() {
                                     <button 
                                         key={f} 
                                         onClick={() => setFilter(f)}
-                                        className={`px-3 py-2 rounded-xl text-[11px] font-bold transition-all ${filter === f ? 'bg-[#8B7355] text-white shadow-sm' : 'text-[#A08D74] hover:text-[#5A4D41]'}`}
+                                        className={`px-3 py-2 rounded-xl text-sm font-bold transition-all ${filter === f ? 'bg-[#8B7355] text-white shadow-sm' : 'text-[#A08D74] hover:text-[#5A4D41]'}`}
                                     >
                                         {f === 'all' ? 'งานทั้งหมด' : statusConfig[f]?.label}
                                     </button>
@@ -160,7 +160,7 @@ export default function TechnicianJobsPage() {
                                     {filteredJobs.map((task) => (
                                         <div key={task.id} className="px-7 py-5 flex items-center gap-6 hover:bg-[#FAF8F5] transition-all cursor-pointer group" onClick={() => setSelectedJob(task)}>
                                             <div className="h-14 w-14 rounded-2xl bg-[#F3EFE9] flex flex-col items-center justify-center shrink-0 border border-[#E5DFD3] transition-transform group-hover:scale-105">
-                                                <span className="text-[10px] font-bold text-[#A08D74] uppercase mb-1">ห้อง</span>
+                                                <span className="text-sm font-bold text-[#A08D74] uppercase mb-1">ห้อง</span>
                                                 <span className="text-lg font-black text-[#3E342B]">{task.room_number || '-'}</span>
                                             </div>
                                             <div className="flex-1 min-w-0">
@@ -169,11 +169,11 @@ export default function TechnicianJobsPage() {
                                                     {task.urgency === 'rush' && (
                                                         <span className="px-1.5 py-0.5 rounded text-[8px] font-black bg-rose-500 text-white">ด่วน</span>
                                                     )}
-                                                    <span className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase ${statusConfig[task.status]?.bg}`}>
+                                                    <span className={`px-2 py-0.5 rounded-full text-xs font-black uppercase ${statusConfig[task.status]?.bg}`}>
                                                         {statusConfig[task.status]?.label}
                                                     </span>
                                                 </div>
-                                                <p className="text-[10px] text-[#A08D74] mt-1 font-medium italic">
+                                                <p className="text-sm text-[#A08D74] mt-1 font-medium italic">
                                                     รับแจ้งเมื่อ {new Date(task.created_at).toLocaleString('th-TH')}
                                                 </p>
                                             </div>
@@ -216,12 +216,12 @@ export default function TechnicianJobsPage() {
                                         </span>
                                     </div>
                                     <div className="border-t border-[#E5DFD3] pt-3 flex flex-col gap-2">
-                                       <div className="flex justify-between items-center text-[11px]">
+                                       <div className="flex justify-between items-center text-sm">
                                           <span className="text-[#A08D74]">วันเวลาที่รับเรื่อง</span>
                                           <span className="font-medium">{new Date(selectedJob.created_at).toLocaleString('th-TH')}</span>
                                        </div>
                                        {selectedJob.completed_at && (
-                                          <div className="flex justify-between items-center text-[11px] text-emerald-600 font-bold">
+                                          <div className="flex justify-between items-center text-sm text-emerald-600 font-bold">
                                              <span>วันเวลาที่ปิดงาน</span>
                                              <span>{new Date(selectedJob.completed_at).toLocaleString('th-TH')}</span>
                                           </div>
@@ -230,26 +230,26 @@ export default function TechnicianJobsPage() {
                                 </div>
 
                                 {selectedJob.tenant_notes && (
-                                    <div className="bg-amber-50 border border-amber-100 p-4 rounded-2xl text-[11px] text-amber-800 italic">
+                                    <div className="bg-amber-50 border border-amber-100 p-4 rounded-2xl text-sm text-amber-800 italic">
                                         "หมายเหตุจากห้องพัก: {selectedJob.tenant_notes}"
                                     </div>
                                 )}
 
                                 {selectedJob.notes && (
                                     <div className="space-y-2">
-                                        <h4 className="text-[10px] font-bold uppercase text-[#A08D74]">บันทึกจากช่าง</h4>
+                                        <h4 className="text-sm font-bold uppercase text-[#A08D74]">บันทึกจากช่าง</h4>
                                         <p className="bg-white border border-[#E5DFD3] p-4 rounded-2xl text-xs">{selectedJob.notes}</p>
                                     </div>
                                 )}
 
                                 {selectedJob.photo_url && (
                                     <div className="space-y-2">
-                                        <h4 className="text-[10px] font-bold uppercase text-[#A08D74]">หลักฐานงานซ่อม</h4>
+                                        <h4 className="text-sm font-bold uppercase text-[#A08D74]">หลักฐานงานซ่อม</h4>
                                         <div className="relative h-44 w-full rounded-2xl overflow-hidden border border-[#E5DFD3]">
                                             {selectedJob.photo_url.startsWith('http') ? (
                                                 <Image src={selectedJob.photo_url} alt="Proof" fill className="object-cover" />
                                             ) : (
-                                                <div className="flex items-center justify-center h-full bg-[#FAF8F5] text-[10px] text-blue-600">
+                                                <div className="flex items-center justify-center h-full bg-[#FAF8F5] text-sm text-blue-600">
                                                     {selectedJob.photo_url}
                                                 </div>
                                             )}

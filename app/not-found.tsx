@@ -12,18 +12,18 @@ export default function NotFound() {
         </h1>
         
         <div className="-mt-12 space-y-8">
-           <h2 className="text-5xl font-display font-black tracking-tight text-[#3E342B] italic">
+           <h2 className="text-3xl font-display font-black tracking-tight text-[#3E342B] italic">
              ไม่พบหน้าที่คุณค้นหา
            </h2>
            
-           <p className="text-lg text-[#A08D74] font-medium leading-relaxed max-w-sm mx-auto">
+           <p className="text-lg text-[#A08D74] font-medium leading-normal max-w-sm mx-auto">
              หน้านี้อาจจะถูกลบไปแล้ว หรือคุณอาจจะเข้าถึงเส้นทางที่ไม่มีอยู่จริงในระบบ SmartDom
            </p>
 
            <div className="pt-6">
              <Link
                href="/"
-               className="rounded-full bg-[#8B7355] px-14 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-white shadow-2xl shadow-[#8B7355]/20 hover:-translate-y-1 transition-all active:scale-95 inline-block"
+               className="rounded-full bg-[#8B7355] px-14 py-6 text-sm font-black uppercase tracking-wide text-white shadow-2xl shadow-[#8B7355]/20 hover:-translate-y-1 transition-all active:scale-95 inline-block"
              >
                กลับสู่หน้าหลัก →
              </Link>

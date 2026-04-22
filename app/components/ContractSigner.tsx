@@ -93,12 +93,12 @@ export default function ContractSigner({
   return (
     <div className="bg-background rounded-[4rem] p-8 lg:p-16 border border-border/40 shadow-2xl max-w-5xl w-full mx-auto space-y-14 animate-reveal">
       <div className="text-center space-y-3">
-        <h2 className="text-4xl font-display font-black tracking-tight italic">สัญญาเช่าหอพักระบบดิจิทัล</h2>
-        <p className="text-[10px] font-black uppercase tracking-[0.4em] text-primary">SmartDom Digital Agreement</p>
+        <h2 className="text-2xl font-display font-black tracking-tight italic">สัญญาเช่าหอพักระบบดิจิทัล</h2>
+        <p className="text-sm font-black uppercase tracking-wider text-primary">SmartDom Digital Agreement</p>
       </div>
 
       {/* Contract Content Area */}
-      <div className="bg-[#FAF9F6] border border-border/60 rounded-[3rem] p-10 lg:p-16 overflow-y-auto max-h-[50vh] space-y-12 text-[#3E342B] shadow-inner font-serif leading-relaxed relative">
+      <div className="bg-[#FAF9F6] border border-border/60 rounded-[3rem] p-10 lg:p-16 overflow-y-auto max-h-[50vh] space-y-12 text-[#3E342B] shadow-inner font-serif leading-normal relative">
         <div className="text-center space-y-5 pb-10 border-b border-border/40">
           <h3 className="text-2xl font-bold">สัญญาเช่าที่พักอาศัย</h3>
           <p className="text-sm opacity-60">จัดทำขึ้นและมีผลบังคับใช้ ณ วันที่ {new Date().toLocaleDateString('th-TH', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
@@ -113,19 +113,19 @@ export default function ContractSigner({
           <div className="bg-white/50 rounded-3xl p-8 space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                <div className="space-y-1">
-                 <p className="text-[10px] font-black uppercase tracking-widest text-primary/40">ระยะเวลาเช่า</p>
+                 <p className="text-sm font-black uppercase tracking-wider text-primary/40">ระยะเวลาเช่า</p>
                  <p className="font-bold">{new Date(startDate).toLocaleDateString('th-TH')} — {new Date(endDate).toLocaleDateString('th-TH')}</p>
                </div>
                <div className="space-y-1">
-                 <p className="text-[10px] font-black uppercase tracking-widest text-primary/40">ค่าเช่ารายเดือน</p>
+                 <p className="text-sm font-black uppercase tracking-wider text-primary/40">ค่าเช่ารายเดือน</p>
                  <p className="font-bold">฿{monthlyRent.toLocaleString()}</p>
                </div>
                <div className="space-y-1">
-                 <p className="text-[10px] font-black uppercase tracking-widest text-primary/40">เงินประกันความเสียหาย</p>
+                 <p className="text-sm font-black uppercase tracking-wider text-primary/40">เงินประกันความเสียหาย</p>
                  <p className="font-bold">฿{depositAmount.toLocaleString()}</p>
                </div>
                <div className="space-y-1">
-                 <p className="text-[10px] font-black uppercase tracking-widest text-primary/40">ผู้เช่า</p>
+                 <p className="text-sm font-black uppercase tracking-wider text-primary/40">ผู้เช่า</p>
                  <p className="font-bold">{tenantName}</p>
                </div>
             </div>
@@ -145,7 +145,7 @@ export default function ContractSigner({
         </div>
         
         {/* Subtle watermark */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-8xl font-display font-black text-black/[0.02] -rotate-12 pointer-events-none select-none">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-2xl font-display font-black text-black/[0.02] -rotate-12 pointer-events-none select-none">
           SMARTDOM AGREEMENT
         </div>
       </div>
@@ -153,10 +153,10 @@ export default function ContractSigner({
       {/* Signature Pad Area */}
       <div className="space-y-6">
         <div className="flex justify-between items-end px-2">
-          <label className="text-[10px] font-black uppercase tracking-[0.2em] text-primary/60">ลงลายมือชื่อผู้เช่า (Electronic Signature)</label>
+          <label className="text-sm font-black uppercase tracking-wide text-primary/60">ลงลายมือชื่อผู้เช่า (Electronic Signature)</label>
           <button 
             onClick={clearCanvas} 
-            className="text-[10px] font-black text-rose-500 uppercase tracking-widest hover:text-rose-600 transition-colors"
+            className="text-sm font-black text-rose-500 uppercase tracking-wider hover:text-rose-600 transition-colors"
           >
             ล้างข้อมูล
           </button>
@@ -191,7 +191,7 @@ export default function ContractSigner({
       <div className="flex flex-col sm:flex-row gap-6 pt-4">
         <button 
           onClick={onCancel}
-          className="flex-1 py-6 bg-secondary/10 border border-transparent rounded-full text-[10px] font-black uppercase tracking-[0.2em] hover:bg-secondary/20 transition-all duration-300 active:scale-95"
+          className="flex-1 py-6 bg-secondary/10 border border-transparent rounded-full text-sm font-black uppercase tracking-wide hover:bg-secondary/20 transition-all duration-300 active:scale-95"
         >
           ย้อนกลับ
         </button>
@@ -199,7 +199,7 @@ export default function ContractSigner({
           onClick={handleConfirm}
           disabled={!hasSigned}
           className={cn(
-            "flex-[2.5] py-6 bg-primary text-primary-foreground rounded-full text-[10px] font-black uppercase tracking-[0.2em]",
+            "flex-[2.5] py-6 bg-primary text-primary-foreground rounded-full text-sm font-black uppercase tracking-wide",
             "hover:scale-[1.02] hover:shadow-2xl hover:shadow-primary/30 transition-all duration-500 active:scale-95",
             "disabled:opacity-40 disabled:scale-100 disabled:cursor-not-allowed"
           )}

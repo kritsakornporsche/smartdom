@@ -145,11 +145,11 @@ export default function AdminBillingPage() {
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="bg-accent/30 border-b border-border">
-                    <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-muted-foreground">รายการ / รอบบิล</th>
-                    <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-muted-foreground">ผู้เช่า / ห้อง</th>
-                    <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-right">ยอดเงิน (บาท)</th>
-                    <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-center">สถานะ</th>
-                    <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-center">จัดการ</th>
+                    <th className="px-8 py-5 text-sm font-black uppercase tracking-wider text-muted-foreground">รายการ / รอบบิล</th>
+                    <th className="px-8 py-5 text-sm font-black uppercase tracking-wider text-muted-foreground">ผู้เช่า / ห้อง</th>
+                    <th className="px-8 py-5 text-sm font-black uppercase tracking-wider text-muted-foreground text-right">ยอดเงิน (บาท)</th>
+                    <th className="px-8 py-5 text-sm font-black uppercase tracking-wider text-muted-foreground text-center">สถานะ</th>
+                    <th className="px-8 py-5 text-sm font-black uppercase tracking-wider text-muted-foreground text-center">จัดการ</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border">
@@ -161,18 +161,18 @@ export default function AdminBillingPage() {
                     <tr key={bill.id} className="hover:bg-accent/10 transition-colors group">
                       <td className="px-8 py-6">
                         <div className="text-sm font-bold text-foreground mb-0.5">{bill.title}</div>
-                        <div className="text-[10px] font-black text-muted-foreground uppercase">{bill.billing_cycle}</div>
+                        <div className="text-sm font-black text-muted-foreground uppercase">{bill.billing_cycle}</div>
                       </td>
                       <td className="px-8 py-6">
                         <div className="text-sm font-bold text-foreground mb-0.5">{bill.tenant_name}</div>
-                        <div className="text-[10px] font-black text-primary uppercase tracking-tighter">ห้อง {bill.room_number || 'N/A'}</div>
+                        <div className="text-sm font-black text-primary uppercase tracking-tighter">ห้อง {bill.room_number || 'N/A'}</div>
                       </td>
                       <td className="px-8 py-6 text-right">
                         <div className="text-base font-display font-bold text-foreground">฿{Number(bill.amount).toLocaleString()}</div>
-                        <div className="text-[10px] font-black text-rose-500 uppercase">ครบกำหนด {new Date(bill.due_date).toLocaleDateString('th-TH')}</div>
+                        <div className="text-sm font-black text-rose-500 uppercase">ครบกำหนด {new Date(bill.due_date).toLocaleDateString('th-TH')}</div>
                       </td>
                       <td className="px-8 py-6 text-center">
-                        <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border ${getStatusBadge(bill.status)}`}>
+                        <span className={`px-4 py-1.5 rounded-full text-sm font-black uppercase tracking-wider border ${getStatusBadge(bill.status)}`}>
                           {bill.status}
                         </span>
                       </td>
@@ -212,7 +212,7 @@ export default function AdminBillingPage() {
             </div>
             <form onSubmit={handleIssueBill} className="p-8 space-y-5">
               <div>
-                <label className="block text-[10px] font-black uppercase text-primary mb-2">เลือกผู้เช่า</label>
+                <label className="block text-sm font-black uppercase text-primary mb-2">เลือกผู้เช่า</label>
                 <select 
                   required
                   value={selectedTenant}
@@ -226,7 +226,7 @@ export default function AdminBillingPage() {
                 </select>
               </div>
               <div>
-                <label className="block text-[10px] font-black uppercase text-primary mb-2">หัวข้อบิล</label>
+                <label className="block text-sm font-black uppercase text-primary mb-2">หัวข้อบิล</label>
                 <input 
                   type="text"
                   value={billTitle}
@@ -236,7 +236,7 @@ export default function AdminBillingPage() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-[10px] font-black uppercase text-primary mb-2">ยอดเงิน (บาท)</label>
+                  <label className="block text-sm font-black uppercase text-primary mb-2">ยอดเงิน (บาท)</label>
                   <input 
                     type="number"
                     required
@@ -246,7 +246,7 @@ export default function AdminBillingPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-black uppercase text-primary mb-2">รอบบิล</label>
+                  <label className="block text-sm font-black uppercase text-primary mb-2">รอบบิล</label>
                   <input 
                     type="text"
                     value={cycle}
@@ -256,7 +256,7 @@ export default function AdminBillingPage() {
                 </div>
               </div>
               <div>
-                <label className="block text-[10px] font-black uppercase text-primary mb-2">วันครบกำหนด</label>
+                <label className="block text-sm font-black uppercase text-primary mb-2">วันครบกำหนด</label>
                 <input 
                   type="date"
                   required
@@ -267,7 +267,7 @@ export default function AdminBillingPage() {
               </div>
               <button 
                 type="submit"
-                className="w-full py-4 rounded-full bg-primary text-primary-foreground font-black uppercase text-xs tracking-widest shadow-xl hover:-translate-y-1 transition-transform"
+                className="w-full py-4 rounded-full bg-primary text-primary-foreground font-black uppercase text-xs tracking-wider shadow-xl hover:-translate-y-1 transition-transform"
               >
                 ยืนยันการออกบิล
               </button>

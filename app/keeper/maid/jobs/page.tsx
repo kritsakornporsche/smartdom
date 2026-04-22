@@ -163,17 +163,17 @@ export default function MaidJobsPage() {
                                     {filteredJobs.map((task) => (
                                         <div key={task.id} className="px-7 py-5 flex items-center gap-6 hover:bg-[#FAF8F5] transition-all cursor-pointer group" onClick={() => setSelectedJob(task)}>
                                             <div className="h-14 w-14 rounded-2xl bg-[#F3EFE9] flex flex-col items-center justify-center shrink-0 border border-[#E5DFD3] group-hover:scale-105 transition-transform">
-                                                <span className="text-[10px] font-bold text-[#A08D74] uppercase mb-1">ห้อง</span>
+                                                <span className="text-sm font-bold text-[#A08D74] uppercase mb-1">ห้อง</span>
                                                 <span className="text-lg font-black text-[#3E342B]">{task.room_number || '-'}</span>
                                             </div>
                                             <div className="flex-1 min-w-0">
                                                 <div className="flex items-center gap-2">
                                                     <h3 className="text-sm font-bold text-[#3E342B] truncate">{jobTypeConfig[task.job_type] || task.job_type}</h3>
-                                                    <span className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase ${statusConfig[task.status]?.bg}`}>
+                                                    <span className={`px-2 py-0.5 rounded-full text-xs font-black uppercase ${statusConfig[task.status]?.bg}`}>
                                                         {statusConfig[task.status]?.label}
                                                     </span>
                                                 </div>
-                                                <p className="text-[10px] text-[#A08D74] mt-1 italic">
+                                                <p className="text-sm text-[#A08D74] mt-1 italic">
                                                     มอบหมายเมื่อ {new Date(task.created_at).toLocaleString('th-TH')}
                                                 </p>
                                             </div>
@@ -208,7 +208,7 @@ export default function MaidJobsPage() {
                                     </div>
                                     <div className="flex justify-between">
                                         <span className="text-[#A08D74]">สถานะ</span>
-                                        <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold ${statusConfig[selectedJob.status]?.bg}`}>
+                                        <span className={`px-2 py-0.5 rounded-md text-sm font-bold ${statusConfig[selectedJob.status]?.bg}`}>
                                             {statusConfig[selectedJob.status]?.label}
                                         </span>
                                     </div>
@@ -228,19 +228,19 @@ export default function MaidJobsPage() {
 
                                 {selectedJob.notes && (
                                     <div className="space-y-2">
-                                        <h4 className="text-[10px] font-bold uppercase tracking-wider text-[#A08D74]">บันทึกการทำงาน</h4>
+                                        <h4 className="text-sm font-bold uppercase tracking-wider text-[#A08D74]">บันทึกการทำงาน</h4>
                                         <p className="bg-white border border-[#E5DFD3] p-4 rounded-2xl text-xs text-[#3E342B]">{selectedJob.notes}</p>
                                     </div>
                                 )}
 
                                 {selectedJob.photo_url && (
                                     <div className="space-y-2">
-                                        <h4 className="text-[10px] font-bold uppercase tracking-wider text-[#A08D74]">หลักฐานรูปภาพ</h4>
+                                        <h4 className="text-sm font-bold uppercase tracking-wider text-[#A08D74]">หลักฐานรูปภาพ</h4>
                                         <div className="relative h-48 w-full rounded-2xl overflow-hidden border border-[#E5DFD3]">
                                             {selectedJob.photo_url.startsWith('http') ? (
                                                 <Image src={selectedJob.photo_url} alt="Done" fill className="object-cover" />
                                             ) : (
-                                                <div className="flex items-center justify-center h-full bg-[#FAF8F5] text-[10px] text-blue-600 underline">
+                                                <div className="flex items-center justify-center h-full bg-[#FAF8F5] text-sm text-blue-600 underline">
                                                     {selectedJob.photo_url}
                                                 </div>
                                             )}

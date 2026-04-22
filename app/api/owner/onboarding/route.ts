@@ -20,12 +20,28 @@ export async function POST(req: Request) {
 
     // 2. Create or Update Dormitory Profile
     const dormResult = await sql`
-      INSERT INTO dormitory_profile (name, address, phone, owner_id)
-      VALUES (${dormData.name}, ${dormData.address}, ${dormData.phone}, ${ownerId})
+      INSERT INTO dormitory_profile (
+        name, address, phone, owner_id,
+        water_rate, electricity_rate, pet_friendly, has_wifi, has_lan, has_parking, facilities, map_url
+      )
+      VALUES (
+        ${dormData.name}, ${dormData.address}, ${dormData.phone}, ${ownerId},
+        ${dormData.water_rate || 0}, ${dormData.electricity_rate || 0}, 
+        ${!!dormData.pet_friendly}, ${!!dormData.has_wifi}, ${!!dormData.has_lan}, ${!!dormData.has_parking}, 
+        ${dormData.facilities || ''}, ${dormData.map_url || ''}
+      )
       ON CONFLICT (name) DO UPDATE SET 
         address = EXCLUDED.address,
         phone = EXCLUDED.phone,
-        owner_id = EXCLUDED.owner_id
+        owner_id = EXCLUDED.owner_id,
+        water_rate = EXCLUDED.water_rate,
+        electricity_rate = EXCLUDED.electricity_rate,
+        pet_friendly = EXCLUDED.pet_friendly,
+        has_wifi = EXCLUDED.has_wifi,
+        has_lan = EXCLUDED.has_lan,
+        has_parking = EXCLUDED.has_parking,
+        facilities = EXCLUDED.facilities,
+        map_url = EXCLUDED.map_url
       RETURNING id
     `;
     const dormId = dormResult[0].id;

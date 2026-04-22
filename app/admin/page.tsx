@@ -150,7 +150,7 @@ export default function AdminDashboardPage() {
         <header className="h-20 bg-white/60 backdrop-blur-md border-b border-[#E5DFD3] flex items-center justify-between px-10 shrink-0">
           <div>
             <h1 className="font-display text-xl font-bold tracking-tight text-[#3E342B]">ภาพรวมระบบ</h1>
-            <p className="text-[10px] text-[#A08D74] font-bold uppercase tracking-widest mt-0.5 whitespace-nowrap">Admin Management System</p>
+            <p className="text-sm text-[#A08D74] font-bold uppercase tracking-wider mt-0.5 whitespace-nowrap">Admin Management System</p>
           </div>
           <div className="flex items-center gap-3">
             <button
@@ -177,7 +177,7 @@ export default function AdminDashboardPage() {
               <div className="flex items-start justify-between gap-6">
                 <div className="flex-1">
                   <h2 className="font-display text-base font-bold text-[#3E342B] mb-1.5 whitespace-nowrap">สถานะการเชื่อมต่อฐานข้อมูล</h2>
-                  <p className="text-sm text-[#A08D74] leading-relaxed max-w-lg font-medium">
+                  <p className="text-sm text-[#A08D74] leading-normal max-w-lg font-medium">
                     ตรวจสอบการเชื่อมต่อ Neon PostgreSQL แบบเรียลไทม์ หากพบข้อผิดพลาด กรุณาตรวจสอบค่าใน{' '}
                     <code className="bg-[#FAF8F5] px-1.5 py-0.5 rounded-md font-mono text-xs text-[#8B6A2B] border border-[#E5DFD3]">.env.local</code>
                   </p>
@@ -205,7 +205,7 @@ export default function AdminDashboardPage() {
 
               {dbStatus === 'error' && (
                 <div className="mt-5 p-4 bg-rose-50 rounded-2xl border border-rose-100">
-                  <div className="text-[10px] font-bold uppercase tracking-widest text-rose-400 mb-1.5">รายละเอียดข้อผิดพลาด</div>
+                  <div className="text-sm font-bold uppercase tracking-wider text-rose-400 mb-1.5">รายละเอียดข้อผิดพลาด</div>
                   <div className="font-mono text-sm text-rose-700 break-all">{errorDetails}</div>
                 </div>
               )}
@@ -217,7 +217,7 @@ export default function AdminDashboardPage() {
                   { label: 'สถานะ API', value: 'ออนไลน์' },
                 ].map((item) => (
                   <div key={item.label}>
-                    <div className="text-[10px] font-bold uppercase tracking-widest text-[#A08D74] mb-0.5">{item.label}</div>
+                    <div className="text-sm font-bold uppercase tracking-wider text-[#A08D74] mb-0.5">{item.label}</div>
                     <div className="text-sm font-bold text-[#3E342B]">{item.value}</div>
                   </div>
                 ))}
@@ -232,7 +232,7 @@ export default function AdminDashboardPage() {
                   className="bg-white border border-[#E5DFD3] rounded-3xl p-7 shadow-sm relative overflow-hidden group hover:-translate-y-0.5 transition-transform"
                 >
                   <div className="flex items-start justify-between mb-4">
-                    <p className="text-xs font-bold uppercase tracking-widest text-[#A08D74]">{stat.label}</p>
+                    <p className="text-xs font-bold uppercase tracking-wider text-[#A08D74]">{stat.label}</p>
                     <div className="p-2 bg-[#F3EFE9] rounded-xl text-[#8B7355]">{stat.icon}</div>
                   </div>
                   <div className="flex items-end gap-3">
@@ -267,7 +267,7 @@ export default function AdminDashboardPage() {
                   <p className="text-xs text-[#A08D74] font-medium mt-1">เปรียบเทียบผลประกอบการในรอบ 6 เดือนที่ผ่านมา</p>
                 </div>
                 <div className="flex items-center gap-2">
-                   <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-50 text-[10px] font-black uppercase text-emerald-600 border border-emerald-200 tracking-widest">
+                   <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-50 text-sm font-black uppercase text-emerald-600 border border-emerald-200 tracking-wider">
                       Real-time Data
                    </div>
                 </div>
@@ -275,7 +275,7 @@ export default function AdminDashboardPage() {
 
               {loadingStats ? (
                 <div className="h-64 flex items-center justify-center bg-[#FAF8F5] rounded-2xl animate-pulse">
-                   <span className="text-xs font-bold text-[#A08D74] uppercase tracking-widest">กำลังคิดคำนวณข้อมูล...</span>
+                   <span className="text-xs font-bold text-[#A08D74] uppercase tracking-wider">กำลังคิดคำนวณข้อมูล...</span>
                 </div>
               ) : (
                 <div className="h-64 flex items-end gap-4 lg:gap-8 px-4 border-b border-[#F3EFE9]">
@@ -287,7 +287,7 @@ export default function AdminDashboardPage() {
                       <div key={idx} className="flex-1 flex flex-col items-center group relative h-full justify-end">
                         {/* Tooltip */}
                         <div className="absolute -top-10 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none scale-90 group-hover:scale-100 z-10">
-                           <div className="bg-[#3E342B] text-white text-[10px] font-black px-3 py-1.5 rounded-lg shadow-xl whitespace-nowrap">
+                           <div className="bg-[#3E342B] text-white text-sm font-black px-3 py-1.5 rounded-lg shadow-xl whitespace-nowrap">
                              ฿{item.revenue.toLocaleString()}
                            </div>
                         </div>
@@ -305,7 +305,7 @@ export default function AdminDashboardPage() {
                         </div>
                         
                         {/* Month Label */}
-                        <div className="mt-4 text-[10px] font-black uppercase tracking-widest text-[#A08D74] group-hover:text-[#8B7355] transition-colors mb-[-1.5rem]">
+                        <div className="mt-4 text-sm font-black uppercase tracking-wider text-[#A08D74] group-hover:text-[#8B7355] transition-colors mb-[-1.5rem]">
                           {item.month}
                         </div>
                       </div>
@@ -325,7 +325,7 @@ export default function AdminDashboardPage() {
                   { label: 'ผู้เช่า', value: summary.tenants, color: 'text-emerald-600' },
                 ].map((s) => (
                   <div key={s.label} className="bg-white border border-[#E5DFD3] rounded-2xl p-5 shadow-sm">
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-[#A08D74] mb-2">{s.label}</p>
+                    <p className="text-sm font-bold uppercase tracking-wider text-[#A08D74] mb-2">{s.label}</p>
                     <p className={`font-display text-3xl font-bold ${s.color}`}>{s.value}</p>
                   </div>
                 ))}
@@ -338,7 +338,7 @@ export default function AdminDashboardPage() {
               <div className="flex items-center justify-between px-7 py-5 border-b border-[#E5DFD3]">
                 <div>
                   <h2 className="font-display text-base font-bold text-[#3E342B]">ผู้ใช้งานในระบบ</h2>
-                  <p className="text-[10px] text-[#A08D74] font-bold uppercase tracking-widest mt-0.5 whitespace-nowrap">
+                  <p className="text-sm text-[#A08D74] font-bold uppercase tracking-wider mt-0.5 whitespace-nowrap">
                     {lastRefresh ? `อัปเดตล่าสุด ${lastRefresh.toLocaleTimeString('th-TH')}` : 'กำลังดึงข้อมูล...'}
                   </p>
                 </div>
@@ -385,7 +385,7 @@ export default function AdminDashboardPage() {
                     <thead className="bg-[#FAF8F5] border-b border-[#E5DFD3]">
                       <tr>
                         {['#', 'ชื่อ-นามสกุล', 'อีเมล', 'บทบาท', 'สถานะ', 'สมัครเมื่อ'].map((h) => (
-                          <th key={h} className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-[#A08D74] whitespace-nowrap">
+                          <th key={h} className="px-6 py-4 text-sm font-bold uppercase tracking-wider text-[#A08D74] whitespace-nowrap">
                             {h}
                           </th>
                         ))}

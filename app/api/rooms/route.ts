@@ -11,24 +11,26 @@ export async function GET(req: NextRequest) {
   try {
     // Migration logic to ensure all columns exist
     await sql`ALTER TABLE rooms ADD COLUMN IF NOT EXISTS tenant_id INTEGER REFERENCES users(id)`;
-    await sql`ALTER TABLE rooms ADD COLUMN IF NOT EXISTS dorm_id INTEGER REFERENCES dormitories(id)`;
+    await sql`ALTER TABLE rooms ADD COLUMN IF NOT EXISTS dorm_id INTEGER REFERENCES dormitory_profile(id)`;
     await sql`ALTER TABLE rooms ADD COLUMN IF NOT EXISTS images TEXT[] DEFAULT '{}'`;
     await sql`ALTER TABLE rooms ADD COLUMN IF NOT EXISTS amenities TEXT[] DEFAULT '{}'`;
 
     let rooms;
     if (dormId) {
       rooms = await sql`
-        SELECT r.id, r.room_number, r.room_type, r.price, r.status, r.floor, r.image_url, r.images, r.amenities, r.created_at, r.tenant_id, u.full_name as tenant_name
+        SELECT r.id, r.room_number, r.room_type, r.price, r.status, r.floor, r.image_url, r.images, r.amenities, r.created_at, r.tenant_id, u.name as tenant_name, d.name as dorm_name
         FROM rooms r
         LEFT JOIN users u ON r.tenant_id = u.id
+        LEFT JOIN dormitory_profile d ON r.dorm_id = d.id
         WHERE r.dorm_id = ${parseInt(dormId)}
         ORDER BY r.room_number ASC
       `;
     } else {
       rooms = await sql`
-        SELECT r.id, r.room_number, r.room_type, r.price, r.status, r.floor, r.image_url, r.images, r.amenities, r.created_at, r.tenant_id, u.full_name as tenant_name
+        SELECT r.id, r.room_number, r.room_type, r.price, r.status, r.floor, r.image_url, r.images, r.amenities, r.created_at, r.tenant_id, u.name as tenant_name, d.name as dorm_name
         FROM rooms r
         LEFT JOIN users u ON r.tenant_id = u.id
+        LEFT JOIN dormitory_profile d ON r.dorm_id = d.id
         ORDER BY r.room_number ASC
       `;
     }

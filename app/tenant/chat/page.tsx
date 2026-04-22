@@ -105,7 +105,7 @@ export default function TenantChatPage() {
       <div className="w-80 lg:w-96 border-r border-black/5 flex flex-col bg-white shrink-0">
         <div className="p-8 border-b border-black/5 bg-[#FDFBF7]">
           <h1 className="text-2xl font-black tracking-tight mb-1 italic">ข้อความแชท</h1>
-          <p className="text-[10px] font-black uppercase tracking-widest text-[#8B7355]">Tenant Messages Center</p>
+          <p className="text-sm font-black uppercase tracking-wider text-[#8B7355]">Tenant Messages Center</p>
         </div>
         
         <div className="flex-1 overflow-y-auto">
@@ -120,7 +120,7 @@ export default function TenantChatPage() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                   </svg>
                </div>
-               <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40 leading-relaxed">ยังไม่มีประวัติการพูดคุย</p>
+               <p className="text-sm font-black uppercase tracking-wider text-muted-foreground/40 leading-normal">ยังไม่มีประวัติการพูดคุย</p>
             </div>
           ) : (
             conversations.map((conv) => (
@@ -130,16 +130,16 @@ export default function TenantChatPage() {
                 className={`w-full p-6 text-left border-b border-black/5 transition-all hover:bg-black/5 group ${selectedConv?.id === conv.id ? 'bg-[#3E342B] text-white' : ''}`}
               >
                 <div className="flex justify-between items-start mb-2">
-                  <p className={`text-xs font-black uppercase tracking-widest ${selectedConv?.id === conv.id ? 'text-white/60' : 'text-[#8B7355]'}`}>{conv.dorm_name}</p>
-                  <p className="text-[9px] opacity-40">{new Date(conv.updated_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
+                  <p className={`text-xs font-black uppercase tracking-wider ${selectedConv?.id === conv.id ? 'text-white/60' : 'text-[#8B7355]'}`}>{conv.dorm_name}</p>
+                  <p className="text-xs opacity-40">{new Date(conv.updated_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
                 </div>
                 <div className="flex items-center justify-between gap-2">
                   <h3 className="font-bold text-sm tracking-tight">{conv.owner_name}</h3>
-                  <span className={`text-[9px] font-black uppercase px-2 py-0.5 rounded-full border ${selectedConv?.id === conv.id ? 'bg-white/10 text-white border-white/10' : 'bg-black/5 text-[#8B7355] border-transparent'}`}>
+                  <span className={`text-xs font-black uppercase px-2 py-0.5 rounded-full border ${selectedConv?.id === conv.id ? 'bg-white/10 text-white border-white/10' : 'bg-black/5 text-[#8B7355] border-transparent'}`}>
                     เจ้าหน้าที่
                   </span>
                 </div>
-                <p className={`text-[10px] truncate opacity-60 mt-2 font-medium ${selectedConv?.id === conv.id ? 'text-white/60' : 'text-[#5A4D41]'}`}>
+                <p className={`text-sm truncate opacity-60 mt-2 font-medium ${selectedConv?.id === conv.id ? 'text-white/60' : 'text-[#5A4D41]'}`}>
                   {conv.last_message || 'เริ่มการสนทนาใหม่...'}
                 </p>
               </button>
@@ -160,7 +160,7 @@ export default function TenantChatPage() {
                 </div>
                 <div>
                   <h2 className="text-lg font-black tracking-tight">{selectedConv.owner_name}</h2>
-                  <p className="text-[10px] font-black uppercase tracking-widest text-[#8B7355]">{selectedConv.dorm_name}</p>
+                  <p className="text-sm font-black uppercase tracking-wider text-[#8B7355]">{selectedConv.dorm_name}</p>
                 </div>
               </div>
               <div className="flex gap-2">
@@ -176,13 +176,13 @@ export default function TenantChatPage() {
                 const isMe = String(msg.sender_id) === String((session?.user as any)?.id);
                 return (
                   <div key={msg.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'} animate-in fade-in slide-in-from-bottom-2 duration-300`}>
-                    <div className={`max-w-[70%] p-6 rounded-[2rem] text-sm font-bold leading-relaxed shadow-sm ${
+                    <div className={`max-w-[70%] p-6 rounded-[2rem] text-sm font-bold leading-normal shadow-sm ${
                       isMe 
                         ? 'bg-[#3E342B] text-white rounded-tr-none shadow-xl shadow-black/10' 
                         : 'bg-white border border-black/5 text-[#3E342B] rounded-tl-none'
                     }`}>
                       {msg.message}
-                      <div className={`text-[9px] mt-2 opacity-50 flex items-center gap-1 ${isMe ? 'justify-end text-white/50' : 'justify-start text-black/30'}`}>
+                      <div className={`text-xs mt-2 opacity-50 flex items-center gap-1 ${isMe ? 'justify-end text-white/50' : 'justify-start text-black/30'}`}>
                         {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       </div>
                     </div>
@@ -204,7 +204,7 @@ export default function TenantChatPage() {
                 <button
                   type="submit"
                   disabled={!newMessage.trim() || sending}
-                  className={`px-10 py-5 bg-[#3E342B] text-white rounded-full text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-all shadow-xl shadow-black/20 flex items-center gap-2 ${
+                  className={`px-10 py-5 bg-[#3E342B] text-white rounded-full text-sm font-black uppercase tracking-wider hover:scale-105 transition-all shadow-xl shadow-black/20 flex items-center gap-2 ${
                     !newMessage.trim() || sending ? 'opacity-50 grayscale cursor-not-allowed shadow-none' : ''
                   }`}
                 >
@@ -221,7 +221,7 @@ export default function TenantChatPage() {
               </svg>
             </div>
             <h3 className="text-xl font-black tracking-tight mb-2">เลือกการสนทนา</h3>
-            <p className="text-[10px] font-black uppercase tracking-widest text-[#8B7355] leading-relaxed max-w-xs">
+            <p className="text-sm font-black uppercase tracking-wider text-[#8B7355] leading-normal max-w-xs">
               เลือกแชทจากรายการด้านซ้ายเพื่อพูดคุยสอบถามข้อมูลกับเจ้าของหอพักของคุณ
             </p>
           </div>

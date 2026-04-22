@@ -4,13 +4,14 @@ import { auth } from '@/auth';
 
 export async function POST(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const session = await auth();
   if (!session?.user?.email) return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
 
   try {
-    const announcementId = parseInt(params.id);
+    const resolvedParams = await params;
+    const announcementId = parseInt(resolvedParams.id);
     if (isNaN(announcementId)) return NextResponse.json({ success: false, message: 'Invalid ID' }, { status: 400 });
 
     const sql = neon(process.env.DATABASE_URL || '');

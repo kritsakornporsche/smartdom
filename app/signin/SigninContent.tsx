@@ -79,7 +79,7 @@ export default function SignInContent() {
 
       <Link
         href="/"
-        className="absolute top-10 left-10 flex items-center gap-3 text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors group"
+        className="absolute top-10 left-10 flex items-center gap-3 text-sm font-bold uppercase tracking-wider text-muted-foreground hover:text-primary transition-colors group"
       >
         <span className="h-px w-8 bg-border group-hover:bg-primary transition-colors" />
         กลับหน้าหลัก
@@ -90,24 +90,24 @@ export default function SignInContent() {
           <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-primary font-display font-bold text-primary-foreground text-xl shadow-2xl shadow-primary/20 mb-8">
             S
           </div>
-          <h1 className="text-4xl font-display tracking-tight text-foreground font-black italic ornament">
+          <h1 className="text-2xl font-display tracking-tight text-foreground font-bold italic ornament">
             พบกันอีกครั้ง
           </h1>
-          <p className="mt-3 text-muted-foreground font-black uppercase text-[10px] tracking-widest">
+          <p className="mt-3 text-muted-foreground font-bold uppercase text-sm tracking-wider">
             เข้าสู่ระบบ SmartDom เพื่อจัดการทุกเรื่องให้เป็นเรื่องง่าย
           </p>
         </div>
 
         <div className="bg-card rounded-[2.5rem] p-10 border border-border shadow-xl">
           {error && (
-            <div className="mb-8 p-4 bg-destructive/10 border border-destructive/20 text-destructive rounded-2xl text-xs font-black text-center">
+            <div className="mb-8 p-4 bg-destructive/10 border border-destructive/20 text-destructive rounded-2xl text-xs font-bold text-center">
               {error}
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
-              <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">อีเมล</label>
+              <label className="text-sm font-bold uppercase tracking-wider text-muted-foreground">อีเมล</label>
               <input
                 type="email"
                 required
@@ -120,8 +120,8 @@ export default function SignInContent() {
 
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">รหัสผ่าน</label>
-                <Link href="#" className="text-[10px] font-black text-primary hover:underline uppercase tracking-widest">ลืมรหัสผ่าน?</Link>
+                <label className="text-sm font-bold uppercase tracking-wider text-muted-foreground">รหัสผ่าน</label>
+                <Link href="#" className="text-sm font-bold text-primary hover:underline uppercase tracking-wider">ลืมรหัสผ่าน?</Link>
               </div>
               <div className="relative">
                 <input
@@ -155,7 +155,7 @@ export default function SignInContent() {
               type="submit"
               disabled={loading}
               className={cn(
-                "w-full rounded-full py-5 text-[10px] font-black uppercase tracking-[0.2em] text-primary-foreground transition-all active:scale-95",
+                "w-full rounded-full py-5 text-sm font-bold uppercase tracking-wide text-primary-foreground transition-all active:scale-95",
                 loading ? "bg-muted cursor-not-allowed" : "bg-primary hover:-translate-y-1 shadow-2xl shadow-primary/20"
               )}
             >
@@ -166,7 +166,7 @@ export default function SignInContent() {
           <div className="mt-10 text-center">
              <Link 
                href={`/signup${callbackUrl ? `?callbackUrl=${encodeURIComponent(callbackUrl)}` : ''}`} 
-               className="text-[10px] font-black text-muted-foreground hover:text-primary uppercase tracking-[0.2em]"
+               className="text-sm font-bold text-muted-foreground hover:text-primary uppercase tracking-wide"
              >
                ยังไม่มีบัญชี? <span className="text-primary border-b border-primary/20">สมัครสมาชิกที่นี่</span>
              </Link>

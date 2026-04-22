@@ -30,7 +30,7 @@ export default function ContractSimulatePage() {
           {/* Controls */}
           <div className="md:col-span-3 space-y-8 bg-white p-8 md:p-10 rounded-[2.5rem] border border-[#E5DFD3] shadow-sm">
             <div>
-              <label className="block text-[11px] font-bold text-[#A08D74] uppercase tracking-widest mb-4">ค่าเช่าห้องต่อเดือน (บาท)</label>
+              <label className="block text-sm font-bold text-[#A08D74] uppercase tracking-wider mb-4">ค่าเช่าห้องต่อเดือน (บาท)</label>
               <div className="flex items-center gap-4">
                 <input 
                   type="range" 
@@ -45,7 +45,7 @@ export default function ContractSimulatePage() {
 
             <div className="grid grid-cols-2 gap-6">
               <div>
-                <label className="block text-[11px] font-bold text-[#A08D74] uppercase tracking-widest mb-3">เงินประกัน (เดือน)</label>
+                <label className="block text-sm font-bold text-[#A08D74] uppercase tracking-wider mb-3">เงินประกัน (เดือน)</label>
                 <div className="flex rounded-xl overflow-hidden border border-[#DCD3C6]">
                    {[1, 2, 3].map(m => (
                      <button
@@ -59,7 +59,7 @@ export default function ContractSimulatePage() {
                 </div>
               </div>
               <div>
-                <label className="block text-[11px] font-bold text-[#A08D74] uppercase tracking-widest mb-3">ล่วงหน้า (เดือน)</label>
+                <label className="block text-sm font-bold text-[#A08D74] uppercase tracking-wider mb-3">ล่วงหน้า (เดือน)</label>
                 <div className="flex rounded-xl overflow-hidden border border-[#DCD3C6]">
                    {[1, 2].map(m => (
                      <button
@@ -75,7 +75,7 @@ export default function ContractSimulatePage() {
             </div>
 
             <div>
-              <label className="block text-[11px] font-bold text-[#A08D74] uppercase tracking-widest mb-4">ระยะเวลาสัญญา (เดือน)</label>
+              <label className="block text-sm font-bold text-[#A08D74] uppercase tracking-wider mb-4">ระยะเวลาสัญญา (เดือน)</label>
               <input 
                 type="range" 
                 min="1" max="24" step="1" 
@@ -96,7 +96,7 @@ export default function ContractSimulatePage() {
             <div className="bg-[#3E342B] rounded-[2.5rem] p-8 md:p-10 text-white shadow-xl shadow-[#3E342B]/20 overflow-hidden relative">
               <div className="absolute top-0 right-0 w-48 h-48 bg-white/5 rounded-full -mr-24 -mt-24 blur-2xl"></div>
               
-              <h3 className="text-sm font-bold text-white/60 tracking-widest uppercase mb-8">สรุปค่าใช้จ่ายวันทำสัญญา</h3>
+              <h3 className="text-sm font-bold text-white/60 tracking-wider uppercase mb-8">สรุปค่าใช้จ่ายวันทำสัญญา</h3>
               
               <div className="space-y-6 relative z-10">
                 <div className="flex justify-between items-end border-b border-white/10 pb-4">
@@ -113,15 +113,15 @@ export default function ContractSimulatePage() {
                 </div>
                 
                 <div className="pt-4">
-                  <p className="text-xs text-[#A08D74] font-bold uppercase tracking-widest mb-2">ยอดรวมที่ต้องชำระ (Total)</p>
-                  <p className="text-4xl md:text-5xl font-black text-[#8B6A2B]">฿{totalRequired.toLocaleString()}</p>
+                  <p className="text-xs text-[#A08D74] font-bold uppercase tracking-wider mb-2">ยอดรวมที่ต้องชำระ (Total)</p>
+                  <p className="text-2xl md:text-3xl font-black text-[#8B6A2B]">฿{totalRequired.toLocaleString()}</p>
                 </div>
               </div>
             </div>
 
             <div className="bg-[#FFF9F9] border border-rose-100 rounded-3xl p-6 flex gap-4">
                 <svg className="w-6 h-6 shrink-0 text-rose-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                <p className="text-sm text-rose-800 font-medium leading-relaxed">
+                <p className="text-sm text-rose-800 font-medium leading-normal">
                   <strong>หมายเหตุ:</strong> ข้อมูลนี้เป็นเพียงการจำลองเพื่อการวางแผนเบื้องต้นเท่านั้น โปรดติดต่อผู้ดูแลหอพักเพื่อตรวจสอบห้องว่างและราคาจริงก่อนทำสัญญา
                 </p>
             </div>

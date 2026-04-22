@@ -32,13 +32,13 @@ export default function Navbar() {
           <div className="h-9 w-9 lg:h-10 lg:w-10 flex items-center justify-center rounded-2xl bg-primary text-primary-foreground font-display font-bold text-base shadow-lg transition-all duration-500 group-hover:bg-foreground group-hover:scale-110 group-hover:rotate-12">
             S
           </div>
-          <span className="text-sm lg:text-base font-display font-black tracking-tight uppercase group-hover:text-primary transition-colors">SmartDom</span>
+          <span className="text-sm lg:text-base font-display font-bold tracking-tight uppercase group-hover:text-primary transition-colors">SmartDom</span>
         </Link>
         
         {/* Navigation Links */}
         <div className="flex items-center gap-4 lg:gap-10">
           <div className="hidden md:flex items-center gap-8 lg:gap-10">
-            <Link href="/explore" className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground hover:text-primary transition-all hover:translate-y-[-1px]">
+            <Link href="/explore" className="text-sm font-bold uppercase tracking-wide text-muted-foreground hover:text-primary transition-all hover:translate-y-[-1px]">
               สำรวจหอพัก
             </Link>
             <div className="h-4 w-px bg-border/40" />
@@ -49,13 +49,15 @@ export default function Navbar() {
           ) : session ? (
             <div className="flex items-center gap-4 lg:gap-6">
               <div className="hidden sm:flex flex-col items-end">
-                <span className="text-[11px] font-black text-foreground leading-none mb-1">
+                <span className="text-sm font-bold text-foreground leading-none mb-1">
                   {session.user?.name || session.user?.email || 'ไม่มีชื่อผู้ใช้'}
                 </span>
                 <div className="flex items-center gap-2">
                    <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-                   <span className="text-[9px] font-black uppercase tracking-[0.1em] text-primary/70">
-                      {(session.user as any)?.role || 'User'}
+                   <span className="text-xs font-bold uppercase tracking-normal text-primary/70">
+                      {((session.user as any)?.role === 'Admin' ? 'แอดมิน' :
+                        (session.user as any)?.role === 'Owner' ? 'เจ้าของหอพัก' :
+                        (session.user as any)?.role === 'Keeper' ? 'ผู้ดูแล' : 'ผู้ใช้งาน')}
                    </span>
                 </div>
               </div>
@@ -70,7 +72,7 @@ export default function Navbar() {
                     '/tenant'
                   }
                   className={cn(
-                    "rounded-xl bg-primary/10 px-4 py-2 text-[10px] font-black uppercase tracking-[0.1em] text-primary",
+                    "rounded-xl bg-primary/10 px-4 py-2 text-sm font-bold uppercase tracking-normal text-primary",
                     "hover:bg-primary hover:text-primary-foreground transition-all duration-300",
                     "shadow-sm hover:shadow-md hover:scale-[1.05] active:scale-95 flex items-center gap-2"
                   )}
@@ -84,9 +86,9 @@ export default function Navbar() {
 
               <button 
                 onClick={() => signOut({ callbackUrl: '/' })}
-                className="text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-destructive transition-all hover:translate-y-[-1px]"
+                className="text-sm font-bold uppercase tracking-wider text-muted-foreground hover:text-destructive transition-all hover:translate-y-[-1px]"
               >
-                {session ? 'ออก' : 'ออกจากระบบ'}
+                {session ? 'ออกจากระบบ' : 'ออกจากระบบ'}
               </button>
             </div>
           ) : (
@@ -94,7 +96,7 @@ export default function Navbar() {
               <Link 
                 href="/signin" 
                 className={cn(
-                  "px-5 py-2.5 rounded-full border border-border text-[10px] font-black uppercase tracking-widest transition-all duration-300",
+                  "px-5 py-2.5 rounded-full border border-border text-sm font-bold uppercase tracking-wider transition-all duration-300",
                   "hover:bg-secondary hover:border-primary/20 hover:text-primary hover:-translate-y-0.5 active:scale-95"
                 )}
               >
@@ -103,12 +105,12 @@ export default function Navbar() {
               <Link 
                 href="/signup" 
                 className={cn(
-                  "rounded-full bg-foreground px-6 sm:px-8 py-2.5 sm:py-3 text-[10px] font-black uppercase tracking-[0.2em] text-background",
+                  "rounded-full bg-foreground px-6 sm:px-8 py-2.5 sm:py-3 text-sm font-bold uppercase tracking-wide text-background",
                   "hover:bg-primary hover:text-primary-foreground transition-all duration-500",
                   "shadow-xl shadow-foreground/5 hover:shadow-primary/20 hover:scale-[1.05] active:scale-95"
                 )}
               >
-                เริ่มเลิย
+                เริ่มใช้งาน
               </Link>
             </div>
           )}

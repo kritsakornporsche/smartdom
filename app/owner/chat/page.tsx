@@ -91,23 +91,23 @@ export default function OwnerChatPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#faf9f6] flex flex-col">
+    <div className="flex-1 flex flex-col overflow-hidden bg-[#faf9f6]">
       <div className="flex-1 flex overflow-hidden">
         {/* Sidebar */}
         <div className="w-80 lg:w-96 bg-white border-r border-black/5 flex flex-col">
           <div className="p-8 border-b border-black/5">
             <h1 className="text-2xl font-display font-black tracking-tight mb-2 italic">ศูนย์จัดการแชท</h1>
-            <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Chat Management Center</p>
+            <p className="text-sm font-black uppercase tracking-wider text-muted-foreground">Chat Management Center</p>
           </div>
           
-          <div className="flex-1 overflow-y-auto">
+          <div className="flex-1 overflow-y-auto custom-scrollbar">
             {loading ? (
               <div className="p-8 space-y-4">
                 {[1, 2, 3].map(i => <div key={i} className="h-20 bg-black/5 animate-pulse rounded-2xl" />)}
               </div>
             ) : conversations.length === 0 ? (
               <div className="p-12 text-center">
-                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40">ยังไม่มีการสนทนา</p>
+                <p className="text-sm font-black uppercase tracking-wider text-muted-foreground/40">ยังไม่มีการสนทนา</p>
               </div>
             ) : (
               conversations.map((conv) => (
@@ -117,12 +117,12 @@ export default function OwnerChatPage() {
                   className={`w-full p-6 text-left border-b border-black/5 transition-all hover:bg-black/5 group ${selectedConv?.id === conv.id ? 'bg-black text-white' : ''}`}
                 >
                   <div className="flex justify-between items-start mb-2">
-                    <p className={`text-xs font-black uppercase tracking-widest ${selectedConv?.id === conv.id ? 'text-primary' : 'text-primary'}`}>{conv.dorm_name}</p>
-                    <p className="text-[9px] opacity-40">{new Date(conv.updated_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
+                    <p className={`text-xs font-black uppercase tracking-wider ${selectedConv?.id === conv.id ? 'text-primary' : 'text-primary'}`}>{conv.dorm_name}</p>
+                    <p className="text-xs opacity-40">{new Date(conv.updated_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
                   </div>
                   <div className="flex items-center justify-between gap-2">
                     <h3 className="font-bold text-sm">{conv.guest_name}</h3>
-                    <span className={`text-[9px] font-black uppercase px-2 py-0.5 rounded-full ${
+                    <span className={`text-xs font-black uppercase px-2 py-0.5 rounded-full ${
                       conv.guest_role === 'tenant' 
                         ? 'bg-[#8B7355] text-white' 
                         : 'bg-black/5 text-[#A08D74]'
@@ -130,7 +130,7 @@ export default function OwnerChatPage() {
                       {conv.guest_role === 'tenant' ? 'ลูกหอ' : 'แขกที่สนใจ'}
                     </span>
                   </div>
-                  <p className={`text-[10px] truncate opacity-60 mt-2 ${selectedConv?.id === conv.id ? 'text-white/60' : ''}`}>{conv.last_message || 'เริ่มการสนทนาใหม่'}</p>
+                  <p className={`text-sm truncate opacity-60 mt-2 ${selectedConv?.id === conv.id ? 'text-white/60' : ''}`}>{conv.last_message || 'เริ่มการสนทนาใหม่'}</p>
                 </button>
               ))
             )}
@@ -145,17 +145,17 @@ export default function OwnerChatPage() {
               <div className="p-6 bg-white border-b border-black/5 flex items-center justify-between">
                 <div>
                   <h2 className="text-lg font-bold">{selectedConv.guest_name}</h2>
-                  <p className="text-[10px] font-black uppercase tracking-widest text-primary">{selectedConv.dorm_name}</p>
+                  <p className="text-sm font-black uppercase tracking-wider text-primary">{selectedConv.dorm_name}</p>
                 </div>
               </div>
 
               {/* Messages */}
-              <div ref={scrollRef} className="flex-1 p-8 overflow-y-auto space-y-6">
+              <div ref={scrollRef} className="flex-1 p-8 overflow-y-auto space-y-6 custom-scrollbar">
                 {messages.map((msg) => {
                   const isMe = String(msg.sender_id) === String((session?.user as any)?.id);
                   return (
                     <div key={msg.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
-                      <div className={`max-w-[60%] p-6 rounded-[2rem] text-sm font-bold leading-relaxed shadow-sm ${isMe ? 'bg-[#3E342B] text-white rounded-tr-none shadow-xl shadow-black/10' : 'bg-white border border-black/5 text-black rounded-tl-none shadow-sm'}`}>
+                      <div className={`max-w-[60%] p-6 rounded-[2rem] text-sm font-bold leading-normal shadow-sm ${isMe ? 'bg-[#3E342B] text-white rounded-tr-none shadow-xl shadow-black/10' : 'bg-white border border-black/5 text-black rounded-tl-none shadow-sm'}`}>
                         {msg.message}
                       </div>
                     </div>
@@ -175,7 +175,7 @@ export default function OwnerChatPage() {
                   />
                   <button
                     type="submit"
-                    className="px-10 py-5 bg-primary text-primary-foreground rounded-full text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-all shadow-xl shadow-primary/20"
+                    className="px-10 py-5 bg-primary text-primary-foreground rounded-full text-sm font-black uppercase tracking-wider hover:scale-105 transition-all shadow-xl shadow-primary/20"
                   >
                     ส่งข้อความ
                   </button>
@@ -188,7 +188,7 @@ export default function OwnerChatPage() {
                 <svg className="w-10 h-10 text-black/10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" /></svg>
               </div>
               <h3 className="text-xl font-display font-black tracking-tight mb-2">เลือกการสนทนา</h3>
-              <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40 leading-relaxed max-w-xs">
+              <p className="text-sm font-black uppercase tracking-wider text-muted-foreground/40 leading-normal max-w-xs">
                 เลือกแชทจากรายการด้านซ้ายเพื่อพูดคุยและตอบคำถามแขกที่สนใจหอพักของคุณ
               </p>
             </div>

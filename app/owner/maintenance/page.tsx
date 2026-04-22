@@ -91,12 +91,12 @@ export default function OwnerMaintenancePage() {
   };
 
   return (
-    <div className="flex-1 flex flex-col h-screen bg-[#FDFBF7] overflow-hidden overflow-y-auto p-8 lg:p-12">
+    <div className="flex-1 flex flex-col bg-[#FDFBF7] overflow-y-auto p-8 lg:p-12 scroll-smooth custom-scrollbar">
       <div className="max-w-6xl mx-auto w-full space-y-10">
         
         <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 border-b border-[#E5DFD3] pb-8">
            <div>
-             <h1 className="text-4xl font-black text-[#3E342B] tracking-tight">การจัดการแจ้งซ่อม</h1>
+             <h1 className="text-2xl font-black text-[#3E342B] tracking-tight">การจัดการแจ้งซ่อม</h1>
              <p className="text-[#8B7355] mt-2 font-medium">ติดตามและอัปเดตสถานะปัญหาการใช้งานของผู้เช่า</p>
            </div>
         </header>
@@ -105,21 +105,21 @@ export default function OwnerMaintenancePage() {
            <div className="bg-white p-6 rounded-3xl border border-[#E5DFD3] shadow-sm flex items-center gap-6">
               <div className="w-14 h-14 bg-amber-50 rounded-2xl flex items-center justify-center text-amber-500 text-2xl font-bold">!</div>
               <div>
-                 <p className="text-[10px] text-[#A08D74] font-black uppercase tracking-widest">รอดำเนินการ</p>
+                 <p className="text-sm text-[#A08D74] font-black uppercase tracking-wider">รอดำเนินการ</p>
                  <p className="text-2xl font-black text-[#3E342B]">{requests.filter(r => r.status === 'Pending').length}</p>
               </div>
            </div>
            <div className="bg-white p-6 rounded-3xl border border-[#E5DFD3] shadow-sm flex items-center gap-6">
               <div className="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-500 text-2xl font-bold">⚙</div>
               <div>
-                 <p className="text-[10px] text-[#A08D74] font-black uppercase tracking-widest">กำลังดำเนินการ</p>
+                 <p className="text-sm text-[#A08D74] font-black uppercase tracking-wider">กำลังดำเนินการ</p>
                  <p className="text-2xl font-black text-[#3E342B]">{requests.filter(r => r.status === 'In Progress').length}</p>
               </div>
            </div>
            <div className="bg-white p-6 rounded-3xl border border-[#E5DFD3] shadow-sm flex items-center gap-6">
               <div className="w-14 h-14 bg-emerald-50 rounded-2xl flex items-center justify-center text-emerald-500 text-2xl font-bold">✓</div>
               <div>
-                 <p className="text-[10px] text-[#A08D74] font-black uppercase tracking-widest">ดำเนินการเสร็จสิ้น</p>
+                 <p className="text-sm text-[#A08D74] font-black uppercase tracking-wider">ดำเนินการเสร็จสิ้น</p>
                  <p className="text-2xl font-black text-[#3E342B]">{requests.filter(r => r.status === 'Resolved').length}</p>
               </div>
            </div>
@@ -130,10 +130,10 @@ export default function OwnerMaintenancePage() {
              <table className="w-full text-left border-collapse">
                 <thead className="bg-[#FAF8F5] hidden sm:table-header-group border-b border-[#F3EFE9]">
                    <tr>
-                      <th className="px-8 py-5 text-[10px] font-black text-[#A08D74] uppercase tracking-widest">ห้อง</th>
-                      <th className="px-8 py-5 text-[10px] font-black text-[#A08D74] uppercase tracking-widest">ข้อมูลผู้แจ้ง</th>
-                      <th className="px-8 py-5 text-[10px] font-black text-[#A08D74] uppercase tracking-widest">รายละเอียดปัญหา</th>
-                      <th className="px-8 py-5 text-[10px] font-black text-[#A08D74] uppercase tracking-widest w-48">สถานะ / อัปเดต</th>
+                      <th className="px-8 py-5 text-sm font-black text-[#A08D74] uppercase tracking-wider">ห้อง</th>
+                      <th className="px-8 py-5 text-sm font-black text-[#A08D74] uppercase tracking-wider">ข้อมูลผู้แจ้ง</th>
+                      <th className="px-8 py-5 text-sm font-black text-[#A08D74] uppercase tracking-wider">รายละเอียดปัญหา</th>
+                      <th className="px-8 py-5 text-sm font-black text-[#A08D74] uppercase tracking-wider w-48">สถานะ / อัปเดต</th>
                    </tr>
                 </thead>
                 <tbody className="divide-y divide-[#F3EFE9] flex flex-col sm:table-row-group">
@@ -148,30 +148,30 @@ export default function OwnerMaintenancePage() {
                    ) : requests.map((req) => (
                       <tr key={req.id} className="hover:bg-[#FAF8F5] transition-colors flex flex-col sm:table-row p-6 sm:p-0">
                          <td className="px-0 sm:px-8 py-2 sm:py-6 align-top">
-                            <span className="inline-flex sm:hidden text-[10px] font-black text-[#A08D74] uppercase tracking-widest mb-1">ห้อง</span>
+                            <span className="inline-flex sm:hidden text-sm font-black text-[#A08D74] uppercase tracking-wider mb-1">ห้อง</span>
                             <div className="w-12 h-12 bg-[#F3EFE9] rounded-xl flex items-center justify-center text-[#3E342B] font-black text-lg">
                                {req.room_number || '-'}
                             </div>
                          </td>
                          <td className="px-0 sm:px-8 py-3 sm:py-6 align-top">
-                            <span className="inline-flex sm:hidden text-[10px] font-black text-[#A08D74] uppercase tracking-widest mb-1">ข้อมูลผู้แจ้ง</span>
+                            <span className="inline-flex sm:hidden text-sm font-black text-[#A08D74] uppercase tracking-wider mb-1">ข้อมูลผู้แจ้ง</span>
                             <p className="font-bold text-[#3E342B]">{req.tenant_name || 'ไม่ระบุชื่อ'}</p>
-                            <p className="text-[10px] font-bold text-[#A08D74]">{new Date(req.created_at).toLocaleDateString('th-TH')}</p>
+                            <p className="text-sm font-bold text-[#A08D74]">{new Date(req.created_at).toLocaleDateString('th-TH')}</p>
                          </td>
                          <td className="px-0 sm:px-8 py-3 sm:py-6 align-top">
-                            <span className="inline-flex sm:hidden text-[10px] font-black text-[#A08D74] uppercase tracking-widest mb-1">รายละเอียดปัญหา</span>
+                            <span className="inline-flex sm:hidden text-sm font-black text-[#A08D74] uppercase tracking-wider mb-1">รายละเอียดปัญหา</span>
                             <div className="bg-rose-50 border border-rose-100 text-rose-800 px-3 py-1 rounded-lg text-xs font-bold inline-block mb-2">
                                {req.issue_type}
                             </div>
-                            <p className="text-sm font-medium text-[#5A4D41] whitespace-pre-line leading-relaxed">{req.description}</p>
+                            <p className="text-sm font-medium text-[#5A4D41] whitespace-pre-line leading-normal">{req.description}</p>
                          </td>
                          <td className="px-0 sm:px-8 py-4 sm:py-6 align-top">
-                            <span className="inline-flex sm:hidden text-[10px] font-black text-[#A08D74] uppercase tracking-widest mb-3">สถานะ</span>
+                            <span className="inline-flex sm:hidden text-sm font-black text-[#A08D74] uppercase tracking-wider mb-3">สถานะ</span>
                             <select 
                                value={req.status}
                                onChange={(e) => updateStatus(req.id, e.target.value)}
                                className={cn(
-                                  "w-full text-xs font-black uppercase tracking-widest px-4 py-3 rounded-xl border-2 outline-none cursor-pointer",
+                                  "w-full text-xs font-black uppercase tracking-wider px-4 py-3 rounded-xl border-2 outline-none cursor-pointer",
                                   getStatusColor(req.status)
                                )}
                             >

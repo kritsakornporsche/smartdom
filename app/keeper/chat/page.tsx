@@ -24,7 +24,7 @@ export default function KeeperChatPage() {
                 <div className="flex-1 p-8 overflow-y-auto flex flex-col gap-4">
                     {room ? (
                         <>
-                            <div className="text-center text-xs text-[#A08D74] font-bold uppercase tracking-widest my-4">เริ่มต้นการสนทนากับห้อง {room}</div>
+                            <div className="text-center text-xs text-[#A08D74] font-bold uppercase tracking-wider my-4">เริ่มต้นการสนทนากับห้อง {room}</div>
                             <div className="self-end bg-[#8B7355] text-white px-6 py-4 rounded-[2rem] rounded-tr-sm max-w-sm text-sm shadow-md">
                                 สวัสดีครับ ผมช่างประจำหอพัก จะขอเข้าไปซ่อมแซมช่วง 14:00 น. วันนี้สะดวกไหมครับ?
                             </div>

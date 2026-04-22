@@ -118,7 +118,7 @@ export default function KeeperSidebar() {
             <span className="font-display font-bold text-sm tracking-tight text-[#3E342B] leading-none">
               SmartDom
             </span>
-            <span className="text-[10px] font-bold text-[#A08D74] mt-1">
+            <span className="text-sm font-bold text-[#A08D74] mt-1">
               {subRole === 'technician' ? 'TECHNICIAN' : subRole === 'maid' ? 'MAID' : 'KEEPER'}
             </span>
           </div>
@@ -127,7 +127,7 @@ export default function KeeperSidebar() {
 
       {/* Navigation */}
       <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
-        <p className="px-4 py-2 text-[10px] font-black uppercase tracking-[0.25em] text-[#A08D74]/60 mb-2">
+        <p className="px-4 py-2 text-sm font-black uppercase tracking-wide text-[#A08D74]/60 mb-2">
           Dashboard
         </p>
         {navItems.length > 0 ? (
@@ -146,7 +146,7 @@ export default function KeeperSidebar() {
                 <span className={`transition-transform group-hover:scale-110 ${isActive ? 'text-white' : ''}`}>{item.icon}</span>
                 {item.label}
                 {item.badge !== undefined && item.badge > 0 && (
-                   <span className={`ml-auto px-2 py-0.5 rounded-full text-[9px] font-black ${isActive ? 'bg-white text-[#8B7355]' : 'bg-rose-500 text-white animate-pulse'}`}>
+                   <span className={`ml-auto px-2 py-0.5 rounded-full text-xs font-black ${isActive ? 'bg-white text-[#8B7355]' : 'bg-rose-500 text-white animate-pulse'}`}>
                       {item.badge}
                    </span>
                 )}

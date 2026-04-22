@@ -59,7 +59,7 @@ export default function AnnouncementsSection() {
           <h3 className="text-sm font-bold text-[#3E342B] flex items-center gap-2">
             <span className="text-lg">📢</span> ประกาศและข่าวสารลำสุด
           </h3>
-          <span className="text-[10px] font-bold text-[#A08D74] bg-[#FAF8F5] px-2 py-0.5 rounded-md">
+          <span className="text-sm font-bold text-[#A08D74] bg-[#FAF8F5] px-2 py-0.5 rounded-md">
             {news.length} รายการ
           </span>
         </div>
@@ -73,8 +73,8 @@ export default function AnnouncementsSection() {
                 </div>
                 <div className="min-w-0">
                   <h4 className="text-xs font-bold text-[#3E342B] truncate">{item.title}</h4>
-                  <p className="text-[10px] text-[#A08D74] mt-1 line-clamp-1">{item.content}</p>
-                  <p className="text-[9px] text-[#A08D74]/60 mt-2 font-medium">
+                  <p className="text-sm text-[#A08D74] mt-1 line-clamp-1">{item.content}</p>
+                  <p className="text-xs text-[#A08D74]/60 mt-2 font-medium">
                     {new Date(item.created_at).toLocaleDateString('th-TH', { day: 'numeric', month: 'short' })}
                   </p>
                 </div>
@@ -101,11 +101,11 @@ export default function AnnouncementsSection() {
                     </button>
                  </div>
                  <h2 className="text-2xl font-black text-[#3E342B] mb-4">{selectedNews.title}</h2>
-                 <p className="text-xs font-black text-[#8B7355] uppercase tracking-widest mb-8 flex items-center gap-2">
+                 <p className="text-xs font-black text-[#8B7355] uppercase tracking-wider mb-8 flex items-center gap-2">
                     <span className="h-1 w-8 bg-[#8B7355] rounded-full"></span>
                     {new Date(selectedNews.created_at).toLocaleDateString('th-TH', { day: 'numeric', month: 'long', year: 'numeric' })}
                  </p>
-                 <div className="text-sm font-medium text-[#564D44] leading-relaxed bg-[#FAF8F5] p-8 rounded-3xl border border-[#E5DFD3]/50 whitespace-pre-wrap">
+                 <div className="text-sm font-medium text-[#564D44] leading-normal bg-[#FAF8F5] p-8 rounded-3xl border border-[#E5DFD3]/50 whitespace-pre-wrap">
                     {selectedNews.content}
                  </div>
                  <button 

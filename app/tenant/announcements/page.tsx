@@ -80,17 +80,17 @@ export default async function TenantAnnouncements() {
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-4">
                       {ann.is_important ? (
-                        <div className="inline-flex items-center gap-1.5 bg-rose-50 text-rose-600 px-3 py-1 rounded-lg border border-rose-100 text-[10px] font-black uppercase tracking-widest">
+                        <div className="inline-flex items-center gap-1.5 bg-rose-50 text-rose-600 px-3 py-1 rounded-lg border border-rose-100 text-sm font-black uppercase tracking-wider">
                           <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse"></span>
                           ประกาศสำคัญ
                         </div>
                       ) : (
-                        <div className="inline-flex items-center gap-1.5 bg-[#FAF8F5] text-[#8B7355] px-3 py-1 rounded-lg border border-[#E5DFD3] text-[10px] font-black uppercase tracking-widest">
+                        <div className="inline-flex items-center gap-1.5 bg-[#FAF8F5] text-[#8B7355] px-3 py-1 rounded-lg border border-[#E5DFD3] text-sm font-black uppercase tracking-wider">
                           อัปเดตทั่วไป
                         </div>
                       )}
                       
-                      <div className="text-[10px] font-bold text-[#A08D74] uppercase tracking-widest font-mono">
+                      <div className="text-sm font-bold text-[#A08D74] uppercase tracking-wider font-mono">
                         {new Date(ann.created_at).toLocaleDateString('th-TH', { 
                           year: 'numeric', month: 'long', day: 'numeric' 
                         })}
@@ -100,14 +100,14 @@ export default async function TenantAnnouncements() {
                     <h2 className="text-xl md:text-2xl font-bold text-[#3E342B] tracking-tight mb-3">
                       {ann.title}
                     </h2>
-                    <p className={`leading-relaxed text-sm ${ann.is_read ? 'text-[#8B7355]' : 'text-[#5A4D41]'}`}>
+                    <p className={`leading-normal text-sm ${ann.is_read ? 'text-[#8B7355]' : 'text-[#5A4D41]'}`}>
                       {ann.content}
                     </p>
                   </div>
 
                   <div className="shrink-0 flex flex-col items-start md:items-end w-full md:w-auto mt-4 md:mt-0 pt-6 md:pt-0 border-t md:border-t-0 border-[#E5DFD3] gap-3">
                     {ann.is_read ? (
-                      <div className="flex items-center gap-2 text-emerald-600 font-bold text-[10px] uppercase tracking-widest bg-emerald-50 px-4 py-2.5 rounded-xl border border-emerald-100">
+                      <div className="flex items-center gap-2 text-emerald-600 font-bold text-sm uppercase tracking-wider bg-emerald-50 px-4 py-2.5 rounded-xl border border-emerald-100">
                         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" /></svg>
                         รับทราบเมื่อ {new Date(ann.read_at).toLocaleDateString('th-TH', { day: 'numeric', month: 'short' })}
                       </div>

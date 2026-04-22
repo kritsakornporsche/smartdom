@@ -89,13 +89,13 @@ export default function AdminJobsPage() {
           <div className="flex bg-accent/30 p-1 rounded-2xl border border-border">
             <button 
               onClick={() => setActiveTab('maintenance')}
-              className={`px-6 py-2 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${activeTab === 'maintenance' ? 'bg-white text-primary shadow-sm' : 'text-muted-foreground'}`}
+              className={`px-6 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all ${activeTab === 'maintenance' ? 'bg-white text-primary shadow-sm' : 'text-muted-foreground'}`}
             >
               งานซ่อมบำรุง
             </button>
             <button 
               onClick={() => setActiveTab('cleaning')}
-              className={`px-6 py-2 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${activeTab === 'cleaning' ? 'bg-white text-primary shadow-sm' : 'text-muted-foreground'}`}
+              className={`px-6 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all ${activeTab === 'cleaning' ? 'bg-white text-primary shadow-sm' : 'text-muted-foreground'}`}
             >
               งานทำความสะอาด
             </button>
@@ -113,7 +113,7 @@ export default function AdminJobsPage() {
               <div className="grid grid-cols-1 gap-6">
                 {(activeTab === 'maintenance' ? maintenanceJobs : cleaningJobs).length === 0 ? (
                   <div className="bg-white border border-border rounded-3xl p-20 text-center shadow-sm">
-                    <span className="text-6xl mb-6 block">✨</span>
+                    <span className="text-2xl mb-6 block">✨</span>
                     <h3 className="font-display text-xl font-semibold">ไม่มีงานค้างในระบบ</h3>
                     <p className="text-muted-foreground mt-2">พนักงานจัดการงานทั้งหมดเสร็จเรียบร้อยแล้ว</p>
                   </div>
@@ -125,12 +125,12 @@ export default function AdminJobsPage() {
                         {job.photo_url ? (
                           <img src={job.photo_url} alt="Job evidence" className="w-full h-full object-cover transition-transform group-hover:scale-105 duration-700" />
                         ) : (
-                          <div className="w-full h-full flex items-center justify-center text-muted-foreground font-bold text-[10px] uppercase tracking-widest bg-accent shadow-inner">
+                          <div className="w-full h-full flex items-center justify-center text-muted-foreground font-bold text-sm uppercase tracking-wider bg-accent shadow-inner">
                             ไม่มีหลักฐานภาพถ่าย
                           </div>
                         )}
                         <div className="absolute top-4 left-4">
-                          <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border backdrop-blur-md ${getStatusBadge(job.status)}`}>
+                          <span className={`px-4 py-1.5 rounded-full text-sm font-black uppercase tracking-wider border backdrop-blur-md ${getStatusBadge(job.status)}`}>
                             {job.status}
                           </span>
                         </div>
@@ -140,7 +140,7 @@ export default function AdminJobsPage() {
                       <div className="flex-1 p-8">
                         <div className="flex flex-col lg:flex-row justify-between lg:items-center gap-4 mb-6">
                           <div>
-                            <div className="text-[10px] font-black uppercase tracking-widest text-primary mb-1">
+                            <div className="text-sm font-black uppercase tracking-wider text-primary mb-1">
                               {activeTab === 'maintenance' ? (job as any).urgency : (job as any).job_type} · ห้อง {job.room_number}
                             </div>
                             <h3 className="text-xl font-display font-bold text-foreground">
@@ -148,27 +148,27 @@ export default function AdminJobsPage() {
                             </h3>
                           </div>
                           <div className="text-right">
-                             <div className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-1">พนักงานที่รับผิดชอบ</div>
+                             <div className="text-sm font-black uppercase tracking-wider text-muted-foreground mb-1">พนักงานที่รับผิดชอบ</div>
                              <div className="text-sm font-bold text-foreground">{job.keeper_name || 'รอดำเนินการ'}</div>
                           </div>
                         </div>
 
                         <div className="bg-accent/30 p-5 rounded-2xl mb-8 border border-border/40">
-                          <div className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-2">บันทึกเพิ่มเติมจากพนักงาน</div>
-                          <p className="text-sm font-medium text-foreground italic leading-relaxed">
+                          <div className="text-sm font-black uppercase tracking-wider text-muted-foreground mb-2">บันทึกเพิ่มเติมจากพนักงาน</div>
+                          <p className="text-sm font-medium text-foreground italic leading-normal">
                             "{job.notes || 'ไม่มีบันทึกเพิ่มเติม'}"
                           </p>
                         </div>
 
                         <div className="flex items-center justify-between pt-6 border-t border-border">
-                          <div className="text-[10px] font-bold text-muted-foreground tracking-widest uppercase">
+                          <div className="text-sm font-bold text-muted-foreground tracking-wider uppercase">
                              แจ้งเมื่อ: {new Date(job.created_at).toLocaleString('th-TH')}
                           </div>
                           <div className="flex gap-3">
                             {job.status !== 'เสร็จสิ้น' && job.status !== 'Completed' && (
                               <button 
                                 onClick={() => updateJobStatus(job.id, activeTab, 'เสร็จสิ้น')}
-                                className="px-6 py-2.5 bg-primary text-primary-foreground text-[10px] font-black uppercase tracking-widest rounded-full hover:scale-105 transition-transform"
+                                className="px-6 py-2.5 bg-primary text-primary-foreground text-sm font-black uppercase tracking-wider rounded-full hover:scale-105 transition-transform"
                               >
                                 อนุมัติการส่งงาน
                               </button>

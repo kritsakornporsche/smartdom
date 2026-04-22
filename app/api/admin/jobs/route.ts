@@ -7,7 +7,7 @@ export async function GET() {
     
     // Fetch cleaning jobs
     const cleaningJobs = await sql`
-      SELECT c.*, r.room_number, u.name as keeper_name
+      SELECT c.*, r.room_number, u.full_name as keeper_name
       FROM cleaning_jobs c
       LEFT JOIN rooms r ON c.room_id = r.id
       LEFT JOIN users u ON c.assigned_to = u.id
@@ -16,7 +16,7 @@ export async function GET() {
     
     // Fetch maintenance jobs
     const maintenanceJobs = await sql`
-      SELECT m.*, r.room_number, u.name as keeper_name
+      SELECT m.*, r.room_number, u.full_name as keeper_name
       FROM maintenance_jobs m
       LEFT JOIN rooms r ON m.room_id = r.id
       LEFT JOIN users u ON m.assigned_to = u.id
@@ -51,16 +51,25 @@ export async function PATCH(request: Request) {
     }
     
     const sql = neon(process.env.DATABASE_URL || '');
-    const table = type === 'cleaning' ? 'cleaning_jobs' : 'maintenance_jobs';
     
-    const result = await sql`
-      UPDATE ${sql(table)}
-      SET status = ${status}
-      WHERE id = ${id}
-      RETURNING *
-    `;
+    let result;
+    if (type === 'cleaning') {
+      result = await sql`
+        UPDATE cleaning_jobs
+        SET status = ${status}
+        WHERE id = ${id}
+        RETURNING *
+      `;
+    } else {
+      result = await sql`
+        UPDATE maintenance_jobs
+        SET status = ${status}
+        WHERE id = ${id}
+        RETURNING *
+      `;
+    }
     
-    return NextResponse.json({ success: true, message: 'Status updated successfully', data: result[0] });
+    return NextResponse.json({ success: true, message: 'Status updated successfully', data: result ? result[0] : null });
   } catch (error) {
     console.error('Error updating job status:', error);
     return NextResponse.json({ success: false, message: 'Failed to update status' }, { status: 500 });

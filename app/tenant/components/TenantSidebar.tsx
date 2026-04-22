@@ -119,14 +119,14 @@ export default function TenantSidebar() {
           </div>
           <div>
             <span className="font-display font-bold text-base tracking-tight text-[#3E342B] block leading-tight">SmartDom</span>
-            <span className="text-[9px] uppercase tracking-widest text-[#8B7355] font-semibold leading-tight block">Tenant Portal</span>
+            <span className="text-xs uppercase tracking-wider text-[#8B7355] font-semibold leading-tight block">Tenant Portal</span>
           </div>
         </div>
       </div>
 
       {/* Navigation */}
       <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
-        <p className="px-4 py-2 text-[10px] font-bold uppercase tracking-[0.2em] text-[#A08D74] mb-2">
+        <p className="px-4 py-2 text-sm font-bold uppercase tracking-wide text-[#A08D74] mb-2">
           เมนูหลัก
         </p>
         {navItems.map((item) => {

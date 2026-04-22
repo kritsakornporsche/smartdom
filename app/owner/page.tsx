@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
-
+import { useSession } from 'next-auth/react';
 
 interface Stats {
   totalRooms: number;
@@ -14,6 +14,7 @@ interface Stats {
 }
 
 export default function OwnerDashboard() {
+  const { data: session, status } = useSession();
   const [stats, setStats] = useState<Stats>({
     totalRooms: 0,
     occupiedRooms: 0,
@@ -26,10 +27,16 @@ export default function OwnerDashboard() {
   const router = useRouter();
 
   useEffect(() => {
+    if (status === 'loading') return;
+    if (status === 'unauthenticated') {
+      router.push('/signin');
+      return;
+    }
+
     const checkOnboarding = async () => {
-      const email = localStorage.getItem('userEmail') || 'owner@smartdom.com';
+      if (!session?.user?.email) return;
       try {
-        const res = await fetch(`/api/owner/onboarding?email=${email}`);
+        const res = await fetch(`/api/owner/onboarding?email=${session.user.email}`);
         const data = await res.json();
         
         if (data.success && !data.hasDorm) {
@@ -53,24 +60,24 @@ export default function OwnerDashboard() {
     };
 
     checkOnboarding();
-  }, [router]);
+  }, [router, session, status]);
 
-  if (loading) return (
+  if (loading || status === 'loading') return (
     <div className="h-screen flex items-center justify-center bg-[#FDFBF7]">
       <div className="flex flex-col items-center gap-4">
         <div className="w-12 h-12 border-4 border-[#8B7355] border-t-transparent rounded-full animate-spin" />
-        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#8B7355]">กำลังโหลดข้อมูล...</p>
+        <p className="text-sm font-black uppercase tracking-wider text-[#8B7355]">กำลังโหลดข้อมูล...</p>
       </div>
     </div>
   );
 
   return (
-    <div className="flex-1 flex flex-col overflow-hidden">
+    <div className="flex-1 flex flex-col overflow-hidden bg-[#FDFBF7]">
       {/* Top Navbar */}
       <header className="h-20 bg-white/60 backdrop-blur-md border-b border-[#E5DFD3] flex items-center justify-between px-10 shrink-0 sticky top-0 z-10">
         <div className="flex flex-col">
           <h1 className="text-xl font-black tracking-tight text-[#3E342B]">Dashboard</h1>
-          <p className="text-[10px] font-bold text-[#A08D74] uppercase tracking-widest">การดำเนินงานสรุปรายวัน</p>
+          <p className="text-sm font-bold text-[#A08D74] uppercase tracking-wider">การดำเนินงานสรุปรายวัน</p>
         </div>
 
         <div className="flex items-center gap-6">
@@ -85,7 +92,7 @@ export default function OwnerDashboard() {
       </header>
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto p-10 bg-[#FDFBF7]">
+      <div className="flex-1 overflow-y-auto p-8 lg:p-12 scroll-smooth custom-scrollbar">
         <div className="max-w-6xl mx-auto space-y-10">
           
           {/* Welcome Section */}
@@ -94,7 +101,7 @@ export default function OwnerDashboard() {
             <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
               <div className="flex-1">
                 <h2 className="text-3xl font-black text-[#3E342B] mb-2">สวัสดีครับ, คุณเจ้าของหอ! 👋</h2>
-                <p className="text-[#A08D74] font-medium leading-relaxed max-w-md">
+                <p className="text-[#A08D74] font-medium leading-normal max-w-md">
                   ยินดีต้อนรับสู่ระบบจัดการ SmartDom วันนี้หอพักของคุณมีการจองใหม่ 0 รายการ และมีการแจ้งซ่อม 1 รายการ
                 </p>
                 <div className="mt-8 flex gap-3">
@@ -140,7 +147,7 @@ export default function OwnerDashboard() {
                   {item.icon}
                 </div>
                 <div>
-                  <p className="text-[10px] font-bold text-[#A08D74] border uppercase tracking-widest mb-1 border-none">{item.label}</p>
+                  <p className="text-sm font-bold text-[#A08D74] border uppercase tracking-wider mb-1 border-none">{item.label}</p>
                   <p className="text-2xl font-black text-[#5A4D41] tracking-tight">{item.value}</p>
                 </div>
               </div>
@@ -164,17 +171,17 @@ export default function OwnerDashboard() {
               <div className="p-8 space-y-6 text-sm">
                   <div className="grid grid-cols-2 gap-8">
                     <div>
-                       <label className="block text-[10px] font-bold text-[#A08D74] uppercase tracking-widest mb-1.5">ชื่อกิจการ</label>
+                       <label className="block text-sm font-bold text-[#A08D74] uppercase tracking-wider mb-1.5">ชื่อกิจการ</label>
                        <div className="font-bold text-[#3E342B]">{dormInfo?.name || 'SmartDom Mansion'}</div>
                     </div>
                     <div>
-                       <label className="block text-[10px] font-bold text-[#A08D74] uppercase tracking-widest mb-1.5">เบอร์โทรศัพท์</label>
+                       <label className="block text-sm font-bold text-[#A08D74] uppercase tracking-wider mb-1.5">เบอร์โทรศัพท์</label>
                        <div className="font-bold text-[#3E342B]">{dormInfo?.phone || '088-999-8888'}</div>
                     </div>
                  </div>
                  <div>
-                    <label className="block text-[10px] font-bold text-[#A08D74] uppercase tracking-widest mb-1.5">ที่ตั้งหอพัก</label>
-                    <div className="font-bold text-[#3E342B] leading-relaxed">
+                    <label className="block text-sm font-bold text-[#A08D74] uppercase tracking-wider mb-1.5">ที่ตั้งหอพัก</label>
+                    <div className="font-bold text-[#3E342B] leading-normal">
                       {dormInfo?.address || '888 ถนนพระราม 9 แขวงห้วยขวาง เขตห้วยขวาง กรุงเทพฯ 10310'}
                     </div>
                  </div>

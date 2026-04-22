@@ -51,7 +51,7 @@ export default function MoveOutForm() {
 
       <div className="grid sm:grid-cols-2 gap-8 mb-8">
         <div>
-          <label className="block text-[11px] font-bold text-[#A08D74] uppercase tracking-wider mb-2 font-mono ml-1">วันที่ต้องการย้ายออก</label>
+          <label className="block text-sm font-bold text-[#A08D74] uppercase tracking-wider mb-2 font-mono ml-1">วันที่ต้องการย้ายออก</label>
           <input 
             type="date" 
             name="date"
@@ -60,7 +60,7 @@ export default function MoveOutForm() {
           />
         </div>
         <div>
-          <label className="block text-[11px] font-bold text-[#A08D74] uppercase tracking-wider mb-2 font-mono ml-1">เบอร์โทรศัพท์ติดต่อกลับ</label>
+          <label className="block text-sm font-bold text-[#A08D74] uppercase tracking-wider mb-2 font-mono ml-1">เบอร์โทรศัพท์ติดต่อกลับ</label>
           <input 
             type="tel" 
             name="phone"
@@ -71,11 +71,11 @@ export default function MoveOutForm() {
       </div>
 
       <div className="mb-10">
-        <label className="block text-[11px] font-bold text-[#A08D74] uppercase tracking-wider mb-2 font-mono ml-1">เหตุผลที่ต้องการย้ายออก</label>
+        <label className="block text-sm font-bold text-[#A08D74] uppercase tracking-wider mb-2 font-mono ml-1">เหตุผลที่ต้องการย้ายออก</label>
         <textarea 
           name="reason"
           rows={4}
-          className="w-full px-5 py-4 bg-[#FAF8F5] rounded-2xl border border-[#DCD3C6] focus:bg-white focus:ring-4 focus:ring-[#8B6A2B]/10 focus:border-[#8B6A2B] outline-none transition-all text-[#3E342B] font-medium resize-none leading-relaxed"
+          className="w-full px-5 py-4 bg-[#FAF8F5] rounded-2xl border border-[#DCD3C6] focus:bg-white focus:ring-4 focus:ring-[#8B6A2B]/10 focus:border-[#8B6A2B] outline-none transition-all text-[#3E342B] font-medium resize-none leading-normal"
           placeholder="ระบุเหตุผลเบื้องต้นเพื่อให้เรานำไปพัฒนาบริการ..."
         ></textarea>
       </div>

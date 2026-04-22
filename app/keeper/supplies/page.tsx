@@ -39,10 +39,10 @@ export default function SuppliesPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                  {MOCK_INVENTORY.map(item => (
                      <div key={item.id} className="bg-white border border-[#E5DFD3] rounded-[2rem] p-6 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
-                         <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:scale-110 transition-transform text-4xl">
+                         <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:scale-110 transition-transform text-2xl">
                              {(item.category === 'อะไหล่ช่าง') ? '🔧' : '🧽'}
                          </div>
-                         <p className="text-[10px] font-black uppercase tracking-widest text-[#A08D74] mb-1">{item.category}</p>
+                         <p className="text-sm font-black uppercase tracking-wider text-[#A08D74] mb-1">{item.category}</p>
                          <h3 className="text-base font-bold text-[#3E342B] mb-4">{item.name}</h3>
                          <div className="flex items-end justify-between">
                              <div>
@@ -50,7 +50,7 @@ export default function SuppliesPage() {
                                  <span className="text-xs font-bold text-[#A08D74] ml-1.5">{item.unit}</span>
                              </div>
                              {item.stock < 5 && (
-                                 <span className="text-[10px] font-bold text-rose-500 bg-rose-50 px-2 py-1 rounded-md">ใกล้หมด</span>
+                                 <span className="text-sm font-bold text-rose-500 bg-rose-50 px-2 py-1 rounded-md">ใกล้หมด</span>
                              )}
                          </div>
                      </div>

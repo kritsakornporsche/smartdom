@@ -96,7 +96,7 @@ export default function TenantBillingPage() {
             {unpaidCount > 0 && (
               <div className="bg-rose-50 border border-rose-100 px-6 py-3 rounded-2xl flex items-center gap-3 animate-pulse">
                   <span className="h-2 w-2 rounded-full bg-rose-500"></span>
-                  <span className="text-xs font-black text-rose-700 uppercase tracking-widest">
+                  <span className="text-xs font-black text-rose-700 uppercase tracking-wider">
                       มียอดค้างชำระ {unpaidCount} รายการ
                   </span>
               </div>
@@ -119,10 +119,10 @@ export default function TenantBillingPage() {
                  <div className="p-10 md:p-12 flex-1">
                    <div className="flex justify-between items-start mb-10">
                      <div>
-                       <span className="text-[10px] font-black text-[#A08D74] uppercase tracking-[0.25em] mb-3 block">{bill.billing_cycle}</span>
+                       <span className="text-sm font-black text-[#A08D74] uppercase tracking-wide mb-3 block">{bill.billing_cycle}</span>
                        <h3 className="text-2xl font-black text-[#3E342B] group-hover:text-primary transition-colors">{bill.title}</h3>
                      </div>
-                     <span className={`px-6 py-2 text-[10px] font-black uppercase tracking-[0.15em] rounded-full border-2 ${
+                     <span className={`px-6 py-2 text-sm font-black uppercase tracking-wide rounded-full border-2 ${
                         bill.status === 'Unpaid' ? 'bg-[#FAF3E8] text-[#D4A373] border-[#E9C46A]' :
                         bill.status === 'Pending' ? 'bg-[#E3F2FD] text-[#2196F3] border-[#BBDEFB]' :
                         'bg-[#E8F5E9] text-[#4CAF50] border-[#C8E6C9]'
@@ -133,11 +133,11 @@ export default function TenantBillingPage() {
                    
                    <div className="border-t border-[#F3EFE9] pt-10 mt-2 grid grid-cols-1 md:grid-cols-2 gap-8">
                      <div className="bg-[#FAF8F5] p-8 rounded-[2rem] border border-[#E5DFD3]/50">
-                       <p className="text-[10px] text-[#A08D74] font-black uppercase tracking-[0.2em] mb-3">Amount Due</p>
-                       <p className="text-4xl font-black text-[#3E342B]">฿{Number(bill.amount).toLocaleString()}</p>
+                       <p className="text-sm text-[#A08D74] font-black uppercase tracking-wide mb-3">Amount Due</p>
+                       <p className="text-2xl font-black text-[#3E342B]">฿{Number(bill.amount).toLocaleString()}</p>
                      </div>
                      <div className="bg-[#FAF8F5] p-8 rounded-[2rem] border border-[#E5DFD3]/50">
-                       <p className="text-[10px] text-[#A08D74] font-black uppercase tracking-[0.2em] mb-3">Payment Deadline</p>
+                       <p className="text-sm text-[#A08D74] font-black uppercase tracking-wide mb-3">Payment Deadline</p>
                        <div className="flex items-center gap-3">
                           <svg className="w-6 h-6 text-[#8B7355]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2" /></svg>
                           <p className="text-xl font-black text-[#8B7355]">{new Date(bill.due_date).toLocaleDateString('th-TH', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
@@ -198,7 +198,7 @@ export default function TenantBillingPage() {
                 <img src={`https://promptpay.io/0812345678/${selectedBill.amount}.png`} alt="QR Code" className="w-48 h-48 object-contain mix-blend-multiply" />
              </div>
              <div className="text-center space-y-1 mb-8">
-               <p className="text-[10px] text-[#A08D74] font-black uppercase tracking-widest">ยอดที่ต้องชำระ (บาท)</p>
+               <p className="text-sm text-[#A08D74] font-black uppercase tracking-wider">ยอดที่ต้องชำระ (บาท)</p>
                <p className="text-3xl font-black text-primary">฿{Number(selectedBill.amount).toLocaleString()}</p>
              </div>
              <button 

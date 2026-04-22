@@ -37,7 +37,7 @@ export default function MoveOutTestButton() {
       onClick={handleMoveOut}
       disabled={isProcessing}
       className={`
-        px-12 py-5 rounded-full text-xs font-black uppercase tracking-[0.2em] transition-all active:scale-95
+        px-12 py-5 rounded-full text-xs font-black uppercase tracking-wide transition-all active:scale-95
         ${isProcessing 
           ? 'bg-gray-200 text-gray-400 cursor-not-allowed' 
           : 'bg-[#D48806] text-white hover:bg-[#B37200] shadow-xl shadow-[#D48806]/20'

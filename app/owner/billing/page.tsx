@@ -173,13 +173,13 @@ export default function OwnerBillingPage() {
     .reduce((acc, b) => acc + Number(b.amount), 0);
 
   return (
-    <div className="min-h-screen bg-[#FDFBF7] p-8 lg:p-12">
+    <div className="flex-1 overflow-y-auto bg-[#FDFBF7] p-8 lg:p-12 scroll-smooth custom-scrollbar">
       <div className="max-w-7xl mx-auto space-y-10">
         
         {/* Header Section */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div>
-            <h1 className="text-4xl font-black text-[#3E342B] tracking-tight">การจัดการบิลและค่าเช่า</h1>
+            <h1 className="text-2xl font-black text-[#3E342B] tracking-tight">การจัดการบิลและค่าเช่า</h1>
             <p className="text-[#8B7355] mt-2 font-medium">ตรวจสอบสถานะการชำระเงินและออกใบแจ้งหนี้ให้ผู้เช่า</p>
           </div>
           <div className="flex flex-wrap gap-4">
@@ -207,7 +207,7 @@ export default function OwnerBillingPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
            <div className="bg-white p-8 rounded-[2.5rem] border border-[#E5DFD3] shadow-sm relative overflow-hidden group">
               <div className="absolute -right-4 -top-4 w-24 h-24 bg-rose-50 rounded-full blur-2xl group-hover:bg-rose-100 transition-colors" />
-              <p className="text-[10px] font-black text-[#A08D74] uppercase tracking-[0.2em] mb-2">ยอดค้างชำระทั้งหมด</p>
+              <p className="text-sm font-black text-[#A08D74] uppercase tracking-wide mb-2">ยอดค้างชำระทั้งหมด</p>
               <h3 className="text-3xl font-black text-rose-500">฿{totalUnpaid.toLocaleString()}</h3>
               <p className="text-xs text-rose-400 mt-2 font-bold flex items-center gap-1">
                  <span className="w-1.5 h-1.5 rounded-full bg-rose-400 animate-pulse" />
@@ -217,7 +217,7 @@ export default function OwnerBillingPage() {
            
            <div className="bg-white p-8 rounded-[2.5rem] border border-[#E5DFD3] shadow-sm relative overflow-hidden group">
               <div className="absolute -right-4 -top-4 w-24 h-24 bg-emerald-50 rounded-full blur-2xl group-hover:bg-emerald-100 transition-colors" />
-              <p className="text-[10px] font-black text-[#A08D74] uppercase tracking-[0.2em] mb-2">ยอดรับชำระแล้ว (รวม)</p>
+              <p className="text-sm font-black text-[#A08D74] uppercase tracking-wide mb-2">ยอดรับชำระแล้ว (รวม)</p>
               <h3 className="text-3xl font-black text-emerald-600">฿{totalPaidMonth.toLocaleString()}</h3>
               <p className="text-xs text-emerald-500 mt-2 font-bold flex items-center gap-1">
                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
@@ -227,7 +227,7 @@ export default function OwnerBillingPage() {
 
            <div className="bg-[#3E342B] p-8 rounded-[2.5rem] shadow-xl relative overflow-hidden group hidden lg:block">
               <div className="absolute -right-4 -top-4 w-24 h-24 bg-white/5 rounded-full blur-2xl" />
-              <p className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em] mb-2">จำนวนบิลทั้งหมด</p>
+              <p className="text-sm font-black text-white/40 uppercase tracking-wide mb-2">จำนวนบิลทั้งหมด</p>
               <h3 className="text-3xl font-black text-white">{bills.length} ฉบับ</h3>
               <p className="text-xs text-white/60 mt-2 font-medium">อัปเดตล่าสุด: {new Date().toLocaleDateString('th-TH')}</p>
            </div>
@@ -242,7 +242,7 @@ export default function OwnerBillingPage() {
                      key={status}
                      onClick={() => setFilterStatus(status)}
                      className={cn(
-                       "px-6 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all",
+                       "px-6 py-2 rounded-lg text-xs font-black uppercase tracking-wider transition-all",
                        filterStatus === status 
                         ? "bg-[#8B7355] text-white shadow-md shadow-[#8B7355]/20" 
                         : "text-[#A08D74] hover:text-[#5A4D41]"
@@ -258,13 +258,13 @@ export default function OwnerBillingPage() {
               <table className="w-full text-left border-collapse">
                  <thead className="bg-[#FAF8F5]">
                     <tr>
-                       <th className="px-8 py-5 text-[10px] font-bold text-[#A08D74] uppercase tracking-widest">ห้อง</th>
-                       <th className="px-8 py-5 text-[10px] font-bold text-[#A08D74] uppercase tracking-widest">ชื่อผู้เช่า</th>
-                       <th className="px-8 py-5 text-[10px] font-bold text-[#A08D74] uppercase tracking-widest">รายการ</th>
-                       <th className="px-8 py-5 text-[10px] font-bold text-[#A08D74] uppercase tracking-widest">จำนวนเงิน</th>
-                       <th className="px-8 py-5 text-[10px] font-bold text-[#A08D74] uppercase tracking-widest">กำหนดชำระ</th>
-                       <th className="px-8 py-5 text-[10px] font-bold text-[#A08D74] uppercase tracking-widest">สถานะ</th>
-                       <th className="px-8 py-5 text-[10px] font-bold text-[#A08D74] uppercase tracking-widest text-center">จัดการ</th>
+                       <th className="px-8 py-5 text-sm font-bold text-[#A08D74] uppercase tracking-wider">ห้อง</th>
+                       <th className="px-8 py-5 text-sm font-bold text-[#A08D74] uppercase tracking-wider">ชื่อผู้เช่า</th>
+                       <th className="px-8 py-5 text-sm font-bold text-[#A08D74] uppercase tracking-wider">รายการ</th>
+                       <th className="px-8 py-5 text-sm font-bold text-[#A08D74] uppercase tracking-wider">จำนวนเงิน</th>
+                       <th className="px-8 py-5 text-sm font-bold text-[#A08D74] uppercase tracking-wider">กำหนดชำระ</th>
+                       <th className="px-8 py-5 text-sm font-bold text-[#A08D74] uppercase tracking-wider">สถานะ</th>
+                       <th className="px-8 py-5 text-sm font-bold text-[#A08D74] uppercase tracking-wider text-center">จัดการ</th>
                     </tr>
                  </thead>
                  <tbody className="divide-y divide-[#F3EFE9]">
@@ -284,7 +284,7 @@ export default function OwnerBillingPage() {
                          <td className="px-8 py-6 text-[#5A4D41] font-bold">{bill.tenant_name}</td>
                          <td className="px-8 py-6">
                             <p className="text-sm font-bold text-[#3E342B]">{bill.title}</p>
-                            <p className="text-[10px] text-[#A08D74] font-medium">{bill.billing_cycle}</p>
+                            <p className="text-sm text-[#A08D74] font-medium">{bill.billing_cycle}</p>
                          </td>
                          <td className="px-8 py-6 font-black text-[#8B6A2B] text-lg">฿{Number(bill.amount).toLocaleString()}</td>
                          <td className="px-8 py-6 text-sm font-bold text-[#5A4D41]">{new Date(bill.due_date).toLocaleDateString('th-TH')}</td>
@@ -293,7 +293,7 @@ export default function OwnerBillingPage() {
                               value={bill.status}
                               onChange={(e) => updateStatus(bill.id, e.target.value)}
                               className={cn(
-                                "text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-lg border outline-none cursor-pointer transition-all",
+                                "text-sm font-black uppercase tracking-wider px-3 py-1.5 rounded-lg border outline-none cursor-pointer transition-all",
                                 bill.status === 'Paid' ? "bg-emerald-50 text-emerald-600 border-emerald-100" :
                                 bill.status === 'Overdue' ? "bg-rose-50 text-rose-600 border-rose-100" :
                                 "bg-amber-50 text-amber-600 border-amber-100"
@@ -334,7 +334,7 @@ export default function OwnerBillingPage() {
                     </div>
                     <div>
                        <h2 className="text-2xl font-black">ออกบิลล่วงหน้าอัตโนมัติ</h2>
-                       <p className="text-white/40 text-[10px] font-bold uppercase tracking-[0.2em]">Smart Batch Invoicing</p>
+                       <p className="text-white/40 text-sm font-bold uppercase tracking-wide">Smart Batch Invoicing</p>
                     </div>
                  </div>
               </div>
@@ -349,7 +349,7 @@ export default function OwnerBillingPage() {
               <form onSubmit={handleBatchGenerate} className="p-10 space-y-8">
                  <div className="space-y-6">
                     <div>
-                       <label className="block text-[10px] font-black text-[#A08D74] uppercase tracking-widest mb-3 ml-1">หัวข้อบิล (ทุกห้อง)</label>
+                       <label className="block text-sm font-black text-[#A08D74] uppercase tracking-wider mb-3 ml-1">หัวข้อบิล (ทุกห้อง)</label>
                        <input 
                           type="text"
                           required
@@ -361,7 +361,7 @@ export default function OwnerBillingPage() {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                        <div>
-                          <label className="block text-[10px] font-black text-[#A08D74] uppercase tracking-widest mb-3 ml-1">รอบบิล</label>
+                          <label className="block text-sm font-black text-[#A08D74] uppercase tracking-wider mb-3 ml-1">รอบบิล</label>
                           <input 
                              type="text"
                              required
@@ -404,13 +404,13 @@ export default function OwnerBillingPage() {
                     <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
                  </button>
                  <h2 className="text-3xl font-black">ออกใบแจ้งหนี้ใหม่</h2>
-                 <p className="text-white/40 text-xs mt-2 font-bold uppercase tracking-[0.2em]">Billing Management System</p>
+                 <p className="text-white/40 text-xs mt-2 font-bold uppercase tracking-wide">Billing Management System</p>
               </div>
 
               <form onSubmit={handleCreateBill} className="p-10 space-y-8">
                  <div className="space-y-6">
                     <div>
-                       <label className="block text-[10px] font-black text-[#A08D74] uppercase tracking-widest mb-3 ml-1">เลือกผู้เช่า (ตามเลขห้อง)</label>
+                       <label className="block text-sm font-black text-[#A08D74] uppercase tracking-wider mb-3 ml-1">เลือกผู้เช่า (ตามเลขห้อง)</label>
                        <select 
                           required
                           value={formData.tenant_id}
@@ -425,7 +425,7 @@ export default function OwnerBillingPage() {
                     </div>
 
                     <div>
-                       <label className="block text-[10px] font-black text-[#A08D74] uppercase tracking-widest mb-3 ml-1">หัวข้อบิล</label>
+                       <label className="block text-sm font-black text-[#A08D74] uppercase tracking-wider mb-3 ml-1">หัวข้อบิล</label>
                        <input 
                           type="text"
                           required
@@ -438,7 +438,7 @@ export default function OwnerBillingPage() {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                        <div>
-                          <label className="block text-[10px] font-black text-[#A08D74] uppercase tracking-widest mb-3 ml-1">รอบบิล</label>
+                          <label className="block text-sm font-black text-[#A08D74] uppercase tracking-wider mb-3 ml-1">รอบบิล</label>
                           <input 
                              type="text"
                              required
@@ -458,7 +458,7 @@ export default function OwnerBillingPage() {
                     </div>
 
                     <div>
-                       <label className="block text-[10px] font-black text-[#A08D74] uppercase tracking-widest mb-3 ml-1">จำนวนเงินรวม (บาท)</label>
+                       <label className="block text-sm font-black text-[#A08D74] uppercase tracking-wider mb-3 ml-1">จำนวนเงินรวม (บาท)</label>
                        <input 
                           type="number"
                           required

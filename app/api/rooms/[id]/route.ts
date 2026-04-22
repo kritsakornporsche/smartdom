@@ -12,8 +12,8 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
       SELECT 
         r.*, 
         d.name as dorm_name, d.address as dorm_address, d.phone as dorm_phone,
-        u.full_name as owner_name,
-        k.full_name as keeper_name, k.phone as keeper_phone, k.email as keeper_email
+        u.name as owner_name,
+        k.name as keeper_name, k.phone as keeper_phone, k.email as keeper_email
       FROM rooms r
       JOIN dormitory_profile d ON r.dorm_id = d.id
       JOIN users u ON d.owner_id = u.id

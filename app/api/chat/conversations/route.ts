@@ -11,6 +11,9 @@ export async function GET() {
   try {
     const sql = neon(process.env.DATABASE_URL || '');
     const userResult = await sql`SELECT id, role FROM users WHERE email = ${session.user.email} LIMIT 1`;
+    if (userResult.length === 0) {
+      return NextResponse.json({ success: false, message: 'User not found' }, { status: 404 });
+    }
     const user = userResult[0];
 
     let conversations;
@@ -52,6 +55,9 @@ export async function POST(request: Request) {
     
     // Get initiating user and their role
     const userResult = await sql`SELECT id, role FROM users WHERE email = ${session.user.email} LIMIT 1`;
+    if (userResult.length === 0) {
+        return NextResponse.json({ success: false, message: 'User not found' }, { status: 404 });
+    }
     const user = userResult[0];
 
     // Ensure owners cannot initiate contact themselves

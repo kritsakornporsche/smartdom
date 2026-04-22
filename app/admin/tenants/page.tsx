@@ -51,10 +51,10 @@ export default function TenantsPage() {
                 <table className="w-full text-left border-collapse">
                   <thead>
                     <tr className="bg-accent/30 border-b border-border">
-                      <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground">รายชื่อผู้เช่า</th>
-                      <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground">อีเมล</th>
-                      <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground">เบอร์โทรศัพท์</th>
-                      <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground">วันที่เข้าร่วม</th>
+                      <th className="px-6 py-4 text-sm font-black uppercase tracking-wider text-muted-foreground">รายชื่อผู้เช่า</th>
+                      <th className="px-6 py-4 text-sm font-black uppercase tracking-wider text-muted-foreground">อีเมล</th>
+                      <th className="px-6 py-4 text-sm font-black uppercase tracking-wider text-muted-foreground">เบอร์โทรศัพท์</th>
+                      <th className="px-6 py-4 text-sm font-black uppercase tracking-wider text-muted-foreground">วันที่เข้าร่วม</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-border">

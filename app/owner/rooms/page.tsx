@@ -19,6 +19,7 @@ export default function RoomsManagement() {
   const { data: session, status: authStatus } = useSession();
   const [rooms, setRooms] = useState<Room[]>([]);
   const [loading, setLoading] = useState(true);
+  const [dormError, setDormError] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingRoom, setEditingRoom] = useState<Room | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -39,17 +40,24 @@ export default function RoomsManagement() {
 
   const fetchRooms = async (dormId: number) => {
     setLoading(true);
+    setDormError(null);
     try {
       const url = dormId > 0 ? `/api/rooms?dormId=${dormId}` : '/api/rooms';
       console.log('[Rooms] Fetching from:', url);
       const res = await fetch(url);
+      if (!res.ok) {
+        throw new Error(`HTTP Error: ${res.status} ${res.statusText}`);
+      }
       const data = await res.json();
       console.log('[Rooms] Fetch result:', data);
       if (data.success) {
         setRooms(data.data);
+      } else {
+        setDormError(data.message || 'Failed to fetch rooms from API');
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('[Rooms] Fetch error:', err);
+      setDormError(`Network Error: ${err.message}. Please check if the server is running.`);
     } finally {
       setLoading(false);
     }
@@ -61,34 +69,38 @@ export default function RoomsManagement() {
       return;
     }
 
-    if (authStatus === 'authenticated' && session.user?.email) {
-      const init = async () => {
-        try {
-          console.log('[Rooms] Initializing for:', session.user?.email);
-          const res = await fetch(`/api/owner/onboarding?email=${session.user.email}`);
-          const data = await res.json();
-          console.log('[Rooms] Onboarding data:', data);
-          
-          if (data.success && data.hasDorm) {
-            console.log('[Rooms] Found Dorm ID:', data.dorm.id);
-            setOwnerDormId(data.dorm.id);
-            fetchRooms(data.dorm.id);
-          } else {
-            console.log('[Rooms] No dorm found for this owner.');
+    if (authStatus === 'authenticated' && session?.user) {
+      const dormId = (session.user as any).dorm_id;
+      if (dormId) {
+        console.log('[Rooms] Using Dorm ID from session:', dormId);
+        setOwnerDormId(dormId);
+        fetchRooms(dormId);
+      } else {
+        // Fallback for sessions without dorm_id or if it needs refresh
+        const init = async () => {
+          try {
+            console.log('[Rooms] Initializing via fallback for:', session.user?.email);
+            const res = await fetch(`/api/owner/onboarding?email=${session?.user?.email}`);
+            const data = await res.json();
+            console.log('[Rooms] Onboarding fallback data:', data);
+            
+            if (data.success && data.hasDorm) {
+              setOwnerDormId(data.dorm.id);
+              fetchRooms(data.dorm.id);
+            } else {
+              setLoading(false);
+            }
+          } catch (err) {
+            console.error('[Rooms] Init error:', err);
             setLoading(false);
           }
-        } catch (err) {
-          console.error('[Rooms] Init error:', err);
-          setLoading(false);
-        }
-      };
-      init();
-    } else if (authStatus === 'unauthenticated') {
-      router.push('/signin');
+        };
+        init();
+      }
     } else if (authStatus !== 'loading') {
       setLoading(false);
     }
-  }, [authStatus, session, router]);
+  }, [authStatus, (session?.user as any)?.dorm_id, session?.user?.email, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -223,7 +235,7 @@ export default function RoomsManagement() {
   };
 
   return (
-    <div className="flex-1 flex flex-col h-screen bg-[#FDFBF7] overflow-hidden">
+    <div className="flex-1 flex flex-col overflow-hidden bg-[#FDFBF7]">
       {/* Header */}
       <header className="h-24 bg-white/70 backdrop-blur-xl border-b border-[#E5DFD3] flex items-center justify-between px-10 shrink-0 z-10 shadow-sm transition-all duration-300">
         <div className="flex flex-col">
@@ -231,7 +243,7 @@ export default function RoomsManagement() {
             <div className="w-1.5 h-6 bg-[#8B7355] rounded-full" />
             <h1 className="text-2xl font-black text-[#3E342B] tracking-tight">จัดการห้องพัก</h1>
           </div>
-          <p className="text-[10px] font-bold text-[#A08D74] uppercase tracking-[0.2em] ml-3.5 mt-0.5 opacity-80">
+          <p className="text-sm font-bold text-[#A08D74] uppercase tracking-wide ml-3.5 mt-0.5 opacity-80">
             SmartDom Asset & Unit Management
           </p>
         </div>
@@ -280,7 +292,7 @@ export default function RoomsManagement() {
               {s.icon}
             </div>
             <div>
-              <p className="text-[10px] font-bold text-[#A08D74] uppercase tracking-widest">{s.label}</p>
+              <p className="text-sm font-bold text-[#A08D74] uppercase tracking-wider">{s.label}</p>
               <h3 className="text-2xl font-black text-[#3E342B]">{s.val}</h3>
             </div>
           </div>
@@ -312,6 +324,15 @@ export default function RoomsManagement() {
 
       {/* Room Grid */}
       <div className="flex-1 overflow-y-auto px-10 py-6 scroll-smooth custom-scrollbar">
+        {dormError && (
+          <div className="bg-rose-50 border border-rose-100 p-6 rounded-3xl mb-8 flex items-center gap-4 text-rose-600">
+             <div className="w-10 h-10 bg-rose-500 text-white rounded-xl flex items-center justify-center font-black">!</div>
+             <div>
+                <p className="font-bold text-sm">เกิดข้อผิดพลาดในการดึงข้อมูล</p>
+                <p className="text-xs opacity-80">{dormError}</p>
+             </div>
+          </div>
+        )}
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
             {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
@@ -324,7 +345,7 @@ export default function RoomsManagement() {
           </div>
         ) : filteredRooms.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-center py-20">
-            <div className="w-24 h-24 bg-[#F3EFE9] rounded-full flex items-center justify-center text-4xl mb-6">🔍</div>
+            <div className="w-24 h-24 bg-[#F3EFE9] rounded-full flex items-center justify-center text-2xl mb-6">🔍</div>
             <h3 className="text-xl font-black text-[#3E342B] mb-2 text-balance">ไม่พบข้อมูลห้องพักที่คุณต้องการ</h3>
             <p className="text-[#A08D74] text-sm font-medium">ลองเปลี่ยนเงื่อนไขการค้นหา หรือเพิ่มห้องพักใหม่ในระบบ</p>
           </div>
@@ -345,7 +366,7 @@ export default function RoomsManagement() {
                      <>
                        <Image src={firstImage} alt={room.room_number} fill unoptimized className="object-cover group-hover:scale-110 transition-transform duration-700" />
                        {extraCount > 0 && (
-                         <div className="absolute bottom-4 right-4 bg-black/60 backdrop-blur-md text-white text-[10px] font-black px-2 py-1 rounded-lg">
+                         <div className="absolute bottom-4 right-4 bg-black/60 backdrop-blur-md text-white text-sm font-black px-2 py-1 rounded-lg">
                             +{extraCount} รูป
                          </div>
                        )}
@@ -355,13 +376,13 @@ export default function RoomsManagement() {
                         <svg className="w-16 h-16 text-[#8B7355] mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                         </svg>
-                        <span className="text-[10px] font-black uppercase tracking-widest text-[#8B7355]">SMARTDOM UNIT</span>
+                        <span className="text-sm font-black uppercase tracking-wider text-[#8B7355]">SMARTDOM UNIT</span>
                      </div>
                    )}
                    <div className="absolute top-4 left-4 bg-[#3E342B] text-white px-4 py-2 rounded-2xl text-sm font-black shadow-lg z-10">
                       ห้อง {room.room_number}
                    </div>
-                   <div className={`absolute top-4 right-4 px-4 py-2 rounded-2xl text-[10px] font-black uppercase tracking-widest border backdrop-blur-md shadow-xl z-10 ${
+                   <div className={`absolute top-4 right-4 px-4 py-2 rounded-2xl text-sm font-black uppercase tracking-wider border backdrop-blur-md shadow-xl z-10 ${
                      room.status === 'Available' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : 
                      room.status === 'Occupied' || room.status === 'มีผู้เช่า' ? 'bg-blue-500/10 text-blue-600 border-blue-500/20' : 'bg-amber-500/10 text-amber-600 border-amber-500/20'
                    }`}>
@@ -371,8 +392,8 @@ export default function RoomsManagement() {
 
                 <div className="p-8 flex flex-col flex-1">
                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-[10px] font-black text-[#A08D74] uppercase tracking-[0.2em]">{room.room_type} (Type)</span>
-                      <span className="text-[10px] font-black text-[#A08D74] uppercase tracking-[0.2em]">ชั้น {room.floor} (Floor)</span>
+                      <span className="text-sm font-black text-[#A08D74] uppercase tracking-wide">{room.room_type} (Type)</span>
+                      <span className="text-sm font-black text-[#A08D74] uppercase tracking-wide">ชั้น {room.floor} (Floor)</span>
                    </div>
                    <div className="flex items-end gap-1 mb-8">
                       <span className="text-3xl font-black text-[#3E342B]">฿{Number(room.price).toLocaleString()}</span>
@@ -408,7 +429,7 @@ export default function RoomsManagement() {
                 <div className="absolute -right-20 -top-20 w-64 h-64 bg-[#8B7355] rounded-full blur-[100px] opacity-20" />
                 <div className="relative z-10 text-center">
                   <h2 className="text-3xl font-black mb-1 tracking-tight">{editingRoom ? 'แก้ไขข้อมูลยูนิต' : 'เพิ่มยูนิตใหม่'}</h2>
-                  <p className="text-white/40 text-[9px] font-black uppercase tracking-[0.3em] font-display font-medium">SMARTDOM PREMIUM REAL ESTATE</p>
+                  <p className="text-white/40 text-xs font-black uppercase tracking-wider font-display font-medium">SMARTDOM PREMIUM REAL ESTATE</p>
                 </div>
              </div>
              
@@ -416,7 +437,7 @@ export default function RoomsManagement() {
                <form onSubmit={handleSubmit} className="space-y-8">
                   <div className="grid grid-cols-2 gap-8">
                     <div className="space-y-2">
-                        <label className="block text-[10px] font-black text-[#A08D74] uppercase tracking-widest ml-1">หมายเลขห้อง</label>
+                        <label className="block text-sm font-black text-[#A08D74] uppercase tracking-wider ml-1">หมายเลขห้อง</label>
                         <input 
                           type="text" 
                           required
@@ -427,7 +448,7 @@ export default function RoomsManagement() {
                         />
                     </div>
                     <div className="space-y-2">
-                        <label className="block text-[10px] font-black text-[#A08D74] uppercase tracking-widest ml-1">ประเภท (Type)</label>
+                        <label className="block text-sm font-black text-[#A08D74] uppercase tracking-wider ml-1">ประเภท (Type)</label>
                         <select 
                             value={formData.room_type}
                             onChange={(e) => setFormData({...formData, room_type: e.target.value})}
@@ -443,7 +464,7 @@ export default function RoomsManagement() {
 
                   <div className="grid grid-cols-2 gap-8">
                     <div className="space-y-2">
-                        <label className="block text-[10px] font-black text-[#A08D74] uppercase tracking-widest ml-1">ชั้น (Floor)</label>
+                        <label className="block text-sm font-black text-[#A08D74] uppercase tracking-wider ml-1">ชั้น (Floor)</label>
                         <input 
                             type="number" 
                             value={formData.floor}
@@ -452,7 +473,7 @@ export default function RoomsManagement() {
                         />
                     </div>
                     <div className="space-y-2">
-                        <label className="block text-[10px] font-black text-[#A08D74] uppercase tracking-widest ml-1">สถานะ (Status)</label>
+                        <label className="block text-sm font-black text-[#A08D74] uppercase tracking-wider ml-1">สถานะ (Status)</label>
                         <select 
                             value={formData.status}
                             onChange={(e) => setFormData({...formData, status: e.target.value})}
@@ -466,7 +487,7 @@ export default function RoomsManagement() {
                   </div>
 
                   <div className="space-y-2">
-                    <label className="block text-[10px] font-black text-[#A08D74] uppercase tracking-widest ml-1 text-center">ราคาเช่ารายเดือน (Rental Price)</label>
+                    <label className="block text-sm font-black text-[#A08D74] uppercase tracking-wider ml-1 text-center">ราคาเช่ารายเดือน (Rental Price)</label>
                     <div className="relative group max-w-xs mx-auto">
                         <span className="absolute left-6 top-1/2 -translate-y-1/2 text-2xl font-black text-[#8B7355] group-focus-within:scale-110 transition-transform">฿</span>
                         <input 
@@ -480,7 +501,7 @@ export default function RoomsManagement() {
                   </div>
 
                   <div className="space-y-4">
-                    <label className="block text-[10px] font-black text-[#A08D74] uppercase tracking-widest ml-1">รูปภาพห้องพัก (Gallery - หลายรูป)</label>
+                    <label className="block text-sm font-black text-[#A08D74] uppercase tracking-wider ml-1">รูปภาพห้องพัก (Gallery - หลายรูป)</label>
                     
                     <div className="grid grid-cols-3 gap-4">
                         {formData.images.map((img, idx) => (
@@ -502,7 +523,7 @@ export default function RoomsManagement() {
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
                               </svg>
                             </div>
-                            <span className="text-[9px] font-black text-[#8B7355] uppercase tracking-widest">เพิ่มรูป</span>
+                            <span className="text-xs font-black text-[#8B7355] uppercase tracking-wider">เพิ่มรูป</span>
                             <input 
                                 type="file" 
                                 accept="image/*"

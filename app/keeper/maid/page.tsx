@@ -198,7 +198,7 @@ export default function MaidDashboardPage() {
                 <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform">🧹</div>
                 <span className="text-sm font-semibold text-[#3E342B]">งานทั้งหมดวันนี้</span>
                 <div className="mt-4 flex items-baseline gap-2">
-                  <span className="text-4xl font-display font-semibold text-[#8B7355]">{loadingData ? '-' : data?.stats?.total || 0}</span>
+                  <span className="text-2xl font-display font-semibold text-[#8B7355]">{loadingData ? '-' : data?.stats?.total || 0}</span>
                   <span className="text-sm text-[#A08D74] font-medium">ห้อง</span>
                 </div>
               </div>
@@ -206,7 +206,7 @@ export default function MaidDashboardPage() {
                 <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform">⏳</div>
                 <span className="text-sm font-semibold text-[#3E342B]">กำลังทำความสะอาด</span>
                 <div className="mt-4 flex items-baseline gap-2">
-                  <span className="text-4xl font-display font-semibold text-amber-500">{loadingData ? '-' : data?.stats?.inProgress || 0}</span>
+                  <span className="text-2xl font-display font-semibold text-amber-500">{loadingData ? '-' : data?.stats?.inProgress || 0}</span>
                   <span className="text-sm text-amber-500/70 font-medium">ห้อง</span>
                 </div>
               </div>
@@ -214,7 +214,7 @@ export default function MaidDashboardPage() {
                 <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform">✨</div>
                 <span className="text-sm font-semibold text-[#3E342B]">เสร็จสมบูรณ์วันนี้</span>
                 <div className="mt-4 flex items-baseline gap-2">
-                  <span className="text-4xl font-display font-semibold text-emerald-500">{loadingData ? '-' : data?.stats?.completed || 0}</span>
+                  <span className="text-2xl font-display font-semibold text-emerald-500">{loadingData ? '-' : data?.stats?.completed || 0}</span>
                   <span className="text-sm text-emerald-500/70 font-medium">ห้อง</span>
                 </div>
               </div>
@@ -277,7 +277,7 @@ export default function MaidDashboardPage() {
                 </div>
               ) : filteredJobs.length === 0 ? (
                 <div className="p-20 text-center flex flex-col items-center gap-4">
-                  <div className="text-4xl">📭</div>
+                  <div className="text-2xl">📭</div>
                   <p className="text-sm font-medium text-[#A08D74]">ไม่พบรายการงานที่ต้องการ</p>
                 </div>
               ) : (
@@ -289,25 +289,25 @@ export default function MaidDashboardPage() {
                       onClick={() => setSelectedJob(task)}
                     >
                       <div className="h-14 w-14 rounded-2xl bg-[#F3EFE9] flex flex-col items-center justify-center shrink-0 border border-[#E5DFD3] group-hover:border-[#8B7355] transition-colors">
-                        <span className="text-[10px] font-bold text-[#A08D74] uppercase leading-none mb-1">ห้อง</span>
+                        <span className="text-sm font-bold text-[#A08D74] uppercase leading-none mb-1">ห้อง</span>
                         <span className="text-lg font-black text-[#3E342B] leading-none">{task.room_number || '-'}</span>
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-3">
                            <h3 className="text-sm font-bold text-[#3E342B] truncate">{jobTypeConfig[task.job_type] || task.job_type}</h3>
-                           <span className={`px-2 py-0.5 rounded-full text-[9px] font-black tracking-wider uppercase ${statusConfig[task.status]?.bg || 'bg-[#E5DFD3] text-[#5A4D41]'}`}>
+                           <span className={`px-2 py-0.5 rounded-full text-xs font-black tracking-wider uppercase ${statusConfig[task.status]?.bg || 'bg-[#E5DFD3] text-[#5A4D41]'}`}>
                             {statusConfig[task.status]?.label || task.status}
                           </span>
                         </div>
                         <div className="flex items-center gap-4 mt-1.5 flex-wrap">
-                          <span className="text-[10px] text-[#A08D74] flex items-center gap-1 font-medium">
+                          <span className="text-sm text-[#A08D74] flex items-center gap-1 font-medium">
                             <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
                             มอบหมายเมื่อ {new Date(task.created_at).toLocaleDateString('th-TH')}
                           </span>
                           {task.completed_at && (
-                            <span className="text-[10px] text-emerald-600 flex items-center gap-1 font-bold italic">
+                            <span className="text-sm text-emerald-600 flex items-center gap-1 font-bold italic">
                               สำเร็จเมื่อ {new Date(task.completed_at).toLocaleTimeString('th-TH')}
                             </span>
                           )}
@@ -317,7 +317,7 @@ export default function MaidDashboardPage() {
                         {task.status === 'pending' && (
                           <button 
                             onClick={() => updateStatus(task.id, 'in_progress')}
-                            className="text-[11px] font-bold px-5 py-2.5 bg-[#8B7355] text-white rounded-xl shadow-sm hover:focus:ring-2 hover:bg-[#5A4D41] transition-all transform hover:scale-105 active:scale-95"
+                            className="text-sm font-bold px-5 py-2.5 bg-[#8B7355] text-white rounded-xl shadow-sm hover:focus:ring-2 hover:bg-[#5A4D41] transition-all transform hover:scale-105 active:scale-95"
                           >
                             รับงาน
                           </button>
@@ -328,7 +328,7 @@ export default function MaidDashboardPage() {
                               setSelectedJob(task);
                               setIsFinishing(true);
                             }}
-                            className="text-[11px] font-bold px-5 py-2.5 bg-emerald-600 text-white rounded-xl shadow-sm hover:focus:ring-2 hover:bg-emerald-700 transition-all transform hover:scale-105 active:scale-95"
+                            className="text-sm font-bold px-5 py-2.5 bg-emerald-600 text-white rounded-xl shadow-sm hover:focus:ring-2 hover:bg-emerald-700 transition-all transform hover:scale-105 active:scale-95"
                           >
                             งานเสร็จสิ้น
                           </button>
@@ -426,7 +426,7 @@ export default function MaidDashboardPage() {
                             
                             <dt className="text-[#A08D74] font-medium">สถานะ:</dt>
                             <dd className="font-bold">
-                                <span className={`px-2 py-0.5 rounded-full text-[10px] uppercase ${statusConfig[selectedJob.status]?.bg}`}>
+                                <span className={`px-2 py-0.5 rounded-full text-sm uppercase ${statusConfig[selectedJob.status]?.bg}`}>
                                     {statusConfig[selectedJob.status]?.label}
                                 </span>
                             </dd>

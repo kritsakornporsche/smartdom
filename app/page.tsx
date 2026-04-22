@@ -5,8 +5,8 @@ import Navbar from "./components/Navbar";
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
-  title: "SmartDom | Experience Minimal & Sustainable Living",
-  description: "Redefining dormitory management with a focus on aesthetics, simplicity, and ease of use. Join the SmartDom ecosystem today.",
+  title: "SmartDom | สัมผัสประสบการณ์การอยู่อาศัยที่เรียบง่ายและยั่งยืน",
+  description: "นิยามใหม่ของการบริหารจัดการหอพักที่เน้นความสุนทรีย์ ความเรียบง่าย และใช้งานง่าย เข้าร่วมระบบนิเวศของ SmartDom วันนี้",
 };
 
 export default function Home() {
@@ -23,17 +23,17 @@ export default function Home() {
         </div>
 
         <div className="relative z-10 mx-auto max-w-5xl px-8 text-center animate-reveal">
-          <div className="inline-flex items-center gap-3 px-5 py-2.5 rounded-full bg-accent text-accent-foreground text-[10px] font-black uppercase tracking-[0.3em] mb-12 border border-border shadow-sm">
+          <div className="inline-flex items-center gap-3 px-5 py-2.5 rounded-full bg-accent text-accent-foreground text-sm font-bold uppercase tracking-wider mb-12 border border-border shadow-sm">
             <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
-            Designed for Modern Living
+            ออกแบบมาเพื่อชีวิตที่ทันสมัย
           </div>
           
-          <h1 className="text-5xl sm:text-7xl lg:text-8xl font-display leading-[1.2] tracking-[-0.01em] mb-12 ornament py-6 px-2">
+          <h1 className="text-3xl sm:text-3xl lg:text-2xl font-display leading-[1.2] tracking-[-0.01em] mb-12 ornament py-6 px-2">
             การใช้ชีวิตที่ <span className="text-primary italic font-medium">เรียบง่าย</span> <br /> 
             เริ่มต้นที่ความใส่ใจ
           </h1>
           
-          <p className="mt-4 text-xl sm:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed font-bold opacity-95">
+          <p className="mt-4 text-xl sm:text-2xl text-muted-foreground max-w-3xl mx-auto leading-normal font-bold opacity-95">
             นิยามใหม่ของการบริหารจัดการหอพักที่เน้นความสุนทรีย์และความเรียบง่าย 
             ผ่านเทคโนโลยีที่ทำให้ทุกเรื่องเป็นเรื่องง่ายและยั่งยืน
           </p>
@@ -42,7 +42,7 @@ export default function Home() {
             <Link
               href="/signup"
               className={cn(
-                "w-full sm:w-auto rounded-full bg-primary px-14 py-6 text-xs font-black uppercase tracking-[0.2em] text-primary-foreground",
+                "w-full sm:w-auto rounded-full bg-primary px-14 py-6 text-xs font-bold uppercase tracking-wide text-primary-foreground",
                 "shadow-2xl shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all duration-500"
               )}
             >
@@ -51,7 +51,7 @@ export default function Home() {
             <Link
               href="/explore"
               className={cn(
-                "w-full sm:w-auto rounded-full border border-border bg-white px-14 py-6 text-xs font-black uppercase tracking-[0.2em] text-foreground",
+                "w-full sm:w-auto rounded-full border border-border bg-white px-14 py-6 text-xs font-bold uppercase tracking-wide text-foreground",
                 "hover:bg-secondary transition-all duration-500 group/btn shadow-sm"
               )}
             >
@@ -63,7 +63,7 @@ export default function Home() {
           <div className="mt-10 animate-reveal" style={{ animationDelay: '0.4s' }}>
              <Link 
                href="/signin" 
-               className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground hover:text-primary transition-all inline-flex items-center gap-3 group"
+               className="text-sm font-bold uppercase tracking-wider text-muted-foreground hover:text-primary transition-all inline-flex items-center gap-3 group"
              >
                มีบัญชีอยู่แล้ว? <span className="text-foreground group-hover:text-primary border-b border-border group-hover:border-primary transition-all">เข้าสู่ระบบที่นี่</span>
              </Link>
@@ -76,11 +76,11 @@ export default function Home() {
         <div className="mx-auto max-w-7xl px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-20 mb-32 items-end reveal-on-scroll active">
             <div className="lg:col-span-8">
-              <h2 className="text-[10px] font-black tracking-[0.4em] uppercase text-primary mb-8 ml-1">The Ecosystem</h2>
-              <p className="text-5xl lg:text-7xl font-display leading-[1.4] tracking-tight ornament py-2">หนึ่งระบบที่สมบูรณ์แบบ <br/> เพื่อตอบโจทย์ทุกคน</p>
+              <h2 className="text-sm font-bold tracking-wider uppercase text-primary mb-8 ml-1">ระบบนิเวศน์แห่งการพักอาศัย</h2>
+              <p className="text-3xl lg:text-3xl font-display leading-[1.4] tracking-tight ornament py-2">หนึ่งระบบที่สมบูรณ์แบบ <br/> เพื่อตอบโจทย์ทุกคน</p>
             </div>
             <div className="lg:col-span-4 pb-2">
-              <p className="text-muted-foreground text-lg sm:text-xl leading-relaxed font-bold">
+              <p className="text-muted-foreground text-lg sm:text-xl leading-normal font-bold">
                 เราเชื่อว่าระบบที่ดีคือระบบที่ไม่มีตัวตน แต่คอยซัพพอร์ตทุกความเคลื่อนไหวของคุณอย่างเงียบเชียบและมีประสิทธิภาพ
               </p>
             </div>
@@ -103,7 +103,7 @@ export default function Home() {
               >
                 <div className="h-1 w-16 bg-primary/20 group-hover:w-24 group-hover:bg-primary transition-all duration-500 mb-10" />
                 <h3 className="text-3xl font-display mb-6 tracking-tight">{r.role}</h3>
-                <p className="text-foreground font-bold leading-relaxed text-sm">
+                <p className="text-foreground font-bold leading-normal text-sm">
                   {r.desc}
                 </p>
               </div>
@@ -131,18 +131,18 @@ export default function Home() {
             </div>
             
             <div className="order-1 lg:order-2 space-y-12">
-              <h2 className="text-4xl lg:text-5xl font-display leading-tight">รายละเอียดที่สร้าง <br/> ความแตกต่างอย่างลึกซึ้ง</h2>
+              <h2 className="text-2xl lg:text-3xl font-display leading-tight">รายละเอียดที่สร้าง <br/> ความแตกต่างอย่างลึกซึ้ง</h2>
               
               <div className="space-y-10">
                 {[
-                  { title: "Smart Contracts", detail: "กระบวนการทางเอกสารที่โปร่งใสและตรวจสอบได้ทุกเมื่อผ่านระบบดิจิทัล" },
-                  { title: "Effortless Billing", detail: "ความเรียบง่ายที่มาพร้อมความแม่นยำ จัดการบิลและรายรับ-รายจ่ายได้อัตโนมัติ" },
-                  { title: "Active Maintenance", detail: "ใส่ใจในคุณภาพชีวิตด้วยระบบแจ้งซ่อมที่รวดเร็วและเป็นขั้นเป็นตอน" }
+                  { title: "สัญญาเช่าอัจฉริยะ", detail: "กระบวนการทางเอกสารที่โปร่งใสและตรวจสอบได้ทุกเมื่อผ่านระบบดิจิทัล" },
+                  { title: "ระบบบิลที่ง่ายดาย", detail: "ความเรียบง่ายที่มาพร้อมความแม่นยำ จัดการบิลและรายรับ-รายจ่ายได้อัตโนมัติ" },
+                  { title: "ระบบแจ้งซ่อมเชิงรุก", detail: "ใส่ใจในคุณภาพชีวิตด้วยระบบแจ้งซ่อมที่รวดเร็วและเป็นขั้นเป็นตอน" }
                 ].map((f, i) => (
                   <div key={i} className="group relative pl-8 border-l border-border/40 hover:border-primary transition-colors">
                     <div className="absolute top-0 left-[-2px] h-0 group-hover:h-full w-1 bg-primary transition-all duration-500" />
                     <h4 className="text-xl font-display mb-2">{f.title}</h4>
-                    <p className="text-muted-foreground font-medium leading-relaxed">{f.detail}</p>
+                    <p className="text-muted-foreground font-medium leading-normal">{f.detail}</p>
                   </div>
                 ))}
               </div>
@@ -150,7 +150,7 @@ export default function Home() {
               <div className="pt-8">
                 <Link href="#" className="inline-flex items-center gap-4 group">
                    <span className="h-px w-12 bg-border group-hover:w-20 group-hover:bg-primary transition-all duration-500 text-foreground" />
-                   <span className="text-xs font-bold uppercase tracking-widest">เรียนรู้เพิ่มเติมเกี่ยวกับเรา</span>
+                   <span className="text-xs font-bold uppercase tracking-wider">เรียนรู้เพิ่มเติมเกี่ยวกับเรา</span>
                 </Link>
               </div>
             </div>
@@ -170,13 +170,13 @@ export default function Home() {
             />
             <div className="absolute inset-0 bg-gradient-to-r from-background/80 via-background/20 to-transparent" />
             <div className="absolute inset-y-0 left-0 flex flex-col justify-center px-12 lg:px-24 max-w-2xl">
-              <h2 className="text-xs font-bold tracking-[0.3em] uppercase text-primary mb-6">Atmosphere</h2>
-              <p className="text-4xl lg:text-6xl font-display leading-[0.9] mb-8">บรรยากาศที่ <br/> ออกแบบมาเพื่อคุณ</p>
+              <h2 className="text-xs font-bold tracking-wider uppercase text-primary mb-6">บรรยากาศ</h2>
+              <p className="text-2xl lg:text-2xl font-display leading-[0.9] mb-8">บรรยากาศที่ <br/> ออกแบบมาเพื่อคุณ</p>
               <p className="text-muted-foreground text-lg font-medium mb-12 hidden md:block">
                 เราไม่ได้แค่จัดการห้องพัก แต่เราดูแลทุกองค์ประกอบที่ทำให้คำว่า &apos;บ้าน&apos; สมบูรณ์แบบที่สุด
               </p>
               <div>
-                 <Link href="/signup" className="inline-flex items-center gap-4 px-8 py-4 rounded-full bg-primary text-primary-foreground text-xs font-bold uppercase tracking-widest hover:-translate-y-1 transition-all">
+                 <Link href="/signup" className="inline-flex items-center gap-4 px-8 py-4 rounded-full bg-primary text-primary-foreground text-xs font-bold uppercase tracking-wider hover:-translate-y-1 transition-all">
                     จองห้องพักในฝัน
                  </Link>
               </div>
@@ -189,30 +189,30 @@ export default function Home() {
       <section id="pricing" className="py-32 lg:py-56 bg-background border-y border-border">
         <div className="mx-auto max-w-7xl px-8">
           <div className="text-center max-w-3xl mx-auto mb-32">
-            <h2 className="text-[10px] font-black tracking-[0.4em] uppercase text-primary mb-8">Investment</h2>
-            <p className="text-5xl lg:text-7xl font-display leading-[1.4] tracking-tight mb-10 ornament py-2">เลือกแพ็กเกจที่เหมาะกับ <br/> การเติบโตของคุณ</p>
+            <h2 className="text-sm font-bold tracking-wider uppercase text-primary mb-8">การลงทุน</h2>
+            <p className="text-3xl lg:text-3xl font-display leading-[1.4] tracking-tight mb-10 ornament py-2">เลือกแพ็กเกจที่เหมาะกับ <br/> การเติบโตของคุณ</p>
             <p className="text-muted-foreground text-xl font-bold">ความโปร่งใสคือหัวใจของเรา ไม่มีค่าธรรมเนียมแอบแฝง</p>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {[
               {
-                name: "Starter",
+                name: "เริ่มต้น (Starter)",
                 price: "0",
                 desc: "สำหรับหอพักเริ่มต้นที่ต้องการความเรียบง่าย",
                 features: ["สูงสุด 10 ห้องพัก", "ระบบแจ้งซ่อมพื้นฐาน", "จัดการสัญญาเช่าดิจิทัล", "ซัพพอร์ต 24 ชม."],
                 current: false
               },
               {
-                name: "Professional",
+                name: "มืออาชีพ (Professional)",
                 price: "1,250",
                 desc: "สมบูรณ์แบบสำหรับธุรกิจที่ต้องการขยายตัว",
-                features: ["ไม่จำกัดห้องพัก", "ระบบบิลลิ่งอัตโนมัติ", "วิเคราะห์ข้อมูลเชิงลึก", "ซัพพอร์ต VIP", "Custom Branding"],
+                features: ["ไม่จำกัดห้องพัก", "ระบบบิลลิ่งอัตโนมัติ", "วิเคราะห์ข้อมูลเชิงลึก", "ซัพพอร์ต VIP", "แบรนดิ้งเฉพาะตัว"],
                 current: true
               },
               {
-                name: "Enterprise",
-                price: "Custom",
+                name: "องค์กร (Enterprise)",
+                price: "ตามตกลง",
                 desc: "โซลูชันที่ปรับแต่งได้เพื่อโครงการขนาดใหญ่",
                 features: ["จัดการหลายโครงการ", "API Integration", "Dedicated Manager", "White-label Service", "จัดอบรมถึงที่"],
                 current: false
@@ -228,18 +228,18 @@ export default function Home() {
                 )}
               >
                 {plan.current && (
-                  <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-primary text-primary-foreground text-[9px] font-black uppercase tracking-[0.3em] px-6 py-2 rounded-full shadow-lg">
-                    Most Popular
+                  <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-primary text-primary-foreground text-xs font-bold uppercase tracking-wider px-6 py-2 rounded-full shadow-lg">
+                    ยอดนิยม
                   </div>
                 )}
                 <h3 className="text-3xl font-display mb-3 tracking-tight">{plan.name}</h3>
                 <div className="flex items-baseline gap-2 mb-8">
-                  <span className="text-5xl font-display font-black tracking-tighter">
+                  <span className="text-3xl font-display font-black tracking-tighter">
                     {plan.price !== "Custom" ? `฿${plan.price}` : plan.price}
                   </span>
                   {plan.price !== "Custom" && (
                     <span className={cn(
-                      "text-[10px] font-black uppercase tracking-widest",
+                      "text-sm font-bold uppercase tracking-wider",
                       plan.current ? "text-white/40" : "text-muted-foreground/60"
                     )}>
                       /เดือน
@@ -247,7 +247,7 @@ export default function Home() {
                   )}
                 </div>
                 <p className={cn(
-                  "text-base mb-12 leading-relaxed font-bold",
+                  "text-base mb-12 leading-normal font-bold",
                   plan.current ? "text-white/60" : "text-muted-foreground"
                 )}>
                   {plan.desc}
@@ -255,7 +255,7 @@ export default function Home() {
                 
                 <ul className="space-y-6 mb-16">
                   {plan.features.map((feat, fi) => (
-                    <li key={fi} className="flex items-center gap-4 text-sm font-black tracking-tight">
+                    <li key={fi} className="flex items-center gap-4 text-sm font-bold tracking-tight">
                       <div className={cn(
                         "h-1.5 w-1.5 rounded-full",
                         plan.current ? "bg-primary" : "bg-primary/40"
@@ -266,12 +266,12 @@ export default function Home() {
                 </ul>
 
                 <button className={cn(
-                  "w-full rounded-full py-6 text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-500",
+                  "w-full rounded-full py-6 text-sm font-bold uppercase tracking-wide transition-all duration-500",
                   plan.current 
                     ? "bg-primary text-primary-foreground hover:bg-white hover:text-foreground shadow-xl shadow-primary/20" 
                     : "bg-secondary text-foreground hover:bg-[#3E342B] hover:text-white"
                 )}>
-                  {plan.price === "Custom" ? "ติดต่อเราเพื่อรับข้อเสนอ" : "เริ่มต้นใช้งานทันที"}
+                  {plan.price === "Custom" || plan.price === "ตามตกลง" ? "ติดต่อเราเพื่อรับข้อเสนอ" : "เริ่มต้นใช้งานทันที"}
                 </button>
               </div>
             ))}
@@ -288,13 +288,13 @@ export default function Home() {
                 <div className="h-10 w-10 flex items-center justify-center rounded-2xl bg-primary text-primary-foreground font-display font-bold text-lg shadow-lg">S</div>
                 <span className="text-xl font-display font-black tracking-tight uppercase">SmartDom</span>
               </Link>
-              <p className="text-muted-foreground text-lg leading-relaxed font-bold">
+              <p className="text-muted-foreground text-lg leading-normal font-bold">
                 เราไม่ได้แค่สร้างระบบจัดการ แต่เราสร้างความอุ่นใจและความเรียบง่ายให้กับการอยู่อาศัยในยุคใหม่
               </p>
               <div className="flex gap-4">
-                {["Instagram", "X", "Facebook"].map((s) => (
-                  <div key={s} className="h-12 w-12 rounded-2xl border border-border flex items-center justify-center text-xs font-black uppercase cursor-pointer hover:bg-foreground hover:text-background hover:scale-105 active:scale-95 transition-all duration-300">
-                    {s[0]}
+                {[{name: "Instagram", icon: "In"}, {name: "X", icon: "X"}, {name: "Facebook", icon: "Fb"}].map((s) => (
+                  <div key={s.name} className="h-12 w-12 rounded-2xl border border-border flex items-center justify-center text-xs font-bold uppercase cursor-pointer hover:bg-foreground hover:text-background hover:scale-105 active:scale-95 transition-all duration-300">
+                    {s.icon}
                   </div>
                 ))}
               </div>
@@ -302,7 +302,7 @@ export default function Home() {
             
             <div className="grid grid-cols-2 gap-20 lg:gap-40 w-full lg:w-auto">
               <div className="space-y-10">
-                <h5 className="text-[10px] uppercase font-black tracking-[0.4em] text-primary">เมนูหลัก</h5>
+                <h5 className="text-sm uppercase font-black tracking-wider text-primary">เมนูหลัก</h5>
                 <ul className="space-y-6">
                   {["หน้าแรก", "คุณสมบัติ", "หอพักในเครือ", "แพ็กเกจ"].map((item) => (
                     <li key={item}>
@@ -312,11 +312,11 @@ export default function Home() {
                 </ul>
               </div>
               <div className="space-y-10">
-                <h5 className="text-[10px] uppercase font-black tracking-[0.4em] text-primary">ความช่วยเหลือ</h5>
+                <h5 className="text-sm uppercase font-bold tracking-wider text-primary">ความช่วยเหลือ</h5>
                 <ul className="space-y-6">
                   {["นโยบายส่วนบุคคล", "ข้อกำหนดการใช้งาน", "ศูนย์ช่วยเหลือ", "ร่วมงานกับเรา"].map((item) => (
                     <li key={item}>
-                      <Link href="#" className="text-sm font-black text-muted-foreground hover:text-foreground transition-all duration-300 inline-block hover:translate-x-1">{item}</Link>
+                      <Link href="#" className="text-sm font-bold text-muted-foreground hover:text-foreground transition-all duration-300 inline-block hover:translate-x-1">{item}</Link>
                     </li>
                   ))}
                 </ul>
@@ -325,15 +325,15 @@ export default function Home() {
           </div>
           
           <div className="mt-40 pt-12 border-t border-border flex flex-col sm:flex-row justify-between items-center gap-10 opacity-60">
-            <div className="text-[10px] font-black uppercase tracking-[0.2em] font-bold">
-              © 2026 SmartDom Ecosystem • Bangkok, Thailand
+            <div className="text-sm font-bold uppercase tracking-wide">
+              © 2026 SmartDom Ecosystem • กรุงเทพฯ ประเทศไทย
             </div>
-            <div className="text-[10px] font-black uppercase tracking-[0.3em] flex items-center gap-4 font-bold">
-              <span>Minimal</span>
+            <div className="text-sm font-bold uppercase tracking-wider flex items-center gap-4">
+              <span>เรียบง่าย</span>
               <span className="h-1 w-1 rounded-full bg-primary" />
-              <span>Sustainable</span>
+              <span>ยั่งยืน</span>
               <span className="h-1 w-1 rounded-full bg-primary" />
-              <span>Smart</span>
+              <span>ชาญฉลาด</span>
             </div>
           </div>
         </div>

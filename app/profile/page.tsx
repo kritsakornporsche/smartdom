@@ -120,7 +120,7 @@ export default function ProfilePage() {
                 <h1 className="text-2xl font-display font-bold text-[#3E342B]">{formData.name}</h1>
                 <p className="text-sm text-[#A08D74] font-medium flex items-center gap-2 mt-1">
                   <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-                  สถานะ: <span className="uppercase tracking-widest text-[10px] bg-[#FAF8F5] px-2 py-0.5 rounded-md border border-[#E5DFD3]">{formData.role}</span>
+                  สถานะ: <span className="uppercase tracking-wider text-sm bg-[#FAF8F5] px-2 py-0.5 rounded-md border border-[#E5DFD3]">{formData.role}</span>
                 </p>
               </div>
             </div>
@@ -136,7 +136,7 @@ export default function ProfilePage() {
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase tracking-[0.1em] text-[#A08D74] px-1">ชื่อ-นามสกุล</label>
+                  <label className="text-sm font-black uppercase tracking-normal text-[#A08D74] px-1">ชื่อ-นามสกุล</label>
                   <input 
                     type="text" 
                     value={formData.name}
@@ -146,7 +146,7 @@ export default function ProfilePage() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase tracking-[0.1em] text-[#A08D74] px-1">อีเมล (ไม่สามารถเปลี่ยนได้)</label>
+                  <label className="text-sm font-black uppercase tracking-normal text-[#A08D74] px-1">อีเมล (ไม่สามารถเปลี่ยนได้)</label>
                   <input 
                     type="email" 
                     value={formData.email}
@@ -158,7 +158,7 @@ export default function ProfilePage() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase tracking-[0.1em] text-[#A08D74] px-1">เบอร์โทรศัพท์</label>
+                  <label className="text-sm font-black uppercase tracking-normal text-[#A08D74] px-1">เบอร์โทรศัพท์</label>
                   <input 
                     type="tel" 
                     value={formData.phone || ''}
@@ -168,7 +168,7 @@ export default function ProfilePage() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase tracking-[0.1em] text-[#A08D74] px-1">รูปโปรไฟล์ (URL)</label>
+                  <label className="text-sm font-black uppercase tracking-normal text-[#A08D74] px-1">รูปโปรไฟล์ (URL)</label>
                   <input 
                     type="text" 
                     value={formData.image_url || ''}
@@ -180,7 +180,7 @@ export default function ProfilePage() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-[10px] font-black uppercase tracking-[0.1em] text-[#A08D74] px-1">เกี่ยวกับฉัน (Bio)</label>
+                <label className="text-sm font-black uppercase tracking-normal text-[#A08D74] px-1">เกี่ยวกับฉัน (Bio)</label>
                 <textarea 
                   value={formData.bio || ''}
                   onChange={(e) => setFormData({...formData, bio: e.target.value})}
@@ -191,7 +191,7 @@ export default function ProfilePage() {
 
               <div className="pt-4 border-t border-[#E5DFD3]">
                 <div className="space-y-2 mb-6">
-                  <label className="text-[10px] font-black uppercase tracking-[0.1em] text-rose-500 px-1">เปลี่ยนรหัสผ่าน (เว้นว่างไว้หากไม่ต้องการเปลี่ยน)</label>
+                  <label className="text-sm font-black uppercase tracking-normal text-rose-500 px-1">เปลี่ยนรหัสผ่าน (เว้นว่างไว้หากไม่ต้องการเปลี่ยน)</label>
                   <input 
                     type="password" 
                     value={formData.password}

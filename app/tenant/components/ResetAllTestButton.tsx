@@ -37,7 +37,7 @@ export default function ResetAllTestButton() {
       onClick={handleResetAll}
       disabled={isProcessing}
       className={`
-        px-8 py-4 rounded-full text-[10px] font-black uppercase tracking-widest transition-all active:scale-95 border-2
+        px-8 py-4 rounded-full text-sm font-black uppercase tracking-wider transition-all active:scale-95 border-2
         ${isProcessing 
           ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed' 
           : 'bg-white border-[#FF4D4F] text-[#FF4D4F] hover:bg-[#FFF1F0]'

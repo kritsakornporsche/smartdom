@@ -62,7 +62,7 @@ export default async function TenantContract({ searchParams }: { searchParams: P
           <div className="flex-1">
             <div id="contract-document" className="bg-white rounded-3xl border border-[#E5DFD3] shadow-sm overflow-hidden flex flex-col h-full">
               {/* Status Header */}
-              <div className={`p-4 border-b text-center font-bold tracking-widest uppercase text-[10px] ${
+              <div className={`p-4 border-b text-center font-bold tracking-wider uppercase text-sm ${
                 contract.status === 'Active' ? 'bg-[#FAF8F5] text-[#8B6A2B] border-[#E5DFD3]' : 
                 contract.status === 'Expired' ? 'bg-rose-50 text-rose-700 border-rose-200' :
                 'bg-[#F0F4F0] text-[#4CAF50] border-[#E0E0E0]'
@@ -77,14 +77,14 @@ export default async function TenantContract({ searchParams }: { searchParams: P
                     <p className="text-[#A08D74] font-medium">SmartDom Apartment</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-[11px] text-[#A08D74] font-bold uppercase tracking-widest mb-1 text-right">รหัสสัญญา</p>
+                    <p className="text-sm text-[#A08D74] font-bold uppercase tracking-wider mb-1 text-right">รหัสสัญญา</p>
                     <p className="text-lg font-mono text-[#3E342B]">SD-2026-{contract.id.toString().padStart(4, '0')}</p>
                   </div>
                 </div>
 
                 <div className="grid sm:grid-cols-2 gap-6 mb-12">
                   <div className="bg-[#FAF8F5] p-6 rounded-2xl border border-[#F2EFE9]">
-                    <p className="text-[11px] text-[#A08D74] font-bold uppercase tracking-widest mb-1 font-mono">ระยะเวลาเช่า</p>
+                    <p className="text-sm text-[#A08D74] font-bold uppercase tracking-wider mb-1 font-mono">ระยะเวลาเช่า</p>
                     <div className="text-[#3E342B] font-medium flex items-center justify-between">
                       <span className="text-sm">{new Date(contract.start_date).toLocaleDateString('th-TH')}</span>
                       <svg className="w-4 h-4 text-[#C2B7A8]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
@@ -92,7 +92,7 @@ export default async function TenantContract({ searchParams }: { searchParams: P
                     </div>
                   </div>
                   <div className="bg-[#FAF8F5] p-6 rounded-2xl border border-[#F2EFE9]">
-                    <p className="text-[11px] text-[#A08D74] font-bold uppercase tracking-widest mb-1 font-mono">เงินประกัน (Deposit)</p>
+                    <p className="text-sm text-[#A08D74] font-bold uppercase tracking-wider mb-1 font-mono">เงินประกัน (Deposit)</p>
                     <div className="text-[#8B6A2B] text-xl font-bold">
                       ฿{Number(contract.deposit_amount || 0).toLocaleString()}
                     </div>
@@ -101,7 +101,7 @@ export default async function TenantContract({ searchParams }: { searchParams: P
 
                 {/* Agreement Details */}
                 <div className="mb-12">
-                  <p className="text-[11px] text-[#A08D74] font-bold uppercase tracking-widest mb-4 font-mono">ข้อกำหนดและข้อตกลง (Terms & Conditions)</p>
+                  <p className="text-sm text-[#A08D74] font-bold uppercase tracking-wider mb-4 font-mono">ข้อกำหนดและข้อตกลง (Terms & Conditions)</p>
                   <div className="bg-[#FDFBF7] border border-[#E5DFD3] rounded-2xl p-6 text-sm text-[#5A4D41] space-y-4 max-h-60 overflow-y-auto custom-scrollbar">
                     <p><strong>ข้อ 1. วัตถุประสงค์การเช่า:</strong> ผู้เช่าตกลงเช่าห้องพักเพื่อการอยู่อาศัยเท่านั้น และจะไม่นำห้องพักไปใช้ในการประกอบกิจการพาณิชย์ หรือสิ่งผิดกฎหมายใดๆ</p>
                     <p><strong>ข้อ 2. ค่าเช่าและค่าบริการ:</strong> ผู้เช่าตกลงชำระค่าเช่าทุกเดือน ภายในวันที่ 5 ของเดือน หากชำระล่าช้า ผู้เช่าตกลงชำระค่าปรับตามที่ทางโครงการกำหนด</p>
@@ -113,7 +113,7 @@ export default async function TenantContract({ searchParams }: { searchParams: P
 
                 {/* Signature Section */}
                 <div className="mb-12 border-t border-dashed border-[#E5DFD3] pt-8">
-                  <p className="text-[11px] text-[#A08D74] font-bold uppercase tracking-widest mb-4 font-mono">ลายมือชื่ออิเล็กทรอนิกส์</p>
+                  <p className="text-sm text-[#A08D74] font-bold uppercase tracking-wider mb-4 font-mono">ลายมือชื่ออิเล็กทรอนิกส์</p>
                   <div className="inline-block p-4 border border-[#E5DFD3] rounded-2xl bg-[#FAF8F5]">
                     {contract.signature_data ? (
                       <div 
@@ -156,7 +156,7 @@ export default async function TenantContract({ searchParams }: { searchParams: P
           {/* Sidebar: Contract History */}
           <div className="lg:w-80 shrink-0">
             <div className="bg-[#F2EFE9]/50 border border-[#E5DFD3] rounded-3xl p-6">
-              <h3 className="text-sm font-bold text-[#5A4D41] uppercase tracking-widest mb-6 flex items-center gap-2">
+              <h3 className="text-sm font-bold text-[#5A4D41] uppercase tracking-wider mb-6 flex items-center gap-2">
                 <svg className="w-4 h-4 text-[#8B7355]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                 ประวัติสัญญา
               </h3>
@@ -173,8 +173,8 @@ export default async function TenantContract({ searchParams }: { searchParams: P
                     }`}
                   >
                     <div className="flex justify-between items-start mb-1">
-                      <span className="text-[10px] font-mono font-bold text-[#A08D74]">#{c.id.toString().padStart(4, '0')}</span>
-                      <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full ${
+                      <span className="text-sm font-mono font-bold text-[#A08D74]">#{c.id.toString().padStart(4, '0')}</span>
+                      <span className={`text-xs font-bold px-1.5 py-0.5 rounded-full ${
                         c.status === 'Active' ? 'bg-[#FAF8F5] text-[#8B6A2B]' : 'bg-gray-100 text-gray-500'
                       }`}>
                         {c.status}
@@ -183,7 +183,7 @@ export default async function TenantContract({ searchParams }: { searchParams: P
                     <div className="text-xs font-bold text-[#3E342B] truncate mb-1">
                       {new Date(c.start_date).getFullYear() + 543} - {new Date(c.end_date).getFullYear() + 543}
                     </div>
-                    <div className="text-[10px] text-[#8B7355]">
+                    <div className="text-sm text-[#8B7355]">
                        ลงนาม: {new Date(c.created_at).toLocaleDateString('th-TH')}
                     </div>
                   </Link>

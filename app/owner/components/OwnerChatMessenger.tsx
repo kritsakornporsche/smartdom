@@ -28,6 +28,7 @@ export default function OwnerChatMessenger() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   // Poll for conversations
@@ -36,15 +37,26 @@ export default function OwnerChatMessenger() {
     const fetchConvs = async () => {
       try {
         const res = await fetch('/api/chat/conversations');
+        if (!res.ok) throw new Error(`Status: ${res.status}`);
         const data = await res.json();
-        if (data.success) setConversations(data.data);
-      } catch (e) { console.error(e); }
+        if (data.success) {
+          setConversations(data.data);
+          setError(null);
+        } else {
+          setError(data.error || 'Failed to load conversations');
+        }
+      } catch (e: any) { 
+        console.error('[Chat Messenger List]', e);
+        setError(`Connection issue: ${e.message}`);
+      }
     };
 
-    fetchConvs();
-    const interval = setInterval(fetchConvs, 10000); // Poll every 10s for list
+    if (isOpen) fetchConvs();
+    const interval = setInterval(() => {
+        if (isOpen) fetchConvs();
+    }, 10000); 
     return () => clearInterval(interval);
-  }, [session]);
+  }, [session, isOpen]);
 
   // Poll for messages in active chat
   useEffect(() => {
@@ -52,9 +64,14 @@ export default function OwnerChatMessenger() {
     const fetchMsgs = async () => {
       try {
         const res = await fetch(`/api/chat/messages?convId=${activeConv.id}`);
+        if (!res.ok) throw new Error(`Status: ${res.status}`);
         const data = await res.json();
-        if (data.success) setMessages(data.data);
-      } catch (e) { console.error(e); }
+        if (data.success) {
+          setMessages(data.data);
+        }
+      } catch (e: any) { 
+        console.error('[Chat Messenger Messages]', e);
+      }
     };
 
     fetchMsgs();
@@ -104,7 +121,7 @@ export default function OwnerChatMessenger() {
                 </button>
                 <div>
                   <h3 className="text-sm font-bold">{activeConv.guest_name}</h3>
-                  <p className="text-[10px] font-black uppercase tracking-widest text-primary">กำลังออนไลน์</p>
+                  <p className="text-sm font-black uppercase tracking-wider text-primary">กำลังออนไลน์</p>
                 </div>
               </div>
             ) : (
@@ -112,7 +129,7 @@ export default function OwnerChatMessenger() {
                 <div className="w-8 h-8 bg-primary rounded-xl flex items-center justify-center text-white font-black text-xs">M</div>
                 <div>
                   <h3 className="text-sm font-bold">SmartDom Messenger</h3>
-                  <p className="text-[10px] font-black uppercase tracking-widest text-white/40">ศูนย์จัดการแชท</p>
+                  <p className="text-sm font-black uppercase tracking-wider text-white/40">ศูนย์จัดการแชท</p>
                 </div>
               </div>
             )}
@@ -126,6 +143,11 @@ export default function OwnerChatMessenger() {
             {!activeConv ? (
               /* Conversation List */
               <div className="flex-1 overflow-y-auto p-4 space-y-1">
+                {error && (
+                  <div className="p-4 bg-rose-50 text-rose-600 text-sm font-bold rounded-2xl mb-2">
+                    {error}
+                  </div>
+                )}
                 {conversations.length === 0 ? (
                   <div className="h-full flex flex-col items-center justify-center text-center p-8 opacity-40">
                     <p className="text-xs font-bold font-display italic">ยังไม่มีการทักทายจากแขก</p>
@@ -144,7 +166,7 @@ export default function OwnerChatMessenger() {
                         <div className="flex justify-between items-start">
                           <div className="flex flex-col">
                             <h4 className="text-sm font-bold text-[#3E342B]">{conv.guest_name}</h4>
-                            <span className={`text-[9px] font-black uppercase px-2 py-0.5 rounded-full w-fit mt-1 ${
+                            <span className={`text-xs font-black uppercase px-2 py-0.5 rounded-full w-fit mt-1 ${
                               conv.guest_role === 'tenant' 
                                 ? 'bg-[#8B7355] text-white' 
                                 : 'bg-[#E5DFD3] text-[#A08D74]'
@@ -152,7 +174,7 @@ export default function OwnerChatMessenger() {
                               {conv.guest_role === 'tenant' ? 'ลูกหอ' : 'แขกที่สนใจ'}
                             </span>
                           </div>
-                          <span className="text-[9px] text-[#A08D74] font-bold">
+                          <span className="text-xs text-[#A08D74] font-bold">
                             {new Date(conv.updated_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                           </span>
                         </div>
@@ -170,7 +192,7 @@ export default function OwnerChatMessenger() {
                     const isMe = String(msg.sender_id) === String((session?.user as any)?.id);
                     return (
                       <div key={msg.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
-                        <div className={`max-w-[75%] p-4 rounded-2xl text-xs font-bold leading-relaxed shadow-sm ${
+                        <div className={`max-w-[75%] p-4 rounded-2xl text-xs font-bold leading-normal shadow-sm ${
                           isMe 
                             ? 'bg-[#3E342B] text-white rounded-tr-none' 
                             : 'bg-white border border-[#E5DFD3] text-[#3E342B] rounded-tl-none'

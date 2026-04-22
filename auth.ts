@@ -123,27 +123,46 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         token.role = (user as any).role || 'guest';
         token.sub_role = (user as any).sub_role || null;
         token.name = user.name;
+        token.id = user.id;
+
+        // Fetch dorm_id immediately on login for relevant roles
+        try {
+          if (token.role === 'owner') {
+            const dorms = await sql`SELECT id FROM dormitory_profile WHERE owner_id = ${parseInt(user.id as string)} LIMIT 1`;
+            if (dorms.length > 0) token.dorm_id = dorms[0].id;
+          } else if (token.role === 'keeper') {
+            const keepers = await sql`SELECT dorm_id FROM keepers WHERE user_id = ${parseInt(user.id as string)} LIMIT 1`;
+            if (keepers.length > 0) token.dorm_id = keepers[0].dorm_id;
+          } else if (token.role === 'tenant') {
+            const tenants = await sql`SELECT room_id FROM tenants WHERE user_id = ${parseInt(user.id as string)} LIMIT 1`;
+            if (tenants.length > 0) {
+              const rooms = await sql`SELECT dorm_id FROM rooms WHERE id = ${tenants[0].room_id} LIMIT 1`;
+              if (rooms.length > 0) token.dorm_id = rooms[0].dorm_id;
+            }
+          }
+        } catch (e) {
+          console.error('[JWT Initial Dorm Fetch Error]', e);
+        }
       } else {
-        // Dynamic Role Refresh: 
-        // Re-check DB for guest and tenant roles to ensure session matches DB state (e.g. after Move Out or Check In)
-        if (['guest', 'tenant'].includes(token.role as string) && token.email) {
+        // Dynamic Role & Dorm Refresh
+        if (token.id && token.email) {
           try {
-            const users = await sql`SELECT role, sub_role FROM users WHERE email = ${token.email}`;
+            const users = await sql`SELECT role, sub_role FROM users WHERE id = ${parseInt(token.id as string)}`;
             if (users.length > 0) {
               token.role = users[0].role;
               token.sub_role = users[0].sub_role;
+
+              // Refresh dorm_id as well
+              if (token.role === 'owner') {
+                const dorms = await sql`SELECT id FROM dormitory_profile WHERE owner_id = ${parseInt(token.id as string)} LIMIT 1`;
+                if (dorms.length > 0) token.dorm_id = dorms[0].id;
+              } else if (token.role === 'keeper') {
+                const keepers = await sql`SELECT dorm_id FROM keepers WHERE user_id = ${parseInt(token.id as string)} LIMIT 1`;
+                if (keepers.length > 0) token.dorm_id = keepers[0].dorm_id;
+              }
             }
           } catch (e) {
-            console.error('[JWT Role Refresh Error]', e);
-          }
-        } else if (account?.type === 'oauth') {
-          // Re-check for social logins if role is somehow missing
-          const users = await sql`SELECT role, sub_role FROM users WHERE email = ${token.email}`;
-          if (users.length > 0) {
-            token.role = users[0].role;
-            token.sub_role = users[0].sub_role;
-          } else {
-            token.role = 'tenant';
+            console.error('[JWT Refresh Error]', e);
           }
         }
       }
@@ -152,15 +171,16 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
     async session({ session, token }) {
       if (session.user) {
-        (session.user as any).id = token.sub;
+        (session.user as any).id = token.id || token.sub;
         (session.user as any).role = token.role;
         (session.user as any).sub_role = token.sub_role;
+        (session.user as any).dorm_id = token.dorm_id;
         session.user.name = token.name;
       }
       return session;
     },
 
-    async redirect({ url, baseUrl, token }) {
+    async redirect({ url, baseUrl }) {
       // By default redirect based on role isn't easy here without token in this scope, wait... JWT token is usually not available in redirect callback.
       // But we can check url in next middleware or rely on the frontend redirect in signIn route.
       // The signIn function in app/signin/page.tsx resolves after auth, and then NextAuth can redirect. 

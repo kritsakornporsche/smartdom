@@ -218,8 +218,8 @@ export default function RoomBookingPage({ params }: { params: Promise<{ id: stri
     }
   };
 
-  if (loading) return <div className="h-screen flex items-center justify-center font-display uppercase tracking-widest text-[10px] animate-pulse">Loading...</div>;
-  if (!room) return <div className="h-screen flex items-center justify-center font-display uppercase tracking-widest text-[10px]">Room not found</div>;
+  if (loading) return <div className="h-screen flex items-center justify-center font-display uppercase tracking-wider text-sm animate-pulse">Loading...</div>;
+  if (!room) return <div className="h-screen flex items-center justify-center font-display uppercase tracking-wider text-sm">Room not found</div>;
 
   const contractStartDate = new Date().toISOString().split('T')[0];
   const contractEndDate = new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString().split('T')[0];
@@ -230,7 +230,7 @@ export default function RoomBookingPage({ params }: { params: Promise<{ id: stri
   return (
     <div className="min-h-screen bg-background">
       <div className="max-w-7xl mx-auto px-6 lg:px-12 py-12 lg:py-24">
-        <Link href={`/explore/${room.dorm_id}`} className="inline-flex items-center gap-3 text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors mb-16 group">
+        <Link href={`/explore/${room.dorm_id}`} className="inline-flex items-center gap-3 text-sm font-black uppercase tracking-wider text-muted-foreground hover:text-primary transition-colors mb-16 group">
           <svg className="w-4 h-4 transition-transform group-hover:-translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M10 19l-7-7m0 0l-7 7m7-7H3" /></svg>
           กลับไปเลือกห้องพัก
         </Link>
@@ -247,7 +247,7 @@ export default function RoomBookingPage({ params }: { params: Promise<{ id: stri
                  <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-xs font-black border-2 transition-all duration-500 rotate-45 ${step >= s.id ? 'bg-primary text-primary-foreground border-primary shadow-xl shadow-primary/20' : 'bg-transparent border-border'}`}>
                    <span className="-rotate-45">{s.id}</span>
                  </div>
-                 <span className={`text-[10px] font-black uppercase tracking-[0.2em] mt-2 transition-colors duration-500 ${step >= s.id ? 'text-foreground' : 'text-muted-foreground'}`}>{s.label}</span>
+                 <span className={`text-sm font-black uppercase tracking-wide mt-2 transition-colors duration-500 ${step >= s.id ? 'text-foreground' : 'text-muted-foreground'}`}>{s.label}</span>
               </div>
               {i < 3 && <div className={`w-16 md:w-28 h-0.5 mx-6 transition-all duration-1000 rounded-full ${step > s.id ? 'bg-primary' : 'bg-border'}`} />}
             </div>
@@ -274,7 +274,7 @@ export default function RoomBookingPage({ params }: { params: Promise<{ id: stri
                <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent pointer-events-none" />
 
                <div className="absolute top-10 left-10 z-20">
-                 <div className="px-8 py-3 bg-white/20 backdrop-blur-xl rounded-full text-[11px] font-black uppercase tracking-widest text-white border border-white/20 shadow-2xl">
+                 <div className="px-8 py-3 bg-white/20 backdrop-blur-xl rounded-full text-sm font-black uppercase tracking-wider text-white border border-white/20 shadow-2xl">
                    Room {room.room_number}
                  </div>
                </div>
@@ -309,12 +309,12 @@ export default function RoomBookingPage({ params }: { params: Promise<{ id: stri
              
              <div className="space-y-10">
                <div className="flex items-center gap-6">
-                 <span className="px-6 py-2.5 bg-foreground text-background rounded-full text-[10px] font-black uppercase tracking-widest leading-none pt-3">{room.room_type}</span>
+                 <span className="px-6 py-2.5 bg-foreground text-background rounded-full text-sm font-black uppercase tracking-wider leading-none pt-3">{room.room_type}</span>
                  <div className="h-4 w-px bg-border" />
-                 <span className="text-muted-foreground text-xs font-black uppercase tracking-[0.2em]">Floor {room.floor} · Minimal Art Living</span>
+                 <span className="text-muted-foreground text-xs font-black uppercase tracking-wide">Floor {room.floor} · Minimal Art Living</span>
                </div>
-               <h2 className="text-5xl lg:text-7xl font-display font-black tracking-tighter italic text-foreground ornament leading-[0.9]">พื้นที่ที่ออกแบบมาเพื่ออิสระภาพ</h2>
-               <p className="text-muted-foreground font-black text-xl leading-relaxed max-w-3xl">
+               <h2 className="text-3xl lg:text-3xl font-display font-black tracking-tighter italic text-foreground ornament leading-[0.9]">พื้นที่ที่ออกแบบมาเพื่ออิสระภาพ</h2>
+               <p className="text-muted-foreground font-black text-xl leading-normal max-w-3xl">
                  ห้องพักที่เป็นเอกลักษณ์พร้อมสิ่งอำนวยความสะดวกครบครัน สภาพแวดล้อมที่เงียบสงบเหมาะแก่การพักผ่อนและสร้างสรรค์สิ่งใหม่ๆ
                </p>
                <div className="h-px w-20 bg-primary/30" />
@@ -329,7 +329,7 @@ export default function RoomBookingPage({ params }: { params: Promise<{ id: stri
                   <div className="animateIn-slideup space-y-10">
                     <div>
                       <h3 className="text-3xl font-display font-black tracking-tight mb-3 text-foreground ornament">สอบถามเพิ่มเติม</h3>
-                      <p className="text-muted-foreground text-sm font-black uppercase tracking-widest opacity-60">ช่องทางติดต่อเจ้าหน้าที่และข้อมูลโครงการ</p>
+                      <p className="text-muted-foreground text-sm font-black uppercase tracking-wider opacity-60">ช่องทางติดต่อเจ้าหน้าที่และข้อมูลโครงการ</p>
                     </div>
                     
                     <div className="space-y-6">
@@ -339,11 +339,11 @@ export default function RoomBookingPage({ params }: { params: Promise<{ id: stri
                                 <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-7h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
                              </div>
                              <div>
-                                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-primary mb-1">Dormitory Office</p>
+                                <p className="text-sm font-black uppercase tracking-wide text-primary mb-1">Dormitory Office</p>
                                 <p className="text-lg font-black text-foreground">{room.dorm_phone || '02-123-4567'}</p>
                              </div>
                           </div>
-                          <p className="text-[11px] font-bold text-muted-foreground leading-relaxed italic border-l-2 border-primary/20 pl-4">{room.dorm_address}</p>
+                          <p className="text-sm font-bold text-muted-foreground leading-normal italic border-l-2 border-primary/20 pl-4">{room.dorm_address}</p>
                        </div>
 
                        <div className="p-8 bg-primary/[0.03] rounded-[3rem] border border-primary/10 shadow-sm relative overflow-hidden group">
@@ -355,7 +355,7 @@ export default function RoomBookingPage({ params }: { params: Promise<{ id: stri
                                 {room.keeper_name ? room.keeper_name[0] : 'K'}
                              </div>
                              <div>
-                                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-primary mb-1">ผู้ดูแลหอพัก (Caretaker)</p>
+                                <p className="text-sm font-black uppercase tracking-wide text-primary mb-1">ผู้ดูแลหอพัก (Caretaker)</p>
                                 <p className="text-lg font-black text-foreground">{room.keeper_name || 'คุณเจ้าหน้าที่'}</p>
                                 <p className="text-xs font-black text-muted-foreground uppercase opacity-70">{room.keeper_phone || '08X-XXX-XXXX'}</p>
                              </div>
@@ -364,16 +364,16 @@ export default function RoomBookingPage({ params }: { params: Promise<{ id: stri
 
                        <div className="space-y-2">
                          <div className="flex justify-between items-center py-5 border-b border-border">
-                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">สถานะปัจจุบัน</span>
+                            <span className="text-sm font-black uppercase tracking-wide text-muted-foreground">สถานะปัจจุบัน</span>
                             <div className="flex items-center gap-2">
                               <span className={`w-2 h-2 rounded-full ${isRoomAvailable ? 'bg-primary' : 'bg-rose-500'} animate-pulse`} />
-                              <span className={`text-[10px] font-black uppercase tracking-[0.2em] ${isRoomAvailable ? 'text-primary' : 'text-rose-500'}`}>
+                              <span className={`text-sm font-black uppercase tracking-wide ${isRoomAvailable ? 'text-primary' : 'text-rose-500'}`}>
                                  {isRoomAvailable ? 'ว่างพร้อมจอง' : 'ติดจองแล้ว'}
                               </span>
                             </div>
                          </div>
                          <div className="flex justify-between items-center py-5">
-                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">ค่าเช่ารายเดือน</span>
+                            <span className="text-sm font-black uppercase tracking-wide text-muted-foreground">ค่าเช่ารายเดือน</span>
                             <span className="text-3xl font-display font-black tracking-tight text-foreground">฿{Number(room.price).toLocaleString()}</span>
                          </div>
                        </div>
@@ -387,7 +387,7 @@ export default function RoomBookingPage({ params }: { params: Promise<{ id: stri
                         { l: 'สัตว์เลี้ยง', v: 'ไม่อนุญาต' }
                       ].map((h, i) => (
                         <div key={i} className="p-5 bg-secondary/50 border border-border rounded-[2rem] hover:bg-white transition-colors duration-500">
-                           <p className="text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground mb-2">{h.l}</p>
+                           <p className="text-xs font-black uppercase tracking-wide text-muted-foreground mb-2">{h.l}</p>
                            <p className="text-xs font-black text-foreground">{h.v}</p>
                         </div>
                       ))}
@@ -395,7 +395,7 @@ export default function RoomBookingPage({ params }: { params: Promise<{ id: stri
 
                     <div className="space-y-4 pt-6">
                       {sessionStatus === 'loading' ? (
-                         <div className="w-full py-6 bg-muted animate-pulse rounded-full text-center text-[11px] font-black text-muted-foreground uppercase tracking-widest">
+                         <div className="w-full py-6 bg-muted animate-pulse rounded-full text-center text-sm font-black text-muted-foreground uppercase tracking-wider">
                            Checking Authorization...
                          </div>
                       ) : (
@@ -405,33 +405,33 @@ export default function RoomBookingPage({ params }: { params: Promise<{ id: stri
                                const chatBtn = document.querySelector('button[class*="bg-primary"][class*="w-16"]') as HTMLButtonElement;
                                if (chatBtn) chatBtn.click();
                              }}
-                             className="w-full py-6 bg-foreground text-background rounded-full text-[11px] font-black uppercase tracking-[0.2em] hover:scale-[1.02] shadow-2xl shadow-black/20 transition-all font-display hover:brightness-110 active:scale-95"
+                             className="w-full py-6 bg-foreground text-background rounded-full text-sm font-black uppercase tracking-wide hover:scale-[1.02] shadow-2xl shadow-black/20 transition-all font-display hover:brightness-110 active:scale-95"
                            >
                              แชทสอบถามข้อมูลเพิ่มเติม
                            </button>
 
                            <button 
                              onClick={() => setShowSimulator(true)}
-                             className="w-full py-6 bg-white text-muted-foreground border border-border rounded-full text-[11px] font-black uppercase tracking-[0.2em] hover:border-primary/40 hover:text-primary transition-all active:scale-95"
+                             className="w-full py-6 bg-white text-muted-foreground border border-border rounded-full text-sm font-black uppercase tracking-wide hover:border-primary/40 hover:text-primary transition-all active:scale-95"
                            >
                              จำลองคำนวณค่าสัญญาเช่า
                            </button>
                            
                            {(session?.user as any)?.role === 'tenant' ? (
                              <div className="p-10 bg-primary/[0.05] rounded-[3.5rem] border border-primary/20 text-center space-y-4 shadow-sm animate-reveal">
-                               <p className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">การจองถูกปิดใช้งาน</p>
+                               <p className="text-sm font-black uppercase tracking-wider text-primary">การจองถูกปิดใช้งาน</p>
                                <p className="text-lg font-black text-foreground leading-tight">คุณมีสัญญาเช่าในระบบแล้ว</p>
-                               <p className="text-[11px] font-black text-muted-foreground/60 leading-relaxed uppercase tracking-widest">
+                               <p className="text-sm font-black text-muted-foreground/60 leading-normal uppercase tracking-wider">
                                  หากต้องการย้ายห้องหรือสอบถามเพิ่มเติม <br/> โปรดติดต่อเจ้าหน้าที่ผ่านช่องทางแชท
                                </p>
-                               <Link href="/tenant" className="inline-block mt-4 px-10 py-3 bg-primary text-primary-foreground rounded-full text-[10px] font-black uppercase tracking-[0.2em] hover:scale-105 active:scale-95 shadow-xl shadow-primary/20 transition-all">
+                               <Link href="/tenant" className="inline-block mt-4 px-10 py-3 bg-primary text-primary-foreground rounded-full text-sm font-black uppercase tracking-wide hover:scale-105 active:scale-95 shadow-xl shadow-primary/20 transition-all">
                                  ไปที่แดชบอร์ด
                                </Link>
                              </div>
                            ) : isRoomAvailable ? (
                              <button 
                                onClick={() => setStep(2)}
-                               className="w-full py-6 bg-primary/20 text-primary hover:bg-primary/30 rounded-full text-[11px] font-black uppercase tracking-[0.2em] transition-all active:scale-95"
+                               className="w-full py-6 bg-primary/20 text-primary hover:bg-primary/30 rounded-full text-sm font-black uppercase tracking-wide transition-all active:scale-95"
                              >
                                ตกลงเช่า และเริ่มจองห้อง
                              </button>
@@ -446,12 +446,12 @@ export default function RoomBookingPage({ params }: { params: Promise<{ id: stri
                  <div className="animateIn-slideup space-y-10">
                    <div>
                      <h3 className="text-3xl font-display font-black tracking-tight mb-3 text-foreground ornament">ระบุข้อมูลผู้จอง</h3>
-                     <p className="text-muted-foreground text-sm font-black uppercase tracking-widest opacity-60">ขั้นตอนการจองและล็อกห้องพัก</p>
+                     <p className="text-muted-foreground text-sm font-black uppercase tracking-wider opacity-60">ขั้นตอนการจองและล็อกห้องพัก</p>
                    </div>
                    
                    <div className="space-y-8">
                      <div className="space-y-4">
-                       <label className="block text-[10px] font-black uppercase tracking-[0.3em] text-primary ml-4">ชื่อ-นามสกุล</label>
+                       <label className="block text-sm font-black uppercase tracking-wider text-primary ml-4">ชื่อ-นามสกุล</label>
                        <input 
                          type="text" 
                          className="w-full px-8 py-5 rounded-3xl bg-secondary border-2 border-transparent focus:border-primary focus:bg-white outline-none font-black text-sm transition-all shadow-sm"
@@ -461,7 +461,7 @@ export default function RoomBookingPage({ params }: { params: Promise<{ id: stri
                        />
                      </div>
                      <div className="space-y-4">
-                       <label className="block text-[10px] font-black uppercase tracking-[0.3em] text-primary ml-4">เบอร์โทรศัพท์ติดต่อ</label>
+                       <label className="block text-sm font-black uppercase tracking-wider text-primary ml-4">เบอร์โทรศัพท์ติดต่อ</label>
                        <input 
                          type="tel" 
                          className="w-full px-8 py-5 rounded-3xl bg-secondary border-2 border-transparent focus:border-primary focus:bg-white outline-none font-black text-sm transition-all shadow-sm"
@@ -476,11 +476,11 @@ export default function RoomBookingPage({ params }: { params: Promise<{ id: stri
                      <button 
                         onClick={handleBooking}
                         disabled={!bookingData.name || !bookingData.phone || isProcessing}
-                        className="w-full py-6 bg-primary text-primary-foreground rounded-full text-[11px] font-black uppercase tracking-[0.2em] hover:scale-[1.02] active:scale-95 shadow-2xl shadow-primary/30 transition-all disabled:opacity-50"
+                        className="w-full py-6 bg-primary text-primary-foreground rounded-full text-sm font-black uppercase tracking-wide hover:scale-[1.02] active:scale-95 shadow-2xl shadow-primary/30 transition-all disabled:opacity-50"
                       >
                         {isProcessing ? 'กำลังดำเนินการ...' : 'ชำระเงินจอง ฿1,000'}
                       </button>
-                      <button onClick={() => setStep(1)} className="w-full py-4 text-muted-foreground hover:text-foreground text-[10px] font-black uppercase tracking-[0.3em] transition-all">ย้อนกลับ</button>
+                      <button onClick={() => setStep(1)} className="w-full py-4 text-muted-foreground hover:text-foreground text-sm font-black uppercase tracking-wider transition-all">ย้อนกลับ</button>
                    </div>
                  </div>
                )}
@@ -489,12 +489,12 @@ export default function RoomBookingPage({ params }: { params: Promise<{ id: stri
                  <div className="animateIn-slideup space-y-10">
                    <div>
                      <h3 className="text-3xl font-display font-black tracking-tight mb-3 text-foreground ornament">สัญญาเช่าดิจิทัล</h3>
-                     <p className="text-muted-foreground text-sm font-black uppercase tracking-widest opacity-60">ตกลงเงื่อนไขและจ่ายเงินล่วงหน้า</p>
+                     <p className="text-muted-foreground text-sm font-black uppercase tracking-wider opacity-60">ตกลงเงื่อนไขและจ่ายเงินล่วงหน้า</p>
                    </div>
                    
                    <div className="bg-secondary p-8 rounded-[2.5rem] border border-border shadow-inner">
-                      <p className="text-[10px] font-black uppercase tracking-[0.3em] text-primary mb-6">Contract Overview</p>
-                      <div className="space-y-6 text-xs font-black text-foreground/80 leading-relaxed uppercase tracking-widest">
+                      <p className="text-sm font-black uppercase tracking-wider text-primary mb-6">Contract Overview</p>
+                      <div className="space-y-6 text-xs font-black text-foreground/80 leading-normal uppercase tracking-wider">
                          <div className="flex justify-between items-center gap-4 border-b border-border pb-4">
                            <span className="opacity-50">Monthly Rent</span>
                            <span>฿{Number(room.price).toLocaleString()}</span>
@@ -512,22 +512,22 @@ export default function RoomBookingPage({ params }: { params: Promise<{ id: stri
 
                    <div className="p-8 bg-primary/[0.03] rounded-[2.5rem] border border-primary/10">
                       <div className="flex justify-between items-center">
-                         <span className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">รวมยอดชำระแรกเข้า</span>
-                         <span className="text-4xl font-display font-black tracking-tighter text-foreground">฿{(Number(room.price) * 3).toLocaleString()}</span>
+                         <span className="text-sm font-black uppercase tracking-wider text-muted-foreground">รวมยอดชำระแรกเข้า</span>
+                         <span className="text-2xl font-display font-black tracking-tighter text-foreground">฿{(Number(room.price) * 3).toLocaleString()}</span>
                       </div>
                    </div>
 
                    <div className="py-6">
-                     <p className="text-[10px] font-black uppercase tracking-[0.3em] text-primary mb-6 text-center">ลงชื่อในช่องด้านล่างเพื่อยืนยันสัญญา</p>
+                     <p className="text-sm font-black uppercase tracking-wider text-primary mb-6 text-center">ลงชื่อในช่องด้านล่างเพื่อยืนยันสัญญา</p>
                       <button 
-                        className="w-full py-6 bg-primary text-primary-foreground rounded-full text-[11px] font-black uppercase tracking-[0.2em] hover:scale-[1.05] active:scale-95 shadow-2xl shadow-primary/30 transition-all font-display"
+                        className="w-full py-6 bg-primary text-primary-foreground rounded-full text-sm font-black uppercase tracking-wide hover:scale-[1.05] active:scale-95 shadow-2xl shadow-primary/30 transition-all font-display"
                       >
                         อ่านและลงนามสัญญาเช่า (Sign Contract)
                       </button>
                    </div>
 
                    <div className="pt-2">
-                     <p className="text-center text-[9px] font-black text-muted-foreground uppercase tracking-[0.2em] opacity-40">Secure Digital Signature via SmartDom Ecosystem</p>
+                     <p className="text-center text-xs font-black text-muted-foreground uppercase tracking-wide opacity-40">Secure Digital Signature via SmartDom Ecosystem</p>
                    </div>
                  </div>
                )}
@@ -536,7 +536,7 @@ export default function RoomBookingPage({ params }: { params: Promise<{ id: stri
                  <div className="animateIn-slideup space-y-10">
                    <div>
                      <h3 className="text-3xl font-display font-black tracking-tight mb-3 text-foreground ornament">รอการอนุมัติจากเจ้าของหอ</h3>
-                     <p className="text-muted-foreground text-sm font-black uppercase tracking-widest opacity-60">กรุณารอเจ้าหน้าที่ตรวจสอบและเซ็นอนุมัติสัญญา</p>
+                     <p className="text-muted-foreground text-sm font-black uppercase tracking-wider opacity-60">กรุณารอเจ้าหน้าที่ตรวจสอบและเซ็นอนุมัติสัญญา</p>
                    </div>
                    
                    <div className="p-8 bg-amber-50/50 rounded-[3rem] border border-amber-100 flex flex-col items-center justify-center text-center space-y-5">
@@ -546,15 +546,15 @@ export default function RoomBookingPage({ params }: { params: Promise<{ id: stri
                          </svg>
                       </div>
                       <h4 className="text-2xl font-black text-amber-800 tracking-tight">ระบบกำลังดำเนินการ</h4>
-                      <p className="text-amber-700/80 font-black text-xs uppercase tracking-widest leading-relaxed">
+                      <p className="text-amber-700/80 font-black text-xs uppercase tracking-wider leading-normal">
                          เมื่อเจ้าของหอพักเซ็นสัญญากลับ <br className="hidden lg:block"/> ระบบจะเปลี่ยนสถานะคุณเป็น "ผู้เช่า" อัตโนมัติ <br className="hidden lg:block"/> และคุณจะสามารถเข้าสู่ระบบเพื่อใช้งานหน้าแดชบอร์ดได้
                       </p>
                    </div>
                    <div className="pt-8">
-                     <Link href="/explore" className="w-full inline-flex justify-center items-center py-6 bg-secondary text-foreground hover:bg-secondary/80 rounded-full text-[11px] font-black uppercase tracking-[0.2em] hover:scale-[1.02] active:scale-95 shadow-md transition-all">
+                     <Link href="/explore" className="w-full inline-flex justify-center items-center py-6 bg-secondary text-foreground hover:bg-secondary/80 rounded-full text-sm font-black uppercase tracking-wide hover:scale-[1.02] active:scale-95 shadow-md transition-all">
                        กลับไปหน้าสำรวจหอพัก
                      </Link>
-                     <p className="text-center mt-8 text-[9px] font-black text-muted-foreground uppercase tracking-[0.4em]">Thank You for choosing SmartDom</p>
+                     <p className="text-center mt-8 text-xs font-black text-muted-foreground uppercase tracking-wider">Thank You for choosing SmartDom</p>
                    </div>
                  </div>
                )}

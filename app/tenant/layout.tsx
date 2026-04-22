@@ -44,11 +44,11 @@ export default async function TenantLayout({ children }: { children: ReactNode }
             <div>
               <h1 className="font-display text-xl font-bold tracking-tight text-[#3E342B] flex items-center gap-2">
                 สวัสดี, {userName}
-                <span className="text-[10px] bg-[#F2EFE9] text-[#8B7355] px-2 py-0.5 rounded-lg font-bold tracking-widest ml-2 uppercase">Tenant</span>
+                <span className="text-sm bg-[#F2EFE9] text-[#8B7355] px-2 py-0.5 rounded-lg font-bold tracking-wider ml-2 uppercase">Tenant</span>
               </h1>
               <div className="flex items-center gap-2 mt-0.5">
                 <div className="h-1.5 w-1.5 rounded-full bg-[#8B6A2B] animate-pulse"></div>
-                <p className="text-[10px] text-[#A08D74] font-bold uppercase tracking-widest leading-none">{roomInfo}</p>
+                <p className="text-sm text-[#A08D74] font-bold uppercase tracking-wider leading-none">{roomInfo}</p>
               </div>
             </div>
           </div>

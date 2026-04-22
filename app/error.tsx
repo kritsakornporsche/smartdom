@@ -27,32 +27,32 @@ export default function Error({
           </svg>
         </div>
 
-        <h1 className="text-5xl font-display font-black tracking-tight text-[#3E342B] mb-6 italic">
+        <h1 className="text-3xl font-display font-bold tracking-tight text-[#3E342B] mb-6 italic">
           ขออภัย มีบางอย่างผิดพลาด
         </h1>
         
-        <p className="text-lg text-[#A08D74] font-medium leading-relaxed mb-12 max-w-md mx-auto">
+        <p className="text-lg text-[#A08D74] font-medium leading-normal mb-12 max-w-md mx-auto">
           ระบบพบข้อผิดพลาดที่ไม่คาดคิด ทีมงานของเรากำลังตรวจสอบเพื่อแก้ไขให้เร็วที่สุด
         </p>
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <button
             onClick={() => reset()}
-            className="rounded-full bg-[#8B7355] px-10 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-white shadow-2xl shadow-[#8B7355]/20 hover:-translate-y-1 transition-all active:scale-95"
+            className="rounded-full bg-[#8B7355] px-10 py-5 text-sm font-bold uppercase tracking-wide text-white shadow-2xl shadow-[#8B7355]/20 hover:-translate-y-1 transition-all active:scale-95"
           >
             ลองใหม่อีกครั้ง
           </button>
           <Link
             href="/"
-            className="rounded-full border border-[#E5DFD3] bg-white/50 backdrop-blur-sm px-10 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-[#A08D74] hover:bg-white transition-all active:scale-95"
+            className="rounded-full border border-[#E5DFD3] bg-white/50 backdrop-blur-sm px-10 py-5 text-sm font-bold uppercase tracking-wide text-[#A08D74] hover:bg-white transition-all active:scale-95"
           >
             กลับสู่หน้าหลัก
           </Link>
         </div>
 
         {error.digest && (
-          <p className="mt-12 text-[9px] font-black uppercase tracking-widest text-[#A08D74]/40">
-            Error ID: {error.digest}
+          <p className="mt-12 text-xs font-bold uppercase tracking-wider text-[#A08D74]/40">
+            รหัสข้อผิดพลาด: {error.digest}
           </p>
         )}
       </div>

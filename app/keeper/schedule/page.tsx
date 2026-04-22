@@ -44,7 +44,7 @@ export default function SchedulePage() {
                     {['จันทร์', 'อังคาร', 'พุธ', 'พฤหัสบดี', 'ศุกร์', 'เสาร์', 'อาทิตย์'].map((dayName, index) => (
                         <div key={dayName} className="flex flex-col gap-4">
                             <div className="text-center rounded-2xl py-3 flex flex-col items-center border border-[#E5DFD3] bg-[#FAF8F5]">
-                                <span className="text-[10px] font-black uppercase text-[#A08D74]">{dayName}</span>
+                                <span className="text-sm font-black uppercase text-[#A08D74]">{dayName}</span>
                                 <span className="text-2xl font-display font-black text-[#3E342B]">{days[index].getDate()}</span>
                             </div>
                             <div className="h-48 rounded-2xl bg-[#F3EFE9]/50 border border-[#E5DFD3]/50 p-2 flex flex-col gap-2 overflow-y-auto">
@@ -52,14 +52,14 @@ export default function SchedulePage() {
                                 {index === 0 && (
                                     <div className="bg-white border border-[#E5DFD3] rounded-xl p-2 shadow-sm relative group cursor-pointer hover:border-[#8B7355]">
                                         <div className="w-1 absolute left-0 top-2 bottom-2 bg-rose-500 rounded-r-md"></div>
-                                        <p className="text-[9px] font-bold text-[#A08D74] ml-2">09:00 - ซ่อมด่วน</p>
+                                        <p className="text-xs font-bold text-[#A08D74] ml-2">09:00 - ซ่อมด่วน</p>
                                         <p className="text-xs font-bold text-[#3E342B] leading-tight ml-2 mt-0.5">ห้อง 302</p>
                                     </div>
                                 )}
                                 {index === 2 && (
                                     <div className="bg-white border border-[#E5DFD3] rounded-xl p-2 shadow-sm relative group cursor-pointer hover:border-[#8B7355]">
                                         <div className="w-1 absolute left-0 top-2 bottom-2 bg-emerald-500 rounded-r-md"></div>
-                                        <p className="text-[9px] font-bold text-[#A08D74] ml-2">14:00 - ล้างแอร์</p>
+                                        <p className="text-xs font-bold text-[#A08D74] ml-2">14:00 - ล้างแอร์</p>
                                         <p className="text-xs font-bold text-[#3E342B] leading-tight ml-2 mt-0.5">ส่วนกลาง</p>
                                     </div>
                                 )}

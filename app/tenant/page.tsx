@@ -60,7 +60,7 @@ export default async function TenantDashboard() {
             <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full -mr-32 -mt-32 blur-3xl"></div>
             <div className="relative z-10 flex flex-col lg:flex-row justify-between items-center gap-12">
                 <div className="text-center lg:text-left">
-                    <h1 className="text-4xl md:text-5xl font-black text-[#3E342B] tracking-tight mb-4">
+                    <h1 className="text-2xl md:text-3xl font-black text-[#3E342B] tracking-tight mb-4">
                         ยินดีต้อนรับสู่บ้านใหม่
                     </h1>
                     <p className="text-lg text-[#8B7355] font-medium max-w-md">
@@ -71,15 +71,15 @@ export default async function TenantDashboard() {
                 {roomInfo && (
                     <div className="flex gap-4 md:gap-8 flex-wrap justify-center">
                         <div className="bg-[#FAF8F5] px-10 py-6 rounded-3xl border border-[#E5DFD3] text-center min-w-[160px] transform hover:scale-105 transition-transform">
-                            <span className="block text-[10px] font-black uppercase tracking-[0.2em] text-[#A08D74] mb-2">Room</span>
+                            <span className="block text-sm font-black uppercase tracking-wide text-[#A08D74] mb-2">Room</span>
                             <span className="text-3xl font-black text-[#3E342B]">{roomInfo.room_number}</span>
                         </div>
                         <div className="bg-[#FAF8F5] px-10 py-6 rounded-3xl border border-[#E5DFD3] text-center min-w-[160px] transform hover:scale-105 transition-transform">
-                            <span className="block text-[10px] font-black uppercase tracking-[0.2em] text-[#A08D74] mb-2">Floor</span>
+                            <span className="block text-sm font-black uppercase tracking-wide text-[#A08D74] mb-2">Floor</span>
                             <span className="text-3xl font-black text-[#3E342B]">{roomInfo.floor}</span>
                         </div>
                         <div className="bg-[#FAF8F5] px-10 py-6 rounded-3xl border border-[#E5DFD3] text-center min-w-[160px] transform hover:scale-105 transition-transform">
-                            <span className="block text-[10px] font-black uppercase tracking-[0.2em] text-[#A08D74] mb-2">Type</span>
+                            <span className="block text-sm font-black uppercase tracking-wide text-[#A08D74] mb-2">Type</span>
                             <span className="text-xl font-black text-[#3E342B] truncate max-w-[120px]">{roomInfo.room_type}</span>
                         </div>
                     </div>
@@ -119,7 +119,7 @@ export default async function TenantDashboard() {
                   <div className="w-3 h-8 bg-[#8B7355] rounded-full"></div>
                   สถานะการดูแลแจ้งซ่อม
                 </h2>
-                <Link href="/tenant/maintenance" className="text-sm font-black text-[#8B7355] hover:text-[#5A4D41] uppercase tracking-widest border-b-2 border-transparent hover:border-[#8B7355] transition-all pb-1">ดูประวัติทั้งหมด</Link>
+                <Link href="/tenant/maintenance" className="text-sm font-black text-[#8B7355] hover:text-[#5A4D41] uppercase tracking-wider border-b-2 border-transparent hover:border-[#8B7355] transition-all pb-1">ดูประวัติทั้งหมด</Link>
               </div>
               
               <div className="grid gap-6">
@@ -152,7 +152,7 @@ export default async function TenantDashboard() {
                                 </p>
                             </div>
                         </div>
-                        <span className={`px-4 py-1.5 text-[10px] font-black uppercase tracking-widest rounded-full border-2 ${
+                        <span className={`px-4 py-1.5 text-sm font-black uppercase tracking-wider rounded-full border-2 ${
                             maint.status === 'Pending' ? 'bg-[#FAF3E8] text-[#D4A373] border-[#E9C46A]' :
                             maint.status === 'In Progress' ? 'bg-[#E3F2FD] text-[#2196F3] border-[#BBDEFB]' :
                             'bg-[#E8F5E9] text-[#4CAF50] border-[#C8E6C9]'
@@ -160,7 +160,7 @@ export default async function TenantDashboard() {
                             {maint.status === 'Pending' ? 'รอดำเนินการ' : maint.status === 'In Progress' ? 'กำลังดำเนินการ' : 'เสร็จสิ้น'}
                         </span>
                       </div>
-                      <p className="text-[#5A4D41] leading-relaxed italic border-l-4 border-[#F3EFE9] pl-6 mb-2">"{maint.description}"</p>
+                      <p className="text-[#5A4D41] leading-normal italic border-l-4 border-[#F3EFE9] pl-6 mb-2">"{maint.description}"</p>
                     </div>
                 ))}
               </div>
@@ -184,7 +184,7 @@ export default async function TenantDashboard() {
                     </div>
                     <div>
                       <h3 className="text-xl font-black text-[#3E342B] mb-1.5 line-clamp-1">จัดการพัสดุ <span className="inline-block ml-2 w-2 h-2 bg-[#FF9800] rounded-full animate-pulse"></span></h3>
-                      <p className="text-xs text-[#8B7355] leading-relaxed font-medium line-clamp-2">ติดตามสถานะพัสดุและจดหมายที่จัดส่งถึงคุณแบบเรียลไทม์</p>
+                      <p className="text-xs text-[#8B7355] leading-normal font-medium line-clamp-2">ติดตามสถานะพัสดุและจดหมายที่จัดส่งถึงคุณแบบเรียลไทม์</p>
                     </div>
                   </div>
                 </Link>
@@ -196,7 +196,7 @@ export default async function TenantDashboard() {
                     </div>
                     <div>
                       <h3 className="text-xl font-black text-[#3E342B] mb-1.5 line-clamp-1">ยานพาหนะและการจอด</h3>
-                      <p className="text-xs text-[#8B7355] leading-relaxed font-medium line-clamp-2">ลงทะเบียนป้ายทะเบียนรถ และตรวจสอบสิทธิ์การจอด</p>
+                      <p className="text-xs text-[#8B7355] leading-normal font-medium line-clamp-2">ลงทะเบียนป้ายทะเบียนรถ และตรวจสอบสิทธิ์การจอด</p>
                     </div>
                   </div>
                 </Link>
@@ -208,7 +208,7 @@ export default async function TenantDashboard() {
                     </div>
                     <div>
                       <h3 className="text-xl font-black text-[#3E342B] mb-1.5 line-clamp-1">แจ้งซ่อม</h3>
-                      <p className="text-xs text-[#8B7355] leading-relaxed font-medium line-clamp-2">พบกระเบื้องแตก น้ำรั่ว ไฟดับ แจ้งเราได้ตลอดเวลา</p>
+                      <p className="text-xs text-[#8B7355] leading-normal font-medium line-clamp-2">พบกระเบื้องแตก น้ำรั่ว ไฟดับ แจ้งเราได้ตลอดเวลา</p>
                     </div>
                   </div>
                 </Link>
@@ -220,7 +220,7 @@ export default async function TenantDashboard() {
                     </div>
                     <div>
                       <h3 className="text-xl font-black text-[#3E342B] mb-1.5 line-clamp-1">คู่มือและเบอร์ฉุกเฉิน</h3>
-                      <p className="text-xs text-[#8B7355] leading-relaxed font-medium line-clamp-2">คู่มือการอยู่อาศัยและการติดต่อขอความช่วยเหลือด่วน</p>
+                      <p className="text-xs text-[#8B7355] leading-normal font-medium line-clamp-2">คู่มือการอยู่อาศัยและการติดต่อขอความช่วยเหลือด่วน</p>
                     </div>
                   </div>
                 </Link>
@@ -238,11 +238,11 @@ export default async function TenantDashboard() {
 
               {/* Developer Test Tools */}
               <div className="bg-[#FFF4E5]/50 rounded-[2.5rem] p-10 border border-[#FFD8A8]/50 shadow-inner text-center">
-                <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#FFD8A8] text-[#873800] text-[10px] font-black uppercase tracking-widest mb-6">
+                <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#FFD8A8] text-[#873800] text-sm font-black uppercase tracking-wider mb-6">
                     🧪 Dev Testing
                 </div>
                 <h3 className="text-xl font-black text-[#873800] mb-4">ทดสอบระบบย้ายออก</h3>
-                <p className="text-[11px] font-bold text-[#873800]/60 uppercase tracking-widest mb-8 leading-relaxed">
+                <p className="text-sm font-bold text-[#873800]/60 uppercase tracking-wider mb-8 leading-normal">
                     คืนสถานะห้องพักและรีเซ็ตบทบาทกลับเป็น Guest เพื่อจองใหม่
                 </p>
                 <div className="flex flex-col gap-3">

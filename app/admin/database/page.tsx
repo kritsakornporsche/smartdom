@@ -59,7 +59,7 @@ export default async function DatabaseViewer(props: { searchParams: Promise<{ ta
           </div>
         </div>
 
-        <div className="px-6 py-2 text-[10px] font-bold uppercase tracking-widest text-[#A08D74] mb-2">ตารางในระบบ (TABLES)</div>
+        <div className="px-6 py-2 text-sm font-bold uppercase tracking-wider text-[#A08D74] mb-2">ตารางในระบบ (TABLES)</div>
         <nav className="flex-1 px-4 space-y-1">
           {tables.map((table) => (
             <Link 
@@ -91,10 +91,10 @@ export default async function DatabaseViewer(props: { searchParams: Promise<{ ta
               <svg className="w-5 h-5 text-[#8B7355]" fill="currentColor" viewBox="0 0 24 24"><path d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4z" /></svg>
               ตาราง: {selectedTable}
             </h1>
-            <p className="text-[10px] text-[#A08D74] mt-1 uppercase tracking-widest font-bold">แสดงข้อมูลล่าสุด 50 รายการ</p>
+            <p className="text-sm text-[#A08D74] mt-1 uppercase tracking-wider font-bold">แสดงข้อมูลล่าสุด 50 รายการ</p>
           </div>
           <div className="flex gap-3">
-             <Link href="/admin" className="px-6 py-2.5 bg-[#FAF8F5] border border-[#DCD3C6] text-[#5A4D41] rounded-xl hover:bg-[#F3EFE9] text-xs font-black transition-all uppercase tracking-widest">
+             <Link href="/admin" className="px-6 py-2.5 bg-[#FAF8F5] border border-[#DCD3C6] text-[#5A4D41] rounded-xl hover:bg-[#F3EFE9] text-xs font-black transition-all uppercase tracking-wider">
                 กลับหน้า Admin
              </Link>
           </div>
@@ -121,10 +121,10 @@ export default async function DatabaseViewer(props: { searchParams: Promise<{ ta
             <div className="rounded-3xl border border-[#E5DFD3] overflow-hidden shadow-xl shadow-[#DCD3C6]/10">
               <div className="overflow-x-auto">
                 <table className="w-full text-sm text-left">
-                  <thead className="text-[10px] text-[#A08D74] uppercase bg-[#FAF8F5] border-b border-[#E5DFD3]">
+                  <thead className="text-sm text-[#A08D74] uppercase bg-[#FAF8F5] border-b border-[#E5DFD3]">
                     <tr>
                       {columns.map((col) => (
-                        <th key={col} className="px-8 py-5 font-black tracking-widest whitespace-nowrap">
+                        <th key={col} className="px-8 py-5 font-black tracking-wider whitespace-nowrap">
                           {col}
                         </th>
                       ))}

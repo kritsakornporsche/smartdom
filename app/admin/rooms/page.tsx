@@ -263,7 +263,7 @@ export default function AdminRoomsPage() {
         <header className="h-20 bg-white/60 backdrop-blur-md border-b border-[#E5DFD3] flex items-center justify-between px-10 shrink-0">
           <div>
             <h1 className="font-display text-xl font-bold tracking-tight text-[#3E342B]">จัดการห้องพัก</h1>
-            <p className="text-[10px] text-[#A08D74] font-bold uppercase tracking-widest mt-0.5 whitespace-nowrap">Room Management System</p>
+            <p className="text-sm text-[#A08D74] font-bold uppercase tracking-wider mt-0.5 whitespace-nowrap">Room Management System</p>
           </div>
           <div className="flex items-center gap-3">
             <button 
@@ -335,7 +335,7 @@ export default function AdminRoomsPage() {
                 </div>
               ) : filteredRooms.length === 0 ? (
                 <div className="p-16 text-center">
-                  <span className="text-6xl mb-4 block">🔍</span>
+                  <span className="text-2xl mb-4 block">🔍</span>
                   <h3 className="font-display text-xl font-bold text-[#3E342B] mb-2">ไม่พบห้องที่คุณต้องการ</h3>
                   <p className="text-[#A08D74] mb-6 max-w-md mx-auto font-medium">ลองเปลี่ยนคำค้นหาหรือตัวกรองใหม่อีกครั้ง</p>
                   <button onClick={() => {setSearchTerm(''); setFloorFilter('all'); setStatusFilter('all');}} className="text-[#8B7355] font-bold hover:underline">ล้างตัวกรองทั้งหมด</button>
@@ -356,7 +356,7 @@ export default function AdminRoomsPage() {
                         ) : (
                           <div className="w-full h-full flex flex-col items-center justify-center text-[#A08D74]">
                             <svg className="w-10 h-10 mb-2 opacity-40" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-                            <span className="text-xs font-bold uppercase tracking-widest opacity-50">ไม่มีรูปภาพ</span>
+                            <span className="text-xs font-bold uppercase tracking-wider opacity-50">ไม่มีรูปภาพ</span>
                           </div>
                         )}
                         <div className="absolute top-3 right-3">
@@ -366,7 +366,7 @@ export default function AdminRoomsPage() {
                         </div>
                         {room.images && room.images.length > 0 && (
                           <div className="absolute bottom-3 left-3">
-                            <span className="px-2 py-1.5 rounded-xl bg-black/60 backdrop-blur-md text-[10px] font-black text-white uppercase tracking-widest flex items-center gap-1.5 border border-white/20">
+                            <span className="px-2 py-1.5 rounded-xl bg-black/60 backdrop-blur-md text-sm font-black text-white uppercase tracking-wider flex items-center gap-1.5 border border-white/20">
                               <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
                               +{room.images.length}
                             </span>
@@ -399,8 +399,8 @@ export default function AdminRoomsPage() {
 
                         {(room.status === 'มีผู้เช่า' || room.status === 'Occupied') && room.tenant_name && (
                           <div className="flex items-center gap-2 mb-4 bg-[#8B7355]/5 p-2 rounded-xl border border-[#8B7355]/10">
-                            <div className="w-6 h-6 rounded-full bg-[#8B7355]/20 flex items-center justify-center text-[10px] text-[#8B7355]">👤</div>
-                            <span className="text-[11px] font-bold text-[#8B7355] truncate">ผู้เช่า: {room.tenant_name}</span>
+                            <div className="w-6 h-6 rounded-full bg-[#8B7355]/20 flex items-center justify-center text-sm text-[#8B7355]">👤</div>
+                            <span className="text-sm font-bold text-[#8B7355] truncate">ผู้เช่า: {room.tenant_name}</span>
                           </div>
                         )}
                         
@@ -450,7 +450,7 @@ export default function AdminRoomsPage() {
 
                 <div className="grid grid-cols-2 gap-5">
                   <div>
-                    <label className="block text-xs font-bold uppercase tracking-widest text-[#8B7355] mb-2">หมายเลขห้อง</label>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-[#8B7355] mb-2">หมายเลขห้อง</label>
                     <input 
                       type="text" 
                       required 
@@ -461,7 +461,7 @@ export default function AdminRoomsPage() {
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-bold uppercase tracking-widest text-[#8B7355] mb-2">ชั้นที่</label>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-[#8B7355] mb-2">ชั้นที่</label>
                     <input 
                       type="number" 
                       required 
@@ -474,7 +474,7 @@ export default function AdminRoomsPage() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-widest text-[#8B7355] mb-2">ประเภทห้อง</label>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-[#8B7355] mb-2">ประเภทห้อง</label>
                   <select 
                     value={roomType}
                     onChange={(e) => setRoomType(e.target.value)}
@@ -489,7 +489,7 @@ export default function AdminRoomsPage() {
 
                 <div className="grid grid-cols-2 gap-5">
                   <div>
-                    <label className="block text-xs font-bold uppercase tracking-widest text-[#8B7355] mb-2">ราคาเช่า/เดือน (บาท)</label>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-[#8B7355] mb-2">ราคาเช่า/เดือน (บาท)</label>
                     <input 
                       type="number" 
                       required 
@@ -502,7 +502,7 @@ export default function AdminRoomsPage() {
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-bold uppercase tracking-widest text-[#8B7355] mb-2">สถานะ</label>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-[#8B7355] mb-2">สถานะ</label>
                     <select 
                       value={status}
                       onChange={(e) => setStatus(e.target.value)}
@@ -518,7 +518,7 @@ export default function AdminRoomsPage() {
 
                 {(status === 'มีผู้เช่า' || status === 'Occupied') && (
                   <div className="animate-in fade-in slide-in-from-top-2 duration-300">
-                    <label className="block text-xs font-bold uppercase tracking-widest text-[#8B7355] mb-2">ระบุผู้เช่า</label>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-[#8B7355] mb-2">ระบุผู้เช่า</label>
                     <select 
                       value={tenantId}
                       onChange={(e) => setTenantId(e.target.value)}
@@ -533,7 +533,7 @@ export default function AdminRoomsPage() {
                 )}
 
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-widest text-[#8B7355] mb-3">สิ่งอำนวยความสะดวก</label>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-[#8B7355] mb-3">สิ่งอำนวยความสะดวก</label>
                   <div className="flex flex-wrap gap-2">
                     {AMENITIES_LIST.map(amenity => (
                       <button
@@ -554,7 +554,7 @@ export default function AdminRoomsPage() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-widest text-[#8B7355] mb-3">แกลเลอรี่ภาพ (รูปเสริม)</label>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-[#8B7355] mb-3">แกลเลอรี่ภาพ (รูปเสริม)</label>
                   <div className="grid grid-cols-4 gap-3">
                     {[0, 1, 2, 3].map((idx) => (
                       <div key={idx} className="relative aspect-square rounded-2xl border-2 border-dashed border-[#E5DFD3] flex flex-col items-center justify-center overflow-hidden bg-[#FAF8F5]">
@@ -564,13 +564,13 @@ export default function AdminRoomsPage() {
                             <button 
                               type="button" 
                               onClick={() => setExtraImages(prev => prev.filter((_, i) => i !== idx))}
-                              className="absolute top-1 right-1 h-5 w-5 rounded-full bg-rose-500 text-white flex items-center justify-center text-[10px] shadow-lg"
+                              className="absolute top-1 right-1 h-5 w-5 rounded-full bg-rose-500 text-white flex items-center justify-center text-sm shadow-lg"
                             >✕</button>
                           </>
                         ) : (
                           <label className="cursor-pointer flex flex-col items-center">
                             <svg className="w-5 h-5 text-[#A08D74] opacity-40 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
-                            <span className="text-[10px] font-bold text-[#A08D74]/60 uppercase tracking-tight">เพิ่มรูป</span>
+                            <span className="text-sm font-bold text-[#A08D74]/60 uppercase tracking-tight">เพิ่มรูป</span>
                             <input type="file" className="hidden" accept="image/*" onChange={(e) => handleFileUpload(e, 'extra', idx)} disabled={uploading} />
                           </label>
                         )}
@@ -580,17 +580,17 @@ export default function AdminRoomsPage() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-widest text-[#8B7355] mb-3">รูปภาพหลัก</label>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-[#8B7355] mb-3">รูปภาพหลัก</label>
                   <div className="relative aspect-video rounded-3xl border-2 border-dashed border-[#E5DFD3] bg-[#FAF8F5] overflow-hidden group">
                     {imageUrl ? (
                       <>
                         <img src={imageUrl} alt="Room preview" className="w-full h-full object-cover transition-transform group-hover:scale-105 duration-700" />
                         <div className="absolute inset-0 bg-[#3E342B]/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
-                          <label className="cursor-pointer bg-white text-[#3E342B] px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest shadow-xl hover:scale-105 transition-transform">
+                          <label className="cursor-pointer bg-white text-[#3E342B] px-4 py-2 rounded-full text-sm font-bold uppercase tracking-wider shadow-xl hover:scale-105 transition-transform">
                             เปลี่ยนรูป
                             <input type="file" className="hidden" accept="image/*" onChange={(e) => handleFileUpload(e, 'main')} disabled={uploading} />
                           </label>
-                          <button type="button" onClick={() => setImageUrl('')} className="bg-rose-500 text-white px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest shadow-xl hover:scale-105 transition-transform">
+                          <button type="button" onClick={() => setImageUrl('')} className="bg-rose-500 text-white px-4 py-2 rounded-full text-sm font-bold uppercase tracking-wider shadow-xl hover:scale-105 transition-transform">
                             ลบรูป
                           </button>
                         </div>
@@ -600,7 +600,7 @@ export default function AdminRoomsPage() {
                         <div className="p-4 bg-[#8B7355]/5 rounded-2xl mb-3">
                           <svg className="w-8 h-8 text-[#8B7355]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
                         </div>
-                        <span className="text-xs font-bold text-[#8B7355] uppercase tracking-widest">อัปโหลดรูปภาพหลัก</span>
+                        <span className="text-xs font-bold text-[#8B7355] uppercase tracking-wider">อัปโหลดรูปภาพหลัก</span>
                         <input type="file" className="hidden" accept="image/*" onChange={(e) => handleFileUpload(e, 'main')} disabled={uploading} />
                       </label>
                     )}

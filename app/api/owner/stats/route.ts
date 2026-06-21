@@ -1,42 +1,36 @@
 import { NextResponse } from 'next/server';
 import { neon } from '@neondatabase/serverless';
 
+const MYSQL_BASE = 'mysql://root:@localhost:3306';
+
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
-  const dormId = searchParams.get('dormId');
+  const dormDbName = searchParams.get('dormDbName');
+  // Legacy support: dormId (ignored now, we use dormDbName)
 
-  if (!dormId) {
-    return NextResponse.json({ success: false, message: 'Dorm ID required' }, { status: 400 });
+  if (!dormDbName) {
+    return NextResponse.json({ success: false, message: 'dormDbName required' }, { status: 400 });
   }
 
   try {
-    const sql = neon(process.env.DATABASE_URL || '');
+    const sql = neon(`${MYSQL_BASE}/${dormDbName}`);
     
-    // Count Rooms
-    const totalRoomsResult = await sql`SELECT COUNT(*) FROM rooms WHERE dorm_id = ${parseInt(dormId)}`;
-    const totalRooms = parseInt(totalRoomsResult[0].count);
+    const totalRoomsResult = await sql`SELECT COUNT(*) as count FROM rooms`;
+    const totalRooms = Number(totalRoomsResult[0].count);
 
-    // Count Occupied
-    const occupiedResult = await sql`SELECT COUNT(*) FROM rooms WHERE dorm_id = ${parseInt(dormId)} AND status = 'Occupied'`;
-    const occupiedRooms = parseInt(occupiedResult[0].count);
+    const occupiedResult = await sql`SELECT COUNT(*) as count FROM rooms WHERE status = 'Occupied'`;
+    const occupiedRooms = Number(occupiedResult[0].count);
 
-    // Count Tenants (joined via rooms)
-    const tenantsResult = await sql`
-      SELECT COUNT(*) FROM tenants 
-      WHERE room_id IN (SELECT id FROM rooms WHERE dorm_id = ${parseInt(dormId)})
-    `;
-    const totalTenants = parseInt(tenantsResult[0].count);
+    const tenantsResult = await sql`SELECT COUNT(*) as count FROM tenants WHERE status = 'Active'`;
+    const totalTenants = Number(tenantsResult[0].count);
+
+    const maintResult = await sql`SELECT COUNT(*) as count FROM maintenance_requests WHERE status = 'Pending'`;
+    const pendingMaintenance = Number(maintResult[0].count);
 
     return NextResponse.json({
       success: true,
-      data: {
-        totalRooms,
-        occupiedRooms,
-        totalTenants,
-        pendingMaintenance: 1 // Placeholder for now
-      }
+      data: { totalRooms, occupiedRooms, totalTenants, pendingMaintenance },
     });
-
   } catch (err: any) {
     return NextResponse.json({ success: false, message: err.message }, { status: 500 });
   }

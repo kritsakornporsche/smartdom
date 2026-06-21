@@ -89,18 +89,18 @@ export default function AdminNewsPage() {
   if (status === 'loading') return null;
 
   return (
-    <div className="flex h-screen bg-[#FDFBF7]">
+    <div className="flex h-screen bg-background">
       <AdminSidebar />
       
       <main className="flex-1 flex flex-col h-screen min-w-0">
-        <header className="h-20 bg-white border-b border-[#E5DFD3] flex items-center justify-between px-10 shrink-0">
+        <header className="h-20 bg-white border-b border-border flex items-center justify-between px-10 shrink-0">
           <div>
-            <h1 className="font-display text-xl font-bold text-[#3E342B]">ประกาศข่าวสาร</h1>
+            <h1 className="font-display text-xl font-bold text-foreground">ประกาศข่าวสาร</h1>
             <p className="text-xs text-[#A08D74] mt-0.5">จัดการข้อมูลข่าวสารสําหรับผู้เช่าและพนักงาน</p>
           </div>
           <button 
             onClick={() => setShowModal(true)}
-            className="bg-[#8B7355] text-white px-5 py-2.5 rounded-xl font-bold text-sm shadow-lg shadow-[#8B7355]/20 hover:scale-105 transition-all"
+            className="bg-primary text-white px-5 py-2.5 rounded-xl font-bold text-sm shadow-lg shadow-primary/20 hover:scale-105 transition-all"
           >
             + สร้างประกาศใหม่
           </button>
@@ -111,14 +111,14 @@ export default function AdminNewsPage() {
             {loading ? (
               <div className="text-center py-20 animate-pulse text-[#A08D74]">กําลังโหลดข่าวสาร...</div>
             ) : news.length === 0 ? (
-              <div className="bg-white border border-[#E5DFD3] rounded-[40px] p-20 text-center space-y-4">
+              <div className="bg-white border border-border rounded-[40px] p-20 text-center space-y-4">
                 <div className="text-4xl">📢</div>
                 <p className="text-[#A08D74] font-medium">ยังไม่มีประกาศข่าวสารในขณะนี้</p>
               </div>
             ) : (
               <div className="grid grid-cols-1 gap-6">
                 {news.map((item) => (
-                  <div key={item.id} className="bg-white border border-[#E5DFD3] rounded-[32px] p-8 shadow-sm hover:shadow-md transition-shadow relative group">
+                  <div key={item.id} className="bg-white border border-border rounded-[32px] p-8 shadow-sm hover:shadow-md transition-shadow relative group">
                     <div className="flex justify-between items-start mb-4">
                       <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${getCategoryColor(item.category)}`}>
                         {item.category}
@@ -129,7 +129,7 @@ export default function AdminNewsPage() {
                         })} โดย {item.author_name}
                       </span>
                     </div>
-                    <h3 className="text-lg font-bold text-[#3E342B] mb-3">{item.title}</h3>
+                    <h3 className="text-lg font-bold text-foreground mb-3">{item.title}</h3>
                     <p className="text-[#5A4D41] text-sm leading-relaxed whitespace-pre-wrap">{item.content}</p>
                   </div>
                 ))}
@@ -142,8 +142,8 @@ export default function AdminNewsPage() {
         {showModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             <div className="absolute inset-0 bg-[#3E342B]/30 backdrop-blur-sm" onClick={() => setShowModal(false)}></div>
-            <div className="bg-white rounded-[40px] shadow-2xl w-full max-w-lg relative z-10 p-10 border border-[#E5DFD3] animate-in fade-in zoom-in duration-200">
-              <h2 className="text-2xl font-display font-bold text-[#3E342B] mb-8">สร้างข่าวสารใหม่</h2>
+            <div className="bg-white rounded-[40px] shadow-2xl w-full max-w-lg relative z-10 p-10 border border-border animate-in fade-in zoom-in duration-200">
+              <h2 className="text-2xl font-display font-bold text-foreground mb-8">สร้างข่าวสารใหม่</h2>
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="space-y-2">
                   <label className="text-[10px] font-black uppercase tracking-wider text-[#A08D74]">หัวข้อประกาศ</label>
@@ -152,7 +152,7 @@ export default function AdminNewsPage() {
                     value={formData.title}
                     onChange={e => setFormData({...formData, title: e.target.value})}
                     placeholder="ระบุหัวข้อที่น่าสนใจ..."
-                    className="w-full bg-[#FAF8F5] border border-[#E5DFD3] rounded-2xl px-5 py-3 text-sm focus:outline-none"
+                    className="w-full bg-background border border-border rounded-2xl px-5 py-3 text-sm focus:outline-none"
                     required
                   />
                 </div>
@@ -161,7 +161,7 @@ export default function AdminNewsPage() {
                   <select 
                     value={formData.category}
                     onChange={e => setFormData({...formData, category: e.target.value})}
-                    className="w-full bg-[#FAF8F5] border border-[#E5DFD3] rounded-2xl px-5 py-3 text-sm focus:outline-none"
+                    className="w-full bg-background border border-border rounded-2xl px-5 py-3 text-sm focus:outline-none"
                   >
                     <option value="info">ทั่วไป (info)</option>
                     <option value="urgent">ด่วน (urgent)</option>
@@ -175,7 +175,7 @@ export default function AdminNewsPage() {
                     value={formData.content}
                     onChange={e => setFormData({...formData, content: e.target.value})}
                     placeholder="รายละเอียดประกาศ..."
-                    className="w-full bg-[#FAF8F5] border border-[#E5DFD3] rounded-2xl p-5 text-sm focus:outline-none h-40"
+                    className="w-full bg-background border border-border rounded-2xl p-5 text-sm focus:outline-none h-40"
                     required
                   />
                 </div>
@@ -183,14 +183,14 @@ export default function AdminNewsPage() {
                   <button 
                     type="button" 
                     onClick={() => setShowModal(false)}
-                    className="flex-1 py-4 border border-[#E5DFD3] text-[#A08D74] rounded-2xl font-bold text-xs"
+                    className="flex-1 py-4 border border-border text-[#A08D74] rounded-2xl font-bold text-xs"
                   >
                     ยกเลิก
                   </button>
                   <button 
                     type="submit" 
                     disabled={saving}
-                    className="flex-1 py-4 bg-[#8B7355] text-white rounded-2xl font-bold text-xs shadow-lg shadow-[#8B7355]/20 disabled:opacity-50"
+                    className="flex-1 py-4 bg-primary text-white rounded-2xl font-bold text-xs shadow-lg shadow-primary/20 disabled:opacity-50"
                   >
                     {saving ? 'กําลังบันทึก...' : 'ประกาศข่าวสาร'}
                   </button>

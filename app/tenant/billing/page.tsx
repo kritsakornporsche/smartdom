@@ -90,8 +90,8 @@ export default function TenantBillingPage() {
         <div className="max-w-5xl mx-auto pb-16 space-y-12">
           <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
             <div className="space-y-2">
-              <h1 className="text-3xl font-black text-[#3E342B]">ธุรกรรมและการชำระเงิน</h1>
-              <p className="text-[#8B7355] font-medium text-lg">จัดการค่าเช่า ค่าน้ำ-ไฟ และประวัติการเงินของคุณ</p>
+              <h1 className="text-3xl font-black text-white">ธุรกรรมและการชำระเงิน</h1>
+              <p className="text-muted-foreground font-medium text-lg">จัดการค่าเช่า ค่าน้ำ-ไฟ และประวัติการเงินของคุณ</p>
             </div>
             {unpaidCount > 0 && (
               <div className="bg-rose-50 border border-rose-100 px-6 py-3 rounded-2xl flex items-center gap-3 animate-pulse">
@@ -105,22 +105,22 @@ export default function TenantBillingPage() {
 
           <div className="grid gap-8">
             {loading ? (
-               <div className="p-20 text-center animate-pulse text-[#A08D74]">กำลังดึงข้อมูลบิลล่าสุด...</div>
+               <div className="p-20 text-center animate-pulse text-white/50">กำลังดึงข้อมูลบิลล่าสุด...</div>
             ) : bills.length === 0 ? (
-              <div className="bg-white border-2 border-dashed border-[#E5DFD3] rounded-[3rem] p-24 text-center">
-                <div className="w-20 h-20 bg-[#FAF8F5] rounded-full flex items-center justify-center mx-auto mb-6">
-                   <svg className="w-10 h-10 text-[#DCD3C6]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+              <div className="bg-[#0F172A] border-2 border-dashed border-white/20/10 rounded-[3rem] p-24 text-center">
+                <div className="w-20 h-20 bg-[#0F172A] rounded-full flex items-center justify-center mx-auto mb-6">
+                   <svg className="w-10 h-10 text-muted-foreground/60" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
                 </div>
-                <h3 className="text-xl font-black text-[#3E342B] mb-2">ยังไม่มีข้อมูลยอดเรียกเก็บ</h3>
-                <p className="text-[#A08D74] font-medium">เมื่อหอพักออกบิลใหม่ คุณจะเห็นรายละเอียดได้ที่นี่</p>
+                <h3 className="text-xl font-black text-white mb-2">ยังไม่มีข้อมูลยอดเรียกเก็บ</h3>
+                <p className="text-white/50 font-medium">เมื่อหอพักออกบิลใหม่ คุณจะเห็นรายละเอียดได้ที่นี่</p>
               </div>
             ) : bills.map((bill) => (
-              <div key={bill.id} className="bg-white rounded-[3rem] border border-[#E5DFD3] shadow-sm hover:shadow-2xl transition-all duration-500 overflow-hidden flex flex-col xl:flex-row group">
+              <div key={bill.id} className="bg-[#0F172A] rounded-[3rem] border border-white/20/10 shadow-sm hover:shadow-2xl transition-all duration-500 overflow-hidden flex flex-col xl:flex-row group">
                  <div className="p-10 md:p-12 flex-1">
                    <div className="flex justify-between items-start mb-10">
                      <div>
-                       <span className="text-[10px] font-black text-[#A08D74] uppercase tracking-[0.25em] mb-3 block">{bill.billing_cycle}</span>
-                       <h3 className="text-2xl font-black text-[#3E342B] group-hover:text-primary transition-colors">{bill.title}</h3>
+                       <span className="text-[10px] font-black text-white/50 uppercase tracking-[0.25em] mb-3 block">{bill.billing_cycle}</span>
+                       <h3 className="text-2xl font-black text-white group-hover:text-primary transition-colors">{bill.title}</h3>
                      </div>
                      <span className={`px-6 py-2 text-[10px] font-black uppercase tracking-[0.15em] rounded-full border-2 ${
                         bill.status === 'Unpaid' ? 'bg-[#FAF3E8] text-[#D4A373] border-[#E9C46A]' :
@@ -132,22 +132,22 @@ export default function TenantBillingPage() {
                    </div>
                    
                    <div className="border-t border-[#F3EFE9] pt-10 mt-2 grid grid-cols-1 md:grid-cols-2 gap-8">
-                     <div className="bg-[#FAF8F5] p-8 rounded-[2rem] border border-[#E5DFD3]/50">
-                       <p className="text-[10px] text-[#A08D74] font-black uppercase tracking-[0.2em] mb-3">Amount Due</p>
-                       <p className="text-4xl font-black text-[#3E342B]">฿{Number(bill.amount).toLocaleString()}</p>
+                     <div className="bg-[#0F172A] p-8 rounded-[2rem] border border-white/20/10/50">
+                       <p className="text-[10px] text-white/50 font-black uppercase tracking-[0.2em] mb-3">Amount Due</p>
+                       <p className="text-4xl font-black text-white">฿{Number(bill.amount).toLocaleString()}</p>
                      </div>
-                     <div className="bg-[#FAF8F5] p-8 rounded-[2rem] border border-[#E5DFD3]/50">
-                       <p className="text-[10px] text-[#A08D74] font-black uppercase tracking-[0.2em] mb-3">Payment Deadline</p>
+                     <div className="bg-[#0F172A] p-8 rounded-[2rem] border border-white/20/10/50">
+                       <p className="text-[10px] text-white/50 font-black uppercase tracking-[0.2em] mb-3">Payment Deadline</p>
                        <div className="flex items-center gap-3">
-                          <svg className="w-6 h-6 text-[#8B7355]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2" /></svg>
-                          <p className="text-xl font-black text-[#8B7355]">{new Date(bill.due_date).toLocaleDateString('th-TH', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
+                          <svg className="w-6 h-6 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2" /></svg>
+                          <p className="text-xl font-black text-muted-foreground">{new Date(bill.due_date).toLocaleDateString('th-TH', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
                        </div>
                      </div>
                    </div>
                  </div>
                  
                  {/* Action Area */}
-                 <div className="bg-[#FAF8F5] border-t xl:border-t-0 xl:border-l border-[#E5DFD3] p-10 md:p-12 flex flex-col justify-center gap-4 xl:w-80">
+                 <div className="bg-[#0F172A] border-t xl:border-t-0 xl:border-l border-white/20/10 p-10 md:p-12 flex flex-col justify-center gap-4 xl:w-80">
                     {bill.status === 'Unpaid' ? (
                       <>
                         <button 
@@ -158,7 +158,7 @@ export default function TenantBillingPage() {
                         </button>
                         <button 
                           onClick={() => { setSelectedBill(bill); setModalType('upload'); }}
-                          className="w-full bg-white hover:bg-[#F3EFE9] text-[#3E342B] border-2 border-[#E5DFD3] font-black py-4 px-6 rounded-2xl transition-all active:scale-[0.98] text-sm"
+                          className="w-full bg-[#0F172A] hover:bg-white/5 text-white border-2 border-white/20/10 font-black py-4 px-6 rounded-2xl transition-all active:scale-[0.98] text-sm"
                         >
                           แจ้งโอนเงิน / เลือกไฟล์
                         </button>
@@ -190,15 +190,15 @@ export default function TenantBillingPage() {
       {/* QR Code Modal */}
       {modalType === 'qr' && selectedBill && (
          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm animate-in fade-in p-4">
-           <div className="bg-white rounded-[2.5rem] w-full max-w-sm p-10 overflow-hidden shadow-2xl relative animate-in zoom-in-95">
-             <button onClick={() => setModalType(null)} className="absolute top-6 right-6 h-10 w-10 flex items-center justify-center rounded-full hover:bg-black/5 text-[#A08D74]">✕</button>
-             <h2 className="text-xl font-black text-[#3E342B] mb-6 text-center">สแกนชำระเงิน</h2>
-             <div className="bg-[#FAF8F5] p-4 rounded-3xl border border-[#E5DFD3] flex justify-center mb-6">
+           <div className="bg-[#0F172A] rounded-[2.5rem] w-full max-w-sm p-10 overflow-hidden shadow-2xl relative animate-in zoom-in-95">
+             <button onClick={() => setModalType(null)} className="absolute top-6 right-6 h-10 w-10 flex items-center justify-center rounded-full hover:bg-black/5 text-white/50">✕</button>
+             <h2 className="text-xl font-black text-white mb-6 text-center">สแกนชำระเงิน</h2>
+             <div className="bg-[#0F172A] p-4 rounded-3xl border border-white/20/10 flex justify-center mb-6">
                 {/* using mock PromptPay qr generator */}
                 <img src={`https://promptpay.io/0812345678/${selectedBill.amount}.png`} alt="QR Code" className="w-48 h-48 object-contain mix-blend-multiply" />
              </div>
              <div className="text-center space-y-1 mb-8">
-               <p className="text-[10px] text-[#A08D74] font-black uppercase tracking-widest">ยอดที่ต้องชำระ (บาท)</p>
+               <p className="text-[10px] text-white/50 font-black uppercase tracking-widest">ยอดที่ต้องชำระ (บาท)</p>
                <p className="text-3xl font-black text-primary">฿{Number(selectedBill.amount).toLocaleString()}</p>
              </div>
              <button 
@@ -214,12 +214,12 @@ export default function TenantBillingPage() {
       {/* Upload Slip Modal */}
       {modalType === 'upload' && selectedBill && (
          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm animate-in fade-in p-4">
-           <div className="bg-white rounded-[2.5rem] w-full max-w-md p-10 overflow-hidden shadow-2xl relative animate-in zoom-in-95">
-             <button onClick={() => setModalType(null)} className="absolute top-6 right-6 h-10 w-10 flex items-center justify-center rounded-full hover:bg-black/5 text-[#A08D74]" disabled={uploading}>✕</button>
-             <h2 className="text-xl font-black text-[#3E342B] mb-2">อัพโหลดหลักฐาน</h2>
-             <p className="text-sm text-[#8B7355] font-medium mb-8">กรุณาแนบภาพสลิปที่เห็นยอดเงินและเวลาจัดเจน</p>
+           <div className="bg-[#0F172A] rounded-[2.5rem] w-full max-w-md p-10 overflow-hidden shadow-2xl relative animate-in zoom-in-95">
+             <button onClick={() => setModalType(null)} className="absolute top-6 right-6 h-10 w-10 flex items-center justify-center rounded-full hover:bg-black/5 text-white/50" disabled={uploading}>✕</button>
+             <h2 className="text-xl font-black text-white mb-2">อัพโหลดหลักฐาน</h2>
+             <p className="text-sm text-muted-foreground font-medium mb-8">กรุณาแนบภาพสลิปที่เห็นยอดเงินและเวลาจัดเจน</p>
              
-             <div className="border-2 border-dashed border-[#E5DFD3] rounded-[2rem] p-10 flex flex-col items-center justify-center bg-[#FAF8F5] relative group hover:border-[#8B6A2B] transition-colors mb-6 cursor-pointer">
+             <div className="border-2 border-dashed border-white/20/10 rounded-[2rem] p-10 flex flex-col items-center justify-center bg-[#0F172A] relative group hover:border-primary transition-colors mb-6 cursor-pointer">
                 <input 
                    type="file" 
                    accept="image/*" 
@@ -227,16 +227,16 @@ export default function TenantBillingPage() {
                    disabled={uploading}
                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed" 
                 />
-                <svg className={`w-12 h-12 mb-4 text-[#DCD3C6] group-hover:text-[#8B6A2B] transition-colors ${uploading ? 'animate-bounce' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
-                <p className="font-bold text-[#3E342B] mb-1">{uploading ? 'กำลังประมวลผล...' : 'คลิกเพื่อเลือกไฟล์รูปภาพ'}</p>
-                <p className="text-xs text-[#A08D74] font-medium">รองรับ JPG, PNG ขนาดไม่เกิน 5MB</p>
+                <svg className={`w-12 h-12 mb-4 text-muted-foreground/60 group-hover:text-primary transition-colors ${uploading ? 'animate-bounce' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
+                <p className="font-bold text-white mb-1">{uploading ? 'กำลังประมวลผล...' : 'คลิกเพื่อเลือกไฟล์รูปภาพ'}</p>
+                <p className="text-xs text-white/50 font-medium">รองรับ JPG, PNG ขนาดไม่เกิน 5MB</p>
              </div>
              
              <div className="flex gap-4">
                <button 
                   onClick={() => setModalType(null)} 
                   disabled={uploading}
-                  className="flex-1 py-4 border border-[#E5DFD3] text-[#A08D74] rounded-2xl font-bold text-sm hover:bg-[#FAF8F5]"
+                  className="flex-1 py-4 border border-white/20/10 text-white/50 rounded-2xl font-bold text-sm hover:bg-[#0F172A]"
                >
                  ยกเลิก
                </button>

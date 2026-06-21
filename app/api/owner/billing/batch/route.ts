@@ -10,7 +10,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: false, message: 'Missing required fields' }, { status: 400 });
     }
 
-    const sql = neon(process.env.DATABASE_URL || '');
+    const sql = neon(process.env.DATABASE_URL || 'postgres://postgres:password@localhost/postgres');
     
     // 1. Find all active tenants in this dormitory via their active contracts
     const activeTenants = await sql`

@@ -8,6 +8,7 @@ import { useState, useEffect } from 'react';
 export default function Navbar() {
   const { data: session, status } = useSession();
   const [scrolled, setScrolled] = useState(false);
+  const [theme, setTheme] = useState<'light' | 'dark'>('light');
 
   useEffect(() => {
     const handleScroll = () => {
@@ -17,14 +18,33 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  useEffect(() => {
+    // Sync theme on mount
+    const savedTheme = localStorage.getItem('theme');
+    const isDark = savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    setTheme(isDark ? 'dark' : 'light');
+  }, []);
+
+  const toggleTheme = () => {
+    if (theme === 'dark') {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+      setTheme('light');
+    } else {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+      setTheme('dark');
+    }
+  };
+
   return (
     <div className="fixed top-0 w-full z-50 px-6 py-8 pointer-events-none">
       <nav 
         className={cn(
           "mx-auto max-w-5xl w-full h-18 px-6 lg:px-10 rounded-[2.5rem] flex items-center justify-between pointer-events-auto transition-all duration-700",
           scrolled 
-            ? "bg-white/70 backdrop-blur-2xl shadow-[0_20px_50px_-12px_rgba(0,0,0,0.08)] border border-white/50 py-3" 
-            : "bg-white/40 backdrop-blur-xl border border-white/20 py-4"
+            ? "bg-card/70 backdrop-blur-2xl shadow-xl border border-border/50 py-3" 
+            : "bg-card/40 backdrop-blur-xl border border-border/25 py-4"
         )}
       >
         {/* Brand */}
@@ -36,9 +56,9 @@ export default function Navbar() {
         </Link>
         
         {/* Navigation Links */}
-        <div className="flex items-center gap-4 lg:gap-10">
-          <div className="hidden md:flex items-center gap-8 lg:gap-10">
-            <Link href="/explore" className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground hover:text-primary transition-all hover:translate-y-[-1px]">
+        <div className="flex items-center gap-4 lg:gap-6">
+          <div className="hidden md:flex items-center gap-6">
+            <Link href="/" className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground hover:text-primary transition-all hover:translate-y-[-1px]">
               สำรวจหอพัก
             </Link>
             <div className="h-4 w-px bg-border/40" />
@@ -84,9 +104,9 @@ export default function Navbar() {
 
               <button 
                 onClick={() => signOut({ callbackUrl: '/' })}
-                className="text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-destructive transition-all hover:translate-y-[-1px]"
+                className="text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-destructive transition-all hover:translate-y-[-1px] cursor-pointer"
               >
-                {session ? 'ออก' : 'ออกจากระบบ'}
+                ออกจากระบบ
               </button>
             </div>
           ) : (
@@ -108,13 +128,25 @@ export default function Navbar() {
                   "shadow-xl shadow-foreground/5 hover:shadow-primary/20 hover:scale-[1.05] active:scale-95"
                 )}
               >
-                เริ่มเลิย
+                สมัครสมาชิก
               </Link>
             </div>
           )}
+
+          {/* Vertical Divider */}
+          <div className="h-6 w-px bg-border/40" />
+
+          {/* Theme Toggler Button */}
+          <button
+            onClick={toggleTheme}
+            className="h-9 w-9 rounded-xl flex items-center justify-center bg-secondary/50 text-foreground hover:bg-secondary transition-all active:scale-95 cursor-pointer text-sm shadow-sm"
+            title={theme === 'dark' ? 'เปลี่ยนเป็นโหมดสว่าง' : 'เปลี่ยนเป็นโหมดมืด'}
+          >
+            {theme === 'dark' ? '☀️' : '🌙'}
+          </button>
         </div>
 
-        {/* Mobile Menu Trigger - Still visual but integrated better */}
+        {/* Mobile Menu Trigger */}
         <button className="md:hidden h-10 w-10 flex flex-col items-center justify-center gap-1.5 bg-secondary/50 rounded-2xl hover:bg-secondary transition-all active:scale-95">
            <div className="w-5 h-0.5 bg-foreground/70 rounded-full" />
            <div className="w-4 h-0.5 bg-foreground/70 rounded-full self-start ml-[7px]" />

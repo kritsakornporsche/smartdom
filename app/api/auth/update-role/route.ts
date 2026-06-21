@@ -14,7 +14,7 @@ export async function POST(request: Request) {
        return NextResponse.json({ success: false, message: 'Invalid role' }, { status: 400 });
     }
 
-    const sql = neon(process.env.DATABASE_URL || '');
+    const sql = neon(process.env.DATABASE_URL || 'postgres://postgres:password@localhost/postgres');
     
     await sql`
       UPDATE users 

@@ -10,7 +10,7 @@ export async function POST(req: Request) {
     const { desiredDate, reason } = await req.json();
     if (!desiredDate) return NextResponse.json({ success: false, message: 'Missing desired date' }, { status: 400 });
 
-    const sql = neon(process.env.DATABASE_URL || '');
+    const sql = neon(process.env.DATABASE_URL || 'postgres://postgres:password@localhost/postgres');
     
     // Find tenant by email
     const tenantRes = await sql`SELECT id FROM tenants WHERE email = ${session.user.email} LIMIT 1`;
@@ -44,7 +44,7 @@ export async function DELETE(req: Request) {
     const { requestId } = await req.json();
     if (!requestId) return NextResponse.json({ success: false, message: 'Missing requestId' }, { status: 400 });
 
-    const sql = neon(process.env.DATABASE_URL || '');
+    const sql = neon(process.env.DATABASE_URL || 'postgres://postgres:password@localhost/postgres');
     
     // Find tenant by email
     const tenantRes = await sql`SELECT id FROM tenants WHERE email = ${session.user.email} LIMIT 1`;

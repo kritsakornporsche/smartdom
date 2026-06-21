@@ -24,10 +24,10 @@ const notoThaiLooped = Noto_Sans_Thai_Looped({
 
 export const metadata: Metadata = {
   title: {
-    default: "SmartDom | Minimal & Sustainable Living",
+    default: "SmartDom | Experience Modern Living",
     template: "%s | SmartDom",
   },
-  description: "Next-gen dormitory management for a simplified lifestyle. Experience the future of minimal living with SmartDom.",
+  description: "Next-gen dormitory management for a simplified lifestyle. Experience the future of modern living with SmartDom.",
   keywords: ["Dormitory", "Management", "Minimalism", "Sustainable Living", "Smart Home"],
   authors: [{ name: "SmartDom Team" }],
 };
@@ -35,7 +35,6 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#faf9f6", // Bone color from theme
 };
 
 import SessionProviderWrapper from "./components/SessionProviderWrapper";
@@ -50,8 +49,23 @@ export default function RootLayout({
     <html
       lang="th"
       className={`${outfit.variable} ${inter.variable} ${notoThai.variable} ${notoThaiLooped.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col bg-[#FDFBF7] text-[#3E342B] font-sans selection:bg-[#8B7355]/20 selection:text-[#8B7355]">
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: `
+          (function() {
+            try {
+              var theme = localStorage.getItem('theme');
+              if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+              } else {
+                document.documentElement.classList.remove('dark');
+              }
+            } catch (e) {}
+          })();
+        ` }} />
+      </head>
+      <body className="min-h-full flex flex-col bg-background text-foreground font-sans transition-colors duration-200">
         <Toaster position="top-center" expand={true} richColors />
         <SessionProviderWrapper>
           {children}

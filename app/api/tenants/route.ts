@@ -6,7 +6,7 @@ export async function GET(req: Request) {
   const dormId = searchParams.get('dormId');
 
   try {
-    const sql = neon(process.env.DATABASE_URL || '');
+    const sql = neon(process.env.DATABASE_URL || 'postgres://postgres:password@localhost/postgres');
     
     let query;
     if (dormId) {

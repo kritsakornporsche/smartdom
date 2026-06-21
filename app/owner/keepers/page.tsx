@@ -125,16 +125,16 @@ export default function KeepersManagement() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FDFBF7] p-8 text-[#3E342B]">
+    <div className="min-h-screen bg-[#080F1E] p-8 text-white">
       <div className="max-w-6xl mx-auto">
         <header className="flex justify-between items-center mb-10">
           <div>
             <h1 className="text-3xl font-black mb-2">จัดการเจ้าหน้าที่</h1>
-            <p className="text-[#A08D74] font-medium">เพิ่ม แก้ไข และลบข้อมูลแม่บ้านหรือช่างประจำหอพัก</p>
+            <p className="text-white/50 font-medium">เพิ่ม แก้ไข และลบข้อมูลแม่บ้านหรือช่างประจำหอพัก</p>
           </div>
           <button 
             onClick={() => handleOpenModal()}
-            className="px-6 py-3 bg-[#8B7355] text-white rounded-2xl font-bold flex items-center gap-2 shadow-lg shadow-[#8B7355]/20 hover:bg-[#725724] transition-all"
+            className="px-6 py-3 bg-primary text-white rounded-2xl font-bold flex items-center gap-2 shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all"
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -145,16 +145,16 @@ export default function KeepersManagement() {
 
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[1, 2, 3].map(i => <div key={i} className="h-48 bg-[#FAF8F5] rounded-3xl animate-pulse" />)}
+            {[1, 2, 3].map(i => <div key={i} className="h-48 bg-[#0F172A] rounded-3xl animate-pulse" />)}
           </div>
         ) : keepers.length === 0 ? (
-          <div className="text-center py-20 bg-white rounded-[40px] border-2 border-dashed border-[#E5DFD3]">
-            <p className="text-[#A08D74] font-bold">ยังไม่มีข้อมูลเจ้าหน้าที่ในระบบ</p>
+          <div className="text-center py-20 bg-[#0F172A] rounded-[40px] border-2 border-dashed border-white/20/10">
+            <p className="text-white/50 font-bold">ยังไม่มีข้อมูลเจ้าหน้าที่ในระบบ</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {keepers.map((keeper) => (
-              <div key={keeper.id} className="bg-white rounded-[32px] p-6 shadow-sm border border-[#E5DFD3] hover:shadow-xl hover:shadow-[#DCD3C6]/30 transition-all group">
+              <div key={keeper.id} className="bg-[#0F172A] rounded-[32px] p-6 shadow-sm border border-white/20/10 hover:shadow-xl hover:shadow-[#DCD3C6]/30 transition-all group">
                 <div className="flex justify-between items-start mb-6">
                   <div className={`p-3 rounded-2xl ${keeper.position === 'Maid' ? 'bg-rose-50 text-rose-600' : 'bg-blue-50 text-blue-600'}`}>
                     {keeper.position === 'Maid' ? (
@@ -185,18 +185,18 @@ export default function KeepersManagement() {
                 <div className="space-y-4">
                   <div>
                     <h3 className="text-lg font-black">{keeper.name}</h3>
-                    <p className="text-xs font-bold text-[#A08D74] uppercase tracking-wider">{keeper.position === 'Maid' ? 'แม่บ้าน' : 'ช่างประจำหอ'}</p>
+                    <p className="text-xs font-bold text-white/50 uppercase tracking-wider">{keeper.position === 'Maid' ? 'แม่บ้าน' : 'ช่างประจำหอ'}</p>
                   </div>
                   
                   <div className="space-y-2">
-                    <div className="flex items-center gap-3 text-sm text-[#5A4D41]">
-                      <svg className="w-4 h-4 text-[#A08D74]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <div className="flex items-center gap-3 text-sm text-white/80">
+                      <svg className="w-4 h-4 text-white/50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                       </svg>
                       {keeper.email || 'ไม่มีข้อมูลอีเมล'}
                     </div>
-                    <div className="flex items-center gap-3 text-sm text-[#5A4D41]">
-                      <svg className="w-4 h-4 text-[#A08D74]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <div className="flex items-center gap-3 text-sm text-white/80">
+                      <svg className="w-4 h-4 text-white/50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 .948.684V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                       </svg>
                       {keeper.phone || 'ไม่มีข้อมูลติดต่อ'}
@@ -212,38 +212,38 @@ export default function KeepersManagement() {
       {/* Modal Tooltip */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-[#3E342B]/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-[40px] w-full max-w-lg shadow-2xl border border-[#E5DFD3] overflow-hidden animate-in zoom-in duration-300">
+          <div className="bg-[#0F172A] rounded-[40px] w-full max-w-lg shadow-2xl border border-white/20/10 overflow-hidden animate-in zoom-in duration-300">
             <div className="p-10">
               <h2 className="text-2xl font-black mb-6">{editingKeeper ? 'แก้ไขข้อมูลเจ้าหน้าที่' : 'เพิ่มเจ้าหน้าที่ใหม่'}</h2>
               
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase text-[#A08D74]">ชื่อ-นามสกุล</label>
+                  <label className="text-[10px] font-black uppercase text-white/50">ชื่อ-นามสกุล</label>
                   <input 
                     required
                     value={formData.name}
                     onChange={(e) => setFormData({...formData, name: e.target.value})}
-                    className="w-full px-6 py-4 bg-[#FAF8F5] border border-[#DCD3C6] rounded-2xl focus:bg-white focus:border-[#8B7355] outline-none"
+                    className="w-full px-6 py-4 bg-[#0F172A] border border-border rounded-2xl focus:bg-[#0F172A] focus:border-primary outline-none"
                     placeholder="เช่น สมศรี รักสบาย"
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase text-[#A08D74]">เบอร์โทรศัพท์</label>
+                    <label className="text-[10px] font-black uppercase text-white/50">เบอร์โทรศัพท์</label>
                     <input 
                       value={formData.phone}
                       onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                      className="w-full px-6 py-4 bg-[#FAF8F5] border border-[#DCD3C6] rounded-2xl focus:bg-white focus:border-[#8B7355] outline-none"
+                      className="w-full px-6 py-4 bg-[#0F172A] border border-border rounded-2xl focus:bg-[#0F172A] focus:border-primary outline-none"
                       placeholder="081-XXX-XXXX"
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase text-[#A08D74]">ตำแหน่ง</label>
+                    <label className="text-[10px] font-black uppercase text-white/50">ตำแหน่ง</label>
                     <select 
                       value={formData.position}
                       onChange={(e) => setFormData({...formData, position: e.target.value})}
-                      className="w-full px-6 py-4 bg-[#FAF8F5] border border-[#DCD3C6] rounded-2xl focus:bg-white focus:border-[#8B7355] outline-none"
+                      className="w-full px-6 py-4 bg-[#0F172A] border border-border rounded-2xl focus:bg-[#0F172A] focus:border-primary outline-none"
                     >
                       <option value="Maid">แม่บ้าน (Maid)</option>
                       <option value="Technician">ช่างเทคนิค (Technician)</option>
@@ -252,29 +252,29 @@ export default function KeepersManagement() {
                 </div>
 
                   <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase text-[#A08D74]">อีเมล (ใช้เป็น Username)</label>
+                    <label className="text-[10px] font-black uppercase text-white/50">อีเมล (ใช้เป็น Username)</label>
                     <input 
                       type="email"
                       required
                       value={formData.email}
                       onChange={(e) => setFormData({...formData, email: e.target.value})}
-                      className="w-full px-6 py-4 bg-[#FAF8F5] border border-[#DCD3C6] rounded-2xl focus:bg-white focus:border-[#8B7355] outline-none"
+                      className="w-full px-6 py-4 bg-[#0F172A] border border-border rounded-2xl focus:bg-[#0F172A] focus:border-primary outline-none"
                       placeholder="email@example.com"
                     />
                   </div>
 
                   {!editingKeeper && (
                     <div className="space-y-2">
-                      <label className="text-[10px] font-black uppercase text-[#A08D74]">รหัสผ่านสำหรับเจ้าหน้าที่</label>
+                      <label className="text-[10px] font-black uppercase text-white/50">รหัสผ่านสำหรับเจ้าหน้าที่</label>
                       <input 
                         type="password"
                         required
                         value={formData.password}
                         onChange={(e) => setFormData({...formData, password: e.target.value})}
-                        className="w-full px-6 py-4 bg-[#FAF8F5] border border-[#DCD3C6] rounded-2xl focus:bg-white focus:border-[#8B7355] outline-none"
+                        className="w-full px-6 py-4 bg-[#0F172A] border border-border rounded-2xl focus:bg-[#0F172A] focus:border-primary outline-none"
                         placeholder="••••••••"
                       />
-                      <p className="text-[9px] text-[#A08D74] ml-1">* เจ้าหน้าที่สามารถใช้ Email และรหัสผ่านนี้ล็อกอินเข้าสู่ระบบได้</p>
+                      <p className="text-[9px] text-white/50 ml-1">* เจ้าหน้าที่สามารถใช้ Email และรหัสผ่านนี้ล็อกอินเข้าสู่ระบบได้</p>
                     </div>
                   )}
 
@@ -283,7 +283,7 @@ export default function KeepersManagement() {
                   <button 
                     type="button"
                     onClick={() => setIsModalOpen(false)}
-                    className="flex-1 py-4 bg-[#FAF8F5] text-[#A08D74] rounded-2xl font-bold hover:bg-[#E5DFD3] transition-all"
+                    className="flex-1 py-4 bg-[#0F172A] text-white/50 rounded-2xl font-bold hover:bg-white/10 transition-all"
                   >
                     ยกเลิก
                   </button>

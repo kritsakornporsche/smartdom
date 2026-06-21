@@ -79,19 +79,19 @@ export default function ProfilePage() {
 
   if (loading || status === 'loading') {
     return (
-      <div className="min-h-screen bg-[#FDFBF7] flex items-center justify-center">
-        <div className="w-10 h-10 border-4 border-[#8B7355]/20 border-t-[#8B7355] rounded-full animate-spin"></div>
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="w-10 h-10 border-4 border-primary/20 border-t-[#8B7355] rounded-full animate-spin"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#FDFBF7] py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-background py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-2xl mx-auto">
         {/* Breadcrumb / Back */}
         <button 
           onClick={() => router.back()}
-          className="mb-8 flex items-center gap-2 text-[#A08D74] hover:text-[#3E342B] transition-colors font-bold text-sm"
+          className="mb-8 flex items-center gap-2 text-[#A08D74] hover:text-foreground transition-colors font-bold text-sm"
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -99,13 +99,13 @@ export default function ProfilePage() {
           กลับไปหน้าที่แล้ว
         </button>
 
-        <div className="bg-white rounded-[40px] shadow-xl shadow-[#3E342B]/5 border border-[#E5DFD3] overflow-hidden">
+        <div className="bg-white rounded-[40px] shadow-xl shadow-[#3E342B]/5 border border-border overflow-hidden">
           {/* Header Section */}
-          <div className="h-32 bg-[#FAF8F5] relative">
+          <div className="h-32 bg-background relative">
             <div className="absolute -bottom-12 left-10">
               <div className="relative h-24 w-24 rounded-3xl overflow-hidden border-4 border-white shadow-lg bg-white">
                 <Image 
-                  src={formData.image_url || `https://ui-avatars.com/api/?name=${formData.name}&background=8B7355&color=fff&size=100`} 
+                  src={formData.image_url || `https://ui-avatars.com/api/?name=${formData.name}&background=6366F1&color=fff&size=100`} 
                   alt="Profile" 
                   fill 
                   className="object-cover"
@@ -117,10 +117,10 @@ export default function ProfilePage() {
           <div className="pt-16 pb-10 px-10">
             <div className="flex justify-between items-start mb-10">
               <div>
-                <h1 className="text-2xl font-display font-bold text-[#3E342B]">{formData.name}</h1>
+                <h1 className="text-2xl font-display font-bold text-foreground">{formData.name}</h1>
                 <p className="text-sm text-[#A08D74] font-medium flex items-center gap-2 mt-1">
                   <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-                  สถานะ: <span className="uppercase tracking-widest text-[10px] bg-[#FAF8F5] px-2 py-0.5 rounded-md border border-[#E5DFD3]">{formData.role}</span>
+                  สถานะ: <span className="uppercase tracking-widest text-[10px] bg-background px-2 py-0.5 rounded-md border border-border">{formData.role}</span>
                 </p>
               </div>
             </div>
@@ -141,7 +141,7 @@ export default function ProfilePage() {
                     type="text" 
                     value={formData.name}
                     onChange={(e) => setFormData({...formData, name: e.target.value})}
-                    className="w-full bg-[#FAF8F5] border border-[#E5DFD3] rounded-2xl px-5 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#8B7355]/20 text-[#3E342B]"
+                    className="w-full bg-background border border-border rounded-2xl px-5 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 text-foreground"
                     required
                   />
                 </div>
@@ -151,7 +151,7 @@ export default function ProfilePage() {
                     type="email" 
                     value={formData.email}
                     disabled
-                    className="w-full bg-[#FAF8F5]/50 border border-[#E5DFD3]/50 rounded-2xl px-5 py-3 text-sm text-[#A08D74] cursor-not-allowed"
+                    className="w-full bg-background/50 border border-border/50 rounded-2xl px-5 py-3 text-sm text-[#A08D74] cursor-not-allowed"
                   />
                 </div>
               </div>
@@ -164,7 +164,7 @@ export default function ProfilePage() {
                     value={formData.phone || ''}
                     onChange={(e) => setFormData({...formData, phone: e.target.value})}
                     placeholder="08X-XXX-XXXX"
-                    className="w-full bg-[#FAF8F5] border border-[#E5DFD3] rounded-2xl px-5 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#8B7355]/20 text-[#3E342B]"
+                    className="w-full bg-background border border-border rounded-2xl px-5 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 text-foreground"
                   />
                 </div>
                 <div className="space-y-2">
@@ -174,7 +174,7 @@ export default function ProfilePage() {
                     value={formData.image_url || ''}
                     onChange={(e) => setFormData({...formData, image_url: e.target.value})}
                     placeholder="https://example.com/photo.jpg"
-                    className="w-full bg-[#FAF8F5] border border-[#E5DFD3] rounded-2xl px-5 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#8B7355]/20 text-[#3E342B]"
+                    className="w-full bg-background border border-border rounded-2xl px-5 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 text-foreground"
                   />
                 </div>
               </div>
@@ -184,19 +184,19 @@ export default function ProfilePage() {
                 <textarea 
                   value={formData.bio || ''}
                   onChange={(e) => setFormData({...formData, bio: e.target.value})}
-                  className="w-full bg-[#FAF8F5] border border-[#E5DFD3] rounded-2xl px-5 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#8B7355]/20 text-[#3E342B] h-24"
+                  className="w-full bg-background border border-border rounded-2xl px-5 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 text-foreground h-24"
                   placeholder="เขียนอะไรบางอย่างเกี่ยวกับคุณ..."
                 />
               </div>
 
-              <div className="pt-4 border-t border-[#E5DFD3]">
+              <div className="pt-4 border-t border-border">
                 <div className="space-y-2 mb-6">
                   <label className="text-[10px] font-black uppercase tracking-[0.1em] text-rose-500 px-1">เปลี่ยนรหัสผ่าน (เว้นว่างไว้หากไม่ต้องการเปลี่ยน)</label>
                   <input 
                     type="password" 
                     value={formData.password}
                     onChange={(e) => setFormData({...formData, password: e.target.value})}
-                    className="w-full bg-[#FAF8F5] border border-[#E5DFD3] rounded-2xl px-5 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-rose-500/20 text-[#3E342B]"
+                    className="w-full bg-background border border-border rounded-2xl px-5 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-rose-500/20 text-foreground"
                     placeholder="••••••••"
                   />
                 </div>
@@ -206,7 +206,7 @@ export default function ProfilePage() {
                 <button 
                   type="submit" 
                   disabled={saving}
-                  className="flex-1 bg-[#8B7355] text-white py-4 rounded-2xl font-bold text-sm shadow-xl shadow-[#8B7355]/20 hover:bg-[#5A4D41] transition-all transform active:scale-[0.98] disabled:opacity-50"
+                  className="flex-1 bg-primary text-white py-4 rounded-2xl font-bold text-sm shadow-xl shadow-primary/20 hover:bg-primary/90 transition-all transform active:scale-[0.98] disabled:opacity-50"
                 >
                   {saving ? 'กำลังบันทึก...' : 'บันทึกการเปลี่ยนแปลง'}
                 </button>

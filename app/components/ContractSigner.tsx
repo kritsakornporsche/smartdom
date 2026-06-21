@@ -98,7 +98,7 @@ export default function ContractSigner({
       </div>
 
       {/* Contract Content Area */}
-      <div className="bg-[#FAF9F6] border border-border/60 rounded-[3rem] p-10 lg:p-16 overflow-y-auto max-h-[50vh] space-y-12 text-[#3E342B] shadow-inner font-serif leading-relaxed relative">
+      <div className="bg-background border border-border/60 rounded-[3rem] p-10 lg:p-16 overflow-y-auto max-h-[50vh] space-y-12 text-foreground shadow-inner font-serif leading-relaxed relative">
         <div className="text-center space-y-5 pb-10 border-b border-border/40">
           <h3 className="text-2xl font-bold">สัญญาเช่าที่พักอาศัย</h3>
           <p className="text-sm opacity-60">จัดทำขึ้นและมีผลบังคับใช้ ณ วันที่ {new Date().toLocaleDateString('th-TH', { day: 'numeric', month: 'long', year: 'numeric' })}</p>

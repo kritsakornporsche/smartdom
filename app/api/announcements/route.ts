@@ -10,7 +10,7 @@ const getUserFromSession = async () => {
 
 export async function GET() {
   try {
-    const sql = neon(process.env.DATABASE_URL || '');
+    const sql = neon(process.env.DATABASE_URL || 'postgres://postgres:password@localhost/postgres');
     
     // Fetch active announcements, newest first
     const news = await sql`
@@ -42,7 +42,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: false, message: 'Missing fields' }, { status: 400 });
     }
 
-    const sql = neon(process.env.DATABASE_URL || '');
+    const sql = neon(process.env.DATABASE_URL || 'postgres://postgres:password@localhost/postgres');
     const result = await sql`
       INSERT INTO announcements (title, content, category, created_by)
       VALUES (${title}, ${content}, ${category || 'info'}, ${user.id})

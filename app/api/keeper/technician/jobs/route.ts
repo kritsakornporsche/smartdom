@@ -9,7 +9,7 @@ export async function GET() {
       return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
     }
 
-    const sql = neon(process.env.DATABASE_URL || '');
+    const sql = neon(process.env.DATABASE_URL || 'postgres://postgres:password@localhost/postgres');
     
     // Fetch stats
     const statsResult = await sql`
@@ -81,7 +81,7 @@ export async function PATCH(request: Request) {
       return NextResponse.json({ success: false, message: 'Missing ID or Status' }, { status: 400 });
     }
 
-    const sql = neon(process.env.DATABASE_URL || '');
+    const sql = neon(process.env.DATABASE_URL || 'postgres://postgres:password@localhost/postgres');
     
     // Update the status of the job
     if (status === 'completed') {

@@ -5,7 +5,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
   try {
     const resolvedParams = await params;
     const id = resolvedParams.id;
-    const sql = neon(process.env.DATABASE_URL || '');
+    const sql = neon(process.env.DATABASE_URL || 'postgres://postgres:password@localhost/postgres');
     
     // Fetch room with dorm, owner and keeper info
     const result = await sql`
@@ -43,7 +43,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
       return NextResponse.json({ success: false, message: 'Missing required fields' }, { status: 400 });
     }
 
-    const sql = neon(process.env.DATABASE_URL || '');
+    const sql = neon(process.env.DATABASE_URL || 'postgres://postgres:password@localhost/postgres');
     
     // Get the dorm_id of the room being updated
     const roomInfo = await sql`SELECT dorm_id FROM rooms WHERE id = ${id}`;
@@ -90,7 +90,7 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
       return NextResponse.json({ success: false, message: 'Room ID is required' }, { status: 400 });
     }
 
-    const sql = neon(process.env.DATABASE_URL || '');
+    const sql = neon(process.env.DATABASE_URL || 'postgres://postgres:password@localhost/postgres');
     
     const result = await sql`
       DELETE FROM rooms

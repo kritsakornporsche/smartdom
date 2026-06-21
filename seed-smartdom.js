@@ -51,7 +51,7 @@ async function seedSmartDom() {
     await sql`
       CREATE TABLE IF NOT EXISTS rooms (
         id SERIAL PRIMARY KEY,
-        room_number VARCHAR(50) UNIQUE NOT NULL,
+        room_number VARCHAR(50) NOT NULL,
         room_type VARCHAR(50) NOT NULL,
         price DECIMAL(10, 2) NOT NULL,
         status VARCHAR(50) DEFAULT 'Available',

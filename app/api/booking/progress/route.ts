@@ -16,7 +16,7 @@ export async function GET(request: Request) {
       return NextResponse.json({ success: false, message: 'Room ID is required' }, { status: 400 });
     }
 
-    const sql = neon(process.env.DATABASE_URL || '');
+    const sql = neon(process.env.DATABASE_URL || 'postgres://postgres:password@localhost/postgres');
     
     const progress = await sql`
       SELECT current_step, booking_data 
@@ -48,7 +48,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: false, message: 'Missing required fields' }, { status: 400 });
     }
 
-    const sql = neon(process.env.DATABASE_URL || '');
+    const sql = neon(process.env.DATABASE_URL || 'postgres://postgres:password@localhost/postgres');
     
     await sql`
       INSERT INTO booking_progress (user_email, room_id, current_step, booking_data, updated_at)
@@ -76,7 +76,7 @@ export async function DELETE(request: Request) {
 
     const { roomId } = await request.json();
 
-    const sql = neon(process.env.DATABASE_URL || '');
+    const sql = neon(process.env.DATABASE_URL || 'postgres://postgres:password@localhost/postgres');
     
     await sql`
       DELETE FROM booking_progress 

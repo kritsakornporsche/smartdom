@@ -73,14 +73,14 @@ export default function AdminSidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="w-64 bg-[#FAF8F5] border-r border-[#E5DFD3] flex flex-col shrink-0 shadow-sm">
+    <aside className="w-64 bg-background border-r border-border flex flex-col shrink-0 shadow-sm">
       {/* Logo */}
-      <div className="h-20 flex items-center px-8 border-b border-[#E5DFD3]">
+      <div className="h-20 flex items-center px-8 border-b border-border">
         <div className="flex items-center gap-3 group cursor-pointer">
-          <div className="h-9 w-9 flex items-center justify-center rounded-xl bg-[#8B7355] text-white font-display font-bold text-base shadow-sm transition-transform group-hover:scale-105">
+          <div className="h-9 w-9 flex items-center justify-center rounded-xl bg-primary text-white font-display font-bold text-base shadow-sm transition-transform group-hover:scale-105">
             S
           </div>
-          <span className="font-display font-bold text-base tracking-tight text-[#3E342B]">SmartDom</span>
+          <span className="font-display font-bold text-base tracking-tight text-foreground">SmartDom</span>
         </div>
       </div>
 
@@ -97,7 +97,7 @@ export default function AdminSidebar() {
               href={item.href}
               className={`flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-sm transition-all ${
                 isActive
-                  ? 'bg-[#8B7355] text-white shadow-md'
+                  ? 'bg-primary text-white shadow-md'
                   : 'text-[#A08D74] hover:bg-[#F3EFE9] hover:text-[#5A4D41]'
               }`}
             >
@@ -112,7 +112,7 @@ export default function AdminSidebar() {
       </nav>
 
       {/* Footer */}
-      <div className="p-4 border-t border-[#E5DFD3]">
+      <div className="p-4 border-t border-border">
         <Link
           href="/"
           className="flex items-center gap-3 px-4 py-3 text-[#A08D74] hover:text-[#5A4D41] rounded-xl font-medium text-sm transition-colors hover:bg-[#F3EFE9]"

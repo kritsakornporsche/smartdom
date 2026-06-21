@@ -131,29 +131,29 @@ export default function MaidDashboardPage() {
   }, [data, filter, searchQuery]);
 
   if (status === 'loading') {
-    return <div className="flex h-screen items-center justify-center bg-[#FDFBF7] font-display text-[#A08D74] tracking-wider">กำลังโหลดระบบ...</div>;
+    return <div className="flex h-screen items-center justify-center bg-[#080F1E] font-display text-white/50 tracking-wider">กำลังโหลดระบบ...</div>;
   }
 
   return (
-    <div className="flex h-screen bg-[#FDFBF7]">
+    <div className="flex flex-col h-screen bg-[#080F1E]">
       <KeeperSidebar />
       
-      <main className="flex-1 flex flex-col h-screen min-w-0">
+      <main className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
         {/* Header */}
-        <header className="h-20 bg-[#FAF8F5] border-b border-[#E5DFD3] flex items-center justify-between px-10 shrink-0">
+        <header className="h-20 bg-[#0F172A] border-b border-white/20/10 flex items-center justify-between px-10 shrink-0">
           <div>
-            <h1 className="font-display text-xl font-bold tracking-tight text-[#3E342B]">ภาพรวมงานแม่บ้าน</h1>
-            <p className="text-xs text-[#A08D74] font-medium mt-0.5">ยินดีต้อนรับคุณ {session?.user?.name}</p>
+            <h1 className="font-display text-xl font-bold tracking-tight text-white">ภาพรวมงานแม่บ้าน</h1>
+            <p className="text-xs text-white/50 font-medium mt-0.5">ยินดีต้อนรับคุณ {session?.user?.name}</p>
           </div>
           <div className="flex items-center gap-4">
-            <div className="text-xs font-medium text-[#A08D74] hidden sm:block">เวลาปัจจุบัน: {currentTime}</div>
+            <div className="text-xs font-medium text-white/50 hidden sm:block">เวลาปัจจุบัน: {currentTime}</div>
             <button
               onClick={() => signOut({ callbackUrl: '/signin' })}
               className="text-xs font-semibold text-rose-600 hover:text-rose-700 bg-rose-50 border border-rose-100 hover:bg-rose-100 transition-colors px-4 py-2 rounded-xl"
             >
               ออกจากระบบ
             </button>
-            <div className="h-10 w-10 rounded-full overflow-hidden border-2 border-[#E5DFD3] shadow-sm">
+            <div className="h-10 w-10 rounded-full overflow-hidden border-2 border-white/20/10 shadow-sm">
               <Image width={40} height={40} src={`https://ui-avatars.com/api/?name=${session?.user?.name || 'Maid'}&background=e2aba1&color=fff`} alt="แม่บ้าน" />
             </div>
           </div>
@@ -165,25 +165,25 @@ export default function MaidDashboardPage() {
 
             {/* Stats Row */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="bg-white border border-[#E5DFD3] shadow-sm p-6 rounded-3xl flex flex-col relative overflow-hidden group">
+              <div className="bg-[#0F172A] border border-white/20/10 shadow-sm p-6 rounded-3xl flex flex-col relative overflow-hidden group">
                 <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform">🧹</div>
-                <span className="text-sm font-semibold text-[#3E342B]">งานทั้งหมดวันนี้</span>
+                <span className="text-sm font-semibold text-white">งานทั้งหมดวันนี้</span>
                 <div className="mt-4 flex items-baseline gap-2">
-                  <span className="text-4xl font-display font-semibold text-[#8B7355]">{loadingData ? '-' : data?.stats?.total || 0}</span>
-                  <span className="text-sm text-[#A08D74] font-medium">ห้อง</span>
+                  <span className="text-4xl font-display font-semibold text-muted-foreground">{loadingData ? '-' : data?.stats?.total || 0}</span>
+                  <span className="text-sm text-white/50 font-medium">ห้อง</span>
                 </div>
               </div>
-              <div className="bg-white border border-[#E5DFD3] shadow-sm p-6 rounded-3xl flex flex-col relative overflow-hidden group">
+              <div className="bg-[#0F172A] border border-white/20/10 shadow-sm p-6 rounded-3xl flex flex-col relative overflow-hidden group">
                 <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform">⏳</div>
-                <span className="text-sm font-semibold text-[#3E342B]">กำลังทำความสะอาด</span>
+                <span className="text-sm font-semibold text-white">กำลังทำความสะอาด</span>
                 <div className="mt-4 flex items-baseline gap-2">
                   <span className="text-4xl font-display font-semibold text-amber-500">{loadingData ? '-' : data?.stats?.inProgress || 0}</span>
                   <span className="text-sm text-amber-500/70 font-medium">ห้อง</span>
                 </div>
               </div>
-              <div className="bg-white border border-[#E5DFD3] shadow-sm p-6 rounded-3xl flex flex-col relative overflow-hidden group">
+              <div className="bg-[#0F172A] border border-white/20/10 shadow-sm p-6 rounded-3xl flex flex-col relative overflow-hidden group">
                 <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform">✨</div>
-                <span className="text-sm font-semibold text-[#3E342B]">เสร็จสมบูรณ์วันนี้</span>
+                <span className="text-sm font-semibold text-white">เสร็จสมบูรณ์วันนี้</span>
                 <div className="mt-4 flex items-baseline gap-2">
                   <span className="text-4xl font-display font-semibold text-emerald-500">{loadingData ? '-' : data?.stats?.completed || 0}</span>
                   <span className="text-sm text-emerald-500/70 font-medium">ห้อง</span>
@@ -193,15 +193,15 @@ export default function MaidDashboardPage() {
 
             {/* Search & Filter Bar */}
             <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
-              <div className="flex gap-2 p-1 bg-[#FAF8F5] border border-[#E5DFD3] rounded-2xl w-full md:w-auto">
+              <div className="flex gap-2 p-1 bg-[#0F172A] border border-white/20/10 rounded-2xl w-full md:w-auto">
                 {(['all', 'pending', 'in_progress', 'completed'] as const).map((f) => (
                   <button
                     key={f}
                     onClick={() => setFilter(f)}
                     className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
                       filter === f 
-                        ? 'bg-[#8B7355] text-white shadow-sm' 
-                        : 'text-[#A08D74] hover:text-[#5A4D41]'
+                        ? 'bg-primary text-white shadow-sm' 
+                        : 'text-white/50 hover:text-white/80'
                     }`}
                   >
                     {f === 'all' ? 'ทั้งหมด' : statusConfig[f]?.label}
@@ -214,25 +214,25 @@ export default function MaidDashboardPage() {
                   placeholder="ค้นหาเลขห้อง..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-white border border-[#E5DFD3] rounded-2xl px-10 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#8B7355]/20 text-[#3E342B]"
+                  className="w-full bg-[#0F172A] border border-white/20/10 rounded-2xl px-10 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 text-white"
                 />
-                <svg className="absolute left-3.5 top-3 w-4 h-4 text-[#A08D74]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg className="absolute left-3.5 top-3 w-4 h-4 text-white/50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
               </div>
             </div>
 
             {/* List */}
-            <section className="bg-white border border-[#E5DFD3] rounded-3xl shadow-sm overflow-hidden min-h-[400px]">
-              <div className="px-7 py-5 border-b border-[#E5DFD3] flex items-center justify-between bg-white/50 backdrop-blur-sm sticky top-0 z-10">
+            <section className="bg-[#0F172A] border border-white/20/10 rounded-3xl shadow-sm overflow-hidden min-h-[400px]">
+              <div className="px-7 py-5 border-b border-white/20/10 flex items-center justify-between bg-[#0F172A]/50 backdrop-blur-sm sticky top-0 z-10">
                 <div>
-                  <h2 className="font-display text-base font-bold text-[#3E342B]">คิวงาน ({filteredJobs.length})</h2>
-                  <p className="text-xs text-[#A08D74] mt-0.5">รายการงานที่ตรงตามเงื่อนไข</p>
+                  <h2 className="font-display text-base font-bold text-white">คิวงาน ({filteredJobs.length})</h2>
+                  <p className="text-xs text-white/50 mt-0.5">รายการงานที่ตรงตามเงื่อนไข</p>
                 </div>
                 <button 
                   onClick={() => fetchData()} 
                   disabled={loadingData}
-                  className={`text-xs font-semibold hover:text-[#5A4D41] flex items-center gap-1 transition-all ${loadingData ? 'text-[#A08D74] opacity-50 cursor-not-allowed' : 'text-[#8B7355]'}`}
+                  className={`text-xs font-semibold hover:text-white/80 flex items-center gap-1 transition-all ${loadingData ? 'text-white/50 opacity-50 cursor-not-allowed' : 'text-muted-foreground'}`}
                 >
                   <svg className={`w-3.5 h-3.5 ${loadingData ? 'animate-spin' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -243,35 +243,35 @@ export default function MaidDashboardPage() {
               
               {loadingData ? (
                 <div className="p-20 text-center flex flex-col items-center gap-4">
-                  <div className="w-10 h-10 border-4 border-[#8B7355]/20 border-t-[#8B7355] rounded-full animate-spin"></div>
-                  <p className="text-sm font-medium text-[#A08D74]">กำลังดึงข้อมูลงานล่าสุด...</p>
+                  <div className="w-10 h-10 border-4 border-primary/20 border-t-[#8B7355] rounded-full animate-spin"></div>
+                  <p className="text-sm font-medium text-white/50">กำลังดึงข้อมูลงานล่าสุด...</p>
                 </div>
               ) : filteredJobs.length === 0 ? (
                 <div className="p-20 text-center flex flex-col items-center gap-4">
                   <div className="text-4xl">📭</div>
-                  <p className="text-sm font-medium text-[#A08D74]">ไม่พบรายการงานที่ต้องการ</p>
+                  <p className="text-sm font-medium text-white/50">ไม่พบรายการงานที่ต้องการ</p>
                 </div>
               ) : (
                 <div className="divide-y divide-[#E5DFD3]">
                   {filteredJobs.map((task) => (
                     <div 
                       key={task.id} 
-                      className="px-7 py-6 flex items-center gap-6 hover:bg-[#FAF8F5] transition-colors cursor-pointer group"
+                      className="px-7 py-6 flex items-center gap-6 hover:bg-[#0F172A] transition-colors cursor-pointer group"
                       onClick={() => setSelectedJob(task)}
                     >
-                      <div className="h-14 w-14 rounded-2xl bg-[#F3EFE9] flex flex-col items-center justify-center shrink-0 border border-[#E5DFD3] group-hover:border-[#8B7355] transition-colors">
-                        <span className="text-[10px] font-bold text-[#A08D74] uppercase leading-none mb-1">ห้อง</span>
-                        <span className="text-lg font-black text-[#3E342B] leading-none">{task.room_number || '-'}</span>
+                      <div className="h-14 w-14 rounded-2xl bg-white/5 flex flex-col items-center justify-center shrink-0 border border-white/20/10 group-hover:border-primary transition-colors">
+                        <span className="text-[10px] font-bold text-white/50 uppercase leading-none mb-1">ห้อง</span>
+                        <span className="text-lg font-black text-white leading-none">{task.room_number || '-'}</span>
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-3">
-                           <h3 className="text-sm font-bold text-[#3E342B] truncate">{jobTypeConfig[task.job_type] || task.job_type}</h3>
-                           <span className={`px-2 py-0.5 rounded-full text-[9px] font-black tracking-wider uppercase ${statusConfig[task.status]?.bg || 'bg-[#E5DFD3] text-[#5A4D41]'}`}>
+                           <h3 className="text-sm font-bold text-white truncate">{jobTypeConfig[task.job_type] || task.job_type}</h3>
+                           <span className={`px-2 py-0.5 rounded-full text-[9px] font-black tracking-wider uppercase ${statusConfig[task.status]?.bg || 'bg-white/10 text-white/80'}`}>
                             {statusConfig[task.status]?.label || task.status}
                           </span>
                         </div>
                         <div className="flex items-center gap-4 mt-1.5 flex-wrap">
-                          <span className="text-[10px] text-[#A08D74] flex items-center gap-1 font-medium">
+                          <span className="text-[10px] text-white/50 flex items-center gap-1 font-medium">
                             <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
@@ -288,7 +288,7 @@ export default function MaidDashboardPage() {
                         {task.status === 'pending' && (
                           <button 
                             onClick={() => updateStatus(task.id, 'in_progress')}
-                            className="text-[11px] font-bold px-5 py-2.5 bg-[#8B7355] text-white rounded-xl shadow-sm hover:focus:ring-2 hover:bg-[#5A4D41] transition-all transform hover:scale-105 active:scale-95"
+                            className="text-[11px] font-bold px-5 py-2.5 bg-primary text-white rounded-xl shadow-sm hover:focus:ring-2 hover:bg-primary/90 transition-all transform hover:scale-105 active:scale-95"
                           >
                             รับงาน
                           </button>
@@ -317,21 +317,21 @@ export default function MaidDashboardPage() {
         {(selectedJob) && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             <div className="absolute inset-0 bg-[#3E342B]/40 backdrop-blur-sm" onClick={() => { setSelectedJob(null); setIsFinishing(false); }}></div>
-            <div className="bg-white rounded-[40px] shadow-2xl w-full max-w-lg relative z-10 overflow-hidden border border-[#E5DFD3] animate-in fade-in zoom-in duration-200">
+            <div className="bg-[#0F172A] rounded-[40px] shadow-2xl w-full max-w-lg relative z-10 overflow-hidden border border-white/20/10 animate-in fade-in zoom-in duration-200">
               <div className="p-8">
                 <div className="flex items-center justify-between mb-8">
                     <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 bg-[#F3EFE9] rounded-2xl flex items-center justify-center text-2xl">
+                        <div className="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center text-2xl">
                             {statusConfig[selectedJob.status]?.icon}
                         </div>
                         <div>
-                            <h3 className="text-xl font-display font-bold text-[#3E342B]">
+                            <h3 className="text-xl font-display font-bold text-white">
                                 {isFinishing ? 'ยืนยันงานเสร็จสิ้น' : 'รายละเอียดงาน'}
                             </h3>
-                            <p className="text-xs text-[#A08D74] font-medium">ห้อง {selectedJob.room_number}</p>
+                            <p className="text-xs text-white/50 font-medium">ห้อง {selectedJob.room_number}</p>
                         </div>
                     </div>
-                    <button onClick={() => { setSelectedJob(null); setIsFinishing(false); }} className="text-[#A08D74] hover:text-[#3E342B] transition-colors">
+                    <button onClick={() => { setSelectedJob(null); setIsFinishing(false); }} className="text-white/50 hover:text-white transition-colors">
                         <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                         </svg>
@@ -341,28 +341,28 @@ export default function MaidDashboardPage() {
                 {isFinishing ? (
                   <div className="space-y-6">
                     <div>
-                      <label className="block text-xs font-bold uppercase tracking-wider text-[#A08D74] mb-2">บันทึกเพิ่มเติม (ถ้ามี)</label>
+                      <label className="block text-xs font-bold uppercase tracking-wider text-white/50 mb-2">บันทึกเพิ่มเติม (ถ้ามี)</label>
                       <textarea 
                         value={finishNotes}
                         onChange={(e) => setFinishNotes(e.target.value)}
                         placeholder="ระบุสิ่งที่ทำลงไป หรือสิ่งที่พบล่าสุด..."
-                        className="w-full bg-[#FAF8F5] border border-[#E5DFD3] rounded-2xl p-4 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 h-24"
+                        className="w-full bg-[#0F172A] border border-white/20/10 rounded-2xl p-4 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 h-24"
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-bold uppercase tracking-wider text-[#A08D74] mb-2">ลิ้งก์รูปภาพหลักฐาน (หรือระบุข้อความ)</label>
+                      <label className="block text-xs font-bold uppercase tracking-wider text-white/50 mb-2">ลิ้งก์รูปภาพหลักฐาน (หรือระบุข้อความ)</label>
                       <input 
                         type="text" 
                         value={finishPhoto}
                         onChange={(e) => setFinishPhoto(e.target.value)}
                         placeholder="https://images.com/done.jpg"
-                        className="w-full bg-[#FAF8F5] border border-[#E5DFD3] rounded-2xl px-4 py-3 text-sm focus:outline-none"
+                        className="w-full bg-[#0F172A] border border-white/20/10 rounded-2xl px-4 py-3 text-sm focus:outline-none"
                       />
                     </div>
                     <div className="flex gap-3 pt-4">
                        <button 
                         onClick={() => setIsFinishing(false)}
-                        className="flex-1 px-4 py-3.5 rounded-2xl border border-[#E5DFD3] text-[#A08D74] text-xs font-bold hover:bg-[#FAF8F5] transition-all"
+                        className="flex-1 px-4 py-3.5 rounded-2xl border border-white/20/10 text-white/50 text-xs font-bold hover:bg-[#0F172A] transition-all"
                        >
                          ยกเลิก
                        </button>
@@ -376,24 +376,24 @@ export default function MaidDashboardPage() {
                   </div>
                 ) : (
                   <div className="space-y-6">
-                    <div className="bg-[#FAF8F5] rounded-3xl p-6 border border-[#E5DFD3]">
+                    <div className="bg-[#0F172A] rounded-3xl p-6 border border-white/20/10">
                         <dl className="grid grid-cols-2 gap-y-4 text-sm">
-                            <dt className="text-[#A08D74] font-medium">ประเภทงาน:</dt>
-                            <dd className="text-[#3E342B] font-bold">{jobTypeConfig[selectedJob.job_type] || selectedJob.job_type}</dd>
+                            <dt className="text-white/50 font-medium">ประเภทงาน:</dt>
+                            <dd className="text-white font-bold">{jobTypeConfig[selectedJob.job_type] || selectedJob.job_type}</dd>
                             
-                            <dt className="text-[#A08D74] font-medium">สถานะ:</dt>
+                            <dt className="text-white/50 font-medium">สถานะ:</dt>
                             <dd className="font-bold">
                                 <span className={`px-2 py-0.5 rounded-full text-[10px] uppercase ${statusConfig[selectedJob.status]?.bg}`}>
                                     {statusConfig[selectedJob.status]?.label}
                                 </span>
                             </dd>
 
-                            <dt className="text-[#A08D74] font-medium">เวลาเริ่มงาน:</dt>
-                            <dd className="text-[#3E342B] font-bold">{new Date(selectedJob.created_at).toLocaleString('th-TH')}</dd>
+                            <dt className="text-white/50 font-medium">เวลาเริ่มงาน:</dt>
+                            <dd className="text-white font-bold">{new Date(selectedJob.created_at).toLocaleString('th-TH')}</dd>
                             
                             {selectedJob.completed_at && (
                                 <>
-                                    <dt className="text-[#A08D74] font-medium">เวลาเสร็จสิ้น:</dt>
+                                    <dt className="text-white/50 font-medium">เวลาเสร็จสิ้น:</dt>
                                     <dd className="text-emerald-600 font-bold">{new Date(selectedJob.completed_at).toLocaleString('th-TH')}</dd>
                                 </>
                             )}
@@ -404,19 +404,19 @@ export default function MaidDashboardPage() {
                          <div className="space-y-4">
                             {selectedJob.notes && (
                                 <div>
-                                    <h4 className="text-xs font-bold uppercase tracking-wider text-[#A08D74] mb-2">บันทึกจากผู้ทำ:</h4>
-                                    <p className="text-sm text-[#3E342B] bg-white border border-[#E5DFD3] p-4 rounded-2xl">{selectedJob.notes}</p>
+                                    <h4 className="text-xs font-bold uppercase tracking-wider text-white/50 mb-2">บันทึกจากผู้ทำ:</h4>
+                                    <p className="text-sm text-white bg-[#0F172A] border border-white/20/10 p-4 rounded-2xl">{selectedJob.notes}</p>
                                 </div>
                             )}
                             {selectedJob.photo_url && (
                                 <div>
-                                    <h4 className="text-xs font-bold uppercase tracking-wider text-[#A08D74] mb-2">หลักฐานงาน:</h4>
+                                    <h4 className="text-xs font-bold uppercase tracking-wider text-white/50 mb-2">หลักฐานงาน:</h4>
                                     {selectedJob.photo_url.startsWith('http') ? (
-                                        <div className="rounded-2xl overflow-hidden border border-[#E5DFD3] relative h-40 w-full">
+                                        <div className="rounded-2xl overflow-hidden border border-white/20/10 relative h-40 w-full">
                                             <Image src={selectedJob.photo_url} alt="Evidence" fill className="object-cover" />
                                         </div>
                                     ) : (
-                                        <p className="text-sm text-[#3E342B] italic">{selectedJob.photo_url}</p>
+                                        <p className="text-sm text-white italic">{selectedJob.photo_url}</p>
                                     )}
                                 </div>
                             )}
@@ -427,7 +427,7 @@ export default function MaidDashboardPage() {
                         {selectedJob.status === 'pending' && (
                             <button 
                                 onClick={() => updateStatus(selectedJob.id, 'in_progress')}
-                                className="w-full px-4 py-4 rounded-2xl bg-[#8B7355] text-white text-sm font-bold shadow-lg shadow-[#8B7355]/20"
+                                className="w-full px-4 py-4 rounded-2xl bg-primary text-white text-sm font-bold shadow-lg shadow-primary/20"
                             >
                                 เริ่มดำเนินการทันที
                             </button>
@@ -443,7 +443,7 @@ export default function MaidDashboardPage() {
                         {selectedJob.status === 'completed' && (
                             <button 
                                 onClick={() => setSelectedJob(null)}
-                                className="w-full px-4 py-4 rounded-2xl border border-[#E5DFD3] text-[#A08D74] text-sm font-bold hover:bg-[#FAF8F5]"
+                                className="w-full px-4 py-4 rounded-2xl border border-white/20/10 text-white/50 text-sm font-bold hover:bg-[#0F172A]"
                             >
                                 ปิดหน้าต่าง
                             </button>

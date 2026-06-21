@@ -226,14 +226,14 @@ export default function OwnerContractsPage() {
   const displayedContracts = activeTab === 'Pending' ? pendingContracts : activeAndOtherContracts;
 
   return (
-    <div className="min-h-screen bg-[#FDFBF7] p-8 lg:p-12">
+    <div className="min-h-screen bg-[#080F1E] p-8 lg:p-12">
       <div className="max-w-7xl mx-auto space-y-12">
         
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
            <div>
-              <h1 className="text-4xl font-black text-[#3E342B] tracking-tight">ระบบสัญญาเช่าอัตโนมัติ</h1>
-              <p className="text-[#8B7355] mt-2 font-medium">จัดการเอกสารสัญญาและลายเซ็นดิจิทัลผ่านระบบออนไลน์</p>
+              <h1 className="text-4xl font-black text-white tracking-tight">ระบบสัญญาเช่าอัตโนมัติ</h1>
+              <p className="text-muted-foreground mt-2 font-medium">จัดการเอกสารสัญญาและลายเซ็นดิจิทัลผ่านระบบออนไลน์</p>
            </div>
            <button 
              onClick={() => setIsModalOpen(true)}
@@ -252,7 +252,7 @@ export default function OwnerContractsPage() {
               "p-6 rounded-3xl cursor-pointer transition-all border",
               activeTab === 'Pending' 
                 ? "bg-amber-100/50 border-amber-300 shadow-lg shadow-amber-900/5 scale-[1.02]" 
-                : "bg-white border-[#E5DFD3] hover:bg-amber-50"
+                : "bg-[#0F172A] border-white/20/10 hover:bg-amber-50"
             )}
           >
             <h3 className="text-sm font-bold text-amber-800 uppercase tracking-widest mb-2">สัญญาใหม่ (รอเจ้าของเซ็นอนุมัติ)</h3>
@@ -264,7 +264,7 @@ export default function OwnerContractsPage() {
               "p-6 rounded-3xl cursor-pointer transition-all border",
               activeTab === 'Active' 
                 ? "bg-emerald-100/50 border-emerald-300 shadow-lg shadow-emerald-900/5 scale-[1.02]" 
-                : "bg-white border-[#E5DFD3] hover:bg-emerald-50"
+                : "bg-[#0F172A] border-white/20/10 hover:bg-emerald-50"
             )}
           >
             <h3 className="text-sm font-bold text-emerald-800 uppercase tracking-widest mb-2">สัญญาที่กำลังใช้งาน (Active)</h3>
@@ -273,42 +273,42 @@ export default function OwnerContractsPage() {
         </div>
 
         {/* Contract List */}
-        <div className="bg-white rounded-[2.5rem] border border-[#E5DFD3] shadow-sm overflow-hidden flex flex-col">
-           <div className="p-8 border-b border-[#F3EFE9] bg-[#FAF8F5]/50 flex justify-between items-center">
-              <h3 className="text-sm font-black text-[#A08D74] uppercase tracking-widest">
+        <div className="bg-[#0F172A] rounded-[2.5rem] border border-white/20/10 shadow-sm overflow-hidden flex flex-col">
+           <div className="p-8 border-b border-[#F3EFE9] bg-[#0F172A]/50 flex justify-between items-center">
+              <h3 className="text-sm font-black text-white/50 uppercase tracking-widest">
                 {activeTab === 'Pending' ? 'รายการสัญญาที่รออนุมัติ' : 'รายการสัญญาเช่าทั้งหมดในระบบ'}
               </h3>
            </div>
            
            <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
-                 <thead className="bg-[#FAF8F5]">
+                 <thead className="bg-[#0F172A]">
                     <tr>
-                       <th className="px-8 py-5 text-[10px] font-bold text-[#A08D74] uppercase tracking-widest">ผู้เช่า / ห้อง</th>
-                       <th className="px-8 py-5 text-[10px] font-bold text-[#A08D74] uppercase tracking-widest">ระยะเวลาสัญญา</th>
-                       <th className="px-8 py-5 text-[10px] font-bold text-[#A08D74] uppercase tracking-widest">เงินประกัน</th>
-                       <th className="px-8 py-5 text-[10px] font-bold text-[#A08D74] uppercase tracking-widest">สถานะ</th>
-                       <th className="px-8 py-5 text-[10px] font-bold text-[#A08D74] uppercase tracking-widest text-center">การจัดการ</th>
+                       <th className="px-8 py-5 text-[10px] font-bold text-white/50 uppercase tracking-widest">ผู้เช่า / ห้อง</th>
+                       <th className="px-8 py-5 text-[10px] font-bold text-white/50 uppercase tracking-widest">ระยะเวลาสัญญา</th>
+                       <th className="px-8 py-5 text-[10px] font-bold text-white/50 uppercase tracking-widest">เงินประกัน</th>
+                       <th className="px-8 py-5 text-[10px] font-bold text-white/50 uppercase tracking-widest">สถานะ</th>
+                       <th className="px-8 py-5 text-[10px] font-bold text-white/50 uppercase tracking-widest text-center">การจัดการ</th>
                     </tr>
                  </thead>
                  <tbody className="divide-y divide-[#F3EFE9]">
                     {loading ? (
-                       <tr className="animate-pulse"><td colSpan={5} className="h-64 bg-[#FAF8F5]/30"></td></tr>
+                       <tr className="animate-pulse"><td colSpan={5} className="h-64 bg-[#0F172A]/30"></td></tr>
                     ) : displayedContracts.length === 0 ? (
-                       <tr><td colSpan={5} className="py-20 text-center font-bold text-[#DCD3C6]">ไม่มีรายการในหมวดหมู่นี้</td></tr>
+                       <tr><td colSpan={5} className="py-20 text-center font-bold text-muted-foreground/60">ไม่มีรายการในหมวดหมู่นี้</td></tr>
                     ) : displayedContracts.map((c) => (
-                       <tr key={c.id} className="hover:bg-[#FAF8F5] transition-colors group">
+                       <tr key={c.id} className="hover:bg-[#0F172A] transition-colors group">
                           <td className="px-8 py-6">
-                             <p className="font-black text-[#3E342B]">{c.tenant_name}</p>
-                             <p className="text-xs font-bold text-[#8B7355]">ห้องพักหมายเลข {c.room_number}</p>
+                             <p className="font-black text-white">{c.tenant_name}</p>
+                             <p className="text-xs font-bold text-muted-foreground">ห้องพักหมายเลข {c.room_number}</p>
                           </td>
                           <td className="px-8 py-6">
-                             <p className="text-sm font-bold text-[#3E342B]">{new Date(c.start_date).toLocaleDateString('th-TH')} - {new Date(c.end_date).toLocaleDateString('th-TH')}</p>
-                             <p className="text-[10px] text-[#A08D74] font-medium uppercase tracking-wider">12 เดือน / สิ้นสุดปีหน้า</p>
+                             <p className="text-sm font-bold text-white">{new Date(c.start_date).toLocaleDateString('th-TH')} - {new Date(c.end_date).toLocaleDateString('th-TH')}</p>
+                             <p className="text-[10px] text-white/50 font-medium uppercase tracking-wider">12 เดือน / สิ้นสุดปีหน้า</p>
                           </td>
                           <td className="px-8 py-6">
-                             <p className="font-bold text-[#3E342B]">฿{Number(c.deposit_amount).toLocaleString()}</p>
-                             <p className="text-[10px] text-[#A08D74] font-medium">คำนวณจากค่าเช่า 2 เดือน</p>
+                             <p className="font-bold text-white">฿{Number(c.deposit_amount).toLocaleString()}</p>
+                             <p className="text-[10px] text-white/50 font-medium">คำนวณจากค่าเช่า 2 เดือน</p>
                           </td>
                           <td className="px-8 py-6">
                              <span className={cn(
@@ -316,7 +316,7 @@ export default function OwnerContractsPage() {
                                c.status === 'Active' ? "bg-emerald-50 text-emerald-600 border-emerald-100" :
                                c.status === 'PendingOwnerSignature' ? "bg-amber-50 text-amber-600 border-amber-100" :
                                c.status === 'Pending' ? "bg-blue-50 text-blue-600 border-blue-100" :
-                               "bg-[#F3EFE9] text-[#A08D74] border-[#E5DFD3]"
+                               "bg-white/5 text-white/50 border-white/20/10"
                              )}>
                                {c.status === 'Active' ? 'อนุมัติแล้ว' : 
                                 c.status === 'PendingOwnerSignature' ? 'รอเจ้าของเซ็น' : 
@@ -338,14 +338,14 @@ export default function OwnerContractsPage() {
                                      สมบูรณ์
                                   </div>
                                ) : (
-                                  <div className="inline-flex items-center gap-2 text-[#A08D74] font-bold text-xs opacity-60 whitespace-nowrap">
+                                  <div className="inline-flex items-center gap-2 text-white/50 font-bold text-xs opacity-60 whitespace-nowrap">
                                      รอระบบอัตโนมัติ
                                   </div>
                                )}
                                
                                <button 
                                  onClick={() => router.push(`/owner/contracts/${c.id}`)}
-                                 className="text-[#A08D74] hover:text-[#3E342B] border border-[#E5DFD3] hover:border-[#A08D74] bg-white px-3 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap"
+                                 className="text-white/50 hover:text-white border border-white/20/10 hover:border-[#A08D74] bg-[#0F172A] px-3 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap"
                                >
                                  ดูรายละเอียด
                                </button>
@@ -362,23 +362,23 @@ export default function OwnerContractsPage() {
       {/* Owner Signing Modal */}
       {signingContract && (
         <div className="fixed inset-0 bg-[#3E342B]/80 backdrop-blur-md z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
-           <div className="bg-white rounded-[3rem] w-full max-w-3xl shadow-2xl animate-in fade-in zoom-in-95 duration-500 border border-[#E5DFD3]">
+           <div className="bg-[#0F172A] rounded-[3rem] w-full max-w-3xl shadow-2xl animate-in fade-in zoom-in-95 duration-500 border border-white/20/10">
               <div className="bg-amber-50 border-b border-amber-100/50 p-8 sm:p-10 flex items-center justify-between rounded-t-[3rem]">
                  <div>
                     <h2 className="text-2xl sm:text-3xl font-black text-amber-900">ตรวจและอนุมัติสัญญา</h2>
                     <p className="text-amber-700/60 font-bold text-xs uppercase tracking-[0.2em] mt-2">Owner Signature Approval</p>
                  </div>
-                 <button onClick={() => { setSigningContract(null); setHasOwnerSigned(false); }} className="h-12 w-12 bg-white rounded-2xl flex items-center justify-center text-amber-600 hover:text-amber-800 border border-amber-200 transition-all">
+                 <button onClick={() => { setSigningContract(null); setHasOwnerSigned(false); }} className="h-12 w-12 bg-[#0F172A] rounded-2xl flex items-center justify-center text-amber-600 hover:text-amber-800 border border-amber-200 transition-all">
                     <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
                  </button>
               </div>
 
               <div className="p-8 sm:p-10 space-y-8">
-                 <div className="grid grid-cols-2 gap-4 text-sm bg-[#FAF8F5] p-6 rounded-3xl border border-[#E5DFD3]">
-                    <div><span className="block text-[10px] font-black text-[#A08D74] uppercase tracking-widest">ผู้เช่า</span><span className="font-bold text-[#3E342B]">{signingContract.tenant_name}</span></div>
-                    <div><span className="block text-[10px] font-black text-[#A08D74] uppercase tracking-widest">ห้องพัก</span><span className="font-bold text-[#3E342B]">{signingContract.room_number}</span></div>
-                    <div><span className="block text-[10px] font-black text-[#A08D74] uppercase tracking-widest">เงินประกัน</span><span className="font-bold text-emerald-600">฿{Number(signingContract.deposit_amount).toLocaleString()}</span></div>
-                    <div><span className="block text-[10px] font-black text-[#A08D74] uppercase tracking-widest">ลายเซ็นผู้เช่า</span>
+                 <div className="grid grid-cols-2 gap-4 text-sm bg-[#0F172A] p-6 rounded-3xl border border-white/20/10">
+                    <div><span className="block text-[10px] font-black text-white/50 uppercase tracking-widest">ผู้เช่า</span><span className="font-bold text-white">{signingContract.tenant_name}</span></div>
+                    <div><span className="block text-[10px] font-black text-white/50 uppercase tracking-widest">ห้องพัก</span><span className="font-bold text-white">{signingContract.room_number}</span></div>
+                    <div><span className="block text-[10px] font-black text-white/50 uppercase tracking-widest">เงินประกัน</span><span className="font-bold text-emerald-600">฿{Number(signingContract.deposit_amount).toLocaleString()}</span></div>
+                    <div><span className="block text-[10px] font-black text-white/50 uppercase tracking-widest">ลายเซ็นผู้เช่า</span>
                       {signingContract.signature_data ? (
                          <div style={{ backgroundImage: `url(${signingContract.signature_data})`, backgroundSize: 'contain', backgroundRepeat: 'no-repeat', height: '40px', width: '80px' }} />
                       ) : <span className="opacity-50">ไม่มีข้อมูล</span>}
@@ -387,10 +387,10 @@ export default function OwnerContractsPage() {
 
                  <div className="space-y-4">
                    <div className="flex justify-between items-end">
-                      <label className="text-[10px] font-black uppercase tracking-[0.2em] text-[#A08D74]">ลงลายมือชื่อเจ้าของหอพัก</label>
+                      <label className="text-[10px] font-black uppercase tracking-[0.2em] text-white/50">ลงลายมือชื่อเจ้าของหอพัก</label>
                       <button onClick={clearCanvas} className="text-[10px] font-black text-rose-500 hover:text-rose-600 transition-colors">ล้างข้อมูล</button>
                    </div>
-                   <div className="relative border-2 border-dashed border-[#E5DFD3] rounded-[2rem] overflow-hidden bg-white hover:border-amber-300 transition-colors h-48 w-full cursor-crosshair">
+                   <div className="relative border-2 border-dashed border-white/20/10 rounded-[2rem] overflow-hidden bg-[#0F172A] hover:border-amber-300 transition-colors h-48 w-full cursor-crosshair">
                      <canvas 
                        ref={canvasRef}
                        width={800}
@@ -406,7 +406,7 @@ export default function OwnerContractsPage() {
                      />
                      {!hasOwnerSigned && (
                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                          <span className="text-xs font-black text-[#A08D74]/40 uppercase tracking-[0.5em] italic">Sign Here</span>
+                          <span className="text-xs font-black text-white/50/40 uppercase tracking-[0.5em] italic">Sign Here</span>
                        </div>
                      )}
                    </div>
@@ -427,13 +427,13 @@ export default function OwnerContractsPage() {
       {/* Creation Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-[#3E342B]/60 backdrop-blur-md z-50 flex items-center justify-center p-6 overflow-y-auto">
-           <div className="bg-white rounded-[3rem] w-full max-w-2xl shadow-2xl animate-in fade-in zoom-in-95 duration-500 border border-[#E5DFD3]">
-              <div className="bg-[#FAF8F5] border-b border-[#F3EFE9] p-10 flex items-center justify-between rounded-t-[3rem]">
+           <div className="bg-[#0F172A] rounded-[3rem] w-full max-w-2xl shadow-2xl animate-in fade-in zoom-in-95 duration-500 border border-white/20/10">
+              <div className="bg-[#0F172A] border-b border-[#F3EFE9] p-10 flex items-center justify-between rounded-t-[3rem]">
                  <div>
-                    <h2 className="text-3xl font-black text-[#3E342B]">สร้างสัญญาด้วยตนเอง</h2>
-                    <p className="text-[#8B7355] font-bold text-xs uppercase tracking-[0.2em] mt-2">Manual Contract Creation</p>
+                    <h2 className="text-3xl font-black text-white">สร้างสัญญาด้วยตนเอง</h2>
+                    <p className="text-muted-foreground font-bold text-xs uppercase tracking-[0.2em] mt-2">Manual Contract Creation</p>
                  </div>
-                 <button onClick={() => setIsModalOpen(false)} className="h-12 w-12 bg-white rounded-2xl flex items-center justify-center text-[#A08D74] hover:text-[#3E342B] border border-[#E5DFD3] transition-all">
+                 <button onClick={() => setIsModalOpen(false)} className="h-12 w-12 bg-[#0F172A] rounded-2xl flex items-center justify-center text-white/50 hover:text-white border border-white/20/10 transition-all">
                     <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
                  </button>
               </div>
@@ -441,12 +441,12 @@ export default function OwnerContractsPage() {
               <form onSubmit={handleSubmit} className="p-10 space-y-8">
                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div className="space-y-3">
-                       <label className="text-[10px] font-black text-[#A08D74] uppercase tracking-[0.1em] ml-2">1. เลือกห้องที่จะทำสัญญา</label>
+                       <label className="text-[10px] font-black text-white/50 uppercase tracking-[0.1em] ml-2">1. เลือกห้องที่จะทำสัญญา</label>
                        <select 
                           required
                           value={formData.room_id}
                           onChange={(e) => setFormData({...formData, room_id: e.target.value})}
-                          className="w-full h-16 px-6 bg-[#FAF8F5] border border-[#E5DFD3] rounded-2xl font-bold text-[#3E342B] outline-none transition-all"
+                          className="w-full h-16 px-6 bg-[#0F172A] border border-white/20/10 rounded-2xl font-bold text-white outline-none transition-all"
                        >
                           <option value="">เลือกห้องพัก (เฉพาะที่ว่าง)...</option>
                           {rooms.map(r => (
@@ -456,12 +456,12 @@ export default function OwnerContractsPage() {
                     </div>
 
                     <div className="space-y-3">
-                       <label className="text-[10px] font-black text-[#A08D74] uppercase tracking-[0.1em] ml-2">2. กำหนดตัวตนผู้เช่า</label>
+                       <label className="text-[10px] font-black text-white/50 uppercase tracking-[0.1em] ml-2">2. กำหนดตัวตนผู้เช่า</label>
                        <select 
                           required
                           value={formData.tenant_id}
                           onChange={(e) => setFormData({...formData, tenant_id: e.target.value})}
-                          className="w-full h-16 px-6 bg-[#FAF8F5] border border-[#E5DFD3] rounded-2xl font-bold text-[#3E342B] outline-none transition-all"
+                          className="w-full h-16 px-6 bg-[#0F172A] border border-white/20/10 rounded-2xl font-bold text-white outline-none transition-all"
                        >
                           <option value="">เลือกผู้เช่าในระบบ...</option>
                           {tenants.map(t => (
@@ -498,7 +498,7 @@ export default function OwnerContractsPage() {
                  </div>
 
                  <div className="pt-6 flex gap-4">
-                    <button type="button" onClick={() => setIsModalOpen(false)} className="flex-1 py-5 text-[#A08D74] font-bold hover:bg-[#FAF8F5] rounded-3xl transition-all">ยกเลิก</button>
+                    <button type="button" onClick={() => setIsModalOpen(false)} className="flex-1 py-5 text-white/50 font-bold hover:bg-[#0F172A] rounded-3xl transition-all">ยกเลิก</button>
                     <button 
                        type="submit" 
                        disabled={submitting}

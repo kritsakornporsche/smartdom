@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { neon } from '@neondatabase/serverless';
 
-const sql = neon(process.env.DATABASE_URL || '');
+const sql = neon(process.env.DATABASE_URL || 'postgres://postgres:password@localhost/postgres');
 
 async function ensureTable() {
   // Match actual DB schema (column: name, not full_name)

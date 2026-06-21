@@ -2,164 +2,138 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useSession } from 'next-auth/react';
-import { useEffect, useState } from 'react';
+import { useSession, signOut } from 'next-auth/react';
+import { useState, useEffect } from 'react';
+
+const navItems = [
+  {
+    href: '/keeper/maid',
+    label: 'งานแม่บ้าน',
+    roles: ['maid'],
+    icon: '🧹',
+  },
+  {
+    href: '/keeper/technician',
+    label: 'งานซ่อมบำรุง',
+    roles: ['technician'],
+    icon: '🔧',
+  },
+];
 
 export default function KeeperSidebar() {
   const pathname = usePathname();
   const { data: session } = useSession();
-  const [counts, setCounts] = useState<{ pending: number; total: number }>({ pending: 0, total: 0 });
-  
-  const subRole = (session?.user as any)?.sub_role;
+  const [mounted, setMounted] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+
+  const userSubRole = (session?.user as any)?.sub_role;
 
   useEffect(() => {
-    if (subRole) {
-      const fetchCounts = async () => {
-        try {
-          const res = await fetch(`/api/keeper/${subRole}/jobs`);
-          const json = await res.json();
-          if (json.success) {
-            const jobs = json.data.jobs || [];
-            const pending = jobs.filter((j: any) => j.status === 'pending' || j.status === 'rush').length;
-            setCounts({ pending, total: jobs.length });
-          }
-        } catch (err) {
-          console.error('Sidebar fetch error:', err);
-        }
-      };
-      
-      fetchCounts();
-      const interval = setInterval(fetchCounts, 60000); // Check every 60s
-      return () => clearInterval(interval);
-    }
-  }, [subRole]);
+    setMounted(true);
+  }, []);
 
-  // Define nav items based on subRole
-  let navItems: { href: string; label: string; icon: JSX.Element; badge?: number }[] = [];
+  if (!mounted) return <header className="h-16 bg-[#0F172A] border-b border-white/20/10 shrink-0" />;
 
-  if (subRole === 'maid') {
-    navItems = [
-      {
-        href: '/keeper/maid',
-        label: 'ภาพรวมงานแม่บ้าน',
-        icon: (
-          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
-          </svg>
-        ),
-      },
-      {
-        href: '/keeper/maid/jobs',
-        label: 'บันทึกทำความสะอาด',
-        badge: counts.pending,
-        icon: (
-          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
-          </svg>
-        ),
-      },
-    ];
-  } else if (subRole === 'technician') {
-    navItems = [
-      {
-        href: '/keeper/technician',
-        label: 'ภาพรวมงานช่าง',
-        icon: (
-          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
-          </svg>
-        ),
-      },
-      {
-        href: '/keeper/technician/jobs',
-        label: 'รายการแจ้งซ่อม',
-        badge: counts.pending,
-        icon: (
-          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-          </svg>
-        ),
-      },
-    ];
-  }
+  const allowedNav = navItems.filter(item => item.roles.includes(userSubRole));
 
   return (
-    <aside className="w-64 bg-[#FAF8F5] border-r border-[#E5DFD3] flex flex-col shrink-0 shadow-sm relative z-20">
-      {/* Logo */}
-      <div className="h-20 flex items-center px-8 border-b border-[#E5DFD3]">
-        <div className="flex items-center gap-3 group cursor-pointer">
-          <div className="h-10 w-10 flex items-center justify-center rounded-2xl bg-[#8B7355] text-white font-display font-bold text-lg shadow-lg shadow-[#8B7355]/20 transition-transform group-hover:rotate-12">
-            S
+    <>
+      <header className="h-16 bg-[#0F172A] border-b border-white/20/10 flex items-center justify-between px-6 shrink-0 z-40 sticky top-0 shadow-sm w-full">
+        <div className="flex items-center gap-3">
+          <button 
+            onClick={() => setIsOpen(true)}
+            className="p-2 -ml-2 text-white/50 hover:bg-[#0F172A]/5 hover:text-white rounded-xl transition-colors focus:outline-none"
+          >
+            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+          
+          <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-orange-500 to-red-600 flex items-center justify-center font-black text-white text-lg shadow-lg border border-white/20/10">
+            K
           </div>
-          <div className="flex flex-col">
-            <span className="font-display font-bold text-sm tracking-tight text-[#3E342B] leading-none">
-              SmartDom
-            </span>
-            <span className="text-[10px] font-bold text-[#A08D74] mt-1">
-              {subRole === 'technician' ? 'TECHNICIAN' : subRole === 'maid' ? 'MAID' : 'KEEPER'}
-            </span>
+          <div className="hidden sm:block">
+            <h2 className="font-bold text-base tracking-tight text-white">SmartDom</h2>
+            <p className="text-[9px] font-black text-orange-400 uppercase tracking-[0.15em] leading-none">Keeper Portal</p>
           </div>
         </div>
-      </div>
 
-      {/* Navigation */}
-      <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
-        <p className="px-4 py-2 text-[10px] font-black uppercase tracking-[0.25em] text-[#A08D74]/60 mb-2">
-          Dashboard
-        </p>
-        {navItems.length > 0 ? (
-          navItems.map((item) => {
+        <div className="flex items-center gap-3">
+          <div className="text-right hidden sm:block">
+            <p className="text-sm font-bold text-white">{session?.user?.name || 'Keeper'}</p>
+            <p className="text-xs text-white/40">{userSubRole === 'maid' ? 'แม่บ้าน' : 'ช่างซ่อม'}</p>
+          </div>
+          <div className="h-9 w-9 rounded-full bg-[#0F172A]/10 border-2 border-white/20/20 shadow-sm overflow-hidden flex justify-center items-center">
+            <span className="text-lg">{userSubRole === 'maid' ? '🧹' : '🔧'}</span>
+          </div>
+        </div>
+      </header>
+
+      {isOpen && (
+        <div 
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 transition-opacity" 
+          onClick={() => setIsOpen(false)}
+        />
+      )}
+
+      <aside 
+        className={`fixed top-0 left-0 h-full w-72 bg-[#0F172A] border-r border-white/20/10 flex flex-col shadow-2xl z-50 transform transition-transform duration-300 ease-in-out ${
+          isOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
+      >
+        <div className="p-6 border-b border-white/20/10 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-orange-500 to-red-600 flex items-center justify-center font-black text-white text-lg shadow-lg">
+              K
+            </div>
+            <div>
+              <h2 className="font-bold text-base tracking-tight text-white">SmartDom</h2>
+              <p className="text-[10px] font-black text-orange-400 uppercase tracking-[0.15em] leading-none mt-1">Keeper</p>
+            </div>
+          </div>
+          <button 
+            onClick={() => setIsOpen(false)}
+            className="p-2 text-white/50 hover:bg-[#0F172A]/5 hover:text-white rounded-full transition-colors"
+          >
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
+          {allowedNav.map((item) => {
             const isActive = pathname === item.href;
             return (
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex items-center gap-3 px-4 py-3 rounded-2xl font-bold text-xs transition-all relative group ${
+                onClick={() => setIsOpen(false)}
+                className={`flex items-center gap-4 px-4 py-3.5 rounded-xl font-bold text-sm transition-all ${
                   isActive
-                    ? 'bg-[#8B7355] text-white shadow-xl shadow-[#8B7355]/30'
-                    : 'text-[#A08D74] hover:bg-[#F3EFE9] hover:text-[#5A4D41]'
+                    ? 'bg-orange-600 text-white shadow-md shadow-orange-600/20'
+                    : 'text-white/50 hover:bg-[#0F172A]/5 hover:text-white'
                 }`}
               >
-                <span className={`transition-transform group-hover:scale-110 ${isActive ? 'text-white' : ''}`}>{item.icon}</span>
+                <span className="text-xl">
+                  {item.icon}
+                </span>
                 {item.label}
-                {item.badge !== undefined && item.badge > 0 && (
-                   <span className={`ml-auto px-2 py-0.5 rounded-full text-[9px] font-black ${isActive ? 'bg-white text-[#8B7355]' : 'bg-rose-500 text-white animate-pulse'}`}>
-                      {item.badge}
-                   </span>
-                )}
-                {isActive && !item.badge && (
-                  <span className="ml-auto w-1.5 h-1.5 rounded-full bg-white/60" />
-                )}
               </Link>
             );
-          })
-        ) : (
-          <div className="px-4 text-xs text-[#A08D74]">ไม่มีเมนูที่กำหนด</div>
-        )}
-      </nav>
+          })}
+        </nav>
 
-      {/* Footer */}
-      <div className="p-4 border-t border-[#E5DFD3] bg-white/50">
-        <Link
-          href="/profile"
-          className="flex items-center gap-3 px-4 py-3 text-[#A08D74] hover:text-[#5A4D41] rounded-2xl font-bold text-xs transition-colors hover:bg-white"
-        >
-          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-          </svg>
-          ตั้งค่าโปรไฟล์
-        </Link>
-        <Link
-          href="/"
-          className="flex items-center gap-3 px-4 py-3 text-[#A08D74] hover:text-[#5A4D41] rounded-2xl font-bold text-xs transition-colors hover:bg-white"
-        >
-          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M11 17l-5-5m0 0l5-5m-5 5h12" />
-          </svg>
-          กลับหน้าหลัก
-        </Link>
-      </div>
-    </aside>
+        <div className="p-6 border-t border-white/20/10">
+          <button
+            onClick={() => signOut({ callbackUrl: '/signin' })}
+            className="w-full flex items-center gap-4 px-4 py-3.5 text-white/40 hover:text-white rounded-xl font-bold text-sm transition-all hover:bg-[#0F172A]/5"
+          >
+            <span>🚪</span>
+            ออกจากระบบ
+          </button>
+        </div>
+      </aside>
+    </>
   );
 }

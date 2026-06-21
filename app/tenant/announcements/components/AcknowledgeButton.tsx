@@ -33,7 +33,7 @@ export default function AcknowledgeButton({ id, isImportant }: { id: number, isI
       className={`px-5 py-2.5 rounded-xl font-bold text-[10px] uppercase tracking-widest transition-all shadow-sm flex items-center gap-2 ${
         isImportant 
           ? 'bg-rose-500 hover:bg-rose-600 text-white shadow-rose-500/20 active:scale-95 disabled:opacity-70' 
-          : 'bg-[#8B6A2B] hover:bg-[#725724] text-white shadow-[#8B6A2B]/20 active:scale-95 disabled:opacity-70'
+          : 'bg-primary hover:bg-primary/90 text-white shadow-primary/20 active:scale-95 disabled:opacity-70'
       }`}
     >
       {loading ? (

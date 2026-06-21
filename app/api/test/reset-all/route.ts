@@ -11,7 +11,7 @@ export async function POST() {
     return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
   }
 
-  const sql = neon(process.env.DATABASE_URL || '');
+  const sql = neon(process.env.DATABASE_URL || 'postgres://postgres:password@localhost/postgres');
 
   try {
     // 1. Reset ALL rooms to Available

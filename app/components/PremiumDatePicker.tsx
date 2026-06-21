@@ -71,29 +71,29 @@ export default function PremiumDatePicker({ date, onChange, label }: PremiumDate
       {/* Input Trigger */}
       <div 
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full px-6 py-4 bg-[#FAF8F5] border border-[#E5DFD3] rounded-2xl cursor-pointer flex items-center justify-between group transition-all hover:border-[#8B6A2B]"
+        className="w-full px-6 py-4 bg-background border border-border rounded-2xl cursor-pointer flex items-center justify-between group transition-all hover:border-primary"
       >
-        <span className={cn("font-bold", date ? "text-[#3E342B]" : "text-[#A08D74]")}>
+        <span className={cn("font-bold", date ? "text-foreground" : "text-[#A08D74]")}>
           {date ? new Date(date).toLocaleDateString('th-TH', { day: 'numeric', month: 'long', year: 'numeric' }) : 'เลือกวันที่...'}
         </span>
-        <svg className="w-5 h-5 text-[#DCD3C6] group-hover:text-[#8B6A2B] transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <svg className="w-5 h-5 text-muted-foreground/60 group-hover:text-primary transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
         </svg>
       </div>
 
       {/* Calendar Dropdown */}
       {isOpen && (
-        <div className="absolute top-full left-0 mt-4 w-80 bg-white rounded-[2rem] shadow-2xl border border-[#E5DFD3] p-6 z-[100] animate-in fade-in slide-in-from-top-2 duration-300">
+        <div className="absolute top-full left-0 mt-4 w-80 bg-white rounded-[2rem] shadow-2xl border border-border p-6 z-[100] animate-in fade-in slide-in-from-top-2 duration-300">
           {/* Header */}
           <div className="flex items-center justify-between mb-6">
-            <button type="button" onClick={() => changeMonth(-1)} className="p-2 hover:bg-[#FAF8F5] rounded-xl text-[#8B7355] transition-all active:scale-90">
+            <button type="button" onClick={() => changeMonth(-1)} className="p-2 hover:bg-background rounded-xl text-muted-foreground transition-all active:scale-90">
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
             </button>
             <div className="text-center">
-              <p className="text-sm font-black text-[#3E342B]">{months[currentView.getMonth()]}</p>
+              <p className="text-sm font-black text-foreground">{months[currentView.getMonth()]}</p>
               <p className="text-[10px] font-black text-[#A08D74]">{currentView.getFullYear() + 543}</p>
             </div>
-            <button type="button" onClick={() => changeMonth(1)} className="p-2 hover:bg-[#FAF8F5] rounded-xl text-[#8B7355] transition-all active:scale-90">
+            <button type="button" onClick={() => changeMonth(1)} className="p-2 hover:bg-background rounded-xl text-muted-foreground transition-all active:scale-90">
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
             </button>
           </div>
@@ -101,7 +101,7 @@ export default function PremiumDatePicker({ date, onChange, label }: PremiumDate
           {/* Grid Header */}
           <div className="grid grid-cols-7 gap-1 mb-2">
             {['อา', 'จ', 'อ', 'พ', 'พฤ', 'ศ', 'ส'].map((day) => (
-              <div key={day} className="text-[10px] font-black text-[#DCD3C6] text-center uppercase py-2">{day}</div>
+              <div key={day} className="text-[10px] font-black text-muted-foreground/60 text-center uppercase py-2">{day}</div>
             ))}
           </div>
 
@@ -120,12 +120,12 @@ export default function PremiumDatePicker({ date, onChange, label }: PremiumDate
                   isSelected(day) 
                     ? "bg-[#3E342B] text-white shadow-lg shadow-[#3E342B]/20" 
                     : "text-[#5A4D41] hover:bg-[#FAF3E8]",
-                  isToday(day) && !isSelected(day) && "text-[#8B6A2B] border border-[#8B6A2B]"
+                  isToday(day) && !isSelected(day) && "text-primary border border-primary"
                 )}
               >
                 {day}
                 {isToday(day) && (
-                  <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-[#8B6A2B] rounded-full" />
+                  <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-primary rounded-full" />
                 )}
               </button>
             ))}
@@ -149,7 +149,7 @@ export default function PremiumDatePicker({ date, onChange, label }: PremiumDate
                    onChange(local.toISOString().split('T')[0]);
                    setIsOpen(false);
                 }}
-                className="text-[10px] font-black text-[#8B6A2B] hover:text-[#725724] uppercase tracking-widest"
+                className="text-[10px] font-black text-primary hover:text-[#725724] uppercase tracking-widest"
               >
                 วันนี้
               </button>

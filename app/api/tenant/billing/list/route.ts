@@ -9,7 +9,7 @@ export async function GET() {
   }
 
   try {
-    const sql = neon(process.env.DATABASE_URL || '');
+    const sql = neon(process.env.DATABASE_URL || 'postgres://postgres:password@localhost/postgres');
     
     // Find tenant ID
     const tenantRes = await sql`SELECT id FROM tenants WHERE email = ${session.user.email}`;

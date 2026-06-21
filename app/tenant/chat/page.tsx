@@ -100,12 +100,12 @@ export default function TenantChatPage() {
   };
 
   return (
-    <div className="flex h-[calc(100vh-6rem)] bg-white font-sans">
+    <div className="flex h-[calc(100vh-6rem)] bg-[#0F172A] font-sans">
       {/* Sidebar - Conversation List */}
-      <div className="w-80 lg:w-96 border-r border-black/5 flex flex-col bg-white shrink-0">
-        <div className="p-8 border-b border-black/5 bg-[#FDFBF7]">
+      <div className="w-80 lg:w-96 border-r border-black/5 flex flex-col bg-[#0F172A] shrink-0">
+        <div className="p-8 border-b border-black/5 bg-[#080F1E]">
           <h1 className="text-2xl font-black tracking-tight mb-1 italic">ข้อความแชท</h1>
-          <p className="text-[10px] font-black uppercase tracking-widest text-[#8B7355]">Tenant Messages Center</p>
+          <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Tenant Messages Center</p>
         </div>
         
         <div className="flex-1 overflow-y-auto">
@@ -115,8 +115,8 @@ export default function TenantChatPage() {
             </div>
           ) : conversations.length === 0 ? (
             <div className="p-12 text-center">
-               <div className="w-16 h-16 bg-[#F2EFE9] rounded-full flex items-center justify-center mx-auto mb-4 grayscale opacity-50">
-                  <svg className="w-8 h-8 text-[#8B7355]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+               <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-4 grayscale opacity-50">
+                  <svg className="w-8 h-8 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                   </svg>
                </div>
@@ -130,16 +130,16 @@ export default function TenantChatPage() {
                 className={`w-full p-6 text-left border-b border-black/5 transition-all hover:bg-black/5 group ${selectedConv?.id === conv.id ? 'bg-[#3E342B] text-white' : ''}`}
               >
                 <div className="flex justify-between items-start mb-2">
-                  <p className={`text-xs font-black uppercase tracking-widest ${selectedConv?.id === conv.id ? 'text-white/60' : 'text-[#8B7355]'}`}>{conv.dorm_name}</p>
+                  <p className={`text-xs font-black uppercase tracking-widest ${selectedConv?.id === conv.id ? 'text-white/60' : 'text-muted-foreground'}`}>{conv.dorm_name}</p>
                   <p className="text-[9px] opacity-40">{new Date(conv.updated_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
                 </div>
                 <div className="flex items-center justify-between gap-2">
                   <h3 className="font-bold text-sm tracking-tight">{conv.owner_name}</h3>
-                  <span className={`text-[9px] font-black uppercase px-2 py-0.5 rounded-full border ${selectedConv?.id === conv.id ? 'bg-white/10 text-white border-white/10' : 'bg-black/5 text-[#8B7355] border-transparent'}`}>
+                  <span className={`text-[9px] font-black uppercase px-2 py-0.5 rounded-full border ${selectedConv?.id === conv.id ? 'bg-[#0F172A]/10 text-white border-white/20/10' : 'bg-black/5 text-muted-foreground border-transparent'}`}>
                     เจ้าหน้าที่
                   </span>
                 </div>
-                <p className={`text-[10px] truncate opacity-60 mt-2 font-medium ${selectedConv?.id === conv.id ? 'text-white/60' : 'text-[#5A4D41]'}`}>
+                <p className={`text-[10px] truncate opacity-60 mt-2 font-medium ${selectedConv?.id === conv.id ? 'text-white/60' : 'text-white/80'}`}>
                   {conv.last_message || 'เริ่มการสนทนาใหม่...'}
                 </p>
               </button>
@@ -149,18 +149,18 @@ export default function TenantChatPage() {
       </div>
 
       {/* Main Chat Area */}
-      <div className="flex-1 flex flex-col bg-[#FDFBF7]">
+      <div className="flex-1 flex flex-col bg-[#080F1E]">
         {selectedConv ? (
           <>
             {/* Header */}
-            <div className="px-8 py-6 bg-white border-b border-black/5 flex items-center justify-between shrink-0">
+            <div className="px-8 py-6 bg-[#0F172A] border-b border-black/5 flex items-center justify-between shrink-0">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 bg-[#3E342B] rounded-2xl flex items-center justify-center text-white font-bold text-xl shadow-xl shadow-black/10">
                   {selectedConv.owner_name?.[0] || 'O'}
                 </div>
                 <div>
                   <h2 className="text-lg font-black tracking-tight">{selectedConv.owner_name}</h2>
-                  <p className="text-[10px] font-black uppercase tracking-widest text-[#8B7355]">{selectedConv.dorm_name}</p>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{selectedConv.dorm_name}</p>
                 </div>
               </div>
               <div className="flex gap-2">
@@ -179,7 +179,7 @@ export default function TenantChatPage() {
                     <div className={`max-w-[70%] p-6 rounded-[2rem] text-sm font-bold leading-relaxed shadow-sm ${
                       isMe 
                         ? 'bg-[#3E342B] text-white rounded-tr-none shadow-xl shadow-black/10' 
-                        : 'bg-white border border-black/5 text-[#3E342B] rounded-tl-none'
+                        : 'bg-[#0F172A] border border-black/5 text-white rounded-tl-none'
                     }`}>
                       {msg.message}
                       <div className={`text-[9px] mt-2 opacity-50 flex items-center gap-1 ${isMe ? 'justify-end text-white/50' : 'justify-start text-black/30'}`}>
@@ -192,14 +192,14 @@ export default function TenantChatPage() {
             </div>
 
             {/* Input Area */}
-            <div className="p-8 bg-white border-t border-black/5 shrink-0">
+            <div className="p-8 bg-[#0F172A] border-t border-black/5 shrink-0">
               <form onSubmit={sendMessage} className="relative flex gap-4 max-w-4xl mx-auto">
                 <input
                   type="text"
                   placeholder="พิมพ์ข้อความตอบกลับ..."
                   value={newMessage}
                   onChange={(e) => setNewMessage(e.target.value)}
-                  className="flex-1 px-8 py-5 bg-black/5 rounded-full border border-transparent focus:border-[#3E342B] focus:bg-white outline-none text-sm font-bold transition-all shadow-inner placeholder:text-black/20"
+                  className="flex-1 px-8 py-5 bg-black/5 rounded-full border border-transparent focus:border-[#3E342B] focus:bg-[#0F172A] outline-none text-sm font-bold transition-all shadow-inner placeholder:text-black/20"
                 />
                 <button
                   type="submit"
@@ -221,7 +221,7 @@ export default function TenantChatPage() {
               </svg>
             </div>
             <h3 className="text-xl font-black tracking-tight mb-2">เลือกการสนทนา</h3>
-            <p className="text-[10px] font-black uppercase tracking-widest text-[#8B7355] leading-relaxed max-w-xs">
+            <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground leading-relaxed max-w-xs">
               เลือกแชทจากรายการด้านซ้ายเพื่อพูดคุยสอบถามข้อมูลกับเจ้าของหอพักของคุณ
             </p>
           </div>

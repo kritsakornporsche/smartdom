@@ -4,16 +4,17 @@ import { auth } from '@/auth';
 
 export async function POST(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   const session = await auth();
   if (!session?.user?.email) return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
 
   try {
-    const announcementId = parseInt(params.id);
+    const announcementId = parseInt(id);
     if (isNaN(announcementId)) return NextResponse.json({ success: false, message: 'Invalid ID' }, { status: 400 });
 
-    const sql = neon(process.env.DATABASE_URL || '');
+    const sql = neon(process.env.DATABASE_URL || 'postgres://postgres:password@localhost/postgres');
     
     // Find tenant by email
     const tenantRes = await sql`SELECT id FROM tenants WHERE email = ${session.user.email} LIMIT 1`;

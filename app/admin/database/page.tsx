@@ -3,7 +3,7 @@ import Link from 'next/link';
 
 export default async function DatabaseViewer(props: { searchParams: Promise<{ table?: string }> }) {
   const searchParams = await props.searchParams;
-  const sql = neon(process.env.DATABASE_URL || '');
+  const sql = neon(process.env.DATABASE_URL || 'postgres://postgres:password@localhost/postgres');
   
   // Fetch all tables in the public schema
   const tablesResult = await sql`
@@ -46,16 +46,16 @@ export default async function DatabaseViewer(props: { searchParams: Promise<{ ta
   }
 
   return (
-    <div className="flex h-screen bg-[#FDFBF7] text-[#3E342B] font-sans">
+    <div className="flex h-screen bg-background text-foreground font-sans">
       
       {/* Sidebar Navigation */}
-      <aside className="w-64 bg-white border-r border-[#E5DFD3] flex flex-col shrink-0 overflow-y-auto">
+      <aside className="w-64 bg-white border-r border-border flex flex-col shrink-0 overflow-y-auto">
         <div className="h-20 flex items-center px-8 border-b border-[#FAF8F5] shrink-0 mb-4">
           <div className="flex items-center gap-3">
-            <Link href="/admin" className="h-8 w-8 bg-[#8B7355] rounded-lg flex items-center justify-center text-white font-bold hover:bg-[#725724] transition-colors">
+            <Link href="/admin" className="h-8 w-8 bg-primary rounded-lg flex items-center justify-center text-white font-bold hover:bg-primary/90 transition-colors">
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
             </Link>
-            <span className="font-bold text-lg tracking-tight text-[#3E342B]">Database</span>
+            <span className="font-bold text-lg tracking-tight text-foreground">Database</span>
           </div>
         </div>
 
@@ -67,8 +67,8 @@ export default async function DatabaseViewer(props: { searchParams: Promise<{ ta
               href={`/admin/database?table=${table}`}
               className={`flex items-center justify-between px-4 py-3 rounded-xl font-bold transition-all ${
                 selectedTable === table 
-                  ? 'bg-[#8B7355] text-white shadow-lg shadow-[#8B7355]/20' 
-                  : 'text-[#5A4D41] hover:bg-[#FAF8F5] hover:text-[#3E342B]'
+                  ? 'bg-primary text-white shadow-lg shadow-primary/20' 
+                  : 'text-[#5A4D41] hover:bg-background hover:text-foreground'
               }`}
             >
               <span className={selectedTable === table ? 'text-[13px]' : 'text-xs uppercase tracking-wider'}>{table}</span>
@@ -85,16 +85,16 @@ export default async function DatabaseViewer(props: { searchParams: Promise<{ ta
       <main className="flex-1 flex flex-col overflow-hidden bg-white">
         
         {/* Header */}
-        <header className="h-20 border-b border-[#E5DFD3] flex items-center justify-between px-10 shrink-0">
+        <header className="h-20 border-b border-border flex items-center justify-between px-10 shrink-0">
           <div>
-            <h1 className="text-xl font-black flex items-center gap-2 text-[#3E342B]">
-              <svg className="w-5 h-5 text-[#8B7355]" fill="currentColor" viewBox="0 0 24 24"><path d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4z" /></svg>
+            <h1 className="text-xl font-black flex items-center gap-2 text-foreground">
+              <svg className="w-5 h-5 text-muted-foreground" fill="currentColor" viewBox="0 0 24 24"><path d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4z" /></svg>
               ตาราง: {selectedTable}
             </h1>
             <p className="text-[10px] text-[#A08D74] mt-1 uppercase tracking-widest font-bold">แสดงข้อมูลล่าสุด 50 รายการ</p>
           </div>
           <div className="flex gap-3">
-             <Link href="/admin" className="px-6 py-2.5 bg-[#FAF8F5] border border-[#DCD3C6] text-[#5A4D41] rounded-xl hover:bg-[#F3EFE9] text-xs font-black transition-all uppercase tracking-widest">
+             <Link href="/admin" className="px-6 py-2.5 bg-background border border-border text-[#5A4D41] rounded-xl hover:bg-[#F3EFE9] text-xs font-black transition-all uppercase tracking-widest">
                 กลับหน้า Admin
              </Link>
           </div>
@@ -118,10 +118,10 @@ export default async function DatabaseViewer(props: { searchParams: Promise<{ ta
               <p className="font-bold">ไม่มีข้อมูลในตารางนี้</p>
             </div>
           ) : (
-            <div className="rounded-3xl border border-[#E5DFD3] overflow-hidden shadow-xl shadow-[#DCD3C6]/10">
+            <div className="rounded-3xl border border-border overflow-hidden shadow-xl shadow-[#DCD3C6]/10">
               <div className="overflow-x-auto">
                 <table className="w-full text-sm text-left">
-                  <thead className="text-[10px] text-[#A08D74] uppercase bg-[#FAF8F5] border-b border-[#E5DFD3]">
+                  <thead className="text-[10px] text-[#A08D74] uppercase bg-background border-b border-border">
                     <tr>
                       {columns.map((col) => (
                         <th key={col} className="px-8 py-5 font-black tracking-widest whitespace-nowrap">
@@ -133,11 +133,11 @@ export default async function DatabaseViewer(props: { searchParams: Promise<{ ta
                   <tbody className="divide-y divide-[#F3EFE9]">
 
                     {rows.map((row, idx) => (
-                      <tr key={row.id || idx} className="bg-white hover:bg-[#FAF8F5] transition-colors">
+                      <tr key={row.id || idx} className="bg-white hover:bg-background transition-colors">
                         {columns.map((col) => {
                           const val = row[col];
                           // Convert dates/objects to string
-                          const displayVal = val === null ? <span className="text-[#DCD3C6] italic">null</span> : 
+                          const displayVal = val === null ? <span className="text-muted-foreground/60 italic">null</span> : 
                                             val instanceof Date ? new Date(val).toLocaleString('th-TH') : 
                                             typeof val === 'object' ? JSON.stringify(val) : 
                                             String(val);

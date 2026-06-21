@@ -94,7 +94,7 @@ export default function OwnerChatPage() {
     <div className="min-h-screen bg-[#faf9f6] flex flex-col">
       <div className="flex-1 flex overflow-hidden">
         {/* Sidebar */}
-        <div className="w-80 lg:w-96 bg-white border-r border-black/5 flex flex-col">
+        <div className="w-80 lg:w-96 bg-[#0F172A] border-r border-black/5 flex flex-col">
           <div className="p-8 border-b border-black/5">
             <h1 className="text-2xl font-display font-black tracking-tight mb-2 italic">ศูนย์จัดการแชท</h1>
             <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Chat Management Center</p>
@@ -124,9 +124,9 @@ export default function OwnerChatPage() {
                     <h3 className="font-bold text-sm">{conv.guest_name}</h3>
                     <span className={`text-[9px] font-black uppercase px-2 py-0.5 rounded-full ${
                       conv.guest_role === 'tenant' 
-                        ? 'bg-[#8B7355] text-white' 
-                        : 'bg-black/5 text-[#A08D74]'
-                    } ${selectedConv?.id === conv.id ? 'bg-white/20 text-white border border-white/20' : ''}`}>
+                        ? 'bg-primary text-white' 
+                        : 'bg-black/5 text-white/50'
+                    } ${selectedConv?.id === conv.id ? 'bg-[#0F172A]/20 text-white border border-white/20/20' : ''}`}>
                       {conv.guest_role === 'tenant' ? 'ลูกหอ' : 'แขกที่สนใจ'}
                     </span>
                   </div>
@@ -142,7 +142,7 @@ export default function OwnerChatPage() {
           {selectedConv ? (
             <>
               {/* Header */}
-              <div className="p-6 bg-white border-b border-black/5 flex items-center justify-between">
+              <div className="p-6 bg-[#0F172A] border-b border-black/5 flex items-center justify-between">
                 <div>
                   <h2 className="text-lg font-bold">{selectedConv.guest_name}</h2>
                   <p className="text-[10px] font-black uppercase tracking-widest text-primary">{selectedConv.dorm_name}</p>
@@ -155,7 +155,7 @@ export default function OwnerChatPage() {
                   const isMe = String(msg.sender_id) === String((session?.user as any)?.id);
                   return (
                     <div key={msg.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
-                      <div className={`max-w-[60%] p-6 rounded-[2rem] text-sm font-bold leading-relaxed shadow-sm ${isMe ? 'bg-[#3E342B] text-white rounded-tr-none shadow-xl shadow-black/10' : 'bg-white border border-black/5 text-black rounded-tl-none shadow-sm'}`}>
+                      <div className={`max-w-[60%] p-6 rounded-[2rem] text-sm font-bold leading-relaxed shadow-sm ${isMe ? 'bg-[#3E342B] text-white rounded-tr-none shadow-xl shadow-black/10' : 'bg-[#0F172A] border border-black/5 text-black rounded-tl-none shadow-sm'}`}>
                         {msg.message}
                       </div>
                     </div>
@@ -164,14 +164,14 @@ export default function OwnerChatPage() {
               </div>
 
               {/* Input Area */}
-              <div className="p-8 bg-white border-t border-black/5">
+              <div className="p-8 bg-[#0F172A] border-t border-black/5">
                 <form onSubmit={sendMessage} className="max-w-4xl mx-auto relative flex gap-4">
                   <input
                     type="text"
                     placeholder="ตอบกลับแขกของคุณ..."
                     value={newMessage}
                     onChange={(e) => setNewMessage(e.target.value)}
-                    className="flex-1 px-8 py-5 bg-black/5 rounded-full border border-transparent focus:border-primary focus:bg-white outline-none text-sm font-bold transition-all shadow-inner"
+                    className="flex-1 px-8 py-5 bg-black/5 rounded-full border border-transparent focus:border-primary focus:bg-[#0F172A] outline-none text-sm font-bold transition-all shadow-inner"
                   />
                   <button
                     type="submit"

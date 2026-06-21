@@ -9,23 +9,23 @@ const rules = [
 
 export default function DormRulesCard() {
   return (
-    <div className="bg-[#FAF8F5] rounded-[2.5rem] p-10 border border-[#E5DFD3] shadow-inner">
-      <h3 className="text-xl font-black text-[#3E342B] mb-8 flex items-center gap-3">
-        <span className="w-8 h-8 rounded-xl bg-[#8B7355] text-white flex items-center justify-center text-sm">⚖️</span>
+    <div className="bg-[#0F172A] rounded-[2.5rem] p-10 border border-white/20/10 shadow-inner">
+      <h3 className="text-xl font-black text-white mb-8 flex items-center gap-3">
+        <span className="w-8 h-8 rounded-xl bg-primary text-white flex items-center justify-center text-sm">⚖️</span>
         ระเบียบและข้อควรปฏิบัติ
       </h3>
       <div className="space-y-6">
         {rules.map((rule, idx) => (
           <div key={idx} className="flex gap-4 group">
-            <div className="text-[#A08D74] font-black text-xs pt-1 group-hover:text-[#8B7355] transition-colors">{idx + 1}.</div>
+            <div className="text-white/50 font-black text-xs pt-1 group-hover:text-muted-foreground transition-colors">{idx + 1}.</div>
             <div className="space-y-1">
-                <h4 className="text-sm font-bold text-[#3E342B] group-hover:text-[#8B7355] transition-colors">{rule.title}</h4>
-                <p className="text-xs text-[#8B7355] leading-relaxed font-medium">{rule.content}</p>
+                <h4 className="text-sm font-bold text-white group-hover:text-muted-foreground transition-colors">{rule.title}</h4>
+                <p className="text-xs text-muted-foreground leading-relaxed font-medium">{rule.content}</p>
             </div>
           </div>
         ))}
       </div>
-      <button className="w-full mt-10 py-3.5 border border-[#8B7355]/20 text-[#8B7355] rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-[#8B7355] hover:text-white transition-all">
+      <button className="w-full mt-10 py-3.5 border border-primary/20 text-muted-foreground rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-primary/90 hover:text-white transition-all">
         ดูระเบียบฉบับเต็ม
       </button>
     </div>

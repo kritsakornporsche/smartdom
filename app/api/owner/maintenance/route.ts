@@ -8,7 +8,7 @@ export async function GET(req: Request) {
   if (!dormId) return NextResponse.json({ success: false, message: 'Dorm ID required' }, { status: 400 });
 
   try {
-    const sql = neon(process.env.DATABASE_URL || '');
+    const sql = neon(process.env.DATABASE_URL || 'postgres://postgres:password@localhost/postgres');
     
     const requests = await sql`
       SELECT m.*, t.name as tenant_name, t.phone as tenant_phone

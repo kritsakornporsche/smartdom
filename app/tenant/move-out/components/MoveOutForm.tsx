@@ -36,7 +36,7 @@ export default function MoveOutForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white rounded-3xl border border-[#E5DFD3] p-8 md:p-12 shadow-sm">
+    <form onSubmit={handleSubmit} className="bg-[#0F172A] rounded-3xl border border-white/20/10 p-8 md:p-12 shadow-sm">
       <div className="mb-10">
          <div className="bg-[#FFF9F9] border border-rose-100 rounded-2xl p-6 text-sm text-rose-800 flex gap-4">
            <div className="shrink-0 bg-rose-100 h-10 w-10 rounded-full flex items-center justify-center text-rose-600">
@@ -51,37 +51,37 @@ export default function MoveOutForm() {
 
       <div className="grid sm:grid-cols-2 gap-8 mb-8">
         <div>
-          <label className="block text-[11px] font-bold text-[#A08D74] uppercase tracking-wider mb-2 font-mono ml-1">วันที่ต้องการย้ายออก</label>
+          <label className="block text-[11px] font-bold text-white/50 uppercase tracking-wider mb-2 font-mono ml-1">วันที่ต้องการย้ายออก</label>
           <input 
             type="date" 
             name="date"
             required
-            className="w-full px-5 py-4 bg-[#FAF8F5] rounded-2xl border border-[#DCD3C6] focus:bg-white focus:ring-4 focus:ring-[#8B6A2B]/10 focus:border-[#8B6A2B] outline-none transition-all text-[#3E342B] font-bold"
+            className="w-full px-5 py-4 bg-[#0F172A] rounded-2xl border border-border focus:bg-[#0F172A] focus:ring-4 focus:ring-primary/10 focus:border-primary outline-none transition-all text-white font-bold"
           />
         </div>
         <div>
-          <label className="block text-[11px] font-bold text-[#A08D74] uppercase tracking-wider mb-2 font-mono ml-1">เบอร์โทรศัพท์ติดต่อกลับ</label>
+          <label className="block text-[11px] font-bold text-white/50 uppercase tracking-wider mb-2 font-mono ml-1">เบอร์โทรศัพท์ติดต่อกลับ</label>
           <input 
             type="tel" 
             name="phone"
-            className="w-full px-5 py-4 bg-[#FAF8F5] rounded-2xl border border-[#DCD3C6] focus:bg-white focus:ring-4 focus:ring-[#8B6A2B]/10 focus:border-[#8B6A2B] outline-none transition-all text-[#3E342B] font-bold"
+            className="w-full px-5 py-4 bg-[#0F172A] rounded-2xl border border-border focus:bg-[#0F172A] focus:ring-4 focus:ring-primary/10 focus:border-primary outline-none transition-all text-white font-bold"
             placeholder="08X-XXX-XXXX"
           />
         </div>
       </div>
 
       <div className="mb-10">
-        <label className="block text-[11px] font-bold text-[#A08D74] uppercase tracking-wider mb-2 font-mono ml-1">เหตุผลที่ต้องการย้ายออก</label>
+        <label className="block text-[11px] font-bold text-white/50 uppercase tracking-wider mb-2 font-mono ml-1">เหตุผลที่ต้องการย้ายออก</label>
         <textarea 
           name="reason"
           rows={4}
-          className="w-full px-5 py-4 bg-[#FAF8F5] rounded-2xl border border-[#DCD3C6] focus:bg-white focus:ring-4 focus:ring-[#8B6A2B]/10 focus:border-[#8B6A2B] outline-none transition-all text-[#3E342B] font-medium resize-none leading-relaxed"
+          className="w-full px-5 py-4 bg-[#0F172A] rounded-2xl border border-border focus:bg-[#0F172A] focus:ring-4 focus:ring-primary/10 focus:border-primary outline-none transition-all text-white font-medium resize-none leading-relaxed"
           placeholder="ระบุเหตุผลเบื้องต้นเพื่อให้เรานำไปพัฒนาบริการ..."
         ></textarea>
       </div>
 
-      <div className="flex gap-4 border-t border-[#E5DFD3] pt-10">
-        <button disabled={loading} type="submit" className="flex-1 bg-[#8B6A2B] hover:bg-[#725724] text-white font-bold py-4 px-8 rounded-2xl transition-all shadow-xl shadow-[#8B6A2B]/20 active:scale-[0.98] text-lg disabled:opacity-70 flex items-center justify-center gap-2">
+      <div className="flex gap-4 border-t border-white/20/10 pt-10">
+        <button disabled={loading} type="submit" className="flex-1 bg-primary hover:bg-primary/90 text-white font-bold py-4 px-8 rounded-2xl transition-all shadow-xl shadow-primary/20 active:scale-[0.98] text-lg disabled:opacity-70 flex items-center justify-center gap-2">
            {loading ? 'กำลังส่งข้อมูล...' : 'ยืนยันการส่งเรื่องแจ้งย้ายออก'}
         </button>
       </div>

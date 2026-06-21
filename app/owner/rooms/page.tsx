@@ -65,7 +65,7 @@ export default function RoomsManagement() {
       const init = async () => {
         try {
           console.log('[Rooms] Initializing for:', session.user?.email);
-          const res = await fetch(`/api/owner/onboarding?email=${session.user.email}`);
+          const res = await fetch(`/api/owner/onboarding?email=${session.user?.email}`);
           const data = await res.json();
           console.log('[Rooms] Onboarding data:', data);
           
@@ -83,8 +83,6 @@ export default function RoomsManagement() {
         }
       };
       init();
-    } else if (authStatus === 'unauthenticated') {
-      router.push('/signin');
     } else if (authStatus !== 'loading') {
       setLoading(false);
     }
@@ -223,15 +221,15 @@ export default function RoomsManagement() {
   };
 
   return (
-    <div className="flex-1 flex flex-col h-screen bg-[#FDFBF7] overflow-hidden">
+    <div className="flex-1 flex flex-col h-screen bg-[#080F1E] overflow-hidden">
       {/* Header */}
-      <header className="h-24 bg-white/70 backdrop-blur-xl border-b border-[#E5DFD3] flex items-center justify-between px-10 shrink-0 z-10 shadow-sm transition-all duration-300">
+      <header className="h-24 bg-[#0F172A]/70 backdrop-blur-xl border-b border-white/20/10 flex items-center justify-between px-10 shrink-0 z-10 shadow-sm transition-all duration-300">
         <div className="flex flex-col">
           <div className="flex items-center gap-2">
-            <div className="w-1.5 h-6 bg-[#8B7355] rounded-full" />
-            <h1 className="text-2xl font-black text-[#3E342B] tracking-tight">จัดการห้องพัก</h1>
+            <div className="w-1.5 h-6 bg-primary rounded-full" />
+            <h1 className="text-2xl font-black text-white tracking-tight">จัดการห้องพัก</h1>
           </div>
-          <p className="text-[10px] font-bold text-[#A08D74] uppercase tracking-[0.2em] ml-3.5 mt-0.5 opacity-80">
+          <p className="text-[10px] font-bold text-white/50 uppercase tracking-[0.2em] ml-3.5 mt-0.5 opacity-80">
             SmartDom Asset & Unit Management
           </p>
         </div>
@@ -243,9 +241,9 @@ export default function RoomsManagement() {
               placeholder="ค้นหาเลขห้อง หรือ ประเภท..." 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-12 pr-6 py-3 bg-[#F3EFE9] border border-[#E5DFD3] rounded-2xl text-sm font-bold text-[#5A4D41] focus:ring-2 focus:ring-[#8B7355] focus:bg-white transition-all outline-none w-64 group-hover:w-80 duration-500"
+              className="pl-12 pr-6 py-3 bg-white/5 border border-white/20/10 rounded-2xl text-sm font-bold text-white/80 focus:ring-2 focus:ring-primary focus:bg-[#0F172A] transition-all outline-none w-64 group-hover:w-80 duration-500"
             />
-            <svg className="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-[#A08D74] opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg className="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-white/50 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
           </div>
@@ -255,11 +253,11 @@ export default function RoomsManagement() {
             onClick={() => { setEditingRoom(null); setFormData({ room_number: '', room_type: 'Standard', price: 4500, floor: 1, status: 'Available', images: [] }); setIsModalOpen(true); }}
             className={`px-8 py-3.5 rounded-2xl font-black text-sm shadow-xl flex items-center gap-3 transition-all duration-300 group ${
               !ownerDormId 
-              ? 'bg-[#E5DFD3] text-[#A08D74] cursor-not-allowed opacity-50' 
+              ? 'bg-white/10 text-white/50 cursor-not-allowed opacity-50' 
               : 'bg-[#3E342B] text-white shadow-[#3E342B]/20 hover:-translate-y-1 active:scale-95'
             }`}
           >
-            <div className="p-1 bg-white/20 rounded-lg group-hover:rotate-90 transition-transform duration-500">
+            <div className="p-1 bg-[#0F172A]/20 rounded-lg group-hover:rotate-90 transition-transform duration-500">
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" /></svg>
             </div>
             {ownerDormId ? 'เพิ่มห้องพัก' : 'กำลังเตรียมข้อมูล...'}
@@ -270,18 +268,18 @@ export default function RoomsManagement() {
       {/* Hero Stats */}
       <div className="px-10 py-8 grid grid-cols-4 gap-6 shrink-0 bg-gradient-to-b from-white/40 to-transparent">
         {[
-          { label: 'ยูนิตทั้งหมด', val: stats.total, color: 'bg-[#8B7355]', icon: '🏢' },
+          { label: 'ยูนิตทั้งหมด', val: stats.total, color: 'bg-primary', icon: '🏢' },
           { label: 'ห้องว่าง', val: stats.available, color: 'bg-emerald-500', icon: '✨' },
           { label: 'มีผู้เช่าแล้ว', val: stats.occupied, color: 'bg-blue-500', icon: '🔑' },
           { label: 'รอตรวจสภาพ', val: stats.maintenance, color: 'bg-amber-500', icon: '🛠️' },
         ].map((s, i) => (
-          <div key={i} className="bg-white p-5 rounded-3xl border border-[#E5DFD3] shadow-sm flex items-center gap-5 hover:border-[#8B7355] transition-colors group">
+          <div key={i} className="bg-[#0F172A] p-5 rounded-3xl border border-white/20/10 shadow-sm flex items-center gap-5 hover:border-primary transition-colors group">
             <div className={`w-14 h-14 ${s.color} rounded-2xl flex items-center justify-center text-3xl shadow-lg shadow-black/5 group-hover:scale-110 transition-transform duration-500`}>
               {s.icon}
             </div>
             <div>
-              <p className="text-[10px] font-bold text-[#A08D74] uppercase tracking-widest">{s.label}</p>
-              <h3 className="text-2xl font-black text-[#3E342B]">{s.val}</h3>
+              <p className="text-[10px] font-bold text-white/50 uppercase tracking-widest">{s.label}</p>
+              <h3 className="text-2xl font-black text-white">{s.val}</h3>
             </div>
           </div>
         ))}
@@ -289,24 +287,24 @@ export default function RoomsManagement() {
 
       {/* Filter Section */}
       <div className="px-10 mb-2 flex items-center gap-6 shrink-0">
-        <div className="flex bg-[#F3EFE9] p-1 rounded-2xl border border-[#E5DFD3]">
+        <div className="flex bg-white/5 p-1 rounded-2xl border border-white/20/10">
           {['All', 'Available', 'Occupied', 'Maintenance'].map((s) => (
             <button
               key={s}
               onClick={() => setFilterStatus(s)}
               className={`px-6 py-2 rounded-xl text-xs font-black transition-all ${
                 filterStatus === s 
-                ? 'bg-white text-[#3E342B] shadow-sm ring-1 ring-[#DCD3C6]' 
-                : 'text-[#A08D74] hover:text-[#5A4D41]'
+                ? 'bg-[#0F172A] text-white shadow-sm ring-1 ring-[#DCD3C6]' 
+                : 'text-white/50 hover:text-white/80'
               }`}
             >
               {s === 'All' ? 'ทั้งหมด' : s === 'Available' ? 'ว่าง' : s === 'Occupied' ? 'มีผู้เช่า' : 'ปิดซ่อม'}
             </button>
           ))}
         </div>
-        <div className="h-4 w-px bg-[#E5DFD3]" />
-        <p className="text-xs font-bold text-[#A08D74]">
-          แสดง <span className="text-[#3E342B]">{filteredRooms.length}</span> จาก <span className="text-[#3E342B]">{rooms.length}</span> ห้อง
+        <div className="h-4 w-px bg-white/10" />
+        <p className="text-xs font-bold text-white/50">
+          แสดง <span className="text-white">{filteredRooms.length}</span> จาก <span className="text-white">{rooms.length}</span> ห้อง
         </p>
       </div>
 
@@ -315,18 +313,18 @@ export default function RoomsManagement() {
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
             {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
-              <div key={i} className="bg-white h-[380px] rounded-[40px] border border-[#E5DFD3] animate-pulse flex flex-col p-6">
-                <div className="bg-[#F3EFE9] h-48 rounded-3xl mb-6" />
-                <div className="h-6 bg-[#F3EFE9] w-2/3 rounded-lg mb-4" />
-                <div className="h-4 bg-[#F3EFE9] w-1/2 rounded-lg" />
+              <div key={i} className="bg-[#0F172A] h-[380px] rounded-[40px] border border-white/20/10 animate-pulse flex flex-col p-6">
+                <div className="bg-white/5 h-48 rounded-3xl mb-6" />
+                <div className="h-6 bg-white/5 w-2/3 rounded-lg mb-4" />
+                <div className="h-4 bg-white/5 w-1/2 rounded-lg" />
               </div>
             ))}
           </div>
         ) : filteredRooms.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-center py-20">
-            <div className="w-24 h-24 bg-[#F3EFE9] rounded-full flex items-center justify-center text-4xl mb-6">🔍</div>
-            <h3 className="text-xl font-black text-[#3E342B] mb-2 text-balance">ไม่พบข้อมูลห้องพักที่คุณต้องการ</h3>
-            <p className="text-[#A08D74] text-sm font-medium">ลองเปลี่ยนเงื่อนไขการค้นหา หรือเพิ่มห้องพักใหม่ในระบบ</p>
+            <div className="w-24 h-24 bg-white/5 rounded-full flex items-center justify-center text-4xl mb-6">🔍</div>
+            <h3 className="text-xl font-black text-white mb-2 text-balance">ไม่พบข้อมูลห้องพักที่คุณต้องการ</h3>
+            <p className="text-white/50 text-sm font-medium">ลองเปลี่ยนเงื่อนไขการค้นหา หรือเพิ่มห้องพักใหม่ในระบบ</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 pb-12">
@@ -337,10 +335,10 @@ export default function RoomsManagement() {
               return (
               <div 
                 key={room.id} 
-                className="bg-white rounded-[40px] border border-[#E5DFD3] shadow-md shadow-[#DCD3C6]/10 overflow-hidden group hover:shadow-2xl hover:border-[#8B7355] hover:-translate-y-2 transition-all duration-500 flex flex-col"
+                className="bg-[#0F172A] rounded-[40px] border border-white/20/10 shadow-md shadow-[#DCD3C6]/10 overflow-hidden group hover:shadow-2xl hover:border-primary hover:-translate-y-2 transition-all duration-500 flex flex-col"
               >
                 {/* Image Placeholder / Real Image */}
-                <div className="relative h-56 w-full bg-[#FAF8F5] overflow-hidden">
+                <div className="relative h-56 w-full bg-[#0F172A] overflow-hidden">
                    {firstImage ? (
                      <>
                        <Image src={firstImage} alt={room.room_number} fill unoptimized className="object-cover group-hover:scale-110 transition-transform duration-700" />
@@ -352,10 +350,10 @@ export default function RoomsManagement() {
                      </>
                    ) : (
                      <div className="absolute inset-0 flex flex-col items-center justify-center opacity-30 group-hover:opacity-100 transition-opacity duration-500">
-                        <svg className="w-16 h-16 text-[#8B7355] mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg className="w-16 h-16 text-muted-foreground mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                         </svg>
-                        <span className="text-[10px] font-black uppercase tracking-widest text-[#8B7355]">SMARTDOM UNIT</span>
+                        <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">SMARTDOM UNIT</span>
                      </div>
                    )}
                    <div className="absolute top-4 left-4 bg-[#3E342B] text-white px-4 py-2 rounded-2xl text-sm font-black shadow-lg z-10">
@@ -371,18 +369,18 @@ export default function RoomsManagement() {
 
                 <div className="p-8 flex flex-col flex-1">
                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-[10px] font-black text-[#A08D74] uppercase tracking-[0.2em]">{room.room_type} (Type)</span>
-                      <span className="text-[10px] font-black text-[#A08D74] uppercase tracking-[0.2em]">ชั้น {room.floor} (Floor)</span>
+                      <span className="text-[10px] font-black text-white/50 uppercase tracking-[0.2em]">{room.room_type} (Type)</span>
+                      <span className="text-[10px] font-black text-white/50 uppercase tracking-[0.2em]">ชั้น {room.floor} (Floor)</span>
                    </div>
                    <div className="flex items-end gap-1 mb-8">
-                      <span className="text-3xl font-black text-[#3E342B]">฿{Number(room.price).toLocaleString()}</span>
-                      <span className="text-xs font-bold text-[#A08D74] mb-1.5 whitespace-nowrap">/ เดือน</span>
+                      <span className="text-3xl font-black text-white">฿{Number(room.price).toLocaleString()}</span>
+                      <span className="text-xs font-bold text-white/50 mb-1.5 whitespace-nowrap">/ เดือน</span>
                    </div>
 
                    <div className="mt-auto flex items-center gap-3 pt-6 border-t border-[#F3EFE9]">
                       <button 
                         onClick={() => handleEdit(room)}
-                        className="flex-1 bg-[#FAF8F5] text-[#8B7355] py-3.5 rounded-2xl text-xs font-bold border border-[#E5DFD3] hover:bg-[#8B7355] hover:text-white hover:border-[#8B7355] hover:shadow-lg hover:shadow-[#8B7355]/20 transition-all active:scale-95"
+                        className="flex-1 bg-[#0F172A] text-muted-foreground py-3.5 rounded-2xl text-xs font-bold border border-white/20/10 hover:bg-primary/90 hover:text-white hover:border-primary hover:shadow-lg hover:shadow-primary/20 transition-all active:scale-95"
                       >
                          แก้ไขข้อมูล
                       </button>
@@ -403,9 +401,9 @@ export default function RoomsManagement() {
       {/* CRUD Modal - Premium Redesign */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-[#3E342B]/60 backdrop-blur-md z-50 flex items-center justify-center p-6 animate-in fade-in duration-300">
-          <div className="bg-white rounded-[48px] w-full max-w-2xl overflow-hidden shadow-2xl animate-in zoom-in slide-in-from-bottom duration-500 border border-[#8B7355]/20 max-h-[90vh] flex flex-col">
+          <div className="bg-[#0F172A] rounded-[48px] w-full max-w-2xl overflow-hidden shadow-2xl animate-in zoom-in slide-in-from-bottom duration-500 border border-primary/20 max-h-[90vh] flex flex-col">
              <div className="bg-[#3E342B] px-10 py-10 text-white relative overflow-hidden shrink-0">
-                <div className="absolute -right-20 -top-20 w-64 h-64 bg-[#8B7355] rounded-full blur-[100px] opacity-20" />
+                <div className="absolute -right-20 -top-20 w-64 h-64 bg-primary rounded-full blur-[100px] opacity-20" />
                 <div className="relative z-10 text-center">
                   <h2 className="text-3xl font-black mb-1 tracking-tight">{editingRoom ? 'แก้ไขข้อมูลยูนิต' : 'เพิ่มยูนิตใหม่'}</h2>
                   <p className="text-white/40 text-[9px] font-black uppercase tracking-[0.3em] font-display font-medium">SMARTDOM PREMIUM REAL ESTATE</p>
@@ -416,22 +414,22 @@ export default function RoomsManagement() {
                <form onSubmit={handleSubmit} className="space-y-8">
                   <div className="grid grid-cols-2 gap-8">
                     <div className="space-y-2">
-                        <label className="block text-[10px] font-black text-[#A08D74] uppercase tracking-widest ml-1">หมายเลขห้อง</label>
+                        <label className="block text-[10px] font-black text-white/50 uppercase tracking-widest ml-1">หมายเลขห้อง</label>
                         <input 
                           type="text" 
                           required
                           value={formData.room_number}
                           onChange={(e) => setFormData({...formData, room_number: e.target.value})}
-                          className="w-full px-6 py-4 bg-[#F3EFE9] border border-[#E5DFD3] rounded-[24px] focus:ring-4 focus:ring-[#8B7355]/10 focus:border-[#8B7355] focus:bg-white outline-none font-black text-[#3E342B] text-lg transition-all"
+                          className="w-full px-6 py-4 bg-white/5 border border-white/20/10 rounded-[24px] focus:ring-4 focus:ring-primary/10 focus:border-primary focus:bg-[#0F172A] outline-none font-black text-white text-lg transition-all"
                           placeholder="101"
                         />
                     </div>
                     <div className="space-y-2">
-                        <label className="block text-[10px] font-black text-[#A08D74] uppercase tracking-widest ml-1">ประเภท (Type)</label>
+                        <label className="block text-[10px] font-black text-white/50 uppercase tracking-widest ml-1">ประเภท (Type)</label>
                         <select 
                             value={formData.room_type}
                             onChange={(e) => setFormData({...formData, room_type: e.target.value})}
-                            className="w-full px-6 py-4 bg-[#F3EFE9] border border-[#E5DFD3] rounded-[24px] font-black outline-none text-[#3E342B] transition-all focus:bg-white cursor-pointer"
+                            className="w-full px-6 py-4 bg-white/5 border border-white/20/10 rounded-[24px] font-black outline-none text-white transition-all focus:bg-[#0F172A] cursor-pointer"
                         >
                             <option>Standard</option>
                             <option>Deluxe</option>
@@ -443,20 +441,20 @@ export default function RoomsManagement() {
 
                   <div className="grid grid-cols-2 gap-8">
                     <div className="space-y-2">
-                        <label className="block text-[10px] font-black text-[#A08D74] uppercase tracking-widest ml-1">ชั้น (Floor)</label>
+                        <label className="block text-[10px] font-black text-white/50 uppercase tracking-widest ml-1">ชั้น (Floor)</label>
                         <input 
                             type="number" 
                             value={formData.floor}
                             onChange={(e) => setFormData({...formData, floor: parseInt(e.target.value)})}
-                            className="w-full px-6 py-4 bg-[#F3EFE9] border border-[#E5DFD3] rounded-[24px] font-black outline-none text-[#3E342B] focus:bg-white transition-all"
+                            className="w-full px-6 py-4 bg-white/5 border border-white/20/10 rounded-[24px] font-black outline-none text-white focus:bg-[#0F172A] transition-all"
                         />
                     </div>
                     <div className="space-y-2">
-                        <label className="block text-[10px] font-black text-[#A08D74] uppercase tracking-widest ml-1">สถานะ (Status)</label>
+                        <label className="block text-[10px] font-black text-white/50 uppercase tracking-widest ml-1">สถานะ (Status)</label>
                         <select 
                             value={formData.status}
                             onChange={(e) => setFormData({...formData, status: e.target.value})}
-                            className="w-full px-6 py-4 bg-[#F3EFE9] border border-[#E5DFD3] rounded-[24px] font-black outline-none text-[#3E342B] focus:bg-white cursor-pointer"
+                            className="w-full px-6 py-4 bg-white/5 border border-white/20/10 rounded-[24px] font-black outline-none text-white focus:bg-[#0F172A] cursor-pointer"
                         >
                             <option value="Available">ว่าง (Available)</option>
                             <option value="Occupied">มีผู้เช่า (Occupied)</option>
@@ -466,25 +464,25 @@ export default function RoomsManagement() {
                   </div>
 
                   <div className="space-y-2">
-                    <label className="block text-[10px] font-black text-[#A08D74] uppercase tracking-widest ml-1 text-center">ราคาเช่ารายเดือน (Rental Price)</label>
+                    <label className="block text-[10px] font-black text-white/50 uppercase tracking-widest ml-1 text-center">ราคาเช่ารายเดือน (Rental Price)</label>
                     <div className="relative group max-w-xs mx-auto">
-                        <span className="absolute left-6 top-1/2 -translate-y-1/2 text-2xl font-black text-[#8B7355] group-focus-within:scale-110 transition-transform">฿</span>
+                        <span className="absolute left-6 top-1/2 -translate-y-1/2 text-2xl font-black text-muted-foreground group-focus-within:scale-110 transition-transform">฿</span>
                         <input 
                           type="number" 
                           required
                           value={formData.price}
                           onChange={(e) => setFormData({...formData, price: parseFloat(e.target.value)})}
-                          className="w-full pl-14 pr-6 py-5 bg-[#F3EFE9] border border-[#8B7355]/30 rounded-[30px] font-black outline-none text-[#3E342B] text-3xl text-center focus:ring-8 focus:ring-[#8B7355]/5 focus:bg-white transition-all"
+                          className="w-full pl-14 pr-6 py-5 bg-white/5 border border-primary/30 rounded-[30px] font-black outline-none text-white text-3xl text-center focus:ring-8 focus:ring-primary/5 focus:bg-[#0F172A] transition-all"
                         />
                     </div>
                   </div>
 
                   <div className="space-y-4">
-                    <label className="block text-[10px] font-black text-[#A08D74] uppercase tracking-widest ml-1">รูปภาพห้องพัก (Gallery - หลายรูป)</label>
+                    <label className="block text-[10px] font-black text-white/50 uppercase tracking-widest ml-1">รูปภาพห้องพัก (Gallery - หลายรูป)</label>
                     
                     <div className="grid grid-cols-3 gap-4">
                         {formData.images.map((img, idx) => (
-                          <div key={idx} className="relative aspect-square rounded-2xl overflow-hidden border-2 border-[#E5DFD3] group/img shadow-sm hover:border-[#8B7355] transition-all">
+                          <div key={idx} className="relative aspect-square rounded-2xl overflow-hidden border-2 border-white/20/10 group/img shadow-sm hover:border-primary transition-all">
                               <Image src={img} alt={`Preview ${idx}`} fill unoptimized className="object-cover" />
                               <button 
                                 type="button"
@@ -496,13 +494,13 @@ export default function RoomsManagement() {
                           </div>
                         ))}
                         
-                        <label className="aspect-square rounded-2xl border-2 border-dashed border-[#E5DFD3] bg-[#FAF8F5] flex flex-col items-center justify-center cursor-pointer hover:border-[#8B7355] hover:bg-white transition-all group">
-                            <div className="w-10 h-10 bg-white rounded-xl shadow-sm mb-2 flex items-center justify-center group-hover:scale-110 transition-transform">
-                              <svg className="w-6 h-6 text-[#8B7355]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <label className="aspect-square rounded-2xl border-2 border-dashed border-white/20/10 bg-[#0F172A] flex flex-col items-center justify-center cursor-pointer hover:border-primary hover:bg-[#0F172A] transition-all group">
+                            <div className="w-10 h-10 bg-[#0F172A] rounded-xl shadow-sm mb-2 flex items-center justify-center group-hover:scale-110 transition-transform">
+                              <svg className="w-6 h-6 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
                               </svg>
                             </div>
-                            <span className="text-[9px] font-black text-[#8B7355] uppercase tracking-widest">เพิ่มรูป</span>
+                            <span className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">เพิ่มรูป</span>
                             <input 
                                 type="file" 
                                 accept="image/*"
@@ -518,7 +516,7 @@ export default function RoomsManagement() {
                     <button 
                       type="button" 
                       onClick={() => setIsModalOpen(false)} 
-                      className="flex-1 py-5 text-[#A08D74] font-black hover:bg-[#FAF8F5] rounded-[28px] transition-all"
+                      className="flex-1 py-5 text-white/50 font-black hover:bg-[#0F172A] rounded-[28px] transition-all"
                     >
                       ยกเลิก
                     </button>

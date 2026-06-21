@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { neon } from '@neondatabase/serverless';
 
 export async function GET() {
-  const sql = neon(process.env.DATABASE_URL || '');
+  const sql = neon(process.env.DATABASE_URL || 'postgres://postgres:password@localhost/postgres');
   
   try {
     const packages = await sql`SELECT * FROM dormitory_packages ORDER BY price ASC`;

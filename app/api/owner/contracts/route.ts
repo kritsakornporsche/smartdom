@@ -10,7 +10,7 @@ export async function GET(req: Request) {
   }
 
   try {
-    const sql = neon(process.env.DATABASE_URL || '');
+    const sql = neon(process.env.DATABASE_URL || 'postgres://postgres:password@localhost/postgres');
     
     // Fetch all contracts for this dormitory
     const contracts = await sql`
@@ -50,7 +50,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: false, message: 'Missing required fields' }, { status: 400 });
     }
 
-    const sql = neon(process.env.DATABASE_URL || '');
+    const sql = neon(process.env.DATABASE_URL || 'postgres://postgres:password@localhost/postgres');
     
     // 1. Create the contract (status 'Pending Signature' by default if we want automation)
     // Actually table default was 'Active', but for automation we want them to sign.

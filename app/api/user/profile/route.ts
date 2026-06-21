@@ -10,7 +10,7 @@ export async function GET() {
       return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
     }
 
-    const sql = neon(process.env.DATABASE_URL || '');
+    const sql = neon(process.env.DATABASE_URL || 'postgres://postgres:password@localhost/postgres');
     const userResult = await sql`
       SELECT id, email, name, role, created_at, image_url, phone, bio
       FROM users
@@ -36,7 +36,7 @@ export async function PATCH(request: Request) {
     }
 
     const { name, phone, bio, image_url, password } = await request.json();
-    const sql = neon(process.env.DATABASE_URL || '');
+    const sql = neon(process.env.DATABASE_URL || 'postgres://postgres:password@localhost/postgres');
 
     // If password is being updated
     if (password) {

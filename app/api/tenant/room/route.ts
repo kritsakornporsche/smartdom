@@ -9,7 +9,7 @@ export async function GET() {
   }
 
   try {
-    const sql = neon(process.env.DATABASE_URL || '');
+    const sql = neon(process.env.DATABASE_URL || 'postgres://postgres:password@localhost/postgres');
     
     // Join tenants with rooms and contracts to get a full picture
     const result = await sql`

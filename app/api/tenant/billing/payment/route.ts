@@ -14,7 +14,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: false, message: 'Missing billId or slipData' }, { status: 400 });
     }
 
-    const sql = neon(process.env.DATABASE_URL || '');
+    const sql = neon(process.env.DATABASE_URL || 'postgres://postgres:password@localhost/postgres');
     
     // Check if bill belongs to current user
     const tenantRes = await sql`SELECT id FROM tenants WHERE email = ${session.user.email}`;

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { neon } from '@neondatabase/serverless';
 import { auth } from '@/auth';
 
-const sql = neon(process.env.DATABASE_URL || '');
+const sql = neon(process.env.DATABASE_URL || 'postgres://postgres:password@localhost/postgres');
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);

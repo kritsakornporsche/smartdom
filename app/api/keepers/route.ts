@@ -10,7 +10,7 @@ export async function GET(request: Request) {
       return NextResponse.json({ success: false, message: 'Missing dormId' }, { status: 400 });
     }
 
-    const sql = neon(process.env.DATABASE_URL || '');
+    const sql = neon(process.env.DATABASE_URL || 'postgres://postgres:password@localhost/postgres');
     const keepers = await sql`
       SELECT * FROM keepers 
       WHERE dorm_id = ${parseInt(dormId)}
@@ -32,7 +32,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: false, message: 'Missing required fields' }, { status: 400 });
     }
 
-    const sql = neon(process.env.DATABASE_URL || '');
+    const sql = neon(process.env.DATABASE_URL || 'postgres://postgres:password@localhost/postgres');
     
     // Helper to hash password (SHA-256 to match signup logic)
     const hashPassword = async (pass: string) => {
@@ -75,7 +75,7 @@ export async function PUT(request: Request) {
       return NextResponse.json({ success: false, message: 'Missing id' }, { status: 400 });
     }
 
-    const sql = neon(process.env.DATABASE_URL || '');
+    const sql = neon(process.env.DATABASE_URL || 'postgres://postgres:password@localhost/postgres');
     const result = await sql`
       UPDATE keepers 
       SET name = ${name}, email = ${email}, phone = ${phone}, position = ${position}
@@ -98,7 +98,7 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ success: false, message: 'Missing id' }, { status: 400 });
     }
 
-    const sql = neon(process.env.DATABASE_URL || '');
+    const sql = neon(process.env.DATABASE_URL || 'postgres://postgres:password@localhost/postgres');
     await sql`DELETE FROM keepers WHERE id = ${parseInt(id)}`;
 
     return NextResponse.json({ success: true, message: 'Keeper deleted' });

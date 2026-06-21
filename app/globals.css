@@ -1,39 +1,38 @@
 @import "tailwindcss";
 
 :root {
-  /* HEX Earth Tone Palette - High Compatibility for libraries like html2canvas */
-  
-  --background: #FAF9F6; /* Minimal warm bone */
-  --foreground: #3E342B; /* Deep charcoal brown */
+  /* Slate & Indigo Light Theme */
+  --background: #F8FAFC; /* Slate 50 */
+  --foreground: #0F172A; /* Slate 900 */
   
   --card: #FFFFFF;
-  --card-foreground: #3E342B;
+  --card-foreground: #0F172A;
   
   --popover: #FFFFFF;
-  --popover-foreground: #3E342B;
+  --popover-foreground: #0F172A;
   
-  --primary: #8B6A2B;    /* Muted earth brown */
-  --primary-foreground: #FAF9F6;
+  --primary: #4F46E5; /* Indigo 600 */
+  --primary-foreground: #FFFFFF;
   
-  --secondary: #F5F3ED;  /* Soft pastel beige */
-  --secondary-foreground: #5A4D41;
+  --secondary: #F1F5F9; /* Slate 100 */
+  --secondary-foreground: #475569; /* Slate 600 */
   
-  --muted: #F2F1ED;      /* Very light grey-tan */
-  --muted-foreground: #8B7355;
+  --muted: #F8FAFC;
+  --muted-foreground: #64748B; /* Slate 500 */
   
-  --accent: #EFE9DB;     /* Soft pastel sand/gold */
-  --accent-foreground: #4D453E;
+  --accent: #EEF2F6;
+  --accent-foreground: #312E81;
   
-  --destructive: #A04545; /* Muted terracotta red */
-  --destructive-foreground: #FAF9F6;
+  --destructive: #EF4444;
+  --destructive-foreground: #FFFFFF;
   
-  --border: #E5DFD3;     /* Subtle line contrast */
-  --input: #E5DFD3;
-  --ring: #8B6A2B;
+  --border: #E2E8F0; /* Slate 200 */
+  --input: #E2E8F0;
+  --ring: #4F46E5;
   
   /* Selection colors */
-  --selection-bg: #EAE3D5;
-  --selection-text: #221F1C;
+  --selection-bg: #C7D2FE;
+  --selection-text: #1E1B4B;
 
   /* Typography */
   --font-sans: var(--font-noto-thai), var(--font-inter), "Segoe UI", Roboto, sans-serif;
@@ -45,6 +44,40 @@
   --radius-lg: 1.25rem;
   --radius-xl: 2rem;
   --radius-2xl: 3rem;
+}
+
+.dark {
+  /* Dark Slate Navy Theme */
+  --background: #0B0F19; 
+  --foreground: #F8FAFC;
+  
+  --card: #151B2C; 
+  --card-foreground: #F8FAFC;
+  
+  --popover: #151B2C;
+  --popover-foreground: #F8FAFC;
+  
+  --primary: #6366F1; /* Indigo 500 */
+  --primary-foreground: #FFFFFF;
+  
+  --secondary: #1E293B; /* Slate 800 */
+  --secondary-foreground: #94A3B8; /* Slate 400 */
+  
+  --muted: #0F172A;
+  --muted-foreground: #94A3B8;
+  
+  --accent: #1E1B4B;
+  --accent-foreground: #E0E7FF;
+  
+  --destructive: #F87171;
+  --destructive-foreground: #FFFFFF;
+  
+  --border: #1E293B; /* Slate 800 */
+  --input: #1E293B;
+  --ring: #6366F1;
+  
+  --selection-bg: #312E81;
+  --selection-text: #EEF2F6;
 }
 
 @theme {
@@ -111,7 +144,6 @@
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    /* Readability focus: slightly tighter letter spacing for modern look, generous line height */
     line-height: 1.7;
     letter-spacing: -0.0125em;
     font-size: 16px;
@@ -146,15 +178,15 @@
   }
 
   .glass-card {
-    @apply bg-white/40 backdrop-blur-xl border border-white/20 shadow-xl;
+    @apply bg-white/40 backdrop-blur-xl border border-white/20 shadow-xl dark:bg-black/40 dark:border-white/10;
   }
 
   .premium-shadow {
-    box-shadow: 0 20px 50px -12px rgba(62, 52, 43, 0.1);
+    box-shadow: 0 20px 50px -12px rgba(15, 23, 42, 0.08);
   }
 
   .inner-shadow {
-    box-shadow: inset 0 2px 4px 0 rgba(62, 52, 43, 0.05);
+    box-shadow: inset 0 2px 4px 0 rgba(15, 23, 42, 0.05);
   }
 
   .reveal-on-scroll {

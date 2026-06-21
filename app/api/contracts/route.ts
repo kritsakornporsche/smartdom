@@ -10,7 +10,7 @@ export async function POST(req: NextRequest) {
     }
 
     const { roomId, signature, startDate, endDate, depositAmount, monthlyRent, tenantName } = await req.json();
-    const sql = neon(process.env.DATABASE_URL || '');
+    const sql = neon(process.env.DATABASE_URL || 'postgres://postgres:password@localhost/postgres');
 
     // 1. Resolve tenant identity (Create if missing)
     const userEmail = session.user.email;

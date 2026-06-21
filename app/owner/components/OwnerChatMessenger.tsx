@@ -93,13 +93,13 @@ export default function OwnerChatMessenger() {
     <div className="fixed bottom-8 right-8 z-[60] flex flex-col items-end gap-4">
       {/* Messenger Window */}
       {isOpen && (
-        <div className="w-[380px] h-[550px] bg-white rounded-[2.5rem] shadow-2xl border border-black/5 flex flex-col overflow-hidden animate-in slide-in-from-bottom-5 duration-300">
+        <div className="w-[380px] h-[550px] bg-[#0F172A] rounded-[2.5rem] shadow-2xl border border-black/5 flex flex-col overflow-hidden animate-in slide-in-from-bottom-5 duration-300">
           
           {/* Header */}
           <div className="p-6 bg-[#3E342B] text-white flex items-center justify-between">
             {activeConv ? (
               <div className="flex items-center gap-3">
-                <button onClick={() => setActiveConv(null)} className="p-1 hover:bg-white/10 rounded-full transition-colors">
+                <button onClick={() => setActiveConv(null)} className="p-1 hover:bg-[#0F172A]/10 rounded-full transition-colors">
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" /></svg>
                 </button>
                 <div>
@@ -116,13 +116,13 @@ export default function OwnerChatMessenger() {
                 </div>
               </div>
             )}
-            <button onClick={() => setIsOpen(false)} className="p-1 hover:bg-white/10 rounded-full transition-colors">
+            <button onClick={() => setIsOpen(false)} className="p-1 hover:bg-[#0F172A]/10 rounded-full transition-colors">
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" /></svg>
             </button>
           </div>
 
           {/* Body */}
-          <div className="flex-1 overflow-hidden flex flex-col bg-[#FDFBF7]">
+          <div className="flex-1 overflow-hidden flex flex-col bg-[#080F1E]">
             {!activeConv ? (
               /* Conversation List */
               <div className="flex-1 overflow-y-auto p-4 space-y-1">
@@ -135,28 +135,28 @@ export default function OwnerChatMessenger() {
                     <button
                       key={conv.id}
                       onClick={() => setActiveConv(conv)}
-                      className="w-full p-4 flex items-center gap-4 rounded-3xl hover:bg-[#F3EFE9] transition-all group"
+                      className="w-full p-4 flex items-center gap-4 rounded-3xl hover:bg-white/5 transition-all group"
                     >
-                      <div className="w-12 h-12 rounded-2xl bg-white border border-[#E5DFD3] flex items-center justify-center font-bold text-[#8B7355] text-lg shadow-sm group-hover:scale-110 transition-transform">
+                      <div className="w-12 h-12 rounded-2xl bg-[#0F172A] border border-white/20/10 flex items-center justify-center font-bold text-muted-foreground text-lg shadow-sm group-hover:scale-110 transition-transform">
                         {conv.guest_name.charAt(0)}
                       </div>
                       <div className="flex-1 text-left">
                         <div className="flex justify-between items-start">
                           <div className="flex flex-col">
-                            <h4 className="text-sm font-bold text-[#3E342B]">{conv.guest_name}</h4>
+                            <h4 className="text-sm font-bold text-white">{conv.guest_name}</h4>
                             <span className={`text-[9px] font-black uppercase px-2 py-0.5 rounded-full w-fit mt-1 ${
                               conv.guest_role === 'tenant' 
-                                ? 'bg-[#8B7355] text-white' 
-                                : 'bg-[#E5DFD3] text-[#A08D74]'
+                                ? 'bg-primary text-white' 
+                                : 'bg-white/10 text-white/50'
                             }`}>
                               {conv.guest_role === 'tenant' ? 'ลูกหอ' : 'แขกที่สนใจ'}
                             </span>
                           </div>
-                          <span className="text-[9px] text-[#A08D74] font-bold">
+                          <span className="text-[9px] text-white/50 font-bold">
                             {new Date(conv.updated_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                           </span>
                         </div>
-                        <p className="text-xs text-[#A08D74] truncate max-w-[150px] mt-1">{conv.last_message || 'รอการตอบกลับ...'}</p>
+                        <p className="text-xs text-white/50 truncate max-w-[150px] mt-1">{conv.last_message || 'รอการตอบกลับ...'}</p>
                       </div>
                     </button>
                   ))
@@ -173,7 +173,7 @@ export default function OwnerChatMessenger() {
                         <div className={`max-w-[75%] p-4 rounded-2xl text-xs font-bold leading-relaxed shadow-sm ${
                           isMe 
                             ? 'bg-[#3E342B] text-white rounded-tr-none' 
-                            : 'bg-white border border-[#E5DFD3] text-[#3E342B] rounded-tl-none'
+                            : 'bg-[#0F172A] border border-white/20/10 text-white rounded-tl-none'
                         }`}>
                           {msg.message}
                         </div>
@@ -183,14 +183,14 @@ export default function OwnerChatMessenger() {
                 </div>
 
                 {/* Footer Input */}
-                <div className="p-4 bg-white border-t border-[#E5DFD3]">
+                <div className="p-4 bg-[#0F172A] border-t border-white/20/10">
                   <form onSubmit={handleSendMessage} className="relative flex items-center gap-2">
                     <input
                       type="text"
                       placeholder="เขียนข้อความของคุณ..."
                       value={newMessage}
                       onChange={(e) => setNewMessage(e.target.value)}
-                      className="flex-1 py-3 px-6 bg-[#FAF8F5] rounded-full border border-[#DCD3C6] focus:border-primary focus:bg-white outline-none text-xs font-bold transition-all shadow-inner"
+                      className="flex-1 py-3 px-6 bg-[#0F172A] rounded-full border border-border focus:border-primary focus:bg-[#0F172A] outline-none text-xs font-bold transition-all shadow-inner"
                     />
                     <button
                       type="submit"

@@ -59,6 +59,7 @@ export default function SignupContent() {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [pdpaConsent, setPdpaConsent] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -112,6 +113,11 @@ export default function SignupContent() {
       return;
     }
 
+    if (!pdpaConsent) {
+      setMessage('กรุณากดยินยอมเปิดเผยข้อมูลและยอมรับข้อตกลงการใช้งาน (PDPA)');
+      return;
+    }
+
     setFormState('loading');
 
     try {
@@ -161,7 +167,7 @@ export default function SignupContent() {
   };
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center bg-[#FAF8F5] px-6 py-20 overflow-hidden">
+    <div className="relative flex min-h-screen items-center justify-center bg-background px-6 py-20 overflow-hidden">
       {/* Decorative blobs */}
       <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/4 w-[600px] h-[600px] bg-primary/5 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute bottom-0 left-0 translate-y-1/2 -translate-x-1/4 w-[500px] h-[500px] bg-accent/10 rounded-full blur-3xl pointer-events-none" />
@@ -339,6 +345,22 @@ export default function SignupContent() {
                       className="w-full rounded-2xl border border-border bg-background px-6 py-4 text-sm font-bold text-foreground focus:bg-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
                     />
                   </div>
+                </div>
+                {/* PDPA Consent Checkbox */}
+                <div className="flex items-start gap-3 p-4 bg-muted/40 rounded-2xl border border-border">
+                  <input
+                    type="checkbox"
+                    id="pdpa-consent"
+                    checked={pdpaConsent}
+                    onChange={(e) => setPdpaConsent(e.target.checked)}
+                    className="mt-1 w-4 h-4 rounded text-primary border-border focus:ring-primary focus:ring-1 cursor-pointer bg-background"
+                  />
+                  <label htmlFor="pdpa-consent" className="text-xs text-muted-foreground font-semibold leading-relaxed cursor-pointer select-none">
+                    ฉันยินยอมให้รวบรวม ใช้ และเปิดเผยข้อมูลส่วนบุคคลของฉันเพื่อวัตถุประสงค์ในการให้บริการ ตาม{' '}
+                    <span className="text-primary hover:underline font-bold">นโยบายความเป็นส่วนตัว (PDPA)</span>{' '}
+                    และยอมรับ{' '}
+                    <span className="text-primary hover:underline font-bold">ข้อตกลงและเงื่อนไขการใช้บริการ</span>
+                  </label>
                 </div>
 
                 {message && <p className="text-center text-xs text-destructive font-black">{message}</p>}

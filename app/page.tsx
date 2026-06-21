@@ -1,270 +1,258 @@
-import Image from "next/image";
-import Link from "next/link";
-import { Metadata } from "next";
-import Navbar from "./components/Navbar";
-import { cn } from "@/lib/utils";
+'use client';
 
-export const metadata: Metadata = {
-  title: "SmartDom | Experience Minimal & Sustainable Living",
-  description: "Redefining dormitory management with a focus on aesthetics, simplicity, and ease of use. Join the SmartDom ecosystem today.",
-};
+import { useState, useEffect } from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
+import Navbar from './components/Navbar';
+
+interface Dormitory {
+  id: number;
+  name: string;
+  address: string;
+  phone: string;
+  cover_image: string | null;
+  description: string | null;
+  pet_friendly: boolean;
+  has_parking: boolean;
+  has_air_con: boolean;
+  has_wifi: boolean;
+  has_lan: boolean;
+  min_price: number;
+  available_rooms_count: number;
+  available_rooms_summary: string | null;
+}
 
 export default function Home() {
+  const [dorms, setDorms] = useState<Dormitory[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // Filters State
+  const [search, setSearch] = useState('');
+  const [maxPrice, setMaxPrice] = useState<string>('');
+  const [petFriendly, setPetFriendly] = useState(false);
+  const [hasParking, setHasParking] = useState(false);
+  const [hasAirCon, setHasAirCon] = useState(false);
+
+  async function fetchDorms() {
+    setLoading(true);
+    try {
+      const params = new URLSearchParams();
+      if (search) params.append('search', search);
+      if (maxPrice) params.append('maxPrice', maxPrice);
+      if (petFriendly) params.append('petFriendly', 'true');
+      if (hasParking) params.append('hasParking', 'true');
+      if (hasAirCon) params.append('hasAirCon', 'true');
+
+      const res = await fetch(`/api/dorms?${params.toString()}`);
+      const data = await res.json();
+      if (data.success) {
+        setDorms(data.data);
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      fetchDorms();
+    }, 300); // Debounce search
+    return () => clearTimeout(timer);
+  }, [search, maxPrice, petFriendly, hasParking, hasAirCon]);
+
   return (
-    <div className="flex flex-col min-h-screen bg-background text-foreground scroll-smooth selection:bg-primary selection:text-primary-foreground">
+    <div className="min-h-screen bg-background text-foreground transition-colors duration-200">
       <Navbar />
-
+      
       {/* Hero Section */}
-      <section className="relative pt-48 pb-64 lg:pt-64 lg:pb-80">
-        {/* Decorative Background Elements - Wrapped to prevent overflow while allowing content to be visible */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/4 w-[800px] h-[800px] bg-secondary/30 rounded-full blur-[120px] opacity-40 animate-float" />
-          <div className="absolute bottom-0 left-0 translate-y-1/2 -translate-x-1/4 w-[600px] h-[600px] bg-primary/10 rounded-full blur-[100px] opacity-20" />
+      <section className="relative h-[55vh] flex items-center justify-center overflow-hidden">
+        <div className="absolute inset-0 z-0">
+          <Image 
+            src="/luxury_dorm_building_1_1775739456274.png" 
+            alt="Dormitory Building" 
+            fill 
+            className="object-cover brightness-[0.4] dark:brightness-[0.3]"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-transparent to-background" />
         </div>
-
-        <div className="relative z-10 mx-auto max-w-5xl px-8 text-center animate-reveal">
-          <div className="inline-flex items-center gap-3 px-5 py-2.5 rounded-full bg-accent text-accent-foreground text-[10px] font-black uppercase tracking-[0.3em] mb-12 border border-border shadow-sm">
-            <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
-            Designed for Modern Living
+        
+        <div className="relative z-10 text-center px-6 animate-reveal">
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/5 backdrop-blur-md rounded-full text-[10px] font-black uppercase tracking-[0.3em] text-primary border border-white/10 mb-6 shadow-xl">
+            <span className="w-1.5 h-1.5 bg-primary rounded-full animate-pulse" />
+            Ecosystem of Living
           </div>
-          
-          <h1 className="text-5xl sm:text-7xl lg:text-8xl font-display leading-[1.2] tracking-[-0.01em] mb-12 ornament py-6 px-2">
-            การใช้ชีวิตที่ <span className="text-primary italic font-medium">เรียบง่าย</span> <br /> 
-            เริ่มต้นที่ความใส่ใจ
+          <h1 className="text-5xl md:text-7xl font-display font-black tracking-tight text-white mb-6 leading-tight">
+            ค้นหาหอพักที่ <span className="italic font-medium text-primary">ตรงใจคุณ</span>
           </h1>
-          
-          <p className="mt-4 text-xl sm:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed font-bold opacity-95">
-            นิยามใหม่ของการบริหารจัดการหอพักที่เน้นความสุนทรีย์และความเรียบง่าย 
-            ผ่านเทคโนโลยีที่ทำให้ทุกเรื่องเป็นเรื่องง่ายและยั่งยืน
+          <p className="max-w-2xl mx-auto text-white/90 dark:text-white/70 font-semibold text-base leading-relaxed">
+            เริ่มต้นการค้นหาจากทำเล กฎระเบียบสัตว์เลี้ยง ค่าน้ำค่าไฟ หรือสิ่งอำนวยความสะดวกที่คุณต้องการ
           </p>
-          
-          <div className="mt-16 flex flex-col sm:flex-row items-center justify-center gap-8">
-            <Link
-              href="/signup"
-              className={cn(
-                "w-full sm:w-auto rounded-full bg-primary px-14 py-6 text-xs font-black uppercase tracking-[0.2em] text-primary-foreground",
-                "shadow-2xl shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all duration-500"
-              )}
-            >
-              เริ่มต้นใช้งานฟรี
-            </Link>
-            <Link
-              href="/explore"
-              className={cn(
-                "w-full sm:w-auto rounded-full border border-border bg-white px-14 py-6 text-xs font-black uppercase tracking-[0.2em] text-foreground",
-                "hover:bg-secondary transition-all duration-500 group/btn shadow-sm"
-              )}
-            >
-              ดูหอพักทั้งหมด 
-              <span className="ml-4 inline-block transition-transform group-hover/btn:translate-x-2">→</span>
-            </Link>
-          </div>
-
-          <div className="mt-10 animate-reveal" style={{ animationDelay: '0.4s' }}>
-             <Link 
-               href="/signin" 
-               className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground hover:text-primary transition-all inline-flex items-center gap-3 group"
-             >
-               มีบัญชีอยู่แล้ว? <span className="text-foreground group-hover:text-primary border-b border-border group-hover:border-primary transition-all">เข้าสู่ระบบที่นี่</span>
-             </Link>
-          </div>
         </div>
       </section>
 
-      {/* Roles Section */}
-      <section id="roles" className="py-32 lg:py-56 bg-white border-t border-border relative">
-        <div className="mx-auto max-w-7xl px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-20 mb-32 items-end reveal-on-scroll active">
-            <div className="lg:col-span-8">
-              <h2 className="text-[10px] font-black tracking-[0.4em] uppercase text-primary mb-8 ml-1">The Ecosystem</h2>
-              <p className="text-5xl lg:text-7xl font-display leading-[1.4] tracking-tight ornament py-2">หนึ่งระบบที่สมบูรณ์แบบ <br/> เพื่อตอบโจทย์ทุกคน</p>
-            </div>
-            <div className="lg:col-span-4 pb-2">
-              <p className="text-muted-foreground text-lg sm:text-xl leading-relaxed font-bold">
-                เราเชื่อว่าระบบที่ดีคือระบบที่ไม่มีตัวตน แต่คอยซัพพอร์ตทุกความเคลื่อนไหวของคุณอย่างเงียบเชียบและมีประสิทธิภาพ
-              </p>
-            </div>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[
-              { role: "ผู้เยี่ยมชม", desc: "ค้นหาและจองห้องพักได้อย่างรวดเร็ว ด้วยหน้ากราฟิกที่สะอาดตาและเข้าใจง่าย", color: "bg-secondary" },
-              { role: "ผู้เช่า", desc: "จัดการทุกอย่างเพียงปลายนิ้วสัมผัส ตั้งแต่การชำระเงินจนถึงการแจ้งซ่อม", color: "bg-accent" },
-              { role: "ผู้ดูแล", desc: "บริหารจัดการงานประจำวันได้อย่างลื่นไหล พร้อมระบบแจ้งเตือนอัจฉริยะ", color: "bg-muted" },
-              { role: "แอดมิน", desc: "วิเคราะห์ข้อมูลและตัดสินใจได้อย่างแม่นยำ ด้วยระบบรายงานที่มีประสิทธิภาพสูงสุด", color: "bg-background" }
-            ].map((r, i) => (
-              <div 
-                key={i} 
-                className={cn(
-                  "group p-12 rounded-[3.5rem] border border-border transition-all duration-700 hover:-translate-y-3",
-                  r.color,
-                  "hover:border-primary/20 hover:shadow-2xl hover:shadow-primary/5"
-                )}
-              >
-                <div className="h-1 w-16 bg-primary/20 group-hover:w-24 group-hover:bg-primary transition-all duration-500 mb-10" />
-                <h3 className="text-3xl font-display mb-6 tracking-tight">{r.role}</h3>
-                <p className="text-foreground font-bold leading-relaxed text-sm">
-                  {r.desc}
-                </p>
+      {/* Filter Section */}
+      <section className="relative z-20 max-w-6xl mx-auto px-6 -mt-16">
+        <div className="bg-card border border-border rounded-[32px] p-8 shadow-2xl backdrop-blur-xl">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            
+            {/* Search Input */}
+            <div className="space-y-2">
+              <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground block pl-1">ค้นหาตามชื่อหอพัก</label>
+              <div className="relative">
+                <span className="absolute inset-y-0 left-4 flex items-center text-muted-foreground/60 text-lg">🔍</span>
+                <input
+                  type="text"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder="พิมพ์ชื่อหอพัก..."
+                  className="w-full bg-background border border-border rounded-2xl pl-12 pr-4 py-3.5 text-sm font-bold text-foreground focus:outline-none focus:border-primary transition-all placeholder:text-muted-foreground/45"
+                />
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
+            </div>
 
-      {/* Pricing Section */}
-      <section id="pricing" className="py-32 lg:py-56 bg-background border-y border-border">
-        <div className="mx-auto max-w-7xl px-8">
-          <div className="text-center max-w-3xl mx-auto mb-32">
-            <h2 className="text-[10px] font-black tracking-[0.4em] uppercase text-primary mb-8">Investment</h2>
-            <p className="text-5xl lg:text-7xl font-display leading-[1.4] tracking-tight mb-10 ornament py-2">เลือกแพ็กเกจที่เหมาะกับ <br/> การเติบโตของคุณ</p>
-            <p className="text-muted-foreground text-xl font-bold">ความโปร่งใสคือหัวใจของเรา ไม่มีค่าธรรมเนียมแอบแฝง</p>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {[
-              {
-                name: "Starter",
-                price: "0",
-                desc: "สำหรับหอพักเริ่มต้นที่ต้องการความเรียบง่าย",
-                features: ["สูงสุด 10 ห้องพัก", "ระบบแจ้งซ่อมพื้นฐาน", "จัดการสัญญาเช่าดิจิทัล", "ซัพพอร์ต 24 ชม."],
-                current: false
-              },
-              {
-                name: "Professional",
-                price: "1,250",
-                desc: "สมบูรณ์แบบสำหรับธุรกิจที่ต้องการขยายตัว",
-                features: ["ไม่จำกัดห้องพัก", "ระบบบิลลิ่งอัตโนมัติ", "วิเคราะห์ข้อมูลเชิงลึก", "ซัพพอร์ต VIP", "Custom Branding"],
-                current: true
-              },
-              {
-                name: "Enterprise",
-                price: "Custom",
-                desc: "โซลูชันที่ปรับแต่งได้เพื่อโครงการขนาดใหญ่",
-                features: ["จัดการหลายโครงการ", "API Integration", "Dedicated Manager", "White-label Service", "จัดอบรมถึงที่"],
-                current: false
-              }
-            ].map((plan, i) => (
-              <div 
-                key={i} 
-                className={cn(
-                  "relative p-14 rounded-[4rem] border transition-all duration-700 group hover:-translate-y-4",
-                  plan.current 
-                    ? "bg-[#3E342B] text-white border-[#3E342B] shadow-2xl premium-shadow" 
-                    : "bg-white border-border hover:border-primary/40 shadow-sm"
-                )}
+            {/* Price Range */}
+            <div className="space-y-2">
+              <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground block pl-1">งบประมาณสูงสุด (ต่อเดือน)</label>
+              <select
+                value={maxPrice}
+                onChange={(e) => setMaxPrice(e.target.value)}
+                className="w-full bg-background border border-border rounded-2xl px-4 py-3.5 text-sm font-bold text-foreground focus:outline-none focus:border-primary cursor-pointer"
               >
-                {plan.current && (
-                  <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-primary text-primary-foreground text-[9px] font-black uppercase tracking-[0.3em] px-6 py-2 rounded-full shadow-lg">
-                    Most Popular
-                  </div>
-                )}
-                <h3 className="text-3xl font-display mb-3 tracking-tight">{plan.name}</h3>
-                <div className="flex items-baseline gap-2 mb-8">
-                  <span className="text-5xl font-display font-black tracking-tighter">
-                    {plan.price !== "Custom" ? `฿${plan.price}` : plan.price}
-                  </span>
-                  {plan.price !== "Custom" && (
-                    <span className={cn(
-                      "text-[10px] font-black uppercase tracking-widest",
-                      plan.current ? "text-white/40" : "text-muted-foreground/60"
-                    )}>
-                      /เดือน
-                    </span>
-                  )}
-                </div>
-                <p className={cn(
-                  "text-base mb-12 leading-relaxed font-bold",
-                  plan.current ? "text-white/60" : "text-muted-foreground"
-                )}>
-                  {plan.desc}
-                </p>
-                
-                <ul className="space-y-6 mb-16">
-                  {plan.features.map((feat, fi) => (
-                    <li key={fi} className="flex items-center gap-4 text-sm font-black tracking-tight">
-                      <div className={cn(
-                        "h-1.5 w-1.5 rounded-full",
-                        plan.current ? "bg-primary" : "bg-primary/40"
-                      )} />
-                      {feat}
-                    </li>
-                  ))}
-                </ul>
+                <option value="">ไม่จำกัดราคา</option>
+                <option value="3000">ไม่เกิน ฿3,000 / เดือน</option>
+                <option value="3500">ไม่เกิน ฿3,500 / เดือน</option>
+                <option value="4000">ไม่เกิน ฿4,000 / เดือน</option>
+                <option value="5000">ไม่เกิน ฿5,000 / เดือน</option>
+                <option value="7000">ไม่เกิน ฿7,000 / เดือน</option>
+              </select>
+            </div>
 
-                <button className={cn(
-                  "w-full rounded-full py-6 text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-500",
-                  plan.current 
-                    ? "bg-primary text-primary-foreground hover:bg-white hover:text-foreground shadow-xl shadow-primary/20" 
-                    : "bg-secondary text-foreground hover:bg-[#3E342B] hover:text-white"
-                )}>
-                  {plan.price === "Custom" ? "ติดต่อเราเพื่อรับข้อเสนอ" : "เริ่มต้นใช้งานทันที"}
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="py-32 bg-white border-t border-border">
-        <div className="mx-auto max-w-7xl px-8 text-foreground">
-          <div className="flex flex-col lg:flex-row justify-between items-start gap-32">
-            <div className="space-y-10 max-w-sm">
-              <Link href="/" className="flex items-center gap-4 group">
-                <div className="h-10 w-10 flex items-center justify-center rounded-2xl bg-primary text-primary-foreground font-display font-bold text-lg shadow-lg">S</div>
-                <span className="text-xl font-display font-black tracking-tight uppercase">SmartDom</span>
-              </Link>
-              <p className="text-muted-foreground text-lg leading-relaxed font-bold">
-                เราไม่ได้แค่สร้างระบบจัดการ แต่เราสร้างความอุ่นใจและความเรียบง่ายให้กับการอยู่อาศัยในยุคใหม่
-              </p>
-              <div className="flex gap-4">
-                {["Instagram", "X", "Facebook"].map((s) => (
-                  <div key={s} className="h-12 w-12 rounded-2xl border border-border flex items-center justify-center text-xs font-black uppercase cursor-pointer hover:bg-foreground hover:text-background hover:scale-105 active:scale-95 transition-all duration-300">
-                    {s[0]}
-                  </div>
+            {/* Tags Filters */}
+            <div className="space-y-2 flex flex-col justify-end">
+              <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground block pl-1 mb-1">ความต้องการพิเศษ</label>
+              <div className="flex flex-wrap gap-2.5">
+                {[
+                  { key: 'petFriendly', label: '🐱 เลี้ยงแมวได้', active: petFriendly, set: setPetFriendly },
+                  { key: 'hasParking', label: '🚗 ที่จอดรถยนต์', active: hasParking, set: setHasParking },
+                  { key: 'hasAirCon', label: '❄️ ห้องแอร์', active: hasAirCon, set: setHasAirCon }
+                ].map(item => (
+                  <button
+                    key={item.key}
+                    type="button"
+                    onClick={() => item.set(!item.active)}
+                    className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                      item.active 
+                        ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/20' 
+                        : 'bg-background border border-border text-muted-foreground hover:border-primary/50'
+                    }`}
+                  >
+                    {item.label}
+                  </button>
                 ))}
               </div>
             </div>
-            
-            <div className="grid grid-cols-2 gap-20 lg:gap-40 w-full lg:w-auto">
-              <div className="space-y-10">
-                <h5 className="text-[10px] uppercase font-black tracking-[0.4em] text-primary">เมนูหลัก</h5>
-                <ul className="space-y-6">
-                  {["หน้าแรก", "คุณสมบัติ", "หอพักในเครือ", "แพ็กเกจ"].map((item) => (
-                    <li key={item}>
-                      <Link href="#" className="text-sm font-black text-muted-foreground hover:text-foreground transition-all duration-300 inline-block hover:translate-x-1">{item}</Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <div className="space-y-10">
-                <h5 className="text-[10px] uppercase font-black tracking-[0.4em] text-primary">ความช่วยเหลือ</h5>
-                <ul className="space-y-6">
-                  {["นโยบายส่วนบุคคล", "ข้อกำหนดการใช้งาน", "ศูนย์ช่วยเหลือ", "ร่วมงานกับเรา"].map((item) => (
-                    <li key={item}>
-                      <Link href="#" className="text-sm font-black text-muted-foreground hover:text-foreground transition-all duration-300 inline-block hover:translate-x-1">{item}</Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          </div>
-          
-          <div className="mt-40 pt-12 border-t border-border flex flex-col sm:flex-row justify-between items-center gap-10 opacity-60">
-            <div className="text-[10px] font-black uppercase tracking-[0.2em] font-bold">
-              © 2026 SmartDom Ecosystem • Bangkok, Thailand
-            </div>
-            <div className="text-[10px] font-black uppercase tracking-[0.3em] flex items-center gap-4 font-bold">
-              <span>Minimal</span>
-              <span className="h-1 w-1 rounded-full bg-primary" />
-              <span>Sustainable</span>
-              <span className="h-1 w-1 rounded-full bg-primary" />
-              <span>Smart</span>
-            </div>
+
           </div>
         </div>
-      </footer>
+      </section>
+
+      {/* Dormitory Grid */}
+      <section className="py-24 px-6 lg:px-12 max-w-7xl mx-auto">
+        <div className="flex justify-between items-center mb-12">
+          <div>
+            <h2 className="text-[10px] font-black uppercase tracking-[0.4em] text-primary mb-2">Our Locations</h2>
+            <p className="text-3xl md:text-5xl font-display font-black tracking-tighter text-foreground">หอพักคุณภาพที่ตอบโจทย์คุณ</p>
+          </div>
+          <p className="text-sm font-bold text-muted-foreground uppercase tracking-widest">พบทั้งหมด {dorms.length} แห่ง</p>
+        </div>
+
+        {loading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+            {[1, 2].map(i => (
+              <div key={i} className="aspect-[16/11] rounded-[3rem] bg-card animate-pulse border border-border" />
+            ))}
+          </div>
+        ) : dorms.length === 0 ? (
+          <div className="text-center py-20 bg-card border border-border rounded-[3rem]">
+            <span className="text-5xl block mb-4">🔍</span>
+            <h3 className="text-xl font-black text-foreground">ไม่พบหอพักตามเงื่อนไขที่ค้นหา</h3>
+            <p className="text-muted-foreground text-sm mt-2 font-medium">กรุณาลองลดตัวกรอง หรือค้นหาใหม่อีกครั้ง</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+            {dorms.map((dorm) => (
+              <Link 
+                href={`/explore/${dorm.id}`} 
+                key={dorm.id}
+                className="group relative flex flex-col aspect-[16/11] rounded-[3rem] overflow-hidden bg-card border border-border shadow-2xl transition-all duration-500 hover:-translate-y-2 hover:border-primary"
+              >
+                <div className="absolute inset-0 z-0">
+                  <Image 
+                    src={dorm.cover_image || "/luxury_dorm_building_1_1775739456274.png"} 
+                    alt={dorm.name} 
+                    fill 
+                    className="object-cover transition-transform duration-[1500ms] group-hover:scale-105 opacity-80 group-hover:opacity-90"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
+                </div>
+                
+                <div className="relative z-10 mt-auto p-10 text-foreground">
+                   <div className="flex gap-2 mb-6">
+                     <div className="inline-flex items-center gap-2 px-3 py-1 bg-background/80 backdrop-blur-md rounded-full text-[9px] font-black uppercase tracking-widest border border-border">
+                        <span className="w-1.5 h-1.5 bg-primary rounded-full" />
+                        {dorm.available_rooms_count > 0 ? `${dorm.available_rooms_count} ห้องว่าง` : 'เต็มแล้ว'}
+                     </div>
+                     <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 backdrop-blur-md rounded-full text-[9px] font-black uppercase tracking-widest border border-primary/20 text-primary">
+                        เริ่มต้น ฿{Number(dorm.min_price).toLocaleString()} / เดือน
+                     </div>
+                   </div>
+                   
+                   <h3 className="text-3xl font-display font-black tracking-tight mb-3 leading-tight group-hover:text-primary transition-colors">{dorm.name}</h3>
+                   {dorm.description && (
+                     <p className="text-muted-foreground text-sm font-semibold line-clamp-2 mb-4 leading-relaxed">{dorm.description}</p>
+                   )}
+
+                   <div className="flex flex-col gap-2.5 opacity-85 group-hover:opacity-100 transition-opacity">
+                      {dorm.available_rooms_summary && (
+                        <p className="text-[10px] font-black uppercase tracking-widest text-primary flex items-center gap-2 mb-1">
+                           <span className="w-4 h-px bg-primary" />
+                           ห้องว่างแนะนำ: {dorm.available_rooms_summary}
+                        </p>
+                      )}
+                      <p className="text-xs font-bold flex items-center gap-2">
+                        <span className="text-primary text-base">📍</span>
+                        {dorm.address}
+                      </p>
+                      <p className="text-xs font-bold flex items-center gap-2">
+                        <span className="text-primary text-base">📞</span>
+                        {dorm.phone}
+                      </p>
+                   </div>
+
+                   {/* Features display */}
+                   <div className="flex gap-3 mt-6">
+                     {dorm.pet_friendly && <span className="text-xs font-bold bg-background/50 border border-border px-2.5 py-1 rounded-lg">🐱 สัตว์เลี้ยงได้</span>}
+                     {dorm.has_parking && <span className="text-xs font-bold bg-background/50 border border-border px-2.5 py-1 rounded-lg">🚗 ที่จอดรถ</span>}
+                     {dorm.has_air_con && <span className="text-xs font-bold bg-background/50 border border-border px-2.5 py-1 rounded-lg">❄️ ห้องแอร์</span>}
+                   </div>
+                   
+                   <div className="mt-8 pt-6 border-t border-border flex items-center justify-between">
+                      <span className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground group-hover:text-primary transition-colors">ดูรายละเอียดห้องพัก</span>
+                      <div className="w-12 h-12 rounded-2xl bg-primary flex items-center justify-center text-primary-foreground shadow-2xl group-hover:scale-105 transition-all duration-300">
+                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                        </svg>
+                      </div>
+                   </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        )}
+      </section>
     </div>
   );
 }

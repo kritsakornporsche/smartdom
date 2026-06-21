@@ -141,7 +141,7 @@ export default function ChatWidget({ dormId, ownerName, initialConversationId }:
                const isMe = String(msg.sender_id) === String((session?.user as any)?.id);
                return (
                   <div key={msg.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
-                    <div className={`max-w-[80%] p-4 rounded-2xl text-[11px] font-bold leading-relaxed shadow-sm ${isMe ? 'bg-[#8B7355] text-white rounded-tr-none shadow-lg shadow-[#8B7355]/20' : 'bg-white border border-black/5 text-black rounded-tl-none'}`}>
+                    <div className={`max-w-[80%] p-4 rounded-2xl text-[11px] font-bold leading-relaxed shadow-sm ${isMe ? 'bg-primary text-white rounded-tr-none shadow-lg shadow-primary/20' : 'bg-white border border-black/5 text-black rounded-tl-none'}`}>
                       {msg.message}
                     </div>
                   </div>

@@ -34,7 +34,7 @@ export default function CancelRequestButton({ requestId }: { requestId: number }
     <button 
       onClick={handleCancel}
       disabled={loading}
-      className="flex-1 bg-white hover:bg-rose-50 text-rose-600 border border-rose-100 font-bold py-3.5 px-4 rounded-xl transition-all shadow-sm flex items-center justify-center gap-2 disabled:opacity-70"
+      className="flex-1 bg-[#0F172A] hover:bg-rose-50 text-rose-600 border border-rose-100 font-bold py-3.5 px-4 rounded-xl transition-all shadow-sm flex items-center justify-center gap-2 disabled:opacity-70"
     >
       {loading ? 'กำลังยกเลิก...' : 'ยกเลิกคำร้อง (Cancel Request)'}
     </button>

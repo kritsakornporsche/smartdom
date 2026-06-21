@@ -14,7 +14,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: false, message: 'Description is required' }, { status: 400 });
     }
 
-    const sql = neon(process.env.DATABASE_URL || '');
+    const sql = neon(process.env.DATABASE_URL || 'postgres://postgres:password@localhost/postgres');
     
     // Find tenant ID and room_number using COALESCE to handle data migration gaps
     const tenantRes = await sql`

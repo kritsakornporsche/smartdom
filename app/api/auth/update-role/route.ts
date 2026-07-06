@@ -1,9 +1,14 @@
+import { getDormDbFromSession } from '@/lib/db';
 import { NextResponse } from 'next/server';
-import { neon } from '@neondatabase/serverless';
+
 import { auth } from '@/auth';
 
 export async function POST(request: Request) {
-  try {
+    const session = await auth();
+  if (!session || !(session.user as any)?.dormDbName) return new Response(JSON.stringify({ success: false, message: 'Unauthorized or missing dormDbName' }), { status: 401, headers: { 'Content-Type': 'application/json' } });
+  const sql = getDormDbFromSession(session);
+
+try {
     const session = await auth();
     if (!session?.user?.email) {
       return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
@@ -14,7 +19,7 @@ export async function POST(request: Request) {
        return NextResponse.json({ success: false, message: 'Invalid role' }, { status: 400 });
     }
 
-    const sql = neon(process.env.DATABASE_URL || 'postgres://postgres:password@localhost/postgres');
+    
     
     await sql`
       UPDATE users 

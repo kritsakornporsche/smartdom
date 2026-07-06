@@ -125,7 +125,7 @@ export default function KeepersManagement() {
   };
 
   return (
-    <div className="min-h-screen bg-[#080F1E] p-8 text-white">
+    <div className="flex-1 overflow-y-auto bg-[#080F1E] p-8 text-white">
       <div className="max-w-6xl mx-auto">
         <header className="flex justify-between items-center mb-10">
           <div>

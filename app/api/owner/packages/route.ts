@@ -1,12 +1,32 @@
 import { NextResponse } from 'next/server';
-import { neon } from '@neondatabase/serverless';
+import { getPlatformDb } from '@/lib/db';
+
+function safeJsonParse(val: any) {
+  if (typeof val !== 'string') return val || [];
+  try {
+    return JSON.parse(val);
+  } catch {
+    try {
+      // Fix escaping issues
+      const cleaned = val.replace(/\\"/g, '"');
+      return JSON.parse(cleaned);
+    } catch (e) {
+      console.error('Failed to parse features JSON:', val, e);
+      return [];
+    }
+  }
+}
 
 export async function GET() {
-  const sql = neon(process.env.DATABASE_URL || 'postgres://postgres:password@localhost/postgres');
+  const sql = getPlatformDb();
   
   try {
     const packages = await sql`SELECT * FROM dormitory_packages ORDER BY price ASC`;
-    return NextResponse.json({ success: true, data: packages });
+    const parsed = packages.map(p => ({
+      ...p,
+      features: safeJsonParse(p.features),
+    }));
+    return NextResponse.json({ success: true, data: parsed });
   } catch (err: any) {
     return NextResponse.json({ success: false, message: err.message }, { status: 500 });
   }

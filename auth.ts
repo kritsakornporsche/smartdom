@@ -4,14 +4,9 @@ import Facebook from 'next-auth/providers/facebook';
 import GitHub from 'next-auth/providers/github';
 import Line from 'next-auth/providers/line';
 import Credentials from 'next-auth/providers/credentials';
-import { neon } from '@neondatabase/serverless';
+import { getDb } from '@/lib/db';
 import bcrypt from 'bcryptjs';
 import { authConfig } from './auth.config';
-
-const MYSQL_BASE = 'mysql://root:@localhost:3306';
-
-// Platform DB connection
-const platformSql = neon(`${MYSQL_BASE}/smartdom_platform`);
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   ...authConfig,
@@ -34,6 +29,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
         const email = String(credentials.email).toLowerCase().trim();
         const password = String(credentials.password);
+        const sql = getDb();
 
         const verifyPassword = async (storedHash: string): Promise<boolean> => {
           if (storedHash.startsWith('$2')) return await bcrypt.compare(password, storedHash);
@@ -46,9 +42,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
         // ── 1. Check platform_admins ──────────────────────────────────────────
         try {
-          const admins = await platformSql`
+          const admins = await sql`
             SELECT id, name, email, password, role FROM platform_admins
-            WHERE email = ${email} AND is_active = TRUE LIMIT 1
+            WHERE (email = ${email} OR name = ${email}) AND is_active = TRUE LIMIT 1
           `;
           if (admins.length > 0) {
             const admin = admins[0];
@@ -59,42 +55,36 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 email: admin.email,
                 role: 'platform_admin',
                 sub_role: null,
-                dormDbName: null,
                 dormId: null,
               } as any;
             }
           }
         } catch (e) { console.error('[Auth: platform check]', e); }
 
-        // ── 2. Search all active dorm DBs ─────────────────────────────────────
+        // ── 2. Search users and their dorm roles ─────────────────────────────
         try {
-          const allDorms = await platformSql`
-            SELECT id, db_name FROM dormitory_registry WHERE status = 'Active' AND db_name != ''
+          const users = await sql`
+            SELECT u.id, u.name, u.email, u.password, u.primary_role, r.role, r.sub_role, r.dorm_id 
+            FROM users u
+            LEFT JOIN user_dorm_roles r ON u.id = r.user_id AND r.is_active = TRUE
+            WHERE (u.email = ${email} OR u.name = ${email}) 
+            LIMIT 1
           `;
-          for (const dorm of allDorms) {
-            try {
-              const dormSql = neon(`${MYSQL_BASE}/${dorm.db_name}`);
-              const users = await dormSql`
-                SELECT id, name, email, password, role, sub_role FROM users
-                WHERE email = ${email} AND is_active = TRUE LIMIT 1
-              `;
-              if (users.length > 0) {
-                const user = users[0];
-                if (await verifyPassword(user.password)) {
-                  return {
-                    id: String(user.id),
-                    name: user.name,
-                    email: user.email,
-                    role: user.role,
-                    sub_role: user.sub_role,
-                    dormDbName: dorm.db_name,
-                    dormId: dorm.id,
-                  } as any;
-                }
-              }
-            } catch { /* DB may not exist, skip */ }
+          
+          if (users.length > 0) {
+            const user = users[0];
+            if (await verifyPassword(user.password)) {
+              return {
+                id: String(user.id),
+                name: user.name,
+                email: user.email,
+                role: user.role || user.primary_role || 'guest',
+                sub_role: user.sub_role,
+                dormId: user.dorm_id,
+              } as any;
+            }
           }
-        } catch (e) { console.error('[Auth: search dorms]', e); }
+        } catch (e) { console.error('[Auth: user check]', e); }
 
         return null;
       }
@@ -111,46 +101,34 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         if ((user as any).role) {
           token.role = (user as any).role;
           token.sub_role = (user as any).sub_role || null;
-          token.dormDbName = (user as any).dormDbName || null;
           token.dormId = (user as any).dormId || null;
         } else {
-          // OAuth Sign-in: lookup email in databases
+          // OAuth Sign-in: lookup email in unified databases
           const email = user.email?.toLowerCase().trim();
           if (email) {
+            const sql = getDb();
             try {
-              const admins = await platformSql`
+              const admins = await sql`
                 SELECT id FROM platform_admins WHERE email = ${email} AND is_active = TRUE LIMIT 1
               `;
               if (admins.length > 0) {
                 token.role = 'platform_admin';
                 token.sub_role = null;
-                token.dormDbName = null;
                 token.dormId = null;
               } else {
-                const allDorms = await platformSql`
-                  SELECT id, db_name FROM dormitory_registry WHERE status = 'Active' AND db_name != ''
+                const dbUsers = await sql`
+                  SELECT u.primary_role, r.role, r.sub_role, r.dorm_id 
+                  FROM users u
+                  LEFT JOIN user_dorm_roles r ON u.id = r.user_id AND r.is_active = TRUE
+                  WHERE u.email = ${email} LIMIT 1
                 `;
-                let found = false;
-                for (const dorm of allDorms) {
-                  try {
-                    const dormSql = neon(`${MYSQL_BASE}/${dorm.db_name}`);
-                    const dbUsers = await dormSql`
-                      SELECT role, sub_role FROM users WHERE email = ${email} AND is_active = TRUE LIMIT 1
-                    `;
-                    if (dbUsers.length > 0) {
-                      token.role = dbUsers[0].role;
-                      token.sub_role = dbUsers[0].sub_role || null;
-                      token.dormDbName = dorm.db_name;
-                      token.dormId = dorm.id;
-                      found = true;
-                      break;
-                    }
-                  } catch { /* skip */ }
-                }
-                if (!found) {
+                if (dbUsers.length > 0) {
+                  token.role = dbUsers[0].role || dbUsers[0].primary_role || 'guest';
+                  token.sub_role = dbUsers[0].sub_role || null;
+                  token.dormId = dbUsers[0].dorm_id || null;
+                } else {
                   token.role = 'guest';
                   token.sub_role = null;
-                  token.dormDbName = null;
                   token.dormId = null;
                 }
               }
@@ -169,7 +147,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         (session.user as any).id = token.sub;
         (session.user as any).role = token.role;
         (session.user as any).sub_role = token.sub_role;
-        (session.user as any).dormDbName = token.dormDbName;
         (session.user as any).dormId = token.dormId;
         session.user.name = token.name;
       }

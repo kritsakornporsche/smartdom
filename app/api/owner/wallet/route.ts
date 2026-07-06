@@ -1,8 +1,5 @@
 import { NextResponse } from 'next/server';
-import { neon } from '@neondatabase/serverless';
-
-const MYSQL_BASE = 'mysql://root:@localhost:3306';
-const platformSql = neon(`${MYSQL_BASE}/smartdom_platform`);
+import { getDb } from '@/lib/db';
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
@@ -11,8 +8,9 @@ export async function GET(req: Request) {
   if (!dormId) return NextResponse.json({ success: false, message: 'Missing dormId' }, { status: 400 });
 
   try {
-    const reg = await platformSql`SELECT coins FROM dormitory_registry WHERE id = ${dormId} LIMIT 1`;
-    const transactions = await platformSql`
+    const sql = getDb();
+    const reg = await sql`SELECT coins FROM dormitory_registry WHERE id = ${dormId} LIMIT 1`;
+    const transactions = await sql`
       SELECT * FROM coin_transactions 
       WHERE dormitory_id = ${dormId} 
       ORDER BY created_at DESC LIMIT 50
@@ -35,19 +33,21 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: false, message: 'Invalid top-up request' }, { status: 400 });
     }
 
+    const sql = getDb();
+
     // 1. Add coins to dormitory
-    await platformSql`
+    await sql`
       UPDATE dormitory_registry SET coins = coins + ${amount} WHERE id = ${dormId}
     `;
 
     // 2. Record coin transaction
-    await platformSql`
+    await sql`
       INSERT INTO coin_transactions (dormitory_id, type, amount, description)
       VALUES (${dormId}, 'TopUp', ${amount}, 'เติมเงินเข้าระบบ')
     `;
 
     // 3. Record revenue in platform accounting
-    await platformSql`
+    await sql`
       INSERT INTO platform_accounting (dormitory_id, type, category, amount, description, transaction_date)
       VALUES (${dormId}, 'Income', 'TopUp', ${amount}, 'เติมเงินซื้อเหรียญ', CURDATE())
     `;

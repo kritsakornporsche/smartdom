@@ -16,6 +16,9 @@ export const authConfig = {
       // Only care about protected routes
       if (protectedPrefixes.includes(currentPrefix)) {
         if (!isLoggedIn) return false; // Redirect to sign-in
+        if (currentPrefix === 'admin' && user.role === 'platform_admin') {
+           return true; // Allow platform_admin to access /admin
+        }
         if (user.role !== currentPrefix) {
            return Response.redirect(new URL("/explore", nextUrl));
         }

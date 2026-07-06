@@ -1,8 +1,14 @@
+import { auth } from '@/auth';
+import { getDormDbFromSession } from '@/lib/db';
 import { NextResponse } from 'next/server';
-import { neon } from '@neondatabase/serverless';
+
 
 export async function GET(request: Request) {
-  try {
+    const session = await auth();
+  if (!session || !(session.user as any)?.dormDbName) return new Response(JSON.stringify({ success: false, message: 'Unauthorized or missing dormDbName' }), { status: 401, headers: { 'Content-Type': 'application/json' } });
+  const sql = getDormDbFromSession(session);
+
+try {
     const { searchParams } = new URL(request.url);
     const dormId = searchParams.get('dormId');
 
@@ -10,7 +16,7 @@ export async function GET(request: Request) {
       return NextResponse.json({ success: false, message: 'Missing dormId' }, { status: 400 });
     }
 
-    const sql = neon(process.env.DATABASE_URL || 'postgres://postgres:password@localhost/postgres');
+    
     const keepers = await sql`
       SELECT * FROM keepers 
       WHERE dorm_id = ${parseInt(dormId)}
@@ -24,7 +30,11 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  try {
+    const session = await auth();
+  if (!session || !(session.user as any)?.dormDbName) return new Response(JSON.stringify({ success: false, message: 'Unauthorized or missing dormDbName' }), { status: 401, headers: { 'Content-Type': 'application/json' } });
+  const sql = getDormDbFromSession(session);
+
+try {
     const body = await request.json();
     const { name, email, phone, position, dorm_id, password } = body;
 
@@ -32,7 +42,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: false, message: 'Missing required fields' }, { status: 400 });
     }
 
-    const sql = neon(process.env.DATABASE_URL || 'postgres://postgres:password@localhost/postgres');
+    
     
     // Helper to hash password (SHA-256 to match signup logic)
     const hashPassword = async (pass: string) => {
@@ -67,7 +77,11 @@ export async function POST(request: Request) {
 }
 
 export async function PUT(request: Request) {
-  try {
+    const session = await auth();
+  if (!session || !(session.user as any)?.dormDbName) return new Response(JSON.stringify({ success: false, message: 'Unauthorized or missing dormDbName' }), { status: 401, headers: { 'Content-Type': 'application/json' } });
+  const sql = getDormDbFromSession(session);
+
+try {
     const body = await request.json();
     const { id, name, email, phone, position } = body;
 
@@ -75,7 +89,7 @@ export async function PUT(request: Request) {
       return NextResponse.json({ success: false, message: 'Missing id' }, { status: 400 });
     }
 
-    const sql = neon(process.env.DATABASE_URL || 'postgres://postgres:password@localhost/postgres');
+    
     const result = await sql`
       UPDATE keepers 
       SET name = ${name}, email = ${email}, phone = ${phone}, position = ${position}
@@ -90,7 +104,11 @@ export async function PUT(request: Request) {
 }
 
 export async function DELETE(request: Request) {
-  try {
+    const session = await auth();
+  if (!session || !(session.user as any)?.dormDbName) return new Response(JSON.stringify({ success: false, message: 'Unauthorized or missing dormDbName' }), { status: 401, headers: { 'Content-Type': 'application/json' } });
+  const sql = getDormDbFromSession(session);
+
+try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
 
@@ -98,7 +116,7 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ success: false, message: 'Missing id' }, { status: 400 });
     }
 
-    const sql = neon(process.env.DATABASE_URL || 'postgres://postgres:password@localhost/postgres');
+    
     await sql`DELETE FROM keepers WHERE id = ${parseInt(id)}`;
 
     return NextResponse.json({ success: true, message: 'Keeper deleted' });

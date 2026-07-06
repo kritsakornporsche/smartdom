@@ -221,7 +221,7 @@ export default function SignupContent() {
                     required
                     value={fields.full_name}
                     onChange={handleChange}
-                    className="w-full rounded-2xl border border-border bg-background px-6 py-4 text-sm font-bold text-foreground focus:bg-white focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-muted-foreground/40"
+                    className="w-full rounded-2xl border border-border bg-background px-6 py-4 text-sm font-bold text-foreground focus:bg-card focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-muted-foreground/40"
                     placeholder="สมชาย ใจดี"
                   />
                 </div>
@@ -236,7 +236,7 @@ export default function SignupContent() {
                       value={fields.email}
                       onChange={handleChange}
                       className={cn(
-                        "w-full rounded-2xl border bg-background px-6 py-4 text-sm font-bold text-foreground focus:bg-white outline-none transition-all placeholder:text-muted-foreground/40 pr-12",
+                        "w-full rounded-2xl border bg-background px-6 py-4 text-sm font-bold text-foreground focus:bg-card outline-none transition-all placeholder:text-muted-foreground/40 pr-12",
                         emailAvailable === false ? 'border-destructive' : emailAvailable === true ? 'border-emerald-400 font-black' : 'border-border focus:border-primary'
                       )}
                       placeholder="you@example.com"
@@ -331,7 +331,7 @@ export default function SignupContent() {
                       minLength={8}
                       value={fields.password}
                       onChange={handleChange}
-                      className="w-full rounded-2xl border border-border bg-background px-6 py-4 text-sm font-bold text-foreground focus:bg-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+                      className="w-full rounded-2xl border border-border bg-background px-6 py-4 text-sm font-bold text-foreground focus:bg-card focus:border-primary focus:ring-1 focus:ring-primary outline-none"
                     />
                   </div>
                   <div className="space-y-2">
@@ -342,7 +342,7 @@ export default function SignupContent() {
                       required
                       value={fields.confirm_password}
                       onChange={handleChange}
-                      className="w-full rounded-2xl border border-border bg-background px-6 py-4 text-sm font-bold text-foreground focus:bg-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+                      className="w-full rounded-2xl border border-border bg-background px-6 py-4 text-sm font-bold text-foreground focus:bg-card focus:border-primary focus:ring-1 focus:ring-primary outline-none"
                     />
                   </div>
                 </div>

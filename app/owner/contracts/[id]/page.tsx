@@ -54,7 +54,7 @@ export default function OwnerContractDetailPage({ params }: { params: Promise<{ 
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#080F1E] flex items-center justify-center">
+      <div className="flex-1 flex items-center justify-center bg-[#080F1E]">
         <div className="animate-pulse text-white/50 font-black uppercase tracking-widest text-xs">Loading Details...</div>
       </div>
     );
@@ -62,7 +62,7 @@ export default function OwnerContractDetailPage({ params }: { params: Promise<{ 
 
   if (error || !contract) {
     return (
-      <div className="min-h-screen bg-[#080F1E] p-8 flex flex-col items-center justify-center">
+      <div className="flex-1 flex flex-col items-center justify-center bg-[#080F1E] p-8">
         <div className="text-rose-500 font-bold mb-4">{error}</div>
         <button onClick={() => router.back()} className="text-white/50 font-bold underline hover:text-white">กลับไปหน้าสัญญา</button>
       </div>
@@ -70,7 +70,7 @@ export default function OwnerContractDetailPage({ params }: { params: Promise<{ 
   }
 
   return (
-    <div className="min-h-screen bg-[#080F1E] p-6 lg:p-12">
+    <div className="flex-1 overflow-y-auto bg-[#080F1E] p-6 lg:p-12">
       <div className="max-w-4xl mx-auto space-y-12">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">

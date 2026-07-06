@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { neon } from '@neondatabase/serverless';
+import { getDormDbFromSession } from '@/lib/db';
 import { auth } from '@/auth';
 
 export async function POST(
@@ -14,7 +14,7 @@ export async function POST(
     const announcementId = parseInt(id);
     if (isNaN(announcementId)) return NextResponse.json({ success: false, message: 'Invalid ID' }, { status: 400 });
 
-    const sql = neon(process.env.DATABASE_URL || 'postgres://postgres:password@localhost/postgres');
+    const sql = getDormDbFromSession(session);
     
     // Find tenant by email
     const tenantRes = await sql`SELECT id FROM tenants WHERE email = ${session.user.email} LIMIT 1`;

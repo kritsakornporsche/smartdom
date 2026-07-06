@@ -8,14 +8,13 @@ interface Package {
   name: string;
   price: number;
   max_rooms: number;
+  max_dorms: number;
   features: string[];
 }
 
 export default function OwnerOnboarding() {
   const router = useRouter();
-  const [step, setStep] = useState<1 | 2 | 3>(1);
-  const [packages, setPackages] = useState<Package[]>([]);
-  const [selectedPackage, setSelectedPackage] = useState<number | null>(null);
+  const [step, setStep] = useState<1 | 3>(1);
   const [loading, setLoading] = useState(false);
   const [ownerEmail, setOwnerEmail] = useState('');
 
@@ -23,6 +22,15 @@ export default function OwnerOnboarding() {
     name: '',
     address: '',
     phone: '',
+    tax_id: '',
+    water_rate: 18,
+    electricity_rate: 8,
+    has_wifi: false,
+    has_parking: false,
+    pet_friendly: false,
+    has_lan: false,
+    has_air_con: false,
+    facilities: '',
   });
 
   useEffect(() => {
@@ -40,7 +48,7 @@ export default function OwnerOnboarding() {
         if (data.success && data.hasDorm && !force) {
           router.push('/owner');
         } else if (data.success && force && !data.canAddDorm) {
-          alert('คุณไม่สามารถเพิ่มหอพักได้ เนื่องจากแพ็กเกจปัจจุบันไม่รองรับการจัดการหลายหอพัก (กรุณาอัปเกรดเป็น Enterprise)');
+          alert(`คุณไม่สามารถเพิ่มหอพักได้ เนื่องจากขีดจำกัดการสร้างหอพักของแพ็กเกจปัจจุบันเต็มแล้ว (สูงสุด ${data.maxAllowedDorms || 1} หอพัก) กรุณาอัปเกรดแพ็กเกจของคุณ`);
           router.push('/owner');
         }
       } catch (err) {
@@ -48,34 +56,26 @@ export default function OwnerOnboarding() {
       }
     };
 
-    const fetchPackages = async () => {
-      try {
-        const res = await fetch('/api/owner/packages');
-        const data = await res.json();
-        if (data.success) {
-          const formatted = data.data.map((p: any) => ({
-            ...p,
-            features: typeof p.features === 'string' ? JSON.parse(p.features) : p.features
-          }));
-          setPackages(formatted);
-        }
-      } catch (err) {
-        console.error('Error fetching packages:', err);
-      }
-    };
-
     checkOnboarding();
-    fetchPackages();
   }, [router]);
 
 
-  const handleDormSubmit = (e: React.FormEvent) => {
+  const handleFinalSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setStep(2);
-  };
+    
+    if (!dormData.name.trim()) {
+      alert('กรุณากรอกชื่อหอพัก');
+      return;
+    }
+    if (!dormData.phone.trim()) {
+      alert('กรุณากรอกเบอร์โทรศัพท์ติดต่อ');
+      return;
+    }
+    if (!dormData.address.trim()) {
+      alert('กรุณากรอกที่อยู่หอพัก');
+      return;
+    }
 
-  const handleFinalSubmit = async () => {
-    if (!selectedPackage) return;
     setLoading(true);
     
     try {
@@ -84,42 +84,35 @@ export default function OwnerOnboarding() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ownerEmail,
-          dormData,
-          packageId: selectedPackage
+          dormData
         }),
       });
 
-      const data = await res.json();
+      let data;
+      try {
+        data = await res.json();
+      } catch (parseErr) {
+        throw new Error('ระบบเซิร์ฟเวอร์ขัดข้อง กรุณาลองใหม่อีกครั้ง');
+      }
+
       if (data.success) {
         setStep(3);
         setTimeout(() => router.push('/owner'), 3000);
       } else {
         alert(data.message);
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
+      alert(err.message || 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-[#080F1E] text-white font-sans flex flex-col items-center py-20 px-6">
-      <div className="max-w-4xl w-full">
+    <div className="flex-1 min-h-0 overflow-y-auto bg-[#080F1E] text-white font-sans py-20 px-6">
+      <div className="max-w-4xl w-full mx-auto">
         
-        {/* Progress Bar */}
-        {step < 3 && (
-          <div className="mb-16">
-            <div className="flex justify-between mb-4">
-               <span className={`text-[10px] font-bold uppercase tracking-widest ${step >= 1 ? 'text-muted-foreground' : 'text-muted-foreground/60'}`}>1. ข้อมูลหอพัก</span>
-               <span className={`text-[10px] font-bold uppercase tracking-widest ${step >= 2 ? 'text-muted-foreground' : 'text-muted-foreground/60'}`}>2. เลือกแพ็กเกจ</span>
-            </div>
-            <div className="h-1 bg-white/10 rounded-full overflow-hidden">
-               <div className={`h-full bg-primary transition-all duration-700 ${step === 1 ? 'w-1/2' : 'w-full'}`} />
-            </div>
-          </div>
-        )}
-
         {/* STEP 1: Dormitory Details */}
         {step === 1 && (
           <div className="bg-[#0F172A] rounded-[40px] shadow-2xl shadow-[#DCD3C6]/40 border border-white/20/10 p-12 animate-in fade-in slide-in-from-bottom-8 duration-700">
@@ -128,11 +121,10 @@ export default function OwnerOnboarding() {
                 <p className="text-white/50 font-medium">กรอกข้อมูลพื้นฐานเพื่อเริ่มต้นการใช้งานระบบ</p>
              </div>
 
-             <form onSubmit={handleDormSubmit} className="space-y-8 max-w-xl mx-auto">
+             <form onSubmit={handleFinalSubmit} className="space-y-8 max-w-xl mx-auto">
                 <div className="space-y-2">
                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-white/50 ml-1">ชื่อหอพัก / กิจการ</label>
                    <input 
-                    required
                     value={dormData.name}
                     onChange={(e) => setDormData({...dormData, name: e.target.value})}
                     placeholder="เช่น SmartDom Mansion"
@@ -143,7 +135,6 @@ export default function OwnerOnboarding() {
                 <div className="space-y-2">
                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-white/50 ml-1">เบอร์โทรศัพท์ติดต่อ</label>
                    <input 
-                    required
                     value={dormData.phone}
                     onChange={(e) => setDormData({...dormData, phone: e.target.value})}
                     placeholder="02-XXX-XXXX"
@@ -154,7 +145,6 @@ export default function OwnerOnboarding() {
                 <div className="space-y-2">
                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-white/50 ml-1">ที่อยู่หอพัก</label>
                    <textarea 
-                    required
                     value={dormData.address}
                     onChange={(e) => setDormData({...dormData, address: e.target.value})}
                     rows={3}
@@ -163,81 +153,56 @@ export default function OwnerOnboarding() {
                    />
                 </div>
 
-                <button 
-                  type="submit"
-                  className="w-full py-5 bg-[#3E342B] text-white rounded-2xl font-black text-xs uppercase tracking-[0.2em] shadow-xl hover:-translate-y-1 active:scale-95 transition-all"
-                >
-                  ขั้นตอนถัดไป →
-                </button>
-             </form>
-          </div>
-        )}
-
-        {/* STEP 2: Package Selection */}
-        {step === 2 && (
-          <div className="animate-in fade-in slide-in-from-bottom-8 duration-700">
-             <div className="mb-12 text-center">
-                <h2 className="text-3xl font-black mb-3 text-white">เลือกแพ็กเกจที่เหมาะกับคุณ</h2>
-                <p className="text-white/50 font-medium">ทุกแพ็กเกจรองรับการขยายตัวในอนาคต</p>
-             </div>
-
-             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-                {packages.map((pkg) => (
-                  <div 
-                    key={pkg.id}
-                    onClick={() => setSelectedPackage(pkg.id)}
-                    className={`relative p-8 rounded-[40px] border-2 cursor-pointer transition-all duration-500 flex flex-col h-full ${
-                      selectedPackage === pkg.id 
-                        ? 'border-primary bg-[#0F172A] shadow-2xl scale-105' 
-                        : 'border-white/20/10 bg-[#0F172A] hover:border-primary/40 opacity-80 hover:opacity-100'
-                    }`}
-                  >
-                    {selectedPackage === pkg.id && (
-                      <div className="absolute top-6 right-6 w-6 h-6 bg-primary rounded-full flex items-center justify-center">
-                        <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={4} d="M5 13l4 4L19 7" />
-                        </svg>
-                      </div>
-                    )}
-                    <h3 className="text-xl font-black text-muted-foreground mb-2">{pkg.name}</h3>
-                    <div className="flex items-baseline gap-1 mb-8">
-                       <span className="text-4xl font-black text-white">฿{Number(pkg.price).toLocaleString()}</span>
-                       <span className="text-xs font-bold text-white/50 uppercase">/ เดือน</span>
+                {/* Rates & Legal */}
+                <div className="p-8 rounded-[24px] bg-white/5 border border-white/10 space-y-6">
+                  <h3 className="text-sm font-black text-white">ค่าน้ำ/ค่าไฟ และข้อมูลกฎหมาย</h3>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black uppercase tracking-widest text-white/50 block pl-1">ค่าน้ำ (บาท/ยูนิต)</label>
+                      <input type="number" value={dormData.water_rate} onChange={e => setDormData({...dormData, water_rate: Number(e.target.value)})} className="w-full bg-[#0F172A] border border-white/10 rounded-xl px-4 py-3 text-white font-bold text-sm focus:outline-none focus:border-primary" />
                     </div>
-                    
-                    <ul className="space-y-4 flex-1">
-                       {pkg.features.map((f, i) => (
-                         <li key={i} className="flex gap-3 text-xs font-bold text-white/80">
-                            <svg className="w-4 h-4 text-muted-foreground shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
-                            </svg>
-                            {f}
-                         </li>
-                       ))}
-                    </ul>
-
-                    <div className="mt-8 pt-6 border-t border-[#F3EFE9]">
-                       <p className="text-[10px] font-black uppercase text-white/50">รองรับสูงสุด: {pkg.max_rooms} ห้อง</p>
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black uppercase tracking-widest text-white/50 block pl-1">ค่าไฟ (บาท/ยูนิต)</label>
+                      <input type="number" value={dormData.electricity_rate} onChange={e => setDormData({...dormData, electricity_rate: Number(e.target.value)})} className="w-full bg-[#0F172A] border border-white/10 rounded-xl px-4 py-3 text-white font-bold text-sm focus:outline-none focus:border-primary" />
+                    </div>
+                    <div className="space-y-2 md:col-span-1 col-span-2">
+                      <label className="text-[10px] font-black uppercase tracking-widest text-white/50 block pl-1">เลขผู้เสียภาษี</label>
+                      <input type="text" value={dormData.tax_id} onChange={e => setDormData({...dormData, tax_id: e.target.value})} className="w-full bg-[#0F172A] border border-white/10 rounded-xl px-4 py-3 text-white font-bold text-sm focus:outline-none focus:border-primary" placeholder="เลข 13 หลัก" />
                     </div>
                   </div>
-                ))}
-             </div>
+                </div>
 
-             <div className="flex gap-4 max-w-xl mx-auto">
-               <button 
-                  onClick={() => setStep(1)}
-                  className="flex-1 py-5 bg-[#0F172A] border border-white/20/10 text-white/50 rounded-2xl font-black text-xs uppercase tracking-[0.2em] hover:bg-[#0F172A] transition-all"
-                >
-                  ย้อนกลับ
-                </button>
+                {/* Features */}
+                <div className="p-8 rounded-[24px] bg-white/5 border border-white/10 space-y-6">
+                  <h3 className="text-sm font-black text-white">สิ่งอำนวยความสะดวกและเงื่อนไข</h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    {[
+                      { key: 'has_wifi', label: 'อินเทอร์เน็ต WiFi 📶' },
+                      { key: 'has_parking', label: 'มีที่จอดรถยนต์ 🚗' },
+                      { key: 'pet_friendly', label: 'อนุญาตเลี้ยงสัตว์ 🐱' },
+                      { key: 'has_lan', label: 'สาย LAN ในห้อง 🔌' },
+                      { key: 'has_air_con', label: 'มีห้องแอร์ ❄️' },
+                    ].map(item => (
+                      <label key={item.key} className={`relative flex items-center gap-3 p-4 rounded-xl border cursor-pointer select-none transition-all ${(dormData as any)[item.key] ? 'border-primary bg-primary/10 text-white' : 'border-white/10 bg-[#080F1E]/50 text-white/50 hover:border-white/20'}`}>
+                        <input type="checkbox" checked={(dormData as any)[item.key]} onChange={e => setDormData({...dormData, [item.key]: e.target.checked})} className="sr-only" />
+                        <span className="text-xs font-black">{item.label}</span>
+                      </label>
+                    ))}
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-white/50 block pl-1">สิ่งอำนวยความสะดวกอื่นๆ</label>
+                    <input type="text" value={dormData.facilities} onChange={e => setDormData({...dormData, facilities: e.target.value})} className="w-full bg-[#0F172A] border border-white/10 rounded-xl px-4 py-3 text-white font-bold text-sm focus:outline-none focus:border-primary" placeholder="เช่น ฟิตเนส, สระว่ายน้ำ, กล้องวงจรปิด" />
+                  </div>
+                </div>
+
                 <button 
-                  disabled={!selectedPackage || loading}
-                  onClick={handleFinalSubmit}
-                  className="flex-[2] py-5 bg-primary text-white rounded-2xl font-black text-xs uppercase tracking-[0.2em] shadow-xl hover:-translate-y-1 active:scale-95 disabled:opacity-50 disabled:translate-y-0 transition-all"
+                  type="submit"
+                  disabled={loading}
+                  className="w-full py-5 bg-[#3E342B] text-white rounded-2xl font-black text-xs uppercase tracking-[0.2em] shadow-xl hover:-translate-y-1 active:scale-95 disabled:opacity-50 transition-all"
                 >
                   {loading ? 'กำลังประมวลผล...' : 'ยืนยันและเริ่มต้นใช้งาน →'}
                 </button>
-             </div>
+             </form>
           </div>
         )}
 

@@ -1,9 +1,14 @@
+import { getDormDbFromSession } from '@/lib/db';
 import { NextResponse } from 'next/server';
-import { neon } from '@neondatabase/serverless';
+
 import { auth } from '@/auth';
 
 export async function GET(request: Request) {
-  try {
+    const session = await auth();
+  if (!session || !(session.user as any)?.dormDbName) return new Response(JSON.stringify({ success: false, message: 'Unauthorized or missing dormDbName' }), { status: 401, headers: { 'Content-Type': 'application/json' } });
+  const sql = getDormDbFromSession(session);
+
+try {
     const session = await auth();
     if (!session?.user?.email) {
       return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
@@ -16,7 +21,7 @@ export async function GET(request: Request) {
       return NextResponse.json({ success: false, message: 'Room ID is required' }, { status: 400 });
     }
 
-    const sql = neon(process.env.DATABASE_URL || 'postgres://postgres:password@localhost/postgres');
+    
     
     const progress = await sql`
       SELECT current_step, booking_data 
@@ -36,7 +41,11 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  try {
+    const session = await auth();
+  if (!session || !(session.user as any)?.dormDbName) return new Response(JSON.stringify({ success: false, message: 'Unauthorized or missing dormDbName' }), { status: 401, headers: { 'Content-Type': 'application/json' } });
+  const sql = getDormDbFromSession(session);
+
+try {
     const session = await auth();
     if (!session?.user?.email) {
       return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
@@ -48,7 +57,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: false, message: 'Missing required fields' }, { status: 400 });
     }
 
-    const sql = neon(process.env.DATABASE_URL || 'postgres://postgres:password@localhost/postgres');
+    
     
     await sql`
       INSERT INTO booking_progress (user_email, room_id, current_step, booking_data, updated_at)
@@ -68,7 +77,11 @@ export async function POST(request: Request) {
 }
 
 export async function DELETE(request: Request) {
-  try {
+    const session = await auth();
+  if (!session || !(session.user as any)?.dormDbName) return new Response(JSON.stringify({ success: false, message: 'Unauthorized or missing dormDbName' }), { status: 401, headers: { 'Content-Type': 'application/json' } });
+  const sql = getDormDbFromSession(session);
+
+try {
     const session = await auth();
     if (!session?.user?.email) {
       return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
@@ -76,7 +89,7 @@ export async function DELETE(request: Request) {
 
     const { roomId } = await request.json();
 
-    const sql = neon(process.env.DATABASE_URL || 'postgres://postgres:password@localhost/postgres');
+    
     
     await sql`
       DELETE FROM booking_progress 

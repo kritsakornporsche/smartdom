@@ -18,6 +18,7 @@ const navItems = [
     group: 'การเงินและสัญญา',
     items: [
       { href: '/owner/contracts', label: 'สัญญาเช่าอัตโนมัติ', icon: '📝' },
+      { href: '/owner/meters', label: 'จดมิเตอร์น้ำ-ไฟ', icon: '⚡' },
       { href: '/owner/billing', label: 'การเงินและค่าเช่า', icon: '💰' },
       { href: '/owner/accounting', label: 'บัญชีหอพัก', icon: '📈' },
     ],

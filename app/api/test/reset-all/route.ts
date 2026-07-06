@@ -1,4 +1,4 @@
-import { neon } from '@neondatabase/serverless';
+import { getDormDbFromSession } from '@/lib/db';
 import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
 
@@ -11,7 +11,7 @@ export async function POST() {
     return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
   }
 
-  const sql = neon(process.env.DATABASE_URL || 'postgres://postgres:password@localhost/postgres');
+  const sql = getDormDbFromSession(session);
 
   try {
     // 1. Reset ALL rooms to Available

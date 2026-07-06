@@ -1,18 +1,25 @@
 import { NextResponse } from 'next/server';
-import { neon } from '@neondatabase/serverless';
-
-const platformSql = neon('mysql://root:@localhost:3306/smartdom_platform');
+import { getDb } from '@/lib/db';
+import { auth } from '@/auth';
 
 export async function GET() {
   try {
+    const session = await auth();
+    if (!session || (session.user as any)?.role !== 'platform_admin') {
+      return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
+    }
+
+    const platformSql = getDb();
+    
     const [totalDorms] = await platformSql`SELECT COUNT(*) as count FROM dormitory_registry WHERE status = 'Active'`;
     const [totalSubs] = await platformSql`SELECT COUNT(*) as count FROM subscriptions WHERE status = 'Active'`;
+    
     const [monthRevenue] = await platformSql`
       SELECT COALESCE(SUM(amount), 0) as total FROM platform_accounting
       WHERE type = 'Income' AND MONTH(transaction_date) = MONTH(NOW()) AND YEAR(transaction_date) = YEAR(NOW())
     `;
     const [totalRevenue] = await platformSql`
-      SELECT COALESCE(SUM(amount_paid), 0) as total FROM subscriptions WHERE status != 'Cancelled'
+      SELECT COALESCE(SUM(amount), 0) as total FROM platform_accounting WHERE type = 'Income'
     `;
     const packageBreakdown = await platformSql`
       SELECT p.name, COUNT(s.id) as count

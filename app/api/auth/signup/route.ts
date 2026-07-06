@@ -1,30 +1,7 @@
 import { NextResponse } from 'next/server';
-import { neon } from '@neondatabase/serverless';
+import { getDb } from '@/lib/db';
 import bcrypt from 'bcryptjs';
 
-const sql = neon(process.env.DATABASE_URL || 'postgres://postgres:password@localhost/postgres');
-
-// ─── Ensure users table exists ────────────────────────────────────────────────
-// ─── Ensure users table & columns exist ──────────────────────────────────────
-async function ensureTable() {
-  // Create table using the existing schema (column: name, not full_name)
-  await sql`
-    CREATE TABLE IF NOT EXISTS users (
-      id          SERIAL PRIMARY KEY,
-      name        VARCHAR(255) NOT NULL,
-      email       VARCHAR(255) NOT NULL UNIQUE,
-      password    VARCHAR(255) NOT NULL,
-      role        VARCHAR(50)  NOT NULL DEFAULT 'guest',
-      created_at  TIMESTAMP    DEFAULT NOW()
-    )
-  `;
-  // Add is_active and sub_role columns if they don't exist yet (safe migration)
-  await sql`
-    ALTER TABLE users
-    ADD COLUMN IF NOT EXISTS is_active BOOLEAN NOT NULL DEFAULT TRUE,
-    ADD COLUMN IF NOT EXISTS sub_role VARCHAR(50)
-  `;
-}
 
 // ─── POST /api/auth/signup ─────────────────────────────────────────────────────
 export async function POST(request: Request) {
@@ -76,7 +53,7 @@ export async function POST(request: Request) {
       }
     }
 
-    await ensureTable();
+    const sql = getDb();
 
     // ── Check duplicate email ─────────────────────────────────────────────────
     const existing = await sql`
@@ -94,30 +71,28 @@ export async function POST(request: Request) {
 
     // ── Insert user (use 'name' column to match existing DB schema) ───────────
     const result = await sql`
-      INSERT INTO users (name, email, password, role, sub_role)
+      INSERT INTO users (name, email, password, primary_role)
       VALUES (
         ${full_name.trim()},
         ${email.toLowerCase().trim()},
         ${hashedPassword},
-        ${role},
-        ${role === 'keeper' ? sub_role : null}
+        ${role}
       )
-      RETURNING id, name AS full_name, email, role, sub_role, created_at
     `;
-
-    const user = result[0];
+    
+    // In mysql, INSERT returns an object with insertId, not RETURNING rows
+    const insertId = result.insertId;
 
     return NextResponse.json(
       {
         success: true,
         message: 'สมัครสมาชิกสำเร็จ! ยินดีต้อนรับสู่ SmartDom',
         data: {
-          id: user.id,
-          full_name: user.full_name,
-          email: user.email,
-          role: user.role,
-          sub_role: user.sub_role,
-          created_at: user.created_at,
+          id: insertId,
+          full_name: full_name.trim(),
+          email: email.toLowerCase().trim(),
+          role: role,
+          sub_role: role === 'keeper' ? sub_role : null,
         },
       },
       { status: 201 }
@@ -126,7 +101,7 @@ export async function POST(request: Request) {
     console.error('[POST /api/auth/signup] Error:', error);
 
     // Handle unique constraint violation gracefully
-    if (error.code === '23505') {
+    if (error.code === 'ER_DUP_ENTRY') {
       return NextResponse.json(
         { success: false, message: 'อีเมลนี้ถูกใช้งานแล้ว' },
         { status: 409 }
@@ -153,7 +128,7 @@ export async function GET(request: Request) {
       );
     }
 
-    await ensureTable();
+    const sql = getDb();
 
     const existing = await sql`
       SELECT id FROM users WHERE email = ${email.toLowerCase().trim()}

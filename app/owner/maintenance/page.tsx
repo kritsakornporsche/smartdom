@@ -91,7 +91,7 @@ export default function OwnerMaintenancePage() {
   };
 
   return (
-    <div className="flex-1 flex flex-col h-screen bg-[#080F1E] overflow-hidden overflow-y-auto p-8 lg:p-12">
+    <div className="flex-1 flex flex-col bg-[#080F1E] overflow-y-auto p-8 lg:p-12">
       <div className="max-w-6xl mx-auto w-full space-y-10">
         
         <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 border-b border-white/20/10 pb-8">

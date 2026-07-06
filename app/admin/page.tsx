@@ -131,7 +131,7 @@ export default function AdminDashboardPage() {
                 <div className="flex-1">
                   <h2 className="font-display text-base font-bold text-foreground mb-1.5 whitespace-nowrap">สถานะการเชื่อมต่อฐานข้อมูล</h2>
                   <p className="text-sm text-[#A08D74] leading-relaxed max-w-lg font-medium">
-                    ตรวจสอบการเชื่อมต่อ Neon PostgreSQL แบบเรียลไทม์ หากพบข้อผิดพลาด กรุณาตรวจสอบค่าใน{' '}
+                    ตรวจสอบการเชื่อมต่อ MySQL Server แบบเรียลไทม์ หากพบข้อผิดพลาด กรุณาตรวจสอบค่าใน{' '}
                     <code className="bg-background px-1.5 py-0.5 rounded-md font-mono text-xs text-primary border border-border">.env.local</code>
                   </p>
                 </div>
@@ -164,7 +164,7 @@ export default function AdminDashboardPage() {
               )}
               <div className="mt-5 pt-5 border-t border-border flex items-center gap-8 flex-wrap">
                 {[
-                  { label: 'ฐานข้อมูล', value: 'Neon Serverless PostgreSQL' },
+                  { label: 'ฐานข้อมูล', value: 'MySQL Server' },
                   { label: 'ภูมิภาค', value: 'AWS us-east-1' },
                   { label: 'สถานะ API', value: 'ออนไลน์' },
                 ].map((item) => (

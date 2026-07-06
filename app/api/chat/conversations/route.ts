@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { neon } from '@neondatabase/serverless';
+import { getDormDbFromSession } from '@/lib/db';
 import { auth } from '@/auth';
 
 export async function GET() {
@@ -9,7 +9,7 @@ export async function GET() {
   }
 
   try {
-    const sql = neon(process.env.DATABASE_URL || 'postgres://postgres:password@localhost/postgres');
+    const sql = getDormDbFromSession(session);
     const userResult = await sql`SELECT id, role FROM users WHERE email = ${session.user.email} LIMIT 1`;
     const user = userResult[0];
 
@@ -48,7 +48,7 @@ export async function POST(request: Request) {
 
   try {
     const { dormId } = await request.json();
-    const sql = neon(process.env.DATABASE_URL || 'postgres://postgres:password@localhost/postgres');
+    const sql = getDormDbFromSession(session);
     
     // Get initiating user and their role
     const userResult = await sql`SELECT id, role FROM users WHERE email = ${session.user.email} LIMIT 1`;

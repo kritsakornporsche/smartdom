@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
-import { neon } from '@neondatabase/serverless';
+import { getDormDb } from '@/lib/db';
 
-const sql = neon(process.env.DATABASE_URL || 'postgres://postgres:password@localhost/postgres');
+const sql = getDormDb('smartdom_dorm_1');
 
 async function ensureTable() {
   // Match actual DB schema (column: name, not full_name)

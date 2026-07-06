@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { neon } from '@neondatabase/serverless';
+import { getDormDbFromSession } from '@/lib/db';
 import { auth } from '@/auth';
 
 export async function POST(req: Request) {
@@ -10,7 +10,7 @@ export async function POST(req: Request) {
     const { desiredDate, reason } = await req.json();
     if (!desiredDate) return NextResponse.json({ success: false, message: 'Missing desired date' }, { status: 400 });
 
-    const sql = neon(process.env.DATABASE_URL || 'postgres://postgres:password@localhost/postgres');
+    const sql = getDormDbFromSession(session);
     
     // Find tenant by email
     const tenantRes = await sql`SELECT id FROM tenants WHERE email = ${session.user.email} LIMIT 1`;
@@ -44,7 +44,7 @@ export async function DELETE(req: Request) {
     const { requestId } = await req.json();
     if (!requestId) return NextResponse.json({ success: false, message: 'Missing requestId' }, { status: 400 });
 
-    const sql = neon(process.env.DATABASE_URL || 'postgres://postgres:password@localhost/postgres');
+    const sql = getDormDbFromSession(session);
     
     // Find tenant by email
     const tenantRes = await sql`SELECT id FROM tenants WHERE email = ${session.user.email} LIMIT 1`;

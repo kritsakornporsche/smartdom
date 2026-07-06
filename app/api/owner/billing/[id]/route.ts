@@ -1,8 +1,14 @@
+import { auth } from '@/auth';
+import { getDormDbFromSession } from '@/lib/db';
 import { NextResponse } from 'next/server';
-import { neon } from '@neondatabase/serverless';
+
 
 export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
+    const session = await auth();
+  if (!session || !(session.user as any)?.dormDbName) return new Response(JSON.stringify({ success: false, message: 'Unauthorized or missing dormDbName' }), { status: 401, headers: { 'Content-Type': 'application/json' } });
+  const sql = getDormDbFromSession(session);
+
+const { id } = await params;
   try {
     const body = await req.json();
     const { status } = body;
@@ -11,7 +17,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
       return NextResponse.json({ success: false, message: 'Status is required' }, { status: 400 });
     }
 
-    const sql = neon(process.env.DATABASE_URL || 'postgres://postgres:password@localhost/postgres');
+    
     
     const result = await sql`
       UPDATE bills 
@@ -32,9 +38,13 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
 }
 
 export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
+    const session = await auth();
+  if (!session || !(session.user as any)?.dormDbName) return new Response(JSON.stringify({ success: false, message: 'Unauthorized or missing dormDbName' }), { status: 401, headers: { 'Content-Type': 'application/json' } });
+  const sql = getDormDbFromSession(session);
+
+const { id } = await params;
   try {
-    const sql = neon(process.env.DATABASE_URL || 'postgres://postgres:password@localhost/postgres');
+    
     
     await sql`DELETE FROM bills WHERE id = ${parseInt(id)}`;
     

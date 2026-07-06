@@ -1,12 +1,18 @@
+import { auth } from '@/auth';
+import { getDormDbFromSession } from '@/lib/db';
 import { NextResponse } from 'next/server';
-import { neon } from '@neondatabase/serverless';
+
 
 export async function GET(req: Request) {
-  const { searchParams } = new URL(req.url);
+    const session = await auth();
+  if (!session || !(session.user as any)?.dormDbName) return new Response(JSON.stringify({ success: false, message: 'Unauthorized or missing dormDbName' }), { status: 401, headers: { 'Content-Type': 'application/json' } });
+  const sql = getDormDbFromSession(session);
+
+const { searchParams } = new URL(req.url);
   const dormId = searchParams.get('dormId');
 
   try {
-    const sql = neon(process.env.DATABASE_URL || 'postgres://postgres:password@localhost/postgres');
+    
     
     let query;
     if (dormId) {

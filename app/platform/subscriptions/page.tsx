@@ -20,12 +20,33 @@ export default function PlatformSubscriptions() {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all');
 
-  useEffect(() => {
+  const loadSubs = () => {
     fetch('/api/platform/subscriptions')
       .then(r => r.json())
       .then(d => { if (d.success) setSubs(d.data); })
       .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    loadSubs();
   }, []);
+
+  const handleCancel = async (id: number) => {
+    if (confirm('คุณแน่ใจหรือไม่ว่าต้องการยกเลิกแพ็กเกจและคืนเหรียญ?')) {
+      const res = await fetch('/api/platform/subscriptions/cancel', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id })
+      });
+      const data = await res.json();
+      if (data.success) {
+        alert('ยกเลิกแพ็กเกจสำเร็จ');
+        loadSubs();
+      } else {
+        alert(data.message || 'เกิดข้อผิดพลาด');
+      }
+    }
+  };
 
   const filtered = filter === 'all' ? subs : subs.filter(s => s.status === filter);
   const totalRevenue = subs.filter(s => s.status === 'Active').reduce((sum, s) => sum + Number(s.amount_paid || 0), 0);
@@ -79,6 +100,7 @@ export default function PlatformSubscriptions() {
                   <th className="text-left px-6 py-4 text-white/30 text-xs uppercase tracking-widest font-bold">วันที่เริ่ม</th>
                   <th className="text-left px-6 py-4 text-white/30 text-xs uppercase tracking-widest font-bold">วันหมดอายุ</th>
                   <th className="text-left px-6 py-4 text-white/30 text-xs uppercase tracking-widest font-bold">สถานะ</th>
+                  <th className="text-right px-6 py-4 text-white/30 text-xs uppercase tracking-widest font-bold">จัดการ</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/5">
@@ -109,10 +131,20 @@ export default function PlatformSubscriptions() {
                         'bg-gray-500/20 text-gray-400'
                       }`}>{s.status}</span>
                     </td>
+                    <td className="px-6 py-4 text-right">
+                      {s.status === 'Active' && (
+                        <button 
+                          onClick={() => handleCancel(s.id)}
+                          className="text-xs bg-red-500/10 text-red-400 hover:bg-red-500/20 px-3 py-1.5 rounded-lg font-bold transition-all"
+                        >
+                          ยกเลิก & คืนเหรียญ
+                        </button>
+                      )}
+                    </td>
                   </tr>
                 ))}
                 {filtered.length === 0 && (
-                  <tr><td colSpan={6} className="px-6 py-12 text-center text-white/30 text-sm">ไม่พบข้อมูล</td></tr>
+                  <tr><td colSpan={7} className="px-6 py-12 text-center text-white/30 text-sm">ไม่พบข้อมูล</td></tr>
                 )}
               </tbody>
             </table>

@@ -91,7 +91,7 @@ export default function OwnerChatPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#faf9f6] flex flex-col">
+    <div className="flex-1 flex flex-col bg-[#faf9f6]">
       <div className="flex-1 flex overflow-hidden">
         {/* Sidebar */}
         <div className="w-80 lg:w-96 bg-[#0F172A] border-r border-black/5 flex flex-col">

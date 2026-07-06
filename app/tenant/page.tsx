@@ -1,4 +1,4 @@
-import { neon } from '@neondatabase/serverless';
+import { neon } from '@/lib/mysql-adapter';
 import { auth } from '@/auth';
 import Link from 'next/link';
 import AnnouncementsSection from '../components/AnnouncementsSection';
@@ -10,7 +10,7 @@ async function getDashboardData() {
   const session = await auth();
   if (!session?.user?.email) return { unpaidBills: [], recentMaintenance: [], roomInfo: null };
 
-  const sql = neon(process.env.DATABASE_URL || 'postgres://postgres:password@localhost/postgres');
+  const sql = neon(process.env.DATABASE_URL || 'mysql://smartdom:smartdom@kritsakorn.thddns.net:5994/smartdom_dorm_1');
   
   // Find tenant and room info using COALESCE to bridge data gaps
   const roomRes = await sql`

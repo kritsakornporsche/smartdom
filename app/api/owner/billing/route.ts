@@ -1,8 +1,14 @@
+import { auth } from '@/auth';
+import { getDormDbFromSession } from '@/lib/db';
 import { NextResponse } from 'next/server';
-import { neon } from '@neondatabase/serverless';
+
 
 export async function GET(req: Request) {
-  const { searchParams } = new URL(req.url);
+    const session = await auth();
+  if (!session || !(session.user as any)?.dormDbName) return new Response(JSON.stringify({ success: false, message: 'Unauthorized or missing dormDbName' }), { status: 401, headers: { 'Content-Type': 'application/json' } });
+  const sql = getDormDbFromSession(session);
+
+const { searchParams } = new URL(req.url);
   const dormId = searchParams.get('dormId');
 
   if (!dormId) {
@@ -10,7 +16,7 @@ export async function GET(req: Request) {
   }
 
   try {
-    const sql = neon(process.env.DATABASE_URL || 'postgres://postgres:password@localhost/postgres');
+    
     
     // Fetch all bills for tenants in this dormitory
     const bills = await sql`
@@ -39,7 +45,11 @@ export async function GET(req: Request) {
 }
 
 export async function POST(req: Request) {
-  try {
+    const session = await auth();
+  if (!session || !(session.user as any)?.dormDbName) return new Response(JSON.stringify({ success: false, message: 'Unauthorized or missing dormDbName' }), { status: 401, headers: { 'Content-Type': 'application/json' } });
+  const sql = getDormDbFromSession(session);
+
+try {
     const body = await req.json();
     const { tenant_id, title, amount, billing_cycle, due_date } = body;
 
@@ -47,7 +57,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: false, message: 'Missing required fields' }, { status: 400 });
     }
 
-    const sql = neon(process.env.DATABASE_URL || 'postgres://postgres:password@localhost/postgres');
+    
     
     const result = await sql`
       INSERT INTO bills (tenant_id, title, amount, billing_cycle, due_date, status)

@@ -1,8 +1,14 @@
+import { auth } from '@/auth';
+import { getDormDbFromSession } from '@/lib/db';
 import { NextResponse } from 'next/server';
-import { neon } from '@neondatabase/serverless';
+
 
 export async function GET(req: Request) {
-  const { searchParams } = new URL(req.url);
+    const session = await auth();
+  if (!session || !(session.user as any)?.dormDbName) return new Response(JSON.stringify({ success: false, message: 'Unauthorized or missing dormDbName' }), { status: 401, headers: { 'Content-Type': 'application/json' } });
+  const sql = getDormDbFromSession(session);
+
+const { searchParams } = new URL(req.url);
   const dormId = searchParams.get('dormId');
 
   if (!dormId) {
@@ -10,7 +16,7 @@ export async function GET(req: Request) {
   }
 
   try {
-    const sql = neon(process.env.DATABASE_URL || 'postgres://postgres:password@localhost/postgres');
+    
     
     // Fetch all contracts for this dormitory
     const contracts = await sql`
@@ -42,7 +48,11 @@ export async function GET(req: Request) {
 }
 
 export async function POST(req: Request) {
-  try {
+    const session = await auth();
+  if (!session || !(session.user as any)?.dormDbName) return new Response(JSON.stringify({ success: false, message: 'Unauthorized or missing dormDbName' }), { status: 401, headers: { 'Content-Type': 'application/json' } });
+  const sql = getDormDbFromSession(session);
+
+try {
     const body = await req.json();
     const { tenant_id, room_id, start_date, end_date, deposit_amount } = body;
 
@@ -50,7 +60,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: false, message: 'Missing required fields' }, { status: 400 });
     }
 
-    const sql = neon(process.env.DATABASE_URL || 'postgres://postgres:password@localhost/postgres');
+    
     
     // 1. Create the contract (status 'Pending Signature' by default if we want automation)
     // Actually table default was 'Active', but for automation we want them to sign.

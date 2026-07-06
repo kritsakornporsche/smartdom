@@ -7,6 +7,7 @@ interface Package {
   name: string;
   price: number;
   max_rooms: number;
+  max_dorms: number;
   duration_days: number;
   features: string[];
   is_active: boolean;
@@ -17,7 +18,7 @@ export default function PlatformPackages() {
   const [loading, setLoading] = useState(true);
   const [editPkg, setEditPkg] = useState<Package | null>(null);
   const [showForm, setShowForm] = useState(false);
-  const [form, setForm] = useState({ name: '', price: 0, max_rooms: 10, duration_days: 30, features: '' });
+  const [form, setForm] = useState({ name: '', price: 0, max_rooms: 10, max_dorms: 1, duration_days: 30, features: '' });
 
   const loadPackages = () => {
     fetch('/api/platform/packages')
@@ -46,8 +47,22 @@ export default function PlatformPackages() {
     }
     setShowForm(false);
     setEditPkg(null);
-    setForm({ name: '', price: 0, max_rooms: 10, duration_days: 30, features: '' });
+    setForm({ name: '', price: 0, max_rooms: 10, max_dorms: 1, duration_days: 30, features: '' });
     loadPackages();
+  };
+
+  const handleDelete = async (id: number) => {
+    if (confirm('คุณแน่ใจหรือไม่ว่าต้องการลบแพ็กเกจนี้? (การลบจะไม่สามารถกู้คืนได้)')) {
+      const res = await fetch(`/api/platform/packages?id=${id}`, {
+        method: 'DELETE',
+      });
+      const data = await res.json();
+      if (!data.success) {
+        alert(data.message);
+      } else {
+        loadPackages();
+      }
+    }
   };
 
   const openEdit = (pkg: Package) => {
@@ -56,6 +71,7 @@ export default function PlatformPackages() {
       name: pkg.name,
       price: pkg.price,
       max_rooms: pkg.max_rooms,
+      max_dorms: pkg.max_dorms || 1,
       duration_days: pkg.duration_days,
       features: pkg.features.join('\n'),
     });
@@ -78,7 +94,7 @@ export default function PlatformPackages() {
           <p className="text-white/40 text-xs font-semibold uppercase tracking-widest mt-0.5">Package Management</p>
         </div>
         <button
-          onClick={() => { setEditPkg(null); setForm({ name: '', price: 0, max_rooms: 10, duration_days: 30, features: '' }); setShowForm(true); }}
+          onClick={() => { setEditPkg(null); setForm({ name: '', price: 0, max_rooms: 10, max_dorms: 1, duration_days: 30, features: '' }); setShowForm(true); }}
           className="px-5 py-2.5 bg-violet-600 text-white rounded-xl font-bold text-sm hover:bg-violet-500 transition-colors shadow-lg shadow-violet-600/30"
         >
           + เพิ่มแพ็กเกจ
@@ -103,7 +119,7 @@ export default function PlatformPackages() {
                     ฿{Number(pkg.price).toLocaleString()}
                     <span className="text-sm text-white/30 font-semibold">/เดือน</span>
                   </p>
-                  <p className="text-white/40 text-xs mb-6">สูงสุด {pkg.max_rooms.toLocaleString()} ห้อง • {pkg.duration_days} วัน</p>
+                  <p className="text-white/40 text-xs mb-6">สูงสุด {pkg.max_rooms.toLocaleString()} ห้อง • {(pkg.max_dorms || 1).toLocaleString()} หอพัก • {pkg.duration_days} วัน</p>
                   <ul className="space-y-2 mb-6">
                     {pkg.features.map((f, j) => (
                       <li key={j} className="flex items-start gap-2 text-white/60 text-sm">
@@ -112,12 +128,20 @@ export default function PlatformPackages() {
                       </li>
                     ))}
                   </ul>
-                  <button
-                    onClick={() => openEdit(pkg)}
-                    className="w-full py-2.5 bg-white/5 hover:bg-white/10 text-white/60 hover:text-white rounded-xl text-sm font-bold transition-all"
-                  >
-                    แก้ไข
-                  </button>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => openEdit(pkg)}
+                      className="flex-1 py-2.5 bg-white/5 hover:bg-white/10 text-white/60 hover:text-white rounded-xl text-sm font-bold transition-all"
+                    >
+                      แก้ไข
+                    </button>
+                    <button
+                      onClick={() => handleDelete(pkg.id)}
+                      className="py-2.5 px-4 bg-red-500/10 hover:bg-red-500/20 text-red-400 hover:text-red-300 rounded-xl text-sm font-bold transition-all"
+                    >
+                      ลบ
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}
@@ -140,22 +164,31 @@ export default function PlatformPackages() {
                   placeholder="เช่น Professional"
                 />
               </div>
+              <div>
+                <label className="text-white/50 text-xs font-bold uppercase tracking-wider block mb-1.5">ราคา (บาท)</label>
+                <input
+                  type="number"
+                  value={form.price}
+                  onChange={e => setForm(f => ({ ...f, price: Number(e.target.value) }))}
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-violet-500"
+                />
+              </div>
               <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="text-white/50 text-xs font-bold uppercase tracking-wider block mb-1.5">ราคา (บาท)</label>
-                  <input
-                    type="number"
-                    value={form.price}
-                    onChange={e => setForm(f => ({ ...f, price: Number(e.target.value) }))}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-violet-500"
-                  />
-                </div>
                 <div>
                   <label className="text-white/50 text-xs font-bold uppercase tracking-wider block mb-1.5">จำนวนห้องสูงสุด</label>
                   <input
                     type="number"
                     value={form.max_rooms}
                     onChange={e => setForm(f => ({ ...f, max_rooms: Number(e.target.value) }))}
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-violet-500"
+                  />
+                </div>
+                <div>
+                  <label className="text-white/50 text-xs font-bold uppercase tracking-wider block mb-1.5">จำนวนหอพักสูงสุด</label>
+                  <input
+                    type="number"
+                    value={form.max_dorms}
+                    onChange={e => setForm(f => ({ ...f, max_dorms: Number(e.target.value) }))}
                     className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-violet-500"
                   />
                 </div>

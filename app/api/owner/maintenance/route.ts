@@ -1,25 +1,30 @@
 import { NextResponse } from 'next/server';
-import { neon } from '@neondatabase/serverless';
+import { auth } from '@/auth';
+import { getDormDbFromSession } from '@/lib/db';
 
 export async function GET(req: Request) {
-  const { searchParams } = new URL(req.url);
-  const dormId = searchParams.get('dormId');
-
-  if (!dormId) return NextResponse.json({ success: false, message: 'Dorm ID required' }, { status: 400 });
-
   try {
-    const sql = neon(process.env.DATABASE_URL || 'postgres://postgres:password@localhost/postgres');
+    const session = await auth();
+    if (!session || (session.user as any).role !== 'owner' || !(session.user as any).dormDbName) {
+      return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
+    }
+
+    const sql = getDormDbFromSession(session);
+    
+    const targetDormId = parseInt((session.user as any).dormId, 10);
+    if (!targetDormId) {
+      return NextResponse.json({ success: false, message: 'Owner has no dormitory assigned' }, { status: 400 });
+    }
     
     const requests = await sql`
-      SELECT m.*, t.name as tenant_name, t.phone as tenant_phone
+      SELECT m.*, t.id_card_number as tenant_id_card
       FROM maintenance_requests m
-      JOIN tenants t ON m.tenant_id = t.id
-      JOIN rooms r ON r.id = COALESCE(t.room_id, (SELECT room_id FROM contracts c WHERE c.tenant_id = t.id AND c.status = 'Active' LIMIT 1))
-      WHERE r.dorm_id = ${parseInt(dormId)}
+      LEFT JOIN tenants t ON m.tenant_id = t.id
+      WHERE m.dorm_id = ${targetDormId}
       ORDER BY 
         CASE 
           WHEN m.status = 'Pending' THEN 1
-          WHEN m.status = 'In Progress' THEN 2
+          WHEN m.status = 'InProgress' THEN 2
           ELSE 3
         END,
         m.created_at DESC

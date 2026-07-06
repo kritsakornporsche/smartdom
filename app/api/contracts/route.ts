@@ -1,16 +1,21 @@
-import { neon } from '@neondatabase/serverless';
+import { getDormDbFromSession } from '@/lib/db';
+
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
 
 export async function POST(req: NextRequest) {
-  try {
+    const session = await auth();
+  if (!session || !(session.user as any)?.dormDbName) return new Response(JSON.stringify({ success: false, message: 'Unauthorized or missing dormDbName' }), { status: 401, headers: { 'Content-Type': 'application/json' } });
+  const sql = getDormDbFromSession(session);
+
+try {
     const session = await auth();
     if (!session || !session.user) {
       return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
     }
 
     const { roomId, signature, startDate, endDate, depositAmount, monthlyRent, tenantName } = await req.json();
-    const sql = neon(process.env.DATABASE_URL || 'postgres://postgres:password@localhost/postgres');
+    
 
     // 1. Resolve tenant identity (Create if missing)
     const userEmail = session.user.email;

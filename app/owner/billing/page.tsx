@@ -173,7 +173,7 @@ export default function OwnerBillingPage() {
     .reduce((acc, b) => acc + Number(b.amount), 0);
 
   return (
-    <div className="min-h-screen bg-[#080F1E] p-8 lg:p-12">
+    <div className="flex-1 overflow-y-auto bg-[#080F1E] p-8 lg:p-12">
       <div className="max-w-7xl mx-auto space-y-10">
         
         {/* Header Section */}

@@ -1,4 +1,4 @@
-const { neon } = require('@neondatabase/serverless');
+const { neon } = require('@/lib/mysql-adapter');
 require('dotenv').config({ path: '.env.local' });
 
 async function run() {

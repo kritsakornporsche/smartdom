@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { neon } from '@neondatabase/serverless';
+import { getDormDbFromSession } from '@/lib/db';
 import { auth } from '@/auth';
 
 export async function POST(request: Request) {
@@ -14,7 +14,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: false, message: 'Description is required' }, { status: 400 });
     }
 
-    const sql = neon(process.env.DATABASE_URL || 'postgres://postgres:password@localhost/postgres');
+    const sql = getDormDbFromSession(session);
     
     // Find tenant ID and room_number using COALESCE to handle data migration gaps
     const tenantRes = await sql`

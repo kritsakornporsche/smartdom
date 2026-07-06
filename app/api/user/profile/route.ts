@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { neon } from '@neondatabase/serverless';
+import { getDormDbFromSession, getPlatformDb } from '@/lib/db';
 import { auth } from '@/auth';
 import bcrypt from 'bcryptjs';
 
@@ -10,7 +10,13 @@ export async function GET() {
       return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
     }
 
-    const sql = neon(process.env.DATABASE_URL || 'postgres://postgres:password@localhost/postgres');
+    let sql;
+    if ((session.user as any).role === 'platform_admin') {
+      sql = getPlatformDb();
+    } else {
+      sql = getDormDbFromSession(session);
+    }
+    
     const userResult = await sql`
       SELECT id, email, name, role, created_at, image_url, phone, bio
       FROM users
@@ -36,7 +42,13 @@ export async function PATCH(request: Request) {
     }
 
     const { name, phone, bio, image_url, password } = await request.json();
-    const sql = neon(process.env.DATABASE_URL || 'postgres://postgres:password@localhost/postgres');
+    
+    let sql;
+    if ((session.user as any).role === 'platform_admin') {
+      sql = getPlatformDb();
+    } else {
+      sql = getDormDbFromSession(session);
+    }
 
     // If password is being updated
     if (password) {

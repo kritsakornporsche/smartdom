@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
-import { neon } from '@neondatabase/serverless';
+import { neon } from '@/lib/mysql-adapter';
 
-const platformSql = neon('mysql://root:@localhost:3306/smartdom_platform');
+const platformSql = neon('mysql://smartdom:smartdom@kritsakorn.thddns.net:5994/smartdom_platform');
 
 export async function GET() {
   try {

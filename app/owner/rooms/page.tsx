@@ -221,7 +221,7 @@ export default function RoomsManagement() {
   };
 
   return (
-    <div className="flex-1 flex flex-col h-screen bg-[#080F1E] overflow-hidden">
+    <div className="flex-1 flex flex-col bg-[#080F1E] overflow-hidden">
       {/* Header */}
       <header className="h-24 bg-[#0F172A]/70 backdrop-blur-xl border-b border-white/20/10 flex items-center justify-between px-10 shrink-0 z-10 shadow-sm transition-all duration-300">
         <div className="flex flex-col">

@@ -1,11 +1,27 @@
 import { NextResponse } from 'next/server';
-import { neon } from '@neondatabase/serverless';
+import { getPlatformDb, getDormDb, getDormDbFromSession } from '@/lib/db';
+import { auth } from '@/auth';
 
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const resolvedParams = await params;
     const id = resolvedParams.id;
-    const sql = neon(process.env.DATABASE_URL || 'postgres://postgres:password@localhost/postgres');
+    const { searchParams } = new URL(request.url);
+    const dormId = searchParams.get('dormId');
+    
+    let sql;
+    if (dormId) {
+      const platformSql = getPlatformDb();
+      const reg = await platformSql`SELECT db_name FROM dormitory_registry WHERE id = ${parseInt(dormId)} LIMIT 1`;
+      if (reg.length === 0) return NextResponse.json({ success: false, message: 'Dormitory not found' }, { status: 404 });
+      sql = getDormDb(reg[0].db_name);
+    } else {
+      const session = await auth();
+      if (!session || !(session.user as any)?.dormDbName) {
+        return NextResponse.json({ success: false, message: 'Missing dormId or session' }, { status: 400 });
+      }
+      sql = getDormDbFromSession(session);
+    }
     
     // Fetch room with dorm, owner and keeper info
     const result = await sql`
@@ -34,6 +50,11 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
 
 export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const session = await auth();
+    if (!session || (session.user as any).role !== 'owner') {
+      return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
+    }
+
     const resolvedParams = await params;
     const id = resolvedParams.id;
     const body = await request.json();
@@ -43,17 +64,10 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
       return NextResponse.json({ success: false, message: 'Missing required fields' }, { status: 400 });
     }
 
-    const sql = neon(process.env.DATABASE_URL || 'postgres://postgres:password@localhost/postgres');
+    const sql = getDormDbFromSession(session);
     
-    // Get the dorm_id of the room being updated
-    const roomInfo = await sql`SELECT dorm_id FROM rooms WHERE id = ${id}`;
-    if (roomInfo.length === 0) {
-      return NextResponse.json({ success: false, message: 'Room not found' }, { status: 404 });
-    }
-    const dorm_id = roomInfo[0].dorm_id;
-
     // Check if room number already exists for a DIFFERENT room IN THE SAME DORMITORY
-    const existing = await sql`SELECT id FROM rooms WHERE room_number = ${room_number} AND dorm_id = ${dorm_id} AND id != ${id}`;
+    const existing = await sql`SELECT id FROM rooms WHERE room_number = ${room_number} AND id != ${id}`;
     if (existing.length > 0) {
       return NextResponse.json({ success: false, message: 'Room number already exists in this dormitory' }, { status: 409 });
     }
@@ -83,6 +97,11 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
 
 export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const session = await auth();
+    if (!session || (session.user as any).role !== 'owner') {
+      return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
+    }
+
     const resolvedParams = await params;
     const id = resolvedParams.id;
 
@@ -90,7 +109,7 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
       return NextResponse.json({ success: false, message: 'Room ID is required' }, { status: 400 });
     }
 
-    const sql = neon(process.env.DATABASE_URL || 'postgres://postgres:password@localhost/postgres');
+    const sql = getDormDbFromSession(session);
     
     const result = await sql`
       DELETE FROM rooms

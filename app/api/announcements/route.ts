@@ -1,5 +1,6 @@
+import { getDormDbFromSession } from '@/lib/db';
 import { NextResponse } from 'next/server';
-import { neon } from '@neondatabase/serverless';
+
 import { auth } from '@/auth';
 
 // Get current user id from session helper (if needed)
@@ -9,8 +10,12 @@ const getUserFromSession = async () => {
 };
 
 export async function GET() {
-  try {
-    const sql = neon(process.env.DATABASE_URL || 'postgres://postgres:password@localhost/postgres');
+    const session = await auth();
+  if (!session || !(session.user as any)?.dormDbName) return new Response(JSON.stringify({ success: false, message: 'Unauthorized or missing dormDbName' }), { status: 401, headers: { 'Content-Type': 'application/json' } });
+  const sql = getDormDbFromSession(session);
+
+try {
+    
     
     // Fetch active announcements, newest first
     const news = await sql`
@@ -29,7 +34,11 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  try {
+    const session = await auth();
+  if (!session || !(session.user as any)?.dormDbName) return new Response(JSON.stringify({ success: false, message: 'Unauthorized or missing dormDbName' }), { status: 401, headers: { 'Content-Type': 'application/json' } });
+  const sql = getDormDbFromSession(session);
+
+try {
     const user = await getUserFromSession();
     // Only 'owner' or 'admin' can post news
     const role = (user as any)?.role;
@@ -42,7 +51,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: false, message: 'Missing fields' }, { status: 400 });
     }
 
-    const sql = neon(process.env.DATABASE_URL || 'postgres://postgres:password@localhost/postgres');
+    
     const result = await sql`
       INSERT INTO announcements (title, content, category, created_by)
       VALUES (${title}, ${content}, ${category || 'info'}, ${user.id})

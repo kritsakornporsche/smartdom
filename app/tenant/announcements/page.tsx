@@ -1,4 +1,4 @@
-import { neon } from '@neondatabase/serverless';
+import { neon } from '@/lib/mysql-adapter';
 import { auth } from '@/auth';
 import AcknowledgeButton from './components/AcknowledgeButton';
 
@@ -6,7 +6,7 @@ async function getAnnouncements() {
   const session = await auth();
   if (!session?.user?.email) return [];
 
-  const sql = neon(process.env.DATABASE_URL || 'postgres://postgres:password@localhost/postgres');
+  const sql = neon(process.env.DATABASE_URL || 'mysql://smartdom:smartdom@kritsakorn.thddns.net:5994/smartdom_dorm_1');
   
   // Find tenant by email
   const tenantRes = await sql`SELECT id FROM tenants WHERE email = ${session.user.email} LIMIT 1`;

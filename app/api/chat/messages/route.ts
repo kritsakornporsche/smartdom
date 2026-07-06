@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { neon } from '@neondatabase/serverless';
+import { getDormDbFromSession } from '@/lib/db';
 import { auth } from '@/auth';
 
 export async function GET(request: Request) {
@@ -16,7 +16,7 @@ export async function GET(request: Request) {
   }
 
   try {
-    const sql = neon(process.env.DATABASE_URL || 'postgres://postgres:password@localhost/postgres');
+    const sql = getDormDbFromSession(session);
     
     // Security: Check if user belongs to this conversation
     const userResult = await sql`SELECT id FROM users WHERE email = ${session.user.email} LIMIT 1`;
@@ -52,7 +52,7 @@ export async function POST(request: Request) {
 
   try {
     const { conversationId, message } = await request.json();
-    const sql = neon(process.env.DATABASE_URL || 'postgres://postgres:password@localhost/postgres');
+    const sql = getDormDbFromSession(session);
 
     const userResult = await sql`SELECT id FROM users WHERE email = ${session.user.email} LIMIT 1`;
     const userId = userResult[0].id;

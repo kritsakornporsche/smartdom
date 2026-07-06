@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
-import { neon } from '@neondatabase/serverless';
+import { neon } from '@/lib/mysql-adapter';
 import bcrypt from 'bcryptjs';
 
-const MYSQL_BASE = 'mysql://root:@localhost:3306';
+const MYSQL_BASE = 'mysql://smartdom:smartdom@kritsakorn.thddns.net:5994';
 const platformSql = neon(`${MYSQL_BASE}/smartdom_platform`);
 
 export async function POST(request: Request) {

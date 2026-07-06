@@ -13,7 +13,7 @@ export default auth((req) => {
   
   console.log(`[Proxy] ${req.method} ${nextUrl.pathname} | LoggedIn: ${isLoggedIn}`);
 
-  const protectedPrefixes = ["admin", "owner", "keeper", "tenant"];
+  const protectedPrefixes = ["admin", "owner", "keeper", "tenant", "platform"];
   const pathParts = nextUrl.pathname.split("/");
   const currentPrefix = pathParts[1];
 
@@ -25,9 +25,10 @@ export default auth((req) => {
     }
     
     // Strict role check
-    if (user.role !== currentPrefix) {
+    const requiredRole = currentPrefix === 'platform' ? 'platform_admin' : currentPrefix;
+    if (user.role !== requiredRole && !(currentPrefix === 'admin' && user.role === 'platform_admin')) {
       const role = user?.role || 'guest';
-      const fallback = role === 'guest' ? '/explore' : `/${role}`;
+      const fallback = role === 'platform_admin' ? '/platform' : (role === 'guest' ? '/explore' : `/${role}`);
       return NextResponse.redirect(new URL(fallback, nextUrl));
     }
   }

@@ -8,6 +8,7 @@ interface Package {
   name: string;
   price: number;
   max_rooms: number;
+  max_dorms: number;
   duration_days: number;
   features: string[];
 }
@@ -35,6 +36,9 @@ export default function OwnerSubscription() {
   const [showTopUp, setShowTopUp] = useState(false);
   const [topUpAmount, setTopUpAmount] = useState<number>(500);
 
+  const [confirmDialog, setConfirmDialog] = useState<{ isOpen: boolean; message: string; onConfirm: () => void } | null>(null);
+  const [alertDialog, setAlertDialog] = useState<{ isOpen: boolean; message: string } | null>(null);
+
   const loadData = async () => {
     setLoading(true);
     try {
@@ -46,7 +50,9 @@ export default function OwnerSubscription() {
       const dataS = await resS.json();
       
       if (dataS.success) {
-        const dId = dataS.dorm?.id;
+        // Find the active dorm from the registry (dorms array) using the selected db name
+        const activeRegistryDorm = dataS.dorms?.find((d: any) => d.db_name === dataS.dormDbName) || dataS.dorms?.[0];
+        const dId = activeRegistryDorm?.id;
         setActiveDormId(dId);
         
         if (dataS.subscription) {
@@ -82,39 +88,60 @@ export default function OwnerSubscription() {
   }, [session]);
 
   const handleTopUp = async () => {
-    if (!activeDormId || topUpAmount <= 0) return;
-    const res = await fetch('/api/owner/wallet', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ dormId: activeDormId, amount: topUpAmount }),
-    });
-    const data = await res.json();
-    if (data.success) {
-      alert(data.message);
-      setShowTopUp(false);
-      loadData();
-    } else {
-      alert(data.message);
+    if (!activeDormId) {
+      setAlertDialog({ isOpen: true, message: 'ไม่พบข้อมูลหอพักที่ใช้งานอยู่ กรุณารีเฟรชหน้าเว็บ' });
+      return;
+    }
+    if (topUpAmount <= 0) {
+      setAlertDialog({ isOpen: true, message: 'กรุณาระบุจำนวนเงินที่ถูกต้อง' });
+      return;
+    }
+    try {
+      const res = await fetch('/api/owner/wallet', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ dormId: activeDormId, amount: topUpAmount }),
+      });
+      const data = await res.json();
+      setAlertDialog({ isOpen: true, message: data.message });
+      if (data.success) {
+        setShowTopUp(false);
+        loadData();
+      }
+    } catch (err) {
+      console.error(err);
+      setAlertDialog({ isOpen: true, message: 'เกิดข้อผิดพลาดในการเติมเงิน กรุณาลองใหม่อีกครั้ง' });
     }
   };
 
   const handleBuyPackage = async (pkg: Package) => {
     if (!activeDormId) return;
     if (wallet.coins < pkg.price) {
-      alert('เหรียญไม่เพียงพอ กรุณาเติมเงิน');
+      setAlertDialog({ isOpen: true, message: 'เหรียญไม่เพียงพอ กรุณาเติมเงิน' });
       setShowTopUp(true);
       return;
     }
-    if (!confirm(`ยืนยันการใช้ ${pkg.price} เหรียญ เพื่อซื้อแพ็กเกจ ${pkg.name} ใช่หรือไม่?`)) return;
-
-    const res = await fetch('/api/owner/subscription', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ dormId: activeDormId, packageId: pkg.id }),
+    
+    setConfirmDialog({
+      isOpen: true,
+      message: `ยืนยันการใช้ ${pkg.price} เหรียญ เพื่อซื้อแพ็กเกจ ${pkg.name} ใช่หรือไม่?`,
+      onConfirm: async () => {
+        setConfirmDialog(null);
+        try {
+          const res = await fetch('/api/owner/subscription', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ dormId: activeDormId, packageId: pkg.id }),
+          });
+          const data = await res.json();
+          setAlertDialog({ isOpen: true, message: data.message });
+          if (data.success) loadData();
+        } catch (err) {
+          console.error(err);
+          setAlertDialog({ isOpen: true, message: 'เกิดข้อผิดพลาดในการซื้อแพ็กเกจ กรุณาลองใหม่อีกครั้ง' });
+        }
+      }
     });
-    const data = await res.json();
-    alert(data.message);
-    if (data.success) loadData();
   };
 
   if (loading) return (
@@ -183,7 +210,7 @@ export default function OwnerSubscription() {
                 <div key={pkg.id} className="bg-[#0F172A] border border-white/20 rounded-2xl p-6 shadow-sm hover:border-primary hover:shadow-md transition-all flex flex-col">
                   <h4 className="text-lg font-black text-white mb-2">{pkg.name}</h4>
                   <p className="text-3xl font-black text-primary mb-1">{Number(pkg.price).toLocaleString()} <span className="text-sm text-white/50">เหรียญ</span></p>
-                  <p className="text-white/50 text-xs font-semibold mb-6">รองรับ {pkg.max_rooms} ห้อง • {pkg.duration_days} วัน</p>
+                  <p className="text-white/50 text-xs font-semibold mb-6">รองรับ {pkg.max_rooms} ห้อง • {pkg.max_dorms || 1} หอพัก • {pkg.duration_days} วัน</p>
                   
                   <ul className="space-y-3 mb-8 flex-1">
                     {pkg.features.map((f, i) => (
@@ -251,6 +278,52 @@ export default function OwnerSubscription() {
             >
               ยืนยันการเติมเงิน
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Alert Dialog */}
+      {alertDialog?.isOpen && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[60] p-4" onClick={() => setAlertDialog(null)}>
+          <div className="bg-[#0F172A] border border-white/10 rounded-[32px] p-8 w-full max-w-sm shadow-2xl text-center" onClick={e => e.stopPropagation()}>
+            <div className="w-16 h-16 bg-primary/10 text-primary rounded-full flex items-center justify-center mx-auto mb-6">
+              <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            </div>
+            <h3 className="text-white font-black text-xl mb-4">แจ้งเตือนระบบ</h3>
+            <p className="text-white/70 font-medium mb-8 leading-relaxed">{alertDialog.message}</p>
+            <button 
+              onClick={() => setAlertDialog(null)}
+              className="w-full py-4 bg-white/10 text-white hover:bg-white/20 rounded-xl font-black transition-all"
+            >
+              ตกลง
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Confirm Dialog */}
+      {confirmDialog?.isOpen && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[60] p-4" onClick={() => setConfirmDialog(null)}>
+          <div className="bg-[#0F172A] border border-white/10 rounded-[32px] p-8 w-full max-w-sm shadow-2xl text-center" onClick={e => e.stopPropagation()}>
+            <div className="w-16 h-16 bg-yellow-500/10 text-yellow-500 rounded-full flex items-center justify-center mx-auto mb-6">
+              <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            </div>
+            <h3 className="text-white font-black text-xl mb-4">ยืนยันการดำเนินการ</h3>
+            <p className="text-white/70 font-medium mb-8 leading-relaxed">{confirmDialog.message}</p>
+            <div className="flex gap-3">
+              <button 
+                onClick={() => setConfirmDialog(null)}
+                className="flex-1 py-4 bg-white/5 text-white/50 hover:bg-white/10 hover:text-white rounded-xl font-black transition-all"
+              >
+                ยกเลิก
+              </button>
+              <button 
+                onClick={confirmDialog.onConfirm}
+                className="flex-1 py-4 bg-primary text-white rounded-xl font-black hover:bg-primary/90 transition-all shadow-lg shadow-primary/20"
+              >
+                ตกลง
+              </button>
+            </div>
           </div>
         </div>
       )}

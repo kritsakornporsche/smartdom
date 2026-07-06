@@ -37,6 +37,23 @@ export default function PlatformDashboard() {
   const [recentSubs, setRecentSubs] = useState<RecentSub[]>([]);
   const [packageBreakdown, setPackageBreakdown] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [dbStatus, setDbStatus] = useState<'checking' | 'connected' | 'error'>('checking');
+  const [errorDetails, setErrorDetails] = useState<string>('');
+
+  useEffect(() => {
+    async function checkDb() {
+      try {
+        const res = await fetch('/api/db-test');
+        const data = await res.json();
+        if (data.success) setDbStatus('connected');
+        else { setDbStatus('error'); setErrorDetails(data.error); }
+      } catch (err: any) {
+        setDbStatus('error');
+        setErrorDetails(err.message);
+      }
+    }
+    checkDb();
+  }, []);
 
   useEffect(() => {
     if (status === 'loading') return;
@@ -76,11 +93,37 @@ export default function PlatformDashboard() {
           <h1 className="text-2xl font-black text-white tracking-tight">Platform Dashboard</h1>
           <p className="text-white/40 text-xs font-semibold uppercase tracking-widest mt-0.5">ภาพรวมแพลตฟอร์ม SmartDom</p>
         </div>
-        <div className="flex items-center gap-3 px-4 py-2 bg-green-500/10 rounded-xl border border-green-500/20">
-          <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-          <span className="text-green-400 text-xs font-bold">ระบบทำงานปกติ</span>
+        <div className={`flex items-center gap-3 px-4 py-2 rounded-xl border ${
+          dbStatus === 'connected' ? 'bg-green-500/10 border-green-500/20' :
+          dbStatus === 'error' ? 'bg-red-500/10 border-red-500/20' :
+          'bg-yellow-500/10 border-yellow-500/20'
+        }`}>
+          <span className={`w-2 h-2 rounded-full animate-pulse ${
+            dbStatus === 'connected' ? 'bg-green-400' :
+            dbStatus === 'error' ? 'bg-red-400' :
+            'bg-yellow-400'
+          }`} />
+          <span className={`text-xs font-bold ${
+            dbStatus === 'connected' ? 'text-green-400' :
+            dbStatus === 'error' ? 'text-red-400' :
+            'text-yellow-400'
+          }`}>
+            {dbStatus === 'connected' ? 'ระบบทำงานปกติ (Online)' :
+             dbStatus === 'error' ? 'พบปัญหาการเชื่อมต่อ (Offline)' :
+             'กำลังตรวจสอบระบบ...'}
+          </span>
         </div>
       </header>
+
+      {dbStatus === 'error' && (
+        <div className="mx-10 mt-6 p-4 bg-red-500/10 border border-red-500/20 rounded-2xl flex items-start gap-3">
+          <div className="text-red-400 text-lg leading-none mt-0.5">⚠️</div>
+          <div>
+            <h4 className="text-red-400 font-bold text-sm">การเชื่อมต่อฐานข้อมูล/API ล้มเหลว</h4>
+            <p className="text-red-400/80 text-xs mt-1 font-mono break-all">{errorDetails}</p>
+          </div>
+        </div>
+      )}
 
       <div className="flex-1 overflow-y-auto p-10">
         <div className="max-w-7xl mx-auto space-y-8">

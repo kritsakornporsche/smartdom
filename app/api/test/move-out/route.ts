@@ -1,4 +1,4 @@
-import { neon } from '@neondatabase/serverless';
+import { getDormDbFromSession } from '@/lib/db';
 import { NextResponse } from 'next/server';
 import { auth } from '@/auth'; // ใช้ auth() แทน authOptions สำหรับ NextAuth v5
 
@@ -9,7 +9,7 @@ export async function POST() {
     return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
   }
 
-  const sql = neon(process.env.DATABASE_URL || 'postgres://postgres:password@localhost/postgres');
+  const sql = getDormDbFromSession(session);
   const email = session.user.email;
 
   try {

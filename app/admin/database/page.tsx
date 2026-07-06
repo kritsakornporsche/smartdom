@@ -1,9 +1,9 @@
-import { neon } from '@neondatabase/serverless';
+import { neon } from '@/lib/mysql-adapter';
 import Link from 'next/link';
 
 export default async function DatabaseViewer(props: { searchParams: Promise<{ table?: string }> }) {
   const searchParams = await props.searchParams;
-  const sql = neon(process.env.DATABASE_URL || 'postgres://postgres:password@localhost/postgres');
+  const sql = neon(process.env.DATABASE_URL || 'mysql://smartdom:smartdom@kritsakorn.thddns.net:5994/smartdom_dorm_1');
   
   // Fetch all tables in the public schema
   const tablesResult = await sql`

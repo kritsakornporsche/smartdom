@@ -2,7 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ReactNode } from 'react';
 import { auth } from '@/auth';
-import { neon } from '@neondatabase/serverless';
+import { neon } from '@/lib/mysql-adapter';
 
 import TenantSidebar from './components/TenantSidebar';
 
@@ -13,7 +13,7 @@ export default async function TenantLayout({ children }: { children: ReactNode }
 
   let roomInfo = 'ยังไม่ระบุห้อง';
   if (userEmail) {
-    const sql = neon(process.env.DATABASE_URL || 'postgres://postgres:password@localhost/postgres');
+    const sql = neon(process.env.DATABASE_URL || 'mysql://smartdom:smartdom@kritsakorn.thddns.net:5994/smartdom_dorm_1');
     const res = await sql`
       SELECT r.room_number, r.floor, d.name as dorm_name
       FROM tenants t

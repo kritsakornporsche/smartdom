@@ -84,9 +84,9 @@ export default function Navbar() {
               {session && (
                 <Link 
                   href={
-                    (session.user as any)?.role === 'Admin' ? '/admin' :
-                    (session.user as any)?.role === 'Owner' ? '/owner' :
-                    (session.user as any)?.role === 'Keeper' ? '/keeper' :
+                    (session.user as any)?.role === 'platform_admin' ? '/platform' :
+                    (session.user as any)?.role === 'owner' ? '/owner' :
+                    (session.user as any)?.role === 'keeper' ? '/keeper' :
                     '/tenant'
                   }
                   className={cn(

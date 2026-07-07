@@ -235,7 +235,7 @@ export default function RoomBookingPage({ params }: { params: Promise<{ id: stri
           กลับไปเลือกห้องพัก
         </Link>
 
-        <div className="flex items-center justify-center mb-24 lg:mb-32 px-4 overflow-x-auto pb-4">
+        <div className="flex items-center justify-start md:justify-center mb-16 sm:mb-24 lg:mb-32 px-4 overflow-x-auto no-scrollbar pb-4 w-full">
           {[
             { id: 1, name: 'Inquiry', label: 'สอบถาม' },
             { id: 2, name: 'Booking', label: 'จองห้อง' },
@@ -313,7 +313,7 @@ export default function RoomBookingPage({ params }: { params: Promise<{ id: stri
                  <div className="h-4 w-px bg-border" />
                  <span className="text-muted-foreground text-xs font-black uppercase tracking-[0.2em]">Floor {room.floor} · Minimal Art Living</span>
                </div>
-               <h2 className="text-5xl lg:text-7xl font-display font-black tracking-tighter italic text-foreground ornament leading-[0.9]">พื้นที่ที่ออกแบบมาเพื่ออิสระภาพ</h2>
+               <h2 className="text-4xl sm:text-5xl lg:text-7xl font-display font-black tracking-tighter italic text-foreground ornament leading-[0.9] break-words">พื้นที่ที่ออกแบบมาเพื่ออิสระภาพ</h2>
                <p className="text-muted-foreground font-black text-xl leading-relaxed max-w-3xl">
                  ห้องพักที่เป็นเอกลักษณ์พร้อมสิ่งอำนวยความสะดวกครบครัน สภาพแวดล้อมที่เงียบสงบเหมาะแก่การพักผ่อนและสร้างสรรค์สิ่งใหม่ๆ
                </p>
@@ -332,9 +332,9 @@ export default function RoomBookingPage({ params }: { params: Promise<{ id: stri
                       <p className="text-muted-foreground text-sm font-black uppercase tracking-widest opacity-60">ช่องทางติดต่อเจ้าหน้าที่และข้อมูลโครงการ</p>
                     </div>
                     
-                    <div className="space-y-6">
-                       <div className="p-8 bg-secondary rounded-[3rem] border border-border shadow-sm group hover:border-primary/20 transition-colors">
-                          <div className="flex items-center gap-6 mb-6">
+                    <div className="space-y-6 w-full overflow-hidden">
+                       <div className="p-6 sm:p-8 bg-secondary rounded-[2.5rem] sm:rounded-[3rem] border border-border shadow-sm group hover:border-primary/20 transition-colors">
+                          <div className="flex items-center gap-4 sm:gap-6 mb-4 sm:mb-6">
                              <div className="w-14 h-14 rounded-2xl bg-white flex items-center justify-center text-primary shadow-lg border border-border group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-500 rotate-6 group-hover:rotate-12">
                                 <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-7h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
                              </div>
@@ -346,11 +346,11 @@ export default function RoomBookingPage({ params }: { params: Promise<{ id: stri
                           <p className="text-[11px] font-bold text-muted-foreground leading-relaxed italic border-l-2 border-primary/20 pl-4">{room.dorm_address}</p>
                        </div>
 
-                       <div className="p-8 bg-primary/[0.03] rounded-[3rem] border border-primary/10 shadow-sm relative overflow-hidden group">
-                          <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
-                            <svg className="w-24 h-24" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                       <div className="p-6 sm:p-8 bg-primary/[0.03] rounded-[2.5rem] sm:rounded-[3rem] border border-primary/10 shadow-sm relative overflow-hidden group">
+                          <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity pointer-events-none">
+                            <svg className="w-16 h-16 sm:w-24 sm:h-24" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
                           </div>
-                          <div className="flex items-center gap-6 relative z-10">
+                          <div className="flex items-center gap-4 sm:gap-6 relative z-10">
                              <div className="w-14 h-14 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-black text-lg shadow-xl shadow-primary/20 border-2 border-white">
                                 {room.keeper_name ? room.keeper_name[0] : 'K'}
                              </div>

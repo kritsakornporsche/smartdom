@@ -6,15 +6,39 @@
  *   Single Database Approach
  *   Data isolation is achieved by filtering queries with `dorm_id`
  */
-import { neon } from '@/lib/mysql-adapter';
+import { Pool } from '@/lib/mysql-adapter';
 
 const MYSQL_BASE = process.env.DATABASE_URL 
   ? process.env.DATABASE_URL.replace(/\/[^\/]+$/, '')
   : 'mysql://smartdom:smartdom@kritsakorn.thddns.net:5994';
 
+// Use a singleton pool to prevent MySQL max_connections exhaustion
+let globalDbPool: any = null;
+
 // ── Unified Database ─────────────────────────────────────────────────────────
 export function getDb() {
-  return neon(`${MYSQL_BASE}/smartdomdb`);
+  if (!globalDbPool) {
+    const pool = new Pool({ connectionString: `${MYSQL_BASE}/smartdomdb` });
+    globalDbPool = async function(strings: any, ...values: any[]) {
+      if (Array.isArray(strings) && strings.raw) {
+        let queryText = '';
+        const params = [];
+        for (let i = 0; i < strings.length; i++) {
+          queryText += strings[i];
+          if (i < values.length) {
+            queryText += '?';
+            params.push(values[i]);
+          }
+        }
+        const res = await pool.query(queryText, params);
+        return res.rows;
+      } else {
+        const res = await pool.query(strings, values[0] || []);
+        return res.rows;
+      }
+    };
+  }
+  return globalDbPool;
 }
 
 // ── Fallback exports for gradual migration ────────────────────────────────────

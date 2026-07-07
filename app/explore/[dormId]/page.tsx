@@ -77,15 +77,15 @@ export default function GuestDormRoomsPage({ params }: { params: Promise<{ dormI
 
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-10 mb-20 animate-reveal">
         <div className="space-y-6">
-           <h1 className="text-5xl lg:text-7xl font-display font-black tracking-tighter italic text-foreground ornament">{dormName}</h1>
+           <h1 className="text-4xl sm:text-5xl lg:text-7xl font-display font-black tracking-tighter italic text-foreground ornament break-words">{dormName}</h1>
            <p className="text-muted-foreground font-black text-lg flex items-center gap-3">
              <span className="w-2 h-2 bg-primary rounded-full animate-pulse" />
              สัมผัสประสบการณ์การพักผ่อนที่เหนือระดับ
            </p>
         </div>
         
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
-          <div className="flex p-2 bg-secondary rounded-[2.5rem] border border-border shadow-sm">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6 w-full overflow-hidden">
+          <div className="flex overflow-x-auto no-scrollbar max-w-full p-2 bg-secondary rounded-[2.5rem] border border-border shadow-sm">
             {['All', 'Standard', 'Deluxe', 'Suite'].map((t) => (
               <button
                 key={t}
@@ -111,7 +111,7 @@ export default function GuestDormRoomsPage({ params }: { params: Promise<{ dormI
       {loading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
           {[1, 2, 3].map(i => (
-            <div key={i} className="aspect-[3.5/5.5] rounded-[4rem] bg-muted animate-pulse" />
+            <div key={i} className="aspect-[4/5] sm:aspect-[3.5/5.5] rounded-[3rem] sm:rounded-[4rem] bg-muted animate-pulse" />
           ))}
         </div>
       ) : (
@@ -120,7 +120,7 @@ export default function GuestDormRoomsPage({ params }: { params: Promise<{ dormI
             <Link 
               href={`/explore/room/${room.id}`} 
               key={room.id}
-              className="group relative flex flex-col aspect-[3.5/5.5] rounded-[4rem] overflow-hidden bg-white border border-border shadow-2xl transition-all duration-700 hover:-translate-y-4 premium-shadow"
+              className="group relative flex flex-col aspect-[4/5] sm:aspect-[3.5/5.5] rounded-[3rem] sm:rounded-[4rem] overflow-hidden bg-white border border-border shadow-2xl transition-all duration-700 hover:-translate-y-4 premium-shadow"
             >
               <div className="absolute inset-0 z-0">
                 <Image 
@@ -132,7 +132,7 @@ export default function GuestDormRoomsPage({ params }: { params: Promise<{ dormI
                 <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-90 group-hover:opacity-100 transition-opacity" />
               </div>
               
-              <div className="relative z-10 mt-auto p-12 text-white">
+              <div className="relative z-10 mt-auto p-8 sm:p-12 text-white">
                  <div className="flex items-center gap-3 mb-6">
                     <span className="px-4 py-1.5 bg-white/20 backdrop-blur-md rounded-full text-[9px] font-black uppercase tracking-widest border border-white/20">
                       Floor {room.floor}

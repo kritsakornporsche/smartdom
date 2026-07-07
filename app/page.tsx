@@ -131,7 +131,7 @@ export default function Home() {
             </div>
 
             {/* Tags Filters */}
-            <div className="space-y-2 flex flex-col justify-end">
+            <div className="space-y-2 flex flex-col justify-end mt-2 md:mt-0">
               <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground block pl-1 mb-1">ความต้องการพิเศษ</label>
               <div className="flex flex-wrap gap-2.5">
                 {[
@@ -170,7 +170,7 @@ export default function Home() {
         </div>
 
         {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-12">
             {[1, 2].map(i => (
               <div key={i} className="aspect-[16/11] rounded-[3rem] bg-card animate-pulse border border-border" />
             ))}
@@ -182,7 +182,7 @@ export default function Home() {
             <p className="text-muted-foreground text-sm mt-2 font-medium">กรุณาลองลดตัวกรอง หรือค้นหาใหม่อีกครั้ง</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-12">
             {dorms.map((dorm) => (
               <Link 
                 href={`/explore/${dorm.id}`} 

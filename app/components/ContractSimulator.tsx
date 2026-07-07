@@ -117,7 +117,7 @@ export default function ContractSimulator({ initialPrice = 5000, roomNumber = 'A
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <div className="space-y-5">
               <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-primary/60">เงินประกัน (เดือน)</label>
               <select 
@@ -182,7 +182,7 @@ export default function ContractSimulator({ initialPrice = 5000, roomNumber = 'A
           <div className="relative z-10 space-y-14">
             <div>
               <p className="text-[10px] font-black uppercase tracking-[0.3em] text-background/40 mb-4">ยอดที่ต้องชำระวันทำสัญญา</p>
-              <h3 className="text-6xl font-display font-black tracking-tighter">฿{totalUpfront.toLocaleString()}</h3>
+              <h3 className="text-5xl lg:text-6xl font-display font-black tracking-tighter truncate">฿{totalUpfront.toLocaleString()}</h3>
             </div>
 
             <div className="space-y-8 pt-12 border-t border-background/10">

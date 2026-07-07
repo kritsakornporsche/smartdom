@@ -1,9 +1,6 @@
 import { NextResponse } from 'next/server';
-import { neon } from '@/lib/mysql-adapter';
+import { getDb } from '@/lib/db';
 import bcrypt from 'bcryptjs';
-
-const MYSQL_BASE = 'mysql://smartdom:smartdom@kritsakorn.thddns.net:5994';
-const platformSql = neon(`${MYSQL_BASE}/smartdom_platform`);
 
 export async function POST(request: Request) {
   try {
@@ -13,6 +10,7 @@ export async function POST(request: Request) {
     }
 
     const emailNorm = email.toLowerCase().trim();
+    const sql = getDb();
 
     const verifyPassword = async (storedHash: string): Promise<boolean> => {
       if (storedHash.startsWith('$2')) return await bcrypt.compare(password, storedHash);
@@ -25,7 +23,7 @@ export async function POST(request: Request) {
 
     // ── 1. Check platform_admins ────────────────────────────────────────────
     try {
-      const admins = await platformSql`
+      const admins = await sql`
         SELECT id, name, email, password, role FROM platform_admins
         WHERE email = ${emailNorm} AND is_active = TRUE LIMIT 1
       `;
@@ -39,36 +37,34 @@ export async function POST(request: Request) {
       }
     } catch (e) { /* ignore */ }
 
-    // ── 2. Search dorm DBs ──────────────────────────────────────────────────
-    const allDorms = await platformSql`
-      SELECT id, db_name FROM dormitory_registry WHERE status = 'Active' AND db_name != ''
+    // ── 2. Search unified users table ─────────────────────────────────────────
+    const users = await sql`
+      SELECT u.id, u.name, u.email, u.password, u.primary_role, r.role, r.sub_role, r.dorm_id 
+      FROM users u
+      LEFT JOIN user_dorm_roles r ON u.id = r.user_id AND r.is_active = TRUE
+      WHERE u.email = ${emailNorm} OR u.name = ${emailNorm}
+      LIMIT 1
     `;
 
-    for (const dorm of allDorms) {
-      try {
-        const dormSql = neon(`${MYSQL_BASE}/${dorm.db_name}`);
-        const users = await dormSql`
-          SELECT id, name, email, password, role, sub_role FROM users
-          WHERE email = ${emailNorm} AND is_active = TRUE LIMIT 1
-        `;
-        if (users.length > 0 && await verifyPassword(users[0].password)) {
-          const user = users[0];
-          let redirectUrl = '/explore';
-          if (user.role === 'owner') redirectUrl = '/owner';
-          if (user.role === 'tenant') redirectUrl = '/tenant';
-          if (user.role === 'keeper') {
-            if (user.sub_role === 'maid') redirectUrl = '/keeper/maid';
-            else if (user.sub_role === 'technician') redirectUrl = '/keeper/technician';
-            else redirectUrl = '/keeper';
-          }
-          return NextResponse.json({
-            success: true,
-            message: 'เข้าสู่ระบบสำเร็จ',
-            redirectUrl,
-            user: { ...user, dormDbName: dorm.db_name, dormId: dorm.id },
-          });
-        }
-      } catch { /* DB may not exist */ }
+    if (users.length > 0 && await verifyPassword(users[0].password)) {
+      const user = users[0];
+      const role = user.role || user.primary_role || 'guest';
+      let redirectUrl = '/explore';
+      
+      if (role === 'owner') redirectUrl = '/owner';
+      if (role === 'tenant') redirectUrl = '/tenant';
+      if (role === 'keeper') {
+        if (user.sub_role === 'maid') redirectUrl = '/keeper/maid';
+        else if (user.sub_role === 'technician') redirectUrl = '/keeper/technician';
+        else redirectUrl = '/keeper';
+      }
+      
+      return NextResponse.json({
+        success: true,
+        message: 'เข้าสู่ระบบสำเร็จ',
+        redirectUrl,
+        user: { ...user, role, dormId: user.dorm_id },
+      });
     }
 
     return NextResponse.json({ success: false, message: 'อีเมลหรือรหัสผ่านไม่ถูกต้อง' }, { status: 401 });

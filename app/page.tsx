@@ -48,7 +48,7 @@ export default function Home() {
       if (data.success) {
         setDorms(data.data);
       }
-    } catch (e) {
+    } catch (e: any) {
       console.error(e);
     } finally {
       setLoading(false);

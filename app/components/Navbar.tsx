@@ -40,10 +40,9 @@ export default function Navbar() {
 
   return (
     <>
-      <div className="fixed top-0 w-full z-50 px-4 sm:px-6 py-6 sm:py-8 pointer-events-none">
       <nav 
         className={cn(
-          "mx-auto max-w-5xl w-full h-18 px-6 lg:px-10 rounded-[2.5rem] flex items-center justify-between pointer-events-auto transition-all duration-700",
+          "fixed top-4 sm:top-6 left-4 sm:left-6 right-4 sm:right-6 z-50 mx-auto max-w-5xl h-18 px-6 lg:px-10 rounded-[2.5rem] flex items-center justify-between transition-all duration-700",
           scrolled 
             ? "bg-card/70 backdrop-blur-2xl shadow-xl border border-border/50 py-3" 
             : "bg-card/40 backdrop-blur-xl border border-border/25 py-4"
@@ -159,16 +158,16 @@ export default function Navbar() {
           </button>
           
           <button 
+            type="button"
             onClick={() => setMobileMenuOpen(true)}
-            className="h-10 w-10 flex flex-col items-center justify-center gap-1.5 bg-secondary/50 rounded-2xl hover:bg-secondary transition-all active:scale-95"
+            className="h-10 w-10 flex flex-col items-center justify-center gap-1.5 bg-secondary/50 rounded-2xl hover:bg-secondary transition-all active:scale-95 cursor-pointer"
           >
-           <div className="w-5 h-0.5 bg-foreground/70 rounded-full" />
-           <div className="w-4 h-0.5 bg-foreground/70 rounded-full self-start ml-[7px]" />
-           <div className="w-5 h-0.5 bg-foreground/70 rounded-full" />
+           <div className="w-5 h-0.5 bg-foreground/70 rounded-full pointer-events-none" />
+           <div className="w-4 h-0.5 bg-foreground/70 rounded-full self-start ml-[7px] pointer-events-none" />
+           <div className="w-5 h-0.5 bg-foreground/70 rounded-full pointer-events-none" />
           </button>
         </div>
       </nav>
-    </div>
 
     {/* Mobile Navigation Drawer */}
     {mobileMenuOpen && (

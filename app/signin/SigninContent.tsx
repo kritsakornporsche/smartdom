@@ -72,7 +72,7 @@ export default function SignInContent() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-6 relative overflow-hidden">
+    <div className="min-h-screen bg-background flex items-center justify-center p-4 sm:p-6 relative overflow-hidden">
       {/* Decorative blobs */}
       <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/4 w-[600px] h-[600px] bg-secondary rounded-full blur-3xl pointer-events-none opacity-50" />
       <div className="absolute bottom-0 left-0 translate-y-1/2 -translate-x-1/4 w-[500px] h-[500px] bg-accent rounded-full blur-3xl pointer-events-none opacity-30" />
@@ -86,19 +86,19 @@ export default function SignInContent() {
       </Link>
 
       <div className="relative z-10 max-w-md w-full animate-reveal">
-        <div className="text-center mb-10">
-          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-primary font-display font-bold text-primary-foreground text-xl shadow-2xl shadow-primary/20 mb-8">
+        <div className="text-center mb-8 sm:mb-10">
+          <div className="mx-auto flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-2xl bg-primary font-display font-bold text-primary-foreground text-lg sm:text-xl shadow-2xl shadow-primary/20 mb-6 sm:mb-8">
             S
           </div>
-          <h1 className="text-4xl font-display tracking-tight text-foreground font-black italic ornament">
+          <h1 className="text-3xl sm:text-4xl font-display tracking-tight text-foreground font-black italic ornament">
             พบกันอีกครั้ง
           </h1>
-          <p className="mt-3 text-muted-foreground font-black uppercase text-[10px] tracking-widest">
+          <p className="mt-3 text-muted-foreground font-black uppercase text-[10px] tracking-widest px-2">
             เข้าสู่ระบบ SmartDom เพื่อจัดการทุกเรื่องให้เป็นเรื่องง่าย
           </p>
         </div>
 
-        <div className="bg-card rounded-[2.5rem] p-10 border border-border shadow-xl">
+        <div className="bg-card rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-10 border border-border shadow-xl">
           {error && (
             <div className="mb-8 p-4 bg-destructive/10 border border-destructive/20 text-destructive rounded-2xl text-xs font-black text-center">
               {error}

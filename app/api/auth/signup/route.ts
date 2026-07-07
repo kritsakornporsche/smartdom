@@ -7,12 +7,12 @@ import bcrypt from 'bcryptjs';
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { full_name, email, password, role = 'guest', sub_role = null } = body;
+    const { first_name, last_name, email, password, role = 'guest', sub_role = null } = body;
 
     // ── Validate required fields ──────────────────────────────────────────────
-    if (!full_name || !email || !password) {
+    if (!first_name || !last_name || !email || !password) {
       return NextResponse.json(
-        { success: false, message: 'กรุณากรอกข้อมูลให้ครบถ้วน (ชื่อ, อีเมล, รหัสผ่าน)' },
+        { success: false, message: 'กรุณากรอกข้อมูลให้ครบถ้วน (ชื่อ, นามสกุล, อีเมล, รหัสผ่าน)' },
         { status: 400 }
       );
     }
@@ -70,10 +70,13 @@ export async function POST(request: Request) {
     const hashedPassword = await bcrypt.hash(password, 12);
 
     // ── Insert user (use 'name' column to match existing DB schema) ───────────
+    const fullName = `${first_name.trim()} ${last_name.trim()}`;
     const result = await sql`
-      INSERT INTO users (name, email, password, primary_role)
+      INSERT INTO users (name, first_name, last_name, email, password, primary_role)
       VALUES (
-        ${full_name.trim()},
+        ${fullName},
+        ${first_name.trim()},
+        ${last_name.trim()},
         ${email.toLowerCase().trim()},
         ${hashedPassword},
         ${role}
@@ -89,7 +92,9 @@ export async function POST(request: Request) {
         message: 'สมัครสมาชิกสำเร็จ! ยินดีต้อนรับสู่ SmartDom',
         data: {
           id: insertId,
-          full_name: full_name.trim(),
+          first_name: first_name.trim(),
+          last_name: last_name.trim(),
+          full_name: fullName,
           email: email.toLowerCase().trim(),
           role: role,
           sub_role: role === 'keeper' ? sub_role : null,

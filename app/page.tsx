@@ -84,7 +84,7 @@ export default function Home() {
             <span className="w-1.5 h-1.5 bg-primary rounded-full animate-pulse" />
             Ecosystem of Living
           </div>
-          <h1 className="text-5xl md:text-7xl font-display font-black tracking-tight text-white mb-6 leading-tight">
+          <h1 className="text-4xl sm:text-5xl md:text-7xl font-display font-black tracking-tight text-white mb-4 sm:mb-6 leading-tight">
             ค้นหาหอพักที่ <span className="italic font-medium text-primary">ตรงใจคุณ</span>
           </h1>
           <p className="max-w-2xl mx-auto text-white/90 dark:text-white/70 font-semibold text-base leading-relaxed">
@@ -143,7 +143,7 @@ export default function Home() {
                     key={item.key}
                     type="button"
                     onClick={() => item.set(!item.active)}
-                    className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                    className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl text-[10px] sm:text-xs font-bold transition-all cursor-pointer ${
                       item.active 
                         ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/20' 
                         : 'bg-background border border-border text-muted-foreground hover:border-primary/50'
@@ -160,11 +160,11 @@ export default function Home() {
       </section>
 
       {/* Dormitory Grid */}
-      <section className="py-24 px-6 lg:px-12 max-w-7xl mx-auto">
-        <div className="flex justify-between items-center mb-12">
+      <section className="py-16 sm:py-24 px-4 sm:px-6 lg:px-12 max-w-7xl mx-auto">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 sm:mb-12 gap-4">
           <div>
             <h2 className="text-[10px] font-black uppercase tracking-[0.4em] text-primary mb-2">Our Locations</h2>
-            <p className="text-3xl md:text-5xl font-display font-black tracking-tighter text-foreground">หอพักคุณภาพที่ตอบโจทย์คุณ</p>
+            <p className="text-2xl sm:text-3xl md:text-5xl font-display font-black tracking-tighter text-foreground">หอพักคุณภาพที่ตอบโจทย์คุณ</p>
           </div>
           <p className="text-sm font-bold text-muted-foreground uppercase tracking-widest">พบทั้งหมด {dorms.length} แห่ง</p>
         </div>
@@ -199,8 +199,8 @@ export default function Home() {
                   <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
                 </div>
                 
-                <div className="relative z-10 mt-auto p-10 text-foreground">
-                   <div className="flex gap-2 mb-6">
+                <div className="relative z-10 mt-auto p-6 sm:p-10 text-foreground">
+                   <div className="flex flex-wrap gap-2 mb-4 sm:mb-6">
                      <div className="inline-flex items-center gap-2 px-3 py-1 bg-background/80 backdrop-blur-md rounded-full text-[9px] font-black uppercase tracking-widest border border-border">
                         <span className="w-1.5 h-1.5 bg-primary rounded-full" />
                         {dorm.available_rooms_count > 0 ? `${dorm.available_rooms_count} ห้องว่าง` : 'เต็มแล้ว'}
@@ -233,10 +233,10 @@ export default function Home() {
                    </div>
 
                    {/* Features display */}
-                   <div className="flex gap-3 mt-6">
-                     {dorm.pet_friendly && <span className="text-xs font-bold bg-background/50 border border-border px-2.5 py-1 rounded-lg">🐱 สัตว์เลี้ยงได้</span>}
-                     {dorm.has_parking && <span className="text-xs font-bold bg-background/50 border border-border px-2.5 py-1 rounded-lg">🚗 ที่จอดรถ</span>}
-                     {dorm.has_air_con && <span className="text-xs font-bold bg-background/50 border border-border px-2.5 py-1 rounded-lg">❄️ ห้องแอร์</span>}
+                   <div className="flex flex-wrap gap-2 sm:gap-3 mt-4 sm:mt-6">
+                     {dorm.pet_friendly && <span className="text-[10px] sm:text-xs font-bold bg-background/50 border border-border px-2 sm:px-2.5 py-1 rounded-lg">🐱 สัตว์เลี้ยงได้</span>}
+                     {dorm.has_parking && <span className="text-[10px] sm:text-xs font-bold bg-background/50 border border-border px-2 sm:px-2.5 py-1 rounded-lg">🚗 ที่จอดรถ</span>}
+                     {dorm.has_air_con && <span className="text-[10px] sm:text-xs font-bold bg-background/50 border border-border px-2 sm:px-2.5 py-1 rounded-lg">❄️ ห้องแอร์</span>}
                    </div>
                    
                    <div className="mt-8 pt-6 border-t border-border flex items-center justify-between">

@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
 
 export default function MetersPage() {
   const [readings, setReadings] = useState([]);
@@ -29,7 +28,7 @@ export default function MetersPage() {
     <div className="flex-1 overflow-y-auto p-8 relative z-10 text-white">
        <div className="flex justify-between items-center mb-6">
          <h1 className="text-3xl font-bold">ระบบจดมิเตอร์น้ำ-ไฟ</h1>
-         <Button onClick={fetchMeters}>โหลดข้อมูลใหม่</Button>
+         <button onClick={fetchMeters} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition-colors font-medium">โหลดข้อมูลใหม่</button>
        </div>
        <div className="bg-[#101A30] rounded-xl border border-white/5 p-6 shadow-xl relative overflow-hidden backdrop-blur-xl">
          {loading ? (

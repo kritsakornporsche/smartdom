@@ -11,7 +11,7 @@
   --popover: #FFFFFF;
   --popover-foreground: #0F172A;
   
-  --primary: #4F46E5; /* Indigo 600 */
+  --primary: #7C3AED; /* Purple 600 */
   --primary-foreground: #FFFFFF;
   
   --secondary: #F1F5F9; /* Slate 100 */
@@ -28,7 +28,7 @@
   
   --border: #E2E8F0; /* Slate 200 */
   --input: #E2E8F0;
-  --ring: #4F46E5;
+  --ring: #7C3AED;
   
   /* Selection colors */
   --selection-bg: #C7D2FE;
@@ -57,7 +57,7 @@
   --popover: #151B2C;
   --popover-foreground: #F8FAFC;
   
-  --primary: #6366F1; /* Indigo 500 */
+  --primary: #8B5CF6; /* Purple 500 */
   --primary-foreground: #FFFFFF;
   
   --secondary: #1E293B; /* Slate 800 */
@@ -74,7 +74,7 @@
   
   --border: #1E293B; /* Slate 800 */
   --input: #1E293B;
-  --ring: #6366F1;
+  --ring: #8B5CF6;
   
   --selection-bg: #312E81;
   --selection-text: #EEF2F6;
@@ -204,3 +204,128 @@
     font-feature-settings: "ss01", "ss02", "cv01";
   }
 }
+
+/* ── Light Mode Override Rules for Hardcoded Dark Theme Elements ── */
+:root:not(.dark) {
+  --background: #F8FAFC;
+  --foreground: #0F172A;
+}
+
+:root:not(.dark) .bg-\[\#080F1E\],
+:root:not(.dark) .bg-\[\#090d16\],
+:root:not(.dark) .bg-slate-900 {
+  background-color: var(--background) !important;
+  color: var(--foreground) !important;
+}
+
+:root:not(.dark) .bg-\[\#0F172A\],
+:root:not(.dark) .bg-card {
+  background-color: var(--card) !important;
+  color: var(--foreground) !important;
+  border-color: var(--border) !important;
+}
+
+:root:not(.dark) .bg-\[\#080F1E\] .text-white,
+:root:not(.dark) .bg-\[\#080F1E\] h1,
+:root:not(.dark) .bg-\[\#080F1E\] h2,
+:root:not(.dark) .bg-\[\#080F1E\] h3,
+:root:not(.dark) .bg-\[\#080F1E\] p,
+:root:not(.dark) .bg-\[\#080F1E\] span,
+:root:not(.dark) .bg-\[\#0F172A\] .text-white,
+:root:not(.dark) .bg-\[\#0F172A\] h1,
+:root:not(.dark) .bg-\[\#0F172A\] h2,
+:root:not(.dark) .bg-\[\#0F172A\] h3,
+:root:not(.dark) .bg-\[\#0F172A\] p,
+:root:not(.dark) .bg-\[\#0F172A\] span,
+:root:not(.dark) .bg-\[\#0F172A\] td,
+:root:not(.dark) .bg-\[\#0F172A\] th {
+  color: var(--foreground) !important;
+}
+
+:root:not(.dark) .bg-\[\#080F1E\] .text-white\/80,
+:root:not(.dark) .bg-\[\#0F172A\] .text-white\/80 {
+  color: var(--foreground) !important;
+  opacity: 0.8;
+}
+
+:root:not(.dark) .bg-\[\#080F1E\] .text-white\/50,
+:root:not(.dark) .bg-\[\#0F172A\] .text-white\/50,
+:root:not(.dark) .text-white\/50 {
+  color: var(--muted-foreground) !important;
+}
+
+:root:not(.dark) .border-white\/20\/10,
+:root:not(.dark) .border-white\/10,
+:root:not(.dark) .border-white\/20 {
+  border-color: var(--border) !important;
+}
+
+/* ── Overrides to replace remaining brown tones (#3E342B) with Purple/Violet ── */
+:root {
+  --brown-override: #7C3AED; /* Purple 600 */
+  --brown-glow: rgba(124, 58, 237, 0.2);
+}
+
+.dark {
+  --brown-override: #8B5CF6; /* Purple 500 */
+  --brown-glow: rgba(139, 92, 246, 0.2);
+}
+
+/* Backgrounds */
+.bg-\[\#3E342B\],
+.bg-\[\#3e342b\],
+.bg-\[\#2C241B\],
+.bg-\[\#2c241b\] {
+  background-color: var(--brown-override) !important;
+}
+
+/* Gradients */
+.from-\[\#2C241B\],
+.from-\[\#2c241b\] {
+  --tw-gradient-from: #4C1D95 !important; /* Purple 900 */
+  --tw-gradient-to: #6D28D9 !important;
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important;
+}
+.to-\[\#3E342B\],
+.to-\[\#3e342b\] {
+  --tw-gradient-to: #6D28D9 !important; /* Purple 700 */
+}
+
+/* Borders and Focus outline */
+.border-\[\#3E342B\],
+.border-\[\#3e342b\] {
+  border-color: var(--brown-override) !important;
+}
+.focus\:border-\[\#3E342B\]:focus,
+.focus\:border-\[\#3e342b\]:focus {
+  border-color: var(--brown-override) !important;
+}
+
+/* Shadow Glows */
+.shadow-\[\#3E342B\]\/20,
+.shadow-\[\#3e342b\]\/20 {
+  box-shadow: 0 10px 15px -3px var(--brown-glow), 0 4px 6px -4px var(--brown-glow) !important;
+}
+.shadow-\[\#3E342B\]\/30,
+.shadow-\[\#3e342b\]\/30 {
+  box-shadow: 0 20px 25px -5px var(--brown-glow), 0 8px 10px -6px var(--brown-glow) !important;
+}
+.shadow-\[\#3E342B\]\/5,
+.shadow-\[\#3e342b\]\/5 {
+  box-shadow: 0 4px 6px -1px rgba(124, 58, 237, 0.05) !important;
+}
+
+/* Overlay and Backdrop shades */
+.bg-\[\#3E342B\]\/60,
+.bg-\[\#3e342b\]\/60 {
+  background-color: rgba(124, 58, 237, 0.6) !important;
+}
+.bg-\[\#3E342B\]\/40,
+.bg-\[\#3e342b\]\/40 {
+  background-color: rgba(124, 58, 237, 0.4) !important;
+}
+.bg-\[\#3E342B\]\/80,
+.bg-\[\#3e342b\]\/80 {
+  background-color: rgba(124, 58, 237, 0.8) !important;
+}
+

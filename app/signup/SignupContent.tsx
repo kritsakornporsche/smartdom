@@ -156,20 +156,20 @@ export default function SignupContent() {
   };
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center bg-background px-4 sm:px-6 py-10 sm:py-20 overflow-hidden">
+    <div className="relative flex min-h-screen flex-col bg-background px-4 sm:px-6 py-12 sm:py-20 overflow-hidden">
       {/* Decorative blobs */}
       <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/4 w-[600px] h-[600px] bg-primary/5 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute bottom-0 left-0 translate-y-1/2 -translate-x-1/4 w-[500px] h-[500px] bg-accent/10 rounded-full blur-3xl pointer-events-none" />
 
       <Link
         href="/"
-        className="absolute top-10 left-10 flex items-center gap-3 text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors group"
+        className="absolute top-6 left-4 sm:top-10 sm:left-10 flex items-center gap-3 text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors group z-20"
       >
         <span className="h-px w-8 bg-border group-hover:bg-primary transition-colors" />
         กลับหน้าหลัก
       </Link>
 
-      <div className="relative z-10 w-full max-w-lg animate-reveal">
+      <div className="relative z-10 w-full max-w-lg mx-auto my-auto animate-reveal pt-16 sm:pt-0">
         <div className="text-center mb-8 sm:mb-10">
           <div className="mx-auto flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-2xl bg-primary font-display font-bold text-primary-foreground text-xl shadow-2xl shadow-primary/20 mb-6 sm:mb-8">
             S

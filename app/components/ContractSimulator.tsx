@@ -83,7 +83,7 @@ export default function ContractSimulator({ initialPrice = 5000, roomNumber = 'A
   }
 
   return (
-    <div className="bg-background rounded-[3rem] p-8 lg:p-14 border border-border/40 shadow-2xl space-y-12 animate-reveal">
+    <div className="bg-background rounded-[3rem] p-5 sm:p-8 lg:p-14 border border-border/40 shadow-2xl space-y-12 animate-reveal">
       <div className="flex justify-between items-start">
         <div className="space-y-2">
           <h2 className="text-3xl font-black tracking-tight italic">ระบบจำลองสัญญา</h2>
@@ -175,7 +175,7 @@ export default function ContractSimulator({ initialPrice = 5000, roomNumber = 'A
         </div>
 
         {/* Results Card */}
-        <div className="lg:col-span-5 bg-foreground text-background rounded-[3.5rem] p-10 lg:p-14 flex flex-col justify-between shadow-[0_40px_80px_-15px_rgba(0,0,0,0.3)] relative overflow-hidden group border border-white/5">
+        <div className="lg:col-span-5 bg-foreground text-background rounded-[3.5rem] p-6 sm:p-10 lg:p-14 flex flex-col justify-between shadow-[0_40px_80px_-15px_rgba(0,0,0,0.3)] relative overflow-hidden group border border-white/5">
           {/* Decorative elements */}
           <div className="absolute top-0 right-0 w-80 h-80 bg-primary/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-[80px] group-hover:bg-primary/20 transition-all duration-700" />
           

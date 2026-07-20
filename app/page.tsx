@@ -172,7 +172,7 @@ export default function Home() {
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-12">
             {[1, 2].map(i => (
-              <div key={i} className="aspect-[16/11] rounded-[3rem] bg-card animate-pulse border border-border" />
+              <div key={i} className="aspect-auto min-h-[460px] md:aspect-[16/11] rounded-[3rem] bg-card animate-pulse border border-border" />
             ))}
           </div>
         ) : dorms.length === 0 ? (
@@ -187,7 +187,7 @@ export default function Home() {
               <Link 
                 href={`/explore/${dorm.id}`} 
                 key={dorm.id}
-                className="group relative flex flex-col aspect-[16/11] rounded-[3rem] overflow-hidden bg-card border border-border shadow-2xl transition-all duration-500 hover:-translate-y-2 hover:border-primary"
+                className="group relative flex flex-col aspect-auto min-h-[460px] md:aspect-[16/11] rounded-[3rem] overflow-hidden bg-card border border-border shadow-2xl transition-all duration-500 hover:-translate-y-2 hover:border-primary"
               >
                 <div className="absolute inset-0 z-0">
                   <Image 

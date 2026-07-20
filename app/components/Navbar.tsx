@@ -57,7 +57,7 @@ export default function Navbar() {
         </Link>
         
         {/* Navigation Links (Desktop) */}
-        <div className="hidden md:flex items-center gap-4 lg:gap-6">
+        <div className="hidden lg:flex items-center gap-4 lg:gap-6">
           <div className="flex items-center gap-6">
             <Link href="/" className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground hover:text-primary transition-all hover:translate-y-[-1px]">
               สำรวจหอพัก
@@ -70,7 +70,7 @@ export default function Navbar() {
           ) : session ? (
             <div className="flex items-center gap-4 lg:gap-6">
               <div className="hidden sm:flex flex-col items-end">
-                <span className="text-[11px] font-black text-foreground leading-none mb-1">
+                <span className="text-[11px] font-black text-foreground leading-none mb-1 max-w-[150px] truncate" title={session.user?.name || session.user?.email || ''}>
                   {session.user?.name || session.user?.email || 'ไม่มีชื่อผู้ใช้'}
                 </span>
                 <div className="flex items-center gap-2">
@@ -148,7 +148,7 @@ export default function Navbar() {
         </div>
 
         {/* Mobile Actions */}
-        <div className="flex items-center gap-3 md:hidden">
+        <div className="flex items-center gap-3 lg:hidden">
           <button
             onClick={toggleTheme}
             className="h-10 w-10 rounded-2xl flex items-center justify-center bg-secondary/50 text-foreground hover:bg-secondary transition-all active:scale-95 cursor-pointer text-sm shadow-sm"

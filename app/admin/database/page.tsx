@@ -14,7 +14,7 @@ export default async function DatabaseViewer(props: { searchParams: Promise<{ ta
     ORDER BY table_name;
   `;
   
-  const tables = tablesResult.map((t) => t.table_name);
+  const tables = tablesResult.map((t: any) => t.table_name);
   const selectedTable = searchParams.table || (tables.length > 0 ? tables[0] : '');
 
   let columns: string[] = [];
@@ -38,7 +38,7 @@ export default async function DatabaseViewer(props: { searchParams: Promise<{ ta
         columns = Object.keys(rows[0]);
       } else {
         const colsResult = await sql`SELECT column_name FROM information_schema.columns WHERE table_name = ${selectedTable}`;
-        columns = colsResult.map(c => c.column_name);
+        columns = colsResult.map((c: any) => c.column_name);
       }
     } catch (err: any) {
       errorStr = err.message;
@@ -61,7 +61,7 @@ export default async function DatabaseViewer(props: { searchParams: Promise<{ ta
 
         <div className="px-6 py-2 text-[10px] font-bold uppercase tracking-widest text-[#A08D74] mb-2">ตารางในระบบ (TABLES)</div>
         <nav className="flex-1 px-4 space-y-1">
-          {tables.map((table) => (
+          {tables.map((table: string) => (
             <Link 
               key={table} 
               href={`/admin/database?table=${table}`}

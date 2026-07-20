@@ -1,5 +1,65 @@
 # 📝 รายงานความคืบหน้าประจำวัน (Daily Progress Report)
 
+**วันที่:** 20 กรกฎาคม 2026
+**โปรเจกต์:** SmartDom (SaaS สำหรับบริหารจัดการหอพัก)
+
+---
+
+## 🚀 สิ่งที่ได้ดำเนินการสำเร็จในวันนี้ (Completed Tasks)
+
+### 1. ปรับปรุงคุณภาพโค้ดและการตรวจสอบ Types (Code Quality & strict TS Check)
+- **แก้ไขข้อผิดพลาดทางเทคนิคด้าน TypeScript (Type Mismatch/Implicit Any):**
+  - แก้ไขไฟล์หลักทั้งหมดที่ส่งผลต่อ Build-time warnings และ compiler errors ได้แก่ [next.config.ts](file:///d:/Works/thesiss/smartdom-1/next.config.ts), [lib/db.ts](file:///d:/Works/thesiss/smartdom-1/lib/db.ts), [app/admin/database/page.tsx](file:///d:/Works/thesiss/smartdom-1/app/admin/database/page.tsx), [app/api/owner/packages/route.ts](file:///d:/Works/thesiss/smartdom-1/app/api/owner/packages/route.ts), [app/tenant/announcements/page.tsx](file:///d:/Works/thesiss/smartdom-1/app/tenant/announcements/page.tsx), [app/tenant/contract/page.tsx](file:///d:/Works/thesiss/smartdom-1/app/tenant/contract/page.tsx), และ [app/tenant/page.tsx](file:///d:/Works/thesiss/smartdom-1/app/tenant/page.tsx)
+  - นำ deprecated `eslint` config ออกจาก [next.config.ts](file:///d:/Works/thesiss/smartdom-1/next.config.ts) ทำให้คอมไพเลอร์ Next.js 16 (Turbopack) ทำงานได้อย่างเสถียร
+  - รันตรวจสอบความถูกต้องของประเภทข้อมูลสำเร็จ 100% ไม่มีข้อผิดพลาด (`npx tsc --noEmit`) และคอมไพล์ Production Build (`npm run build`) สำเร็จแบบปราศจาก Warning/Error ใดๆ
+
+### 2. จัดทำแดชบอร์ดสรุปผลการทดสอบระบบแบบอินเตอร์แอคทีฟ (Interactive Testing Dashboard)
+- **ปรับปรุงเอกสารรายงานการทดสอบ:** บันทึกข้อมูลการควบคุมคุณภาพโค้ดและการตรวจสอบ Strict Types ลงในรายงานผลการทดสอบ [06-system-testing-results.md](file:///d:/Works/thesiss/smartdom-1/docs/06-system-testing-results.md)
+- **สร้างแดชบอร์ดหน้าเว็บ HTML สรุปผล:**
+  - สร้างไฟล์ [system-testing-results.html](file:///d:/Works/thesiss/smartdom-1/docs/system-testing-results.html) ในสไตล์ Premium Glassmorphism โทนสีเข้มสลับสว่าง
+  - นำเสนอข้อมูลการทดสอบเชิงฟังก์ชันแยกทีละเคส 19 เคส, รายละเอียดความปลอดภัย 4 มิติ, แผนภูมิแท่งสรุปสถิติ Lighthouse และตารางวิเคราะห์ความพึงพอใจของกลุ่มผู้ใช้เป้าหมาย (Mean/S.D.) พร้อมฟังก์ชันการสลับแท็บด้วย Vanilla JS และ CSS keyframe animations
+
+### 3. รื้อถอนสีน้ำตาลและพัฒนาธีมสี ดำ-ม่วง / ขาว-ม่วง (Theme Overhaul & Purple Accent)
+- **เปลี่ยนโทนสีหลัก (Accent Color):** ปรับแก้ใน [app/globals.css](file:///d:/Works/thesiss/smartdom-1/app/globals.css) โดยเปลี่ยนตัวแปรหลัก (Primary color & rings) จากสี Indigo ให้กลายเป็นสีม่วง/ไวโอเล็ต (Purple/Violet)
+- **กำจัดสีน้ำตาลที่ค้างในระบบ:** 
+  - เพิ่ม CSS overrides สำหรับคลาสสไตล์ที่เคยถูก Hardcode รหัสสีน้ำตาล เช่น `bg-[#3E342B]` และ `bg-[#2C241B]` (รวมถึงตัวแปร gradient และ shadow) ให้สับเปลี่ยนเป็นคู่สีม่วงโดยอัตโนมัติตามธีม (Black-Purple ในธีมมืด และ White-Purple ในธีมสว่าง)
+  - ครอบคลุมการแสดงผลใน Chat Messenger, กล่องแชท, ปุ่มหลัก, ป๊อปอัพ และโมดอลการตั้งค่าใน Owner/Tenant dashboard ทั้งหมด
+- **ปรับปรุงโครงสร้าง Layout ให้ตอบสนองต่อธีม:**
+  - แก้ไข [app/tenant/layout.tsx](file:///d:/Works/thesiss/smartdom-1/app/tenant/layout.tsx), [app/owner/layout.tsx](file:///d:/Works/thesiss/smartdom-1/app/owner/layout.tsx) และแถบนำทาง [OwnerSidebar.tsx](file:///d:/Works/thesiss/smartdom-1/app/owner/components/OwnerSidebar.tsx) ให้เปลี่ยนมาใช้คลาสธีมแบบไดนามิก (`bg-background text-foreground bg-primary`) แทนการ Hardcode สีเข้ม เพื่อให้การสลับโหมดมืด-สว่างทำงานเป็นเนื้อเดียวกันทั้งระบบ
+
+---
+
+**วันที่:** 17 กรกฎาคม 2026
+**โปรเจกต์:** SmartDom (SaaS สำหรับบริหารจัดการหอพัก)
+
+---
+
+## 🚀 สิ่งที่ได้ดำเนินการสำเร็จในวันนี้ (Completed Tasks)
+
+### 1. แก้ไขระบบสิทธิ์การเข้าถึงข้อมูลห้องพักและรายละเอียดห้องพักแบบสาธารณะ (Public API Access)
+- **ปรับปรุง API แสดงรายการห้องพัก (`/api/rooms`)**:
+  - แก้ไขให้รองรับการเรียกดูห้องพักแบบสาธารณะหากมีการส่ง Query Parameter `dormId` (Bypass session check) เพื่อให้บุคคลทั่วไปหรือ Guest ในหน้า Explore สามารถเรียกดูรายการห้องพักได้โดยตรง ส่วนการเรียกแบบไม่มีพารามิเตอร์จะใช้สิทธิ์จาก Session ตามเดิม
+- **ปรับปรุง API รายละเอียดห้องพัก (`/api/rooms/[id]`)**:
+  - เปลี่ยนมาใช้ `getDb()` เชื่อมตรงไปยัง Single Database โดยดึงข้อมูลได้แบบสาธารณะโดยไม่ต้องตรวจสอบ Session เพื่อรองรับการคลิกดูห้องพักรายห้องจากหน้าสำรวจของบุคคลทั่วไป
+
+### 2. แก้ไขข้อผิดพลาดของ SQL Query ในหน้าห้องพัก (SQL Join Correctness)
+- **แก้ไขการ JOIN ตารางผิดเงื่อนไข**:
+  - แก้ไข SQL Query ใน `/api/rooms/[id]` จากเดิมที่ JOIN ตาราง `rooms` เข้ากับ `dormitory_profile` ผิดเงื่อนไข (`r.dorm_id = d.id` ที่ไม่ตรงกับ registry) และคอลัมน์ที่ไม่ตรงกับความเป็นจริง (`d.name`) ให้ดึงข้อมูล `dorm_name`, `address`, `phone` จากตาราง `dormitory_registry dr` ผ่านเงื่อนไขที่ถูกต้องแทน ป้องกันข้อผิดพลาด "Room not found"
+  - ปรับปรุงการ Join ตาราง `keepers` ไปยัง `users` เพื่อดึงชื่อ เบอร์โทร และอีเมลจริงมาแสดงได้อย่างถูกต้อง (จากเดิมที่ดึงคอลัมน์ name/phone ตรงๆ จากตาราง keepers ซึ่งไม่มีอยู่จริง)
+
+### 3. ปรับปรุง UI ให้รองรับการแสดงผลแบบ Responsive เต็มรูปแบบ (Responsive UI Fixes)
+- **ปรับปรุง Navbar (แถบนำทาง)**:
+  - เลื่อน Breakpoint การแสดงผลเมนู Desktop จาก `md` (768px) เป็น `lg` (1024px) เพื่อสวิตช์ไปแสดงแถบเมนูสไลด์ (Mobile Drawer) บนแท็บเล็ต ป้องกันปุ่มเบียดชนกันจนล้นจอ
+  - เพิ่ม CSS class `max-w-[150px] truncate` ให้กับชื่อผู้ใช้งานเพื่อย่นข้อความยาวป้องกัน layout เสียรูป
+- **ปรับปรุงการ์ดหอพักในหน้าแรก (Dormitory Cards)**:
+  - เปลี่ยนการล็อกสัดส่วน `aspect-[16/11]` บนมือถือและแท็บเล็ตให้กลายเป็น `aspect-auto min-h-[460px]` ทำให้การ์ดยืดหยุ่นตามเนื้อหาภายในโดยไม่ถูกบีบตัดส่วนล่าง
+- **ปรับปรุงแถบตัวกรองและปุ่มจัดการห้องพัก (Filter Headers)**:
+  - แก้ไขหน้าจอ `/explore/[dormId]` และหน้าห้องพักให้ส่วนหัวและแถบเมนูคัดกรองแสดงผลแบบเรียงซ้อนกันแนวตั้งบนแท็บเล็ต แทนที่จะชนกันเป็นแนวขวาง
+- **ปรับปรุงการ์ดฟอร์มการจองห้องพัก (Booking Card)**:
+  - ปรับลด padding ภายในฟอร์มบนมือถือจากเดิม `p-12` (48px) เป็นแบบไล่ระดับ `p-6 sm:p-10 lg:p-16` ทำให้มีพื้นที่หน้าจอสำหรับกรอกข้อมูลเพิ่มขึ้น
+
+---
+
 **วันที่:** 7 กรกฎาคม 2026
 **โปรเจกต์:** SmartDom (SaaS สำหรับบริหารจัดการหอพัก)
 

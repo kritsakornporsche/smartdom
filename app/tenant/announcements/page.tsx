@@ -61,7 +61,7 @@ export default async function TenantAnnouncements() {
           </div>
         ) : (
           <div className="grid gap-6">
-            {announcements.map((ann) => (
+            {announcements.map((ann: any) => (
               <div 
                 key={ann.id} 
                 className={`group relative overflow-hidden bg-[#0F172A] rounded-[2.5rem] border shadow-sm transition-all duration-300 ${

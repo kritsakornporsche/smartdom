@@ -21,7 +21,7 @@ async function getContractData(selectedId?: string) {
   let currentContract = allContracts.length > 0 ? allContracts[0] : null;
 
   if (selectedId) {
-    const found = allContracts.find(c => c.id.toString() === selectedId);
+    const found = allContracts.find((c: any) => c.id.toString() === selectedId);
     if (found) currentContract = found;
   }
 
@@ -162,7 +162,7 @@ export default async function TenantContract({ searchParams }: { searchParams: P
               </h3>
               
               <div className="space-y-3">
-                {contracts.map((c) => (
+                {contracts.map((c: any) => (
                   <Link 
                     key={c.id} 
                     href={`/tenant/contract?id=${c.id}`}

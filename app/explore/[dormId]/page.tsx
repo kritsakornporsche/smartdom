@@ -75,7 +75,7 @@ export default function GuestDormRoomsPage({ params }: { params: Promise<{ dormI
         ย้อนกลับไปเลือกหอพัก
       </Link>
 
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-10 mb-20 animate-reveal">
+      <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-10 mb-20 animate-reveal">
         <div className="space-y-6">
            <h1 className="text-4xl sm:text-5xl lg:text-7xl font-display font-black tracking-tighter italic text-foreground ornament break-words">{dormName}</h1>
            <p className="text-muted-foreground font-black text-lg flex items-center gap-3">
@@ -84,7 +84,7 @@ export default function GuestDormRoomsPage({ params }: { params: Promise<{ dormI
            </p>
         </div>
         
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6 w-full overflow-hidden">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6 w-full lg:w-auto overflow-hidden">
           <div className="flex overflow-x-auto no-scrollbar max-w-full p-2 bg-secondary rounded-[2.5rem] border border-border shadow-sm">
             {['All', 'Standard', 'Deluxe', 'Suite'].map((t) => (
               <button

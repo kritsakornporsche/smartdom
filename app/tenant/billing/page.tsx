@@ -23,6 +23,8 @@ export default function TenantBillingPage() {
   const [selectedBill, setSelectedBill] = useState<Bill | null>(null);
   const [modalType, setModalType] = useState<'qr' | 'upload' | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [qrData, setQrData] = useState<{qrImage: string, amount: number, promptpayNumber: string} | null>(null);
+  const [qrLoading, setQrLoading] = useState(false);
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -78,6 +80,27 @@ export default function TenantBillingPage() {
       }
     };
     reader.readAsDataURL(file);
+  };
+
+  const handleOpenQR = async (bill: Bill) => {
+    setSelectedBill(bill);
+    setModalType('qr');
+    setQrLoading(true);
+    setQrData(null);
+    try {
+      const res = await fetch(`/api/tenant/billing/qr?billId=${bill.id}`);
+      const data = await res.json();
+      if (data.success) {
+        setQrData(data);
+      } else {
+        alert(data.message || 'เกิดข้อผิดพลาดในการโหลด QR Code');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('ระบบขัดข้อง');
+    } finally {
+      setQrLoading(false);
+    }
   };
 
   if (status === 'loading') return null;
@@ -151,7 +174,7 @@ export default function TenantBillingPage() {
                     {bill.status === 'Unpaid' ? (
                       <>
                         <button 
-                          onClick={() => { setSelectedBill(bill); setModalType('qr'); }}
+                          onClick={() => handleOpenQR(bill)}
                           className="w-full bg-[#3E342B] hover:bg-black text-white font-black py-5 px-6 rounded-2xl transition-all shadow-xl shadow-[#3E342B]/20 active:scale-[0.98]"
                         >
                           ชำระผ่านทาง QR Code
@@ -193,9 +216,20 @@ export default function TenantBillingPage() {
            <div className="bg-[#0F172A] rounded-[2.5rem] w-full max-w-sm p-10 overflow-hidden shadow-2xl relative animate-in zoom-in-95">
              <button onClick={() => setModalType(null)} className="absolute top-6 right-6 h-10 w-10 flex items-center justify-center rounded-full hover:bg-black/5 text-white/50">✕</button>
              <h2 className="text-xl font-black text-white mb-6 text-center">สแกนชำระเงิน</h2>
-             <div className="bg-[#0F172A] p-4 rounded-3xl border border-white/20/10 flex justify-center mb-6">
-                {/* using mock PromptPay qr generator */}
-                <img src={`https://promptpay.io/0812345678/${selectedBill.amount}.png`} alt="QR Code" className="w-48 h-48 object-contain mix-blend-multiply" />
+             <div className="bg-[#0F172A] p-4 rounded-3xl border border-white/20/10 flex justify-center mb-6 min-h-[220px] items-center">
+                {qrLoading ? (
+                   <div className="flex flex-col items-center justify-center space-y-3">
+                     <svg className="w-8 h-8 text-primary animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg>
+                     <span className="text-sm font-bold text-white/50">กำลังสร้าง QR Code...</span>
+                   </div>
+                ) : qrData ? (
+                   <div className="flex flex-col items-center">
+                     <img src={qrData.qrImage} alt="QR Code" className="w-56 h-56 object-contain bg-white p-2 rounded-xl" />
+                     <p className="text-xs text-white/50 mt-4 font-bold tracking-widest">PromptPay: {qrData.promptpayNumber}</p>
+                   </div>
+                ) : (
+                   <p className="text-destructive font-bold">ไม่สามารถโหลด QR Code ได้</p>
+                )}
              </div>
              <div className="text-center space-y-1 mb-8">
                <p className="text-[10px] text-white/50 font-black uppercase tracking-widest">ยอดที่ต้องชำระ (บาท)</p>

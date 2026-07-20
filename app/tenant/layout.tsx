@@ -28,7 +28,7 @@ export default async function TenantLayout({ children }: { children: ReactNode }
   }
 
   return (
-    <div className="flex flex-col h-screen bg-[#080F1E] text-white">
+    <div className="flex flex-col h-screen bg-background text-foreground">
       <TenantSidebar roomInfo={roomInfo} userName={userName} />
 
       {/* Main Content */}

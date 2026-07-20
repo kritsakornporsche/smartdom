@@ -322,7 +322,7 @@ export default function RoomBookingPage({ params }: { params: Promise<{ id: stri
           </div>
 
           <div className="lg:col-span-5 relative">
-            <div className="bg-white rounded-[4rem] p-12 lg:p-16 border border-border shadow-2xl relative overflow-hidden premium-shadow">
+            <div className="bg-white rounded-[4rem] p-6 sm:p-10 lg:p-16 border border-border shadow-2xl relative overflow-hidden premium-shadow">
                 <div className="absolute -top-20 -right-20 w-40 h-40 bg-primary/5 rounded-full blur-3xl" />
                 
                 {step === 1 && (

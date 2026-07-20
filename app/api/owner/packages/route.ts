@@ -22,7 +22,7 @@ export async function GET() {
   
   try {
     const packages = await sql`SELECT * FROM dormitory_packages ORDER BY price ASC`;
-    const parsed = packages.map(p => ({
+    const parsed = packages.map((p: any) => ({
       ...p,
       features: safeJsonParse(p.features),
     }));

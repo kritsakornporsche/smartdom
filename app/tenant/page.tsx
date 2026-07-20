@@ -97,7 +97,7 @@ export default async function TenantDashboard() {
               <div>
                 <h2 className="text-xl font-black text-primary mb-1.5">คุณมียอดค้างชำระ ({unpaidBills.length} รายการ)</h2>
                 <p className="text-primary/80 font-medium max-w-xl">
-                    กรุณาชำระยอดรวม ฿{unpaidBills.reduce((acc, curr) => acc + Number(curr.amount), 0).toLocaleString()} 
+                    กรุณาชำระยอดรวม ฿{unpaidBills.reduce((acc: number, curr: any) => acc + Number(curr.amount), 0).toLocaleString()} 
                     ภายในวันที่ {new Date(unpaidBills[0].due_date).toLocaleDateString('th-TH')}
                 </p>
               </div>
@@ -131,7 +131,7 @@ export default async function TenantDashboard() {
                       <p className="text-white/50 font-bold">ยังไม่มีรายการแจ้งซ่อมในขณะนี้</p>
                       <Link href="/tenant/maintenance" className="mt-4 inline-block text-primary font-bold text-sm">แจ้งซ่อมใหม่ →</Link>
                     </div>
-                ) : recentMaintenance.map((maint) => (
+                ) : recentMaintenance.map((maint: any) => (
                     <div key={maint.id} className="bg-[#0F172A] rounded-[2rem] border border-white/20/10 p-8 shadow-sm hover:shadow-lg transition-all group">
                       <div className="flex flex-col sm:flex-row justify-between items-start gap-4 mb-6">
                         <div className="flex gap-4 items-start">

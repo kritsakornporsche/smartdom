@@ -1,6 +1,6 @@
 
 import { NextRequest, NextResponse } from 'next/server';
-import { getPlatformDb, getDormDb, getDormDbFromSession } from '@/lib/db';
+import { getDb } from '@/lib/db';
 import { auth } from '@/auth';
 
 export async function GET(req: NextRequest) {
@@ -8,22 +8,18 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const dormIdParam = searchParams.get('dormId');
     
-    const session = await auth();
-    if (!session) {
-      return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
-    }
-
-    // Determine the dorm_id to query based on session or parameter
+    // Determine the dorm_id to query based on parameter or session
     let targetDormId: number | null = null;
-    const userRole = (session.user as any)?.role;
-    const userDormId = (session.user as any)?.dormId;
     
-    if (userRole === 'platform_admin') {
-       if (dormIdParam) {
-           targetDormId = parseInt(dormIdParam, 10);
-       }
+    if (dormIdParam) {
+      targetDormId = parseInt(dormIdParam, 10);
     } else {
-       targetDormId = userDormId ? parseInt(userDormId, 10) : null;
+      const session = await auth();
+      if (!session) {
+        return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
+      }
+      const userDormId = (session.user as any)?.dormId;
+      targetDormId = userDormId ? parseInt(userDormId, 10) : null;
     }
 
     if (!targetDormId) {

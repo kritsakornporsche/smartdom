@@ -9,7 +9,7 @@ export default function OwnerLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex flex-col h-screen bg-[#080F1E]">
+    <div className="flex flex-col h-screen bg-background text-foreground">
       <OwnerSidebar />
       <div className="flex-1 flex flex-col overflow-hidden relative">
         {children}

@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
 import { useState, useEffect } from 'react';
+import NotificationsPopover from '@/components/NotificationsPopover';
 
 const navItems = [
   {
@@ -101,13 +102,14 @@ export default function OwnerSidebar() {
           </div>
           <div className="hidden sm:block">
             <h2 className="font-black text-white tracking-tight text-base">SmartDom</h2>
-            <p className="text-[9px] font-bold text-blue-400 uppercase tracking-[0.15em] leading-none">{(session?.user as any)?.role || 'Owner'} Portal</p>
+            <p className="text-[9px] font-bold text-primary uppercase tracking-[0.15em] leading-none">{(session?.user as any)?.role || 'Owner'} Portal</p>
           </div>
         </div>
 
         {/* Right side - Profile */}
-        <div className="flex items-center gap-3">
-          <div className="text-right hidden sm:block">
+        <div className="flex items-center gap-4">
+          <NotificationsPopover />
+          <div className="text-right hidden sm:block ml-2">
             <p className="text-sm font-bold text-white">{session?.user?.name || 'Owner'}</p>
             <p className="text-xs text-white/40 truncate max-w-[150px]">{dormName || 'Loading...'}</p>
           </div>
@@ -138,7 +140,7 @@ export default function OwnerSidebar() {
             </div>
             <div>
               <h2 className="font-black text-white tracking-tight text-sm">SmartDom</h2>
-              <p className="text-[10px] font-bold text-blue-400 uppercase tracking-widest leading-none mt-1">Owner Portal</p>
+              <p className="text-[10px] font-bold text-primary uppercase tracking-widest leading-none mt-1">Owner Portal</p>
             </div>
           </div>
           <button 
@@ -198,7 +200,7 @@ export default function OwnerSidebar() {
                       onClick={() => setIsOpen(false)}
                       className={`flex items-center gap-3 px-3 py-2.5 rounded-xl font-semibold text-sm transition-all ${
                         isActive
-                          ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30'
+                          ? 'bg-primary text-white shadow-lg shadow-primary/30'
                           : 'text-white/50 hover:bg-[#0F172A]/5 hover:text-white'
                       }`}
                     >

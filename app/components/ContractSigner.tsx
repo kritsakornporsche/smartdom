@@ -91,14 +91,14 @@ export default function ContractSigner({
   };
 
   return (
-    <div className="bg-background rounded-[4rem] p-8 lg:p-16 border border-border/40 shadow-2xl max-w-5xl w-full mx-auto space-y-14 animate-reveal">
+    <div className="bg-background rounded-[4rem] p-5 sm:p-8 lg:p-16 border border-border/40 shadow-2xl max-w-5xl w-full mx-auto space-y-14 animate-reveal">
       <div className="text-center space-y-3">
         <h2 className="text-4xl font-display font-black tracking-tight italic">สัญญาเช่าหอพักระบบดิจิทัล</h2>
         <p className="text-[10px] font-black uppercase tracking-[0.4em] text-primary">SmartDom Digital Agreement</p>
       </div>
 
       {/* Contract Content Area */}
-      <div className="bg-background border border-border/60 rounded-[3rem] p-10 lg:p-16 overflow-y-auto max-h-[50vh] space-y-12 text-foreground shadow-inner font-serif leading-relaxed relative">
+      <div className="bg-background border border-border/60 rounded-[3rem] p-5 sm:p-10 lg:p-16 overflow-y-auto max-h-[50vh] space-y-12 text-foreground shadow-inner font-serif leading-relaxed relative">
         <div className="text-center space-y-5 pb-10 border-b border-border/40">
           <h3 className="text-2xl font-bold">สัญญาเช่าที่พักอาศัย</h3>
           <p className="text-sm opacity-60">จัดทำขึ้นและมีผลบังคับใช้ ณ วันที่ {new Date().toLocaleDateString('th-TH', { day: 'numeric', month: 'long', year: 'numeric' })}</p>

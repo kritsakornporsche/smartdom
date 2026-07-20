@@ -1,39 +1,30 @@
 import { NextResponse } from 'next/server';
-import { getPlatformDb, getDormDb, getDormDbFromSession } from '@/lib/db';
+import { getDb, getPlatformDb, getDormDb, getDormDbFromSession } from '@/lib/db';
 import { auth } from '@/auth';
 
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const resolvedParams = await params;
     const id = resolvedParams.id;
-    const { searchParams } = new URL(request.url);
-    const dormId = searchParams.get('dormId');
     
-    let sql;
-    if (dormId) {
-      const platformSql = getPlatformDb();
-      const reg = await platformSql`SELECT db_name FROM dormitory_registry WHERE id = ${parseInt(dormId)} LIMIT 1`;
-      if (reg.length === 0) return NextResponse.json({ success: false, message: 'Dormitory not found' }, { status: 404 });
-      sql = getDormDb(reg[0].db_name);
-    } else {
-      const session = await auth();
-      if (!session || !(session.user as any)?.dormDbName) {
-        return NextResponse.json({ success: false, message: 'Missing dormId or session' }, { status: 400 });
-      }
-      sql = getDormDbFromSession(session);
-    }
+    const sql = getDb();
     
     // Fetch room with dorm, owner and keeper info
     const result = await sql`
       SELECT 
         r.*, 
-        d.name as dorm_name, d.address as dorm_address, d.phone as dorm_phone,
+        dr.dorm_name as dorm_name, 
+        dr.address as dorm_address, 
+        dr.phone as dorm_phone,
         u.name as owner_name,
-        k.name as keeper_name, k.phone as keeper_phone, k.email as keeper_email
+        ku.name as keeper_name, 
+        ku.phone as keeper_phone, 
+        ku.email as keeper_email
       FROM rooms r
-      JOIN dormitory_profile d ON r.dorm_id = d.id
-      JOIN users u ON d.owner_id = u.id
-      LEFT JOIN keepers k ON d.id = k.dorm_id
+      JOIN dormitory_registry dr ON r.dorm_id = dr.id
+      JOIN users u ON dr.owner_id = u.id
+      LEFT JOIN keepers k ON dr.id = k.dorm_id
+      LEFT JOIN users ku ON k.user_id = ku.id
       WHERE r.id = ${id}
       LIMIT 1
     `;

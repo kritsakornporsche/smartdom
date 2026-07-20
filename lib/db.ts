@@ -20,7 +20,7 @@ export function getDb() {
   if (!globalDbPool) {
     const pool = new Pool({ connectionString: `${MYSQL_BASE}/smartdomdb` });
     globalDbPool = async function(strings: any, ...values: any[]) {
-      if (Array.isArray(strings) && strings.raw) {
+      if (Array.isArray(strings) && (strings as any).raw) {
         let queryText = '';
         const params = [];
         for (let i = 0; i < strings.length; i++) {

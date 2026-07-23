@@ -35,6 +35,11 @@ export default function Error({
           ระบบพบข้อผิดพลาดที่ไม่คาดคิด ทีมงานของเรากำลังตรวจสอบเพื่อแก้ไขให้เร็วที่สุด
         </p>
 
+        <div className="my-6 p-4 bg-destructive/10 border border-destructive/20 text-destructive text-xs font-mono text-left max-h-40 overflow-auto rounded-xl">
+          <strong>Error Details:</strong> {error.message || String(error)}
+          {error.digest && <div className="mt-1 text-[10px] text-muted-foreground">Digest: {error.digest}</div>}
+        </div>
+
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <button
             onClick={() => reset()}
@@ -50,11 +55,6 @@ export default function Error({
           </Link>
         </div>
 
-        {error.digest && (
-          <p className="mt-12 text-[9px] font-black uppercase tracking-widest text-[#A08D74]/40">
-            Error ID: {error.digest}
-          </p>
-        )}
       </div>
     </div>
   );

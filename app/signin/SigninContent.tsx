@@ -40,32 +40,34 @@ export default function SignInContent() {
     setError('');
 
     try {
-      const result = await signIn('credentials', {
-        email,
-        password,
-        redirect: false,
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
       });
-
-      if (result?.error) {
-        setError('อีเมลหรือรหัสผ่านไม่ถูกต้อง');
+      const data = await res.json();
+      
+      if (!data.success) {
+        setError(data.message || 'อีเมลหรือรหัสผ่านไม่ถูกต้อง');
       } else {
         if (typeof window !== 'undefined') {
           localStorage.setItem('userEmail', email);
         }
         
-        const res = await fetch('/api/auth/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, password }),
-        });
-        const data = await res.json();
-        
+        // NextAuth Credentials Session sign in without auto redirecting to 0.0.0.0
+        try {
+          await signIn('credentials', { email, password, redirect: false });
+        } catch (e) {
+          // ignore NextAuth client host mismatch
+        }
+
         const path = callbackUrl || data.redirectUrl || '/explore';
         if (typeof window !== 'undefined') {
           window.location.href = path;
         }
       }
     } catch (err: any) {
+
 
       setError('เกิดข้อผิดพลาดในการเชื่อมต่อ');
     } finally {

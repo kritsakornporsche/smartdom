@@ -52,9 +52,10 @@ export default function OwnerSidebar() {
 
   useEffect(() => {
     setMounted(true);
-    if (session?.user?.email) {
-      const savedDb = localStorage.getItem('selectedDormDbName');
-      fetch(`/api/owner/onboarding?email=${session.user.email}${savedDb ? `&dormDbName=${savedDb}` : ''}`)
+    const email = session?.user?.email || (typeof window !== 'undefined' ? localStorage.getItem('userEmail') : null);
+    if (email) {
+      const savedDb = typeof window !== 'undefined' ? localStorage.getItem('selectedDormDbName') : null;
+      fetch(`/api/owner/onboarding?email=${email}${savedDb ? `&dormDbName=${savedDb}` : ''}`)
         .then(res => res.json())
         .then(data => {
           if (data.success) {
@@ -63,13 +64,14 @@ export default function OwnerSidebar() {
             const activeDb = data.dormDbName;
             setSelectedDb(activeDb);
             setDormName(data.dorm?.name || null);
-            if (activeDb) {
+            if (activeDb && typeof window !== 'undefined') {
               localStorage.setItem('selectedDormDbName', activeDb);
             }
           }
         });
     }
   }, [session]);
+
 
   const handleDormChange = (newDb: string) => {
     localStorage.setItem('selectedDormDbName', newDb);

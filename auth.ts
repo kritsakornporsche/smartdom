@@ -8,10 +8,11 @@ import { getDb } from '@/lib/db';
 import bcrypt from 'bcryptjs';
 import { authConfig } from './auth.config';
 
-if (!process.env.NEXTAUTH_URL && !process.env.AUTH_URL) {
-  process.env.NEXTAUTH_URL = 'http://kritsakorn.thddns.net:5993';
-  process.env.AUTH_URL = 'http://kritsakorn.thddns.net:5993';
-}
+process.env.NEXTAUTH_URL = process.env.NEXTAUTH_URL || 'http://kritsakorn.thddns.net:5993';
+process.env.AUTH_URL = process.env.AUTH_URL || 'http://kritsakorn.thddns.net:5993';
+process.env.AUTH_TRUST_HOST = 'true';
+process.env.AUTH_SECRET = process.env.AUTH_SECRET || 'A3B4C5D6E7F8G9H0I1J2K3L4M5N6O7P8Q9R0S1T2U3V4W5X6Y7Z8';
+
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
 

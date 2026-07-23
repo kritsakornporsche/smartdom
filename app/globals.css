@@ -167,7 +167,7 @@
   }
 
   * {
-    @apply border-border;
+    border-color: var(--border);
   }
 }
 
@@ -182,7 +182,15 @@
   }
 
   .glass-card {
-    @apply bg-white/40 backdrop-blur-xl border border-white/20 shadow-xl dark:bg-black/40 dark:border-white/10;
+    background-color: rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  }
+
+  .dark .glass-card {
+    background-color: rgba(0, 0, 0, 0.4);
+    border-color: rgba(255, 255, 255, 0.1);
   }
 
   .premium-shadow {

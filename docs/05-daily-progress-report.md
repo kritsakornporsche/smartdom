@@ -182,3 +182,43 @@
 - ออกแบบและจัดการระบบ Dashboard ของแอดมินแพลตฟอร์มเพิ่มเติม
 
 > **สถานะการจัดเก็บ:** ทำการบันทึกโค้ด (Commit) และนำขึ้น GitHub เรียบร้อยแล้ว (Progress update)
+
+---
+
+**วันที่:** 23 กรกฎาคม 2026  
+**โปรเจกต์:** SmartDom (ระบบบริหารจัดการหอพักหน้ามหาวิทยาลัยพะเยา)
+
+---
+
+## 🚀 สิ่งที่ได้ดำเนินการสำเร็จในวันนี้ (Completed Tasks)
+
+### 1. แก้ไขปัญหาระบบล็อกอินภายนอกผ่าน DDNS & Port Forwarding
+- **แก้ไขปัญหาระบบเด้งไป `0.0.0.0:3000` / `localhost:3000`:**
+  - ปรับตั้งค่า `.env.local` และ `ecosystem.config.js` บน Server ให้ส่งผ่าน `AUTH_TRUST_HOST=true`, `NEXTAUTH_URL` และ `AUTH_URL` เข้าสู่ PM2 Cluster สำหรับพอร์ต 5993
+  - ปรับแก้ไขการใช้ `NextResponse.redirect` ใน Middleware (`proxy.ts`) เพื่อหลีกเลี่ยงการผสม Origin ภายใน (`0.0.0.0`) ใน HTTP Redirect Headers
+- **แก้ไขปัญหา Error Loop บน NextAuth (v5 Beta):**
+  - นำ `error: '/signin'` ออกจากออบเจกต์ `pages` ใน `auth.ts` เพื่อตัดวงจรลูปการรีไดเรกต์เมื่อเกิดข้อผิดพลาดในการโหลด
+  - ปรับปรุง `redirect` callback ให้คืนค่าเป็น Relative Path 100% เพื่อรองรับการเปลี่ยน Domain และ Port สัมพัทธ์โดยอัตโนมัติ
+- **แก้ไขปัญหา UntrustedHost & Response.redirect ใน Edge Runtime:**
+  - เพิ่ม `trustHost: true` ในออบเจกต์ `authConfig` (`auth.config.ts`)
+  - นำ `Response.redirect` ออกจาก callback `authorized()` เพื่อป้องกัน Edge Crash บน Next.js 16
+  - ระบุ `basePath="/api/auth"` แบบ Relative ให้กับ `<SessionProvider>` ใน `SessionProviderWrapper.tsx`
+- **ปรับปรุงกระบวนการตรวจสอบสิทธิ์ในหน้า Sign In (`SigninContent.tsx`):**
+  - เปลี่ยนการตรวจสอบสิทธิ์มาใช้การเรียก API ภายใน (`/api/auth/login`) นำหน้าก่อน เพื่อหลีกเลี่ยง CSRF & Host Mismatch ของ NextAuth Client Side บน Reverse Proxy
+
+### 2. เพิ่มเติมระบบ fallback สำหรับ Owner Dashboard
+- **ปรับปรุง `OwnerSidebar.tsx`:** เพิ่มการดึงอีเมลสำรองจาก `localStorage.getItem('userEmail')` ป้องกันการสั่ง Redirect พังเมื่อเซสชันของ NextAuth ฝั่ง Client โหลดล่าช้าผ่าน DDNS
+
+### 3. ปรับปรุงการแสดงผลข้อผิดพลาดและการปรับใช้ระบบอัตโนมัติ (Automation & Debugging)
+- **Root Error Boundary (`app/error.tsx`):** เพิ่มส่วนแสดงกล่องรายละเอียด Error Details และ Stack Trace สดบนหน้าจอเพื่อความสะดวกในการวินิจฉัยปัญหาทางเทคนิค
+- **สคริปต์ Remote Deploy (`deploy-remote.js`):**
+  - สร้างและอัปเดตสคริปต์ Deploy ผ่าน SSH2 อัตโนมัติ (`git pull origin main` -> `rmdir .next` -> `npm run build` -> `pm2 restart all`) เพื่อให้ฝั่ง Server ได้รับโค้ดล่าสุดที่ผ่านการทดสอบจาก local เสมอ
+
+---
+
+## 📌 แผนงานขั้นต่อไป (Next Steps)
+- ตรวจสอบและทดสอบการใช้งานฟังก์ชันอื่นๆ (เช่น สัญญา, การจดมิเตอร์, และระบบแจ้งซ่อม) ผ่าน DDNS `kritsakorn.thddns.net:5993`
+- ทำการปรับแต่งการเข้าถึงของผู้ใช้แต่ละบทบาท (Platform Admin, Owner, Tenant, Keeper) บนสภาพแวดล้อม Production
+
+> **สถานะการจัดเก็บ:** ทำการบันทึกรายงานประจำวัน (Daily Log) เรียบร้อยแล้ว
+

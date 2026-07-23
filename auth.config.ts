@@ -7,27 +7,10 @@ export const authConfig = {
   },
 
   callbacks: {
-    authorized({ auth, request: { nextUrl } }) {
-      const isLoggedIn = !!auth?.user;
-      const user = auth?.user as any;
-      
-      const protectedPrefixes = ["admin", "owner", "keeper", "tenant"];
-      const pathParts = nextUrl.pathname.split("/");
-      const currentPrefix = pathParts[1];
-
-      // Only care about protected routes
-      if (protectedPrefixes.includes(currentPrefix)) {
-        if (!isLoggedIn) return false; // Redirect to sign-in
-        if (currentPrefix === 'admin' && user.role === 'platform_admin') {
-           return true; // Allow platform_admin to access /admin
-        }
-        if (user.role !== currentPrefix) {
-           return Response.redirect(new URL("/explore", nextUrl));
-        }
-      }
-
+    authorized() {
       return true;
     },
   },
+
   providers: [],
 } satisfies NextAuthConfig;

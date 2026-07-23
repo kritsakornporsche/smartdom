@@ -11,7 +11,10 @@ module.exports = {
       env: {
         NODE_ENV: 'production',
         PORT: 3000,
-        HOSTNAME: '0.0.0.0'
+        HOSTNAME: '0.0.0.0',
+        AUTH_URL: 'http://kritsakorn.thddns.net:5993',
+        NEXTAUTH_URL: 'http://kritsakorn.thddns.net:5993',
+        AUTH_TRUST_HOST: 'true'
       }
     },
     {
@@ -25,8 +28,12 @@ module.exports = {
       env: {
         NODE_ENV: 'production',
         PORT: 5993,
-        HOSTNAME: '0.0.0.0'
+        HOSTNAME: '0.0.0.0',
+        AUTH_URL: 'http://kritsakorn.thddns.net:5993',
+        NEXTAUTH_URL: 'http://kritsakorn.thddns.net:5993',
+        AUTH_TRUST_HOST: 'true'
       }
     }
   ]
 };
+

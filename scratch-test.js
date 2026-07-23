@@ -1,14 +1,14 @@
-const mysql = require('mysql2/promise');
-require('dotenv').config({ path: '.env.local' });
+const fs = require('fs');
+const path = require('path');
 
-async function test() {
-  const url = process.env.DATABASE_URL.replace(/smartdom_dorm_1$/, 'smartdomdb').replace(/smartdom_platform$/, 'smartdomdb');
-  const pool = mysql.createPool(url);
+const srcHeader = path.join(__dirname, 'lib', 'header.jfif');
+const destHeaderJpg = path.join(__dirname, 'public', 'up-header.jpg');
+const destHeaderJfif = path.join(__dirname, 'public', 'header.jfif');
 
-  console.log('Fetching all users from database...');
-  const [users] = await pool.query('SELECT id, name, email, primary_role FROM users');
-  console.log('Seeded Users in database:', users);
-
-  process.exit(0);
+if (fs.existsSync(srcHeader)) {
+  fs.copyFileSync(srcHeader, destHeaderJpg);
+  fs.copyFileSync(srcHeader, destHeaderJfif);
+  console.log('Successfully copied lib/header.jfif to public/up-header.jpg!');
+} else {
+  console.error('lib/header.jfif not found');
 }
-test();

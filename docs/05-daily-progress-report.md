@@ -1,5 +1,47 @@
 # 📝 รายงานความคืบหน้าประจำวัน (Daily Progress Report)
 
+**วันที่:** 23 กรกฎาคม 2026
+**โปรเจกต์:** แพลตฟอร์มหอพักหน้ามหาวิทยาลัยพะเยา (SaaS บริหารจัดการหอพัก)
+
+---
+
+## 🚀 สิ่งที่ได้ดำเนินการสำเร็จในวันนี้ (Completed Tasks)
+
+### 1. การจัดการบัญชีผู้ใช้งานและจัดทำเอกสารรหัสผ่าน (`docs/account.md`)
+- **รวบรวมข้อมูลเข้าสู่ระบบ:** ตรวจสอบและบันทึกรายชื่อบัญชีพร้อมรหัสผ่านที่ถอดรหัสแล้วลงในเอกสาร [account.md](file:///d:/Works/thesiss/smartdom-1/docs/account.md) เพื่อให้ผู้ใช้และผู้ทดสอบเข้าใช้งานทุกบทบาทได้สะดวกรวดเร็ว:
+  - **Platform Admin (`super_admin`):** `admin` / **`admin`**
+  - **Dorm Owners (`owner`):** `kritsakorn801@gmail.com` / **`smartdom`**, `admin` / **`admin`**, `dummy_owner@smartdom.local` / **`password`**
+  - **Tenant (`tenant`):** `tenant@gmail.com` / **`smartdom`**
+
+### 2. อัปเดตชื่อหอพักหลักและชื่อแบรนด์ระบบ (System & Dormitory Rebranding)
+- **อัปเดตชื่อหอพักในฐานข้อมูล MySQL:** ดำเนินการแก้ไขชื่อหอพักหลัก (Dorm ID: 1) ในตาราง `dormitory_registry` จากเดิม *"หอพักกฤษกร"* เป็น **"หอพักหน้ามหาวิทยาลัยพะเยา"** และหอพักสาขา 2 เป็น **"หอพักหน้ามหาวิทยาลัยพะเยา (สาขา 2)"**
+- **เปลี่ยนชื่อแบรนด์ระบบหลัก:** อัปเดตชื่อระบบจากเดิม *"SmartDom"* เปลี่ยนเป็น **"แพลตฟอร์มหอพักหน้ามหาวิทยาลัยพะเยา"** ครอบคลุมแถบนำทางหลัก ([Navbar.tsx](file:///d:/Works/thesiss/smartdom-1/app/components/Navbar.tsx)), เมนูด้านข้างสำหรับทุกบทบาท ([OwnerSidebar.tsx](file:///d:/Works/thesiss/smartdom-1/app/owner/components/OwnerSidebar.tsx), [TenantSidebar.tsx](file:///d:/Works/thesiss/smartdom-1/app/tenant/components/TenantSidebar.tsx), [PlatformSidebar.tsx](file:///d:/Works/thesiss/smartdom-1/app/platform/components/PlatformSidebar.tsx)), ส่วนท้ายเว็บไซต์ ([ExploreLayout.tsx](file:///d:/Works/thesiss/smartdom-1/app/explore/layout.tsx)) และ Meta Title/Description ([layout.tsx](file:///d:/Works/thesiss/smartdom-1/app/layout.tsx))
+
+### 3. ปรับแต่งเนื้อหาเจาะจงกลุ่มนักศึกษามหาวิทยาลัยพะเยา (UP Student Living Focus)
+- **ปรับแต่งข้อความต้อนรับในหน้าแรก ([app/page.tsx](file:///d:/Works/thesiss/smartdom-1/app/page.tsx)):** อัปเดต Tagline เป็น `University of Phayao Student Living`, หัวข้อหลักเป็น `ค้นหาหอพักหน้า มพ. ที่ตรงใจคุณ` และปรับคำอธิบายเน้นความสะดวกสำหรับนักศึกษามหาวิทยาลัยพะเยาที่กำลังหาหอพักใกล้มอ เช็กราคา ค่าน้ำค่าไฟ กฎเลี้ยงสัตว์ และทำสัญญาเช่าออนไลน์
+
+### 4. พัฒนาธีมสีประจำมหาวิทยาลัยพะเยาและติดตั้งโลโก้ใหม่ (UP Purple & Gold Theme & Official Logo)
+- **กำหนดระบบจานสี (Color Palette):**
+  - **สีม่วง มพ. (UP Purple - `#8E24AA` / `#A855F7`):** ปรับใช้เป็นสีหลัก (Primary) สำหรับปุ่ม, ไฮไลต์, วงกลมสัญลักษณ์ และโฟกัสของระบบ
+  - **สีทอง มพ. (UP Gold - `#C59B63` / `#D4AF37`):** ปรับใช้เป็นสีเน้น (Accent / Gold) สำหรับตกแต่ง ป้ายกำกับแท็ก และตัวหนังสือเน้นความโดดเด่น
+- **ติดตั้งและขยายโลโก้มหาวิทยาลัยพะเยา (`/up-logo.png`):** นำไฟล์ตราสัญลักษณ์มหาวิทยาลัยพะเยาจาก [lib/logo.jpg](file:///d:/Works/thesiss/smartdom-1/lib/logo.jpg) เข้ามาคัดลอกและติดตั้งใช้งานเป็นโลโก้หลักของระบบ พร้อมขยายขนาดกรอบให้ใหญ่และใส่เงานูนลอย (Drop shadow) เพื่อความเด่นชัด อ่านง่ายทุกมุมมอง
+
+### 5. ปรับเปลี่ยนภาพพื้นหลังส่วนหัว (Hero Header Background)
+- **อัปเดตภาพพื้นหลัง:** นำไฟล์ภาพ [lib/header.jfif](file:///d:/Works/thesiss/smartdom-1/lib/header.jfif) มาปรับใช้เป็นภาพพื้นหลังส่วนหัว (`/up-header.jpg`) ในหน้าแรก พร้อมปรับแต่ง Gradient และความสว่างให้ตัวหนังสือต้อนรับและช่องค้นหาลอยโดดเด่น
+
+### 6. ปรับปรุงการ์ดแสดงผลหอพักให้มีความคมชัดสูง (High-Contrast Dorm Card Redesign)
+- **ปรับโครงสร้างการ์ดการแสดงผล:** แยกส่วนภาพปกไว้ด้านบน และจัดวางส่วนกล่องเนื้อหา (Content Card) ไว้บนพื้นหลังทึบด้านล่าง แก้ไขปัญหาตัวหนังสือโปร่งแสงทับบนภาพพื้นหลังสว่างจนอ่านยาก
+- **ปรับแต่งฟอนต์และความคมชัด:** ขยายฟอนต์ชื่อหอพัก, ที่อยู่, เบอร์โทรศัพท์, แท็กสิ่งอำนวยความสะดวก และป้าย *"ดูรายละเอียดห้องพัก"* ให้มีขนาดใหญ่ หนา คมชัด 100% ทั้งในโหมดสว่างและโหมดมืด
+
+### 7. แก้ไขฟังก์ชันแชทสอบถามข้อมูลเพิ่มเติม (Chat Widget Fix)
+- **ซ่อมแซมปุ่ม *"💬 แชทสอบถามข้อมูลเพิ่มเติม"*:** เพิ่มระบบ Custom Event Listener (`open-chat`) ใน [ChatWidget.tsx](file:///d:/Works/thesiss/smartdom-1/app/components/ChatWidget.tsx) เพื่อให้กดปุ่มแชทในหน้าห้องพักแล้วสามารถเปิดกล่องแชทกับเจ้าของหอพักได้ทันที พร้อมเพิ่มระบบนำทางผู้ใช้ทั่วไปที่ยังไม่ได้ล็อกอินไปยังหน้าเข้าสู่ระบบอัตโนมัติ
+
+### 8. ซ่อน Scrollbar ของเบราว์เซอร์และถอดถอนระดับประเภทห้องพัก (Scrollbar Fix & Tier Removal)
+- **เพิ่ม CSS Utility ซ่อน Scrollbar (`.no-scrollbar`):** เพิ่มกฎ CSS ใน [globals.css](file:///d:/Works/thesiss/smartdom-1/app/globals.css) เพื่อซ่อนแถบเลื่อนแนวนอนสีขาว/เทาของเบราว์เซอร์ (Chrome, Firefox, Safari, Edge)
+- **ถอดถอนระดับประเภทห้องพัก:** ลบแถบตัวกรองระดับประเภทห้องพัก (Standard, Deluxe, Suite) ออก คงเหลือเฉพาะปุ่มสลับการแสดงผล **"แสดงเฉพาะห้องว่าง"** เพื่อความเรียบง่ายและใช้งานได้ตรงจุด
+
+---
+
 **วันที่:** 20 กรกฎาคม 2026
 **โปรเจกต์:** SmartDom (SaaS สำหรับบริหารจัดการหอพัก)
 

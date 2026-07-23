@@ -70,10 +70,10 @@ export default function Home() {
       <section className="relative h-[55vh] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 z-0">
           <Image 
-            src="/luxury_dorm_building_1_1775739456274.png" 
-            alt="Dormitory Building" 
+            src="/up-header.jpg" 
+            alt="University of Phayao Dormitory Header" 
             fill 
-            className="object-cover brightness-[0.4] dark:brightness-[0.3]"
+            className="object-cover brightness-[0.5] dark:brightness-[0.4]"
             priority
           />
           <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-transparent to-background" />
@@ -82,13 +82,13 @@ export default function Home() {
         <div className="relative z-10 text-center px-6 animate-reveal">
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/5 backdrop-blur-md rounded-full text-[10px] font-black uppercase tracking-[0.3em] text-primary border border-white/10 mb-6 shadow-xl">
             <span className="w-1.5 h-1.5 bg-primary rounded-full animate-pulse" />
-            Ecosystem of Living
+            University of Phayao Student Living
           </div>
           <h1 className="text-4xl sm:text-5xl md:text-7xl font-display font-black tracking-tight text-white mb-4 sm:mb-6 leading-tight">
-            ค้นหาหอพักที่ <span className="italic font-medium text-primary">ตรงใจคุณ</span>
+            ค้นหาหอพักหน้า มพ. <span className="italic font-medium text-primary">ที่ตรงใจคุณ</span>
           </h1>
           <p className="max-w-2xl mx-auto text-white/90 dark:text-white/70 font-semibold text-base leading-relaxed">
-            เริ่มต้นการค้นหาจากทำเล กฎระเบียบสัตว์เลี้ยง ค่าน้ำค่าไฟ หรือสิ่งอำนวยความสะดวกที่คุณต้องการ
+            ศูนย์รวมหอพักสำหรับนักศึกษามหาวิทยาลัยพะเยา ค้นหาหอพักใกล้มอ เช็กราคา ค่าน้ำค่าไฟ กฎเลี้ยงสัตว์ จองห้องและทำสัญญาออนไลน์ได้ง่ายๆ ในที่เดียว
           </p>
         </div>
       </section>
@@ -163,8 +163,8 @@ export default function Home() {
       <section className="py-16 sm:py-24 px-4 sm:px-6 lg:px-12 max-w-7xl mx-auto">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 sm:mb-12 gap-4">
           <div>
-            <h2 className="text-[10px] font-black uppercase tracking-[0.4em] text-primary mb-2">Our Locations</h2>
-            <p className="text-2xl sm:text-3xl md:text-5xl font-display font-black tracking-tighter text-foreground">หอพักคุณภาพที่ตอบโจทย์คุณ</p>
+            <h2 className="text-[10px] font-black uppercase tracking-[0.4em] text-primary mb-2">University of Phayao</h2>
+            <p className="text-2xl sm:text-3xl md:text-5xl font-display font-black tracking-tighter text-foreground">หอพักคุณภาพหน้า มพ. ที่ตอบโจทย์คุณ</p>
           </div>
           <p className="text-sm font-bold text-muted-foreground uppercase tracking-widest">พบทั้งหมด {dorms.length} แห่ง</p>
         </div>
@@ -172,7 +172,7 @@ export default function Home() {
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-12">
             {[1, 2].map(i => (
-              <div key={i} className="aspect-auto min-h-[460px] md:aspect-[16/11] rounded-[3rem] bg-card animate-pulse border border-border" />
+              <div key={i} className="min-h-[440px] sm:min-h-[480px] w-full rounded-[2.5rem] sm:rounded-[3rem] bg-card animate-pulse border border-border" />
             ))}
           </div>
         ) : dorms.length === 0 ? (
@@ -182,66 +182,77 @@ export default function Home() {
             <p className="text-muted-foreground text-sm mt-2 font-medium">กรุณาลองลดตัวกรอง หรือค้นหาใหม่อีกครั้ง</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-12">
             {dorms.map((dorm) => (
               <Link 
                 href={`/explore/${dorm.id}`} 
                 key={dorm.id}
-                className="group relative flex flex-col aspect-auto min-h-[460px] md:aspect-[16/11] rounded-[3rem] overflow-hidden bg-card border border-border shadow-2xl transition-all duration-500 hover:-translate-y-2 hover:border-primary"
+                className="group flex flex-col w-full rounded-[2.5rem] overflow-hidden bg-card border border-border shadow-2xl transition-all duration-500 hover:-translate-y-2 hover:border-primary hover:shadow-primary/10"
               >
-                <div className="absolute inset-0 z-0">
+                {/* Image Section */}
+                <div className="relative h-64 sm:h-72 w-full overflow-hidden bg-muted">
                   <Image 
                     src={dorm.cover_image || "/luxury_dorm_building_1_1775739456274.png"} 
                     alt={dorm.name} 
                     fill 
-                    className="object-cover transition-transform duration-[1500ms] group-hover:scale-105 opacity-80 group-hover:opacity-90"
+                    className="object-cover transition-transform duration-[1200ms] group-hover:scale-105"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/30" />
+                  
+                  {/* Badges overlay */}
+                  <div className="absolute top-4 left-4 right-4 flex flex-wrap items-center justify-between gap-2 z-10">
+                    <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-black/60 backdrop-blur-md rounded-full text-xs font-bold text-white border border-white/20 shadow-lg">
+                       <span className={`w-2 h-2 rounded-full ${dorm.available_rooms_count > 0 ? 'bg-emerald-400 animate-pulse' : 'bg-rose-400'}`} />
+                       {dorm.available_rooms_count > 0 ? `${dorm.available_rooms_count} ห้องว่าง` : 'เต็มแล้ว'}
+                    </div>
+                    <div className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-primary text-white rounded-full text-xs font-extrabold shadow-xl">
+                       เริ่มต้น ฿{Number(dorm.min_price).toLocaleString()} / เดือน
+                    </div>
+                  </div>
                 </div>
                 
-                <div className="relative z-10 mt-auto p-6 sm:p-10 text-foreground">
-                   <div className="flex flex-wrap gap-2 mb-4 sm:mb-6">
-                     <div className="inline-flex items-center gap-2 px-3 py-1 bg-background/80 backdrop-blur-md rounded-full text-[9px] font-black uppercase tracking-widest border border-border">
-                        <span className="w-1.5 h-1.5 bg-primary rounded-full" />
-                        {dorm.available_rooms_count > 0 ? `${dorm.available_rooms_count} ห้องว่าง` : 'เต็มแล้ว'}
+                {/* Content Section (Solid High-Contrast Background) */}
+                <div className="p-6 sm:p-8 flex flex-col flex-1 bg-card text-foreground">
+                   <h3 className="text-2xl sm:text-3xl font-display font-black tracking-tight text-foreground mb-3 leading-snug group-hover:text-primary transition-colors">
+                     {dorm.name}
+                   </h3>
+
+                   {dorm.available_rooms_summary && (
+                     <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-primary/10 border border-primary/20 rounded-xl text-xs sm:text-sm font-bold text-primary mb-4 w-fit">
+                        <span>✨ ห้องว่างแนะนำ:</span>
+                        <span className="font-extrabold">{dorm.available_rooms_summary}</span>
                      </div>
-                     <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 backdrop-blur-md rounded-full text-[9px] font-black uppercase tracking-widest border border-primary/20 text-primary">
-                        เริ่มต้น ฿{Number(dorm.min_price).toLocaleString()} / เดือน
-                     </div>
-                   </div>
+                   )}
                    
-                   <h3 className="text-3xl font-display font-black tracking-tight mb-3 leading-tight group-hover:text-primary transition-colors">{dorm.name}</h3>
                    {dorm.description && (
-                     <p className="text-muted-foreground text-sm font-semibold line-clamp-2 mb-4 leading-relaxed">{dorm.description}</p>
+                     <p className="text-muted-foreground text-sm sm:text-base font-medium line-clamp-2 mb-5 leading-relaxed">
+                       {dorm.description}
+                     </p>
                    )}
 
-                   <div className="flex flex-col gap-2.5 opacity-85 group-hover:opacity-100 transition-opacity">
-                      {dorm.available_rooms_summary && (
-                        <p className="text-[10px] font-black uppercase tracking-widest text-primary flex items-center gap-2 mb-1">
-                           <span className="w-4 h-px bg-primary" />
-                           ห้องว่างแนะนำ: {dorm.available_rooms_summary}
-                        </p>
-                      )}
-                      <p className="text-xs font-bold flex items-center gap-2">
-                        <span className="text-primary text-base">📍</span>
-                        {dorm.address}
+                   <div className="space-y-2 mb-6">
+                      <p className="text-sm font-bold text-foreground flex items-center gap-2.5">
+                        <span className="text-primary text-base flex-shrink-0">📍</span>
+                        <span>{dorm.address}</span>
                       </p>
-                      <p className="text-xs font-bold flex items-center gap-2">
-                        <span className="text-primary text-base">📞</span>
-                        {dorm.phone}
+                      <p className="text-sm font-bold text-foreground flex items-center gap-2.5">
+                        <span className="text-primary text-base flex-shrink-0">📞</span>
+                        <span>{dorm.phone}</span>
                       </p>
                    </div>
 
                    {/* Features display */}
-                   <div className="flex flex-wrap gap-2 sm:gap-3 mt-4 sm:mt-6">
-                     {dorm.pet_friendly && <span className="text-[10px] sm:text-xs font-bold bg-background/50 border border-border px-2 sm:px-2.5 py-1 rounded-lg">🐱 สัตว์เลี้ยงได้</span>}
-                     {dorm.has_parking && <span className="text-[10px] sm:text-xs font-bold bg-background/50 border border-border px-2 sm:px-2.5 py-1 rounded-lg">🚗 ที่จอดรถ</span>}
-                     {dorm.has_air_con && <span className="text-[10px] sm:text-xs font-bold bg-background/50 border border-border px-2 sm:px-2.5 py-1 rounded-lg">❄️ ห้องแอร์</span>}
+                   <div className="flex flex-wrap gap-2 mb-6 mt-auto">
+                     {dorm.pet_friendly === 1 && <span className="text-xs font-bold bg-secondary text-secondary-foreground border border-border px-3 py-1.5 rounded-xl">🐱 เลี้ยงสัตว์ได้</span>}
+                     {dorm.has_parking === 1 && <span className="text-xs font-bold bg-secondary text-secondary-foreground border border-border px-3 py-1.5 rounded-xl">🚗 มีที่จอดรถ</span>}
+                     {dorm.has_air_con === 1 && <span className="text-xs font-bold bg-secondary text-secondary-foreground border border-border px-3 py-1.5 rounded-xl">❄️ ห้องแอร์</span>}
                    </div>
                    
-                   <div className="mt-8 pt-6 border-t border-border flex items-center justify-between">
-                      <span className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground group-hover:text-primary transition-colors">ดูรายละเอียดห้องพัก</span>
-                      <div className="w-12 h-12 rounded-2xl bg-primary flex items-center justify-center text-primary-foreground shadow-2xl group-hover:scale-105 transition-all duration-300">
+                   <div className="pt-5 border-t border-border flex items-center justify-between mt-auto">
+                      <span className="text-sm font-extrabold text-foreground group-hover:text-primary transition-colors">
+                        ดูรายละเอียดห้องพัก
+                      </span>
+                      <div className="w-11 h-11 rounded-2xl bg-primary text-primary-foreground flex items-center justify-center shadow-lg group-hover:scale-110 transition-all duration-300">
                         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M14 5l7 7m0 0l-7 7m7-7H3" />
                         </svg>

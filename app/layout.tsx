@@ -24,12 +24,12 @@ const notoThaiLooped = Noto_Sans_Thai_Looped({
 
 export const metadata: Metadata = {
   title: {
-    default: "SmartDom | Experience Modern Living",
-    template: "%s | SmartDom",
+    default: "แพลตฟอร์มหอพักหน้ามหาวิทยาลัยพะเยา | Experience Modern Living",
+    template: "%s | แพลตฟอร์มหอพักหน้ามหาวิทยาลัยพะเยา",
   },
-  description: "Next-gen dormitory management for a simplified lifestyle. Experience the future of modern living with SmartDom.",
-  keywords: ["Dormitory", "Management", "Minimalism", "Sustainable Living", "Smart Home"],
-  authors: [{ name: "SmartDom Team" }],
+  description: "ระบบบริหารจัดการหอพักสำหรับนักศึกษาและเจ้าของหอพัก หน้ามหาวิทยาลัยพะเยา",
+  keywords: ["Dormitory", "Management", "University of Phayao", "Smart Living", "Phayao"],
+  authors: [{ name: "ทีมงานแพลตฟอร์มหอพักหน้ามหาวิทยาลัยพะเยา" }],
 };
 
 export const viewport: Viewport = {

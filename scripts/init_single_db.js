@@ -506,7 +506,7 @@ async function main() {
 
     // Dormitory
     const [dormRes] = await pool.query('INSERT INTO dormitory_registry (owner_id, dorm_name, phone, address, status, coins) VALUES (?, ?, ?, ?, ?, ?)',
-      [ownerId, 'หอพักกฤษกร', '0636040550', '88/12', 'Active', 3000]);
+      [ownerId, 'หอพักหน้ามหาวิทยาลัยพะเยา', '0636040550', '88/12', 'Active', 3000]);
     const dormId = dormRes.insertId;
 
     // User Dorm Role for Owner

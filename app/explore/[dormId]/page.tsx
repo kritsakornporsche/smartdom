@@ -50,9 +50,7 @@ export default function GuestDormRoomsPage({ params }: { params: Promise<{ dormI
   }, [dormId]);
 
   const filteredRooms = rooms.filter(r => {
-    const typeMatch = filter === 'All' || r.room_type === filter;
-    const statusMatch = !showAvailableOnly || (r.status === 'Available' || r.status === 'ว่าง');
-    return typeMatch && statusMatch;
+    return !showAvailableOnly || (r.status === 'Available' || r.status === 'ว่าง');
   });
 
   const getFirstImage = (imageParam: string | null) => {
@@ -69,7 +67,7 @@ export default function GuestDormRoomsPage({ params }: { params: Promise<{ dormI
   };
 
   return (
-    <div className="min-h-screen bg-background px-6 lg:px-12 py-12 lg:py-24 max-w-7xl mx-auto">
+    <div className="min-h-screen bg-background px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16 max-w-7xl mx-auto">
       <Link href="/explore" className="inline-flex items-center gap-3 text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors mb-12 group">
         <svg className="w-4 h-4 transition-transform group-hover:-translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M10 19l-7-7m0 0l-7 7m7-7H3" /></svg>
         ย้อนกลับไปเลือกหอพัก
@@ -84,24 +82,16 @@ export default function GuestDormRoomsPage({ params }: { params: Promise<{ dormI
            </p>
         </div>
         
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6 w-full lg:w-auto overflow-hidden">
-          <div className="flex overflow-x-auto no-scrollbar max-w-full p-2 bg-secondary rounded-[2.5rem] border border-border shadow-sm">
-            {['All', 'Standard', 'Deluxe', 'Suite'].map((t) => (
-              <button
-                key={t}
-                onClick={() => setFilter(t)}
-                className={`px-8 py-3 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${filter === t ? 'bg-white text-foreground shadow-xl premium-shadow' : 'text-muted-foreground hover:text-foreground'}`}
-              >
-                {t}
-              </button>
-            ))}
-          </div>
-          
+        <div className="flex items-center gap-4 w-full lg:w-auto">
           <button
             onClick={() => setShowAvailableOnly(!showAvailableOnly)}
-            className={`px-10 py-4 rounded-full text-[10px] font-black uppercase tracking-widest transition-all border ${showAvailableOnly ? 'bg-primary text-primary-foreground border-primary shadow-2xl shadow-primary/20 scale-105' : 'bg-white text-muted-foreground border-border hover:border-primary/40 hover:text-foreground'}`}
+            className={`px-8 py-3.5 rounded-full text-xs font-black uppercase tracking-widest transition-all border ${
+              showAvailableOnly 
+                ? 'bg-primary text-primary-foreground border-primary shadow-lg shadow-primary/20 scale-105' 
+                : 'bg-white dark:bg-card text-muted-foreground border-border hover:border-primary/40 hover:text-foreground'
+            }`}
           >
-            {showAvailableOnly ? '✓ เฉพาะห้องว่าง' : 'แสดงเฉพาะห้องว่าง'}
+            {showAvailableOnly ? '✓ แสดงเฉพาะห้องว่าง' : 'แสดงเฉพาะห้องว่าง'}
           </button>
         </div>
       </div>
@@ -120,7 +110,7 @@ export default function GuestDormRoomsPage({ params }: { params: Promise<{ dormI
             <Link 
               href={`/explore/room/${room.id}`} 
               key={room.id}
-              className="group relative flex flex-col aspect-[4/5] sm:aspect-[3.5/5.5] rounded-[3rem] sm:rounded-[4rem] overflow-hidden bg-white border border-border shadow-2xl transition-all duration-700 hover:-translate-y-4 premium-shadow"
+              className="group relative flex flex-col aspect-[4/5] sm:aspect-[3.5/5.5] rounded-[3rem] sm:rounded-[4rem] overflow-hidden bg-white dark:bg-card border border-border shadow-2xl transition-all duration-700 hover:-translate-y-4 premium-shadow"
             >
               <div className="absolute inset-0 z-0">
                 <Image 
@@ -152,7 +142,7 @@ export default function GuestDormRoomsPage({ params }: { params: Promise<{ dormI
                        <span className="text-[10px] font-black uppercase tracking-widest text-white/50">Monthly Rent</span>
                        <span className="text-3xl font-display font-black tracking-tight">฿{Number(room.price).toLocaleString()} <span className="text-xs font-black text-white/40">/mo</span></span>
                     </div>
-                    <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center text-foreground group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-500 shadow-2xl group-hover:scale-110 group-hover:rotate-12">
+                    <div className="w-16 h-16 rounded-full bg-white dark:bg-secondary flex items-center justify-center text-foreground group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-500 shadow-2xl group-hover:scale-110 group-hover:rotate-12">
                       <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M14 5l7 7m0 0l-7 7m7-7H3" />
                       </svg>

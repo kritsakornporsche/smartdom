@@ -229,7 +229,7 @@ export default function RoomBookingPage({ params }: { params: Promise<{ id: stri
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="max-w-7xl mx-auto px-6 lg:px-12 py-12 lg:py-24">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
         <Link href={`/explore/${room.dorm_id}`} className="inline-flex items-center gap-3 text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors mb-16 group">
           <svg className="w-4 h-4 transition-transform group-hover:-translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M10 19l-7-7m0 0l-7 7m7-7H3" /></svg>
           กลับไปเลือกห้องพัก
@@ -254,7 +254,7 @@ export default function RoomBookingPage({ params }: { params: Promise<{ id: stri
           ))}
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-32 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
           <div className="lg:col-span-7 space-y-16 animate-reveal">
              <div className="relative aspect-[4/3] rounded-[5rem] overflow-hidden shadow-2xl group premium-shadow bg-secondary">
                {images.map((img: string, idx: number) => (
@@ -322,7 +322,7 @@ export default function RoomBookingPage({ params }: { params: Promise<{ id: stri
           </div>
 
           <div className="lg:col-span-5 relative">
-            <div className="bg-white rounded-[4rem] p-6 sm:p-10 lg:p-16 border border-border shadow-2xl relative overflow-hidden premium-shadow">
+            <div className="bg-white dark:bg-card rounded-[4rem] p-6 sm:p-10 lg:p-16 border border-border shadow-2xl relative overflow-hidden premium-shadow">
                 <div className="absolute -top-20 -right-20 w-40 h-40 bg-primary/5 rounded-full blur-3xl" />
                 
                 {step === 1 && (
@@ -335,7 +335,7 @@ export default function RoomBookingPage({ params }: { params: Promise<{ id: stri
                     <div className="space-y-6 w-full overflow-hidden">
                        <div className="p-6 sm:p-8 bg-secondary rounded-[2.5rem] sm:rounded-[3rem] border border-border shadow-sm group hover:border-primary/20 transition-colors">
                           <div className="flex items-center gap-4 sm:gap-6 mb-4 sm:mb-6">
-                             <div className="w-14 h-14 rounded-2xl bg-white flex items-center justify-center text-primary shadow-lg border border-border group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-500 rotate-6 group-hover:rotate-12">
+                             <div className="w-14 h-14 rounded-2xl bg-white dark:bg-secondary flex items-center justify-center text-primary shadow-lg border border-border group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-500 rotate-6 group-hover:rotate-12">
                                 <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-7h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
                              </div>
                              <div>
@@ -351,7 +351,7 @@ export default function RoomBookingPage({ params }: { params: Promise<{ id: stri
                             <svg className="w-16 h-16 sm:w-24 sm:h-24" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
                           </div>
                           <div className="flex items-center gap-4 sm:gap-6 relative z-10">
-                             <div className="w-14 h-14 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-black text-lg shadow-xl shadow-primary/20 border-2 border-white">
+                             <div className="w-14 h-14 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-black text-lg shadow-xl shadow-primary/20 border-2 border-white dark:border-card">
                                 {room.keeper_name ? room.keeper_name[0] : 'K'}
                              </div>
                              <div>
@@ -386,7 +386,7 @@ export default function RoomBookingPage({ params }: { params: Promise<{ id: stri
                         { l: 'เฟอร์นิเจอร์', v: 'ครบชุด' },
                         { l: 'สัตว์เลี้ยง', v: 'ไม่อนุญาต' }
                       ].map((h, i) => (
-                        <div key={i} className="p-5 bg-secondary/50 border border-border rounded-[2rem] hover:bg-white transition-colors duration-500">
+                        <div key={i} className="p-5 bg-secondary/50 border border-border rounded-[2rem] hover:bg-white dark:hover:bg-secondary transition-colors duration-500">
                            <p className="text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground mb-2">{h.l}</p>
                            <p className="text-xs font-black text-foreground">{h.v}</p>
                         </div>
@@ -402,12 +402,15 @@ export default function RoomBookingPage({ params }: { params: Promise<{ id: stri
                          <div className="flex flex-col gap-4">
                            <button 
                              onClick={() => {
-                               const chatBtn = document.querySelector('button[class*="bg-primary"][class*="w-16"]') as HTMLButtonElement;
-                               if (chatBtn) chatBtn.click();
+                               if (!session) {
+                                 window.location.href = `/signin?callbackUrl=${encodeURIComponent(window.location.pathname)}`;
+                                 return;
+                               }
+                               window.dispatchEvent(new CustomEvent('open-chat', { detail: { dormId: room?.dorm_id } }));
                              }}
-                             className="w-full py-6 bg-foreground text-background rounded-full text-[11px] font-black uppercase tracking-[0.2em] hover:scale-[1.02] shadow-2xl shadow-black/20 transition-all font-display hover:brightness-110 active:scale-95"
+                             className="w-full py-6 bg-primary text-white rounded-full text-[11px] font-black uppercase tracking-[0.2em] hover:scale-[1.02] shadow-2xl shadow-primary/30 transition-all font-display hover:brightness-110 active:scale-95"
                            >
-                             แชทสอบถามข้อมูลเพิ่มเติม
+                             💬 แชทสอบถามข้อมูลเพิ่มเติม
                            </button>
 
                            <button 
@@ -593,8 +596,8 @@ export default function RoomBookingPage({ params }: { params: Promise<{ id: stri
         )}
 
         {showSimulator && room && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 lg:p-12 overflow-y-auto bg-black/60 backdrop-blur-xl animate-in fade-in duration-500">
-             <div className="max-w-4xl w-full animate-reveal">
+          <div className="fixed inset-0 z-[100] flex items-start sm:items-center justify-center p-4 sm:p-6 lg:p-8 overflow-y-auto bg-black/60 backdrop-blur-xl animate-in fade-in duration-500">
+             <div className="max-w-4xl w-full my-auto animate-reveal">
                 <ContractSimulator 
                   initialPrice={Number(room.price)} 
                   roomNumber={room.room_number}

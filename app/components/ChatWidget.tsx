@@ -93,13 +93,36 @@ export default function ChatWidget({ dormId, ownerName, initialConversationId }:
     }
   };
 
-  if (!session) return null;
+  useEffect(() => {
+    const handleOpenChat = (e: any) => {
+      if (!session) {
+        window.location.href = `/signin?callbackUrl=${encodeURIComponent(window.location.pathname)}`;
+        return;
+      }
+      if (e.detail?.dormId && e.detail.dormId === dormId) {
+        if (!conversationId) {
+          startConversation();
+        } else {
+          setIsOpen(true);
+        }
+      } else {
+        setIsOpen(true);
+      }
+    };
+    window.addEventListener('open-chat', handleOpenChat);
+    return () => window.removeEventListener('open-chat', handleOpenChat);
+  }, [session, dormId, conversationId]);
 
   return (
     <div className="fixed bottom-8 right-8 z-[100] font-sans">
       {!isOpen ? (
         <button
+          id="open-chat-widget-btn"
           onClick={() => {
+            if (!session) {
+              window.location.href = `/signin?callbackUrl=${encodeURIComponent(window.location.pathname)}`;
+              return;
+            }
             if (conversationId) setIsOpen(true);
             else startConversation();
           }}

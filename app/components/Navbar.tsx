@@ -50,10 +50,10 @@ export default function Navbar() {
       >
         {/* Brand */}
         <Link href="/" className="flex items-center gap-3 lg:gap-4 group cursor-pointer">
-          <div className="h-9 w-9 lg:h-10 lg:w-10 flex items-center justify-center rounded-2xl bg-primary text-primary-foreground font-display font-bold text-base shadow-lg transition-all duration-500 group-hover:bg-foreground group-hover:scale-110 group-hover:rotate-12">
-            S
+          <div className="h-11 w-11 lg:h-14 lg:w-14 flex items-center justify-center rounded-2xl bg-white p-1 shadow-xl border border-black/5 dark:border-white/10 transition-all duration-300 group-hover:scale-105 flex-shrink-0">
+            <img src="/up-logo.png" alt="ตรามหาวิทยาลัยพะเยา" className="w-full h-full object-contain filter drop-shadow-sm" />
           </div>
-          <span className="text-sm lg:text-base font-display font-black tracking-tight uppercase group-hover:text-primary transition-colors">SmartDom</span>
+          <span className="text-sm lg:text-base font-display font-black tracking-tight uppercase group-hover:text-primary transition-colors">แพลตฟอร์มหอพักหน้ามหาวิทยาลัยพะเยา</span>
         </Link>
         
         {/* Navigation Links (Desktop) */}
@@ -176,10 +176,10 @@ export default function Navbar() {
         <div className="relative w-full max-w-sm ml-auto h-full bg-card shadow-2xl border-l border-border flex flex-col p-6 animate-in slide-in-from-right-full duration-300">
           <div className="flex items-center justify-between mb-10">
             <Link href="/" className="flex items-center gap-3" onClick={() => setMobileMenuOpen(false)}>
-              <div className="h-9 w-9 flex items-center justify-center rounded-2xl bg-primary text-primary-foreground font-display font-bold text-sm shadow-lg">
-                S
+              <div className="h-12 w-12 flex items-center justify-center rounded-2xl bg-white p-1 shadow-xl border border-black/5 flex-shrink-0">
+                <img src="/up-logo.png" alt="ตรามหาวิทยาลัยพะเยา" className="w-full h-full object-contain" />
               </div>
-              <span className="text-base font-display font-black tracking-tight uppercase">SmartDom</span>
+              <span className="text-base font-display font-black tracking-tight uppercase">แพลตฟอร์มหอพักหน้ามหาวิทยาลัยพะเยา</span>
             </Link>
             <button onClick={() => setMobileMenuOpen(false)} className="h-10 w-10 rounded-2xl bg-secondary/50 flex items-center justify-center text-muted-foreground hover:text-foreground">
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" /></svg>

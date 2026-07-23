@@ -62,11 +62,11 @@ export default function PlatformSidebar() {
             </svg>
           </button>
           
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-500 to-purple-700 flex items-center justify-center font-black text-white text-lg shadow-lg flex-shrink-0">
-            S
+          <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-white p-1 flex items-center justify-center shadow-lg border border-white/20 flex-shrink-0">
+            <img src="/up-logo.png" alt="ตรามหาวิทยาลัยพะเยา" className="w-full h-full object-contain" />
           </div>
           <div className="hidden sm:block">
-            <h2 className="font-black text-white tracking-tight text-base">SmartDom</h2>
+            <h2 className="font-black text-white tracking-tight text-sm sm:text-base">แพลตฟอร์มหอพักหน้ามหาวิทยาลัยพะเยา</h2>
             <p className="text-[9px] font-bold text-violet-400 uppercase tracking-[0.15em] leading-none">Platform Admin</p>
           </div>
         </div>

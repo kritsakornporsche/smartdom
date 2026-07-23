@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  /* Slate & Indigo Light Theme */
+  /* UP Purple & Gold Light Theme */
   --background: #F8FAFC; /* Slate 50 */
   --foreground: #0F172A; /* Slate 900 */
   
@@ -11,7 +11,7 @@
   --popover: #FFFFFF;
   --popover-foreground: #0F172A;
   
-  --primary: #7C3AED; /* Purple 600 */
+  --primary: #8E24AA; /* UP Purple */
   --primary-foreground: #FFFFFF;
   
   --secondary: #F1F5F9; /* Slate 100 */
@@ -20,19 +20,21 @@
   --muted: #F8FAFC;
   --muted-foreground: #64748B; /* Slate 500 */
   
-  --accent: #EEF2F6;
-  --accent-foreground: #312E81;
+  --accent: #FDF8F0; /* Light Gold tint */
+  --accent-foreground: #7C501A;
+  
+  --gold: #C59B63; /* UP Gold */
   
   --destructive: #EF4444;
   --destructive-foreground: #FFFFFF;
   
   --border: #E2E8F0; /* Slate 200 */
   --input: #E2E8F0;
-  --ring: #7C3AED;
+  --ring: #8E24AA;
   
   /* Selection colors */
-  --selection-bg: #C7D2FE;
-  --selection-text: #1E1B4B;
+  --selection-bg: #F3E8FF;
+  --selection-text: #581C87;
 
   /* Typography */
   --font-sans: var(--font-noto-thai), var(--font-inter), "Segoe UI", Roboto, sans-serif;
@@ -47,7 +49,7 @@
 }
 
 .dark {
-  /* Dark Slate Navy Theme */
+  /* UP Purple & Gold Dark Theme */
   --background: #0B0F19; 
   --foreground: #F8FAFC;
   
@@ -57,7 +59,7 @@
   --popover: #151B2C;
   --popover-foreground: #F8FAFC;
   
-  --primary: #8B5CF6; /* Purple 500 */
+  --primary: #A855F7; /* UP Purple Vibrant */
   --primary-foreground: #FFFFFF;
   
   --secondary: #1E293B; /* Slate 800 */
@@ -66,18 +68,20 @@
   --muted: #0F172A;
   --muted-foreground: #94A3B8;
   
-  --accent: #1E1B4B;
-  --accent-foreground: #E0E7FF;
+  --accent: #2D1F3F;
+  --accent-foreground: #F3E8FF;
+  
+  --gold: #D4AF37; /* UP Gold Metallic */
   
   --destructive: #F87171;
   --destructive-foreground: #FFFFFF;
   
   --border: #1E293B; /* Slate 800 */
   --input: #1E293B;
-  --ring: #8B5CF6;
+  --ring: #A855F7;
   
-  --selection-bg: #312E81;
-  --selection-text: #EEF2F6;
+  --selection-bg: #581C87;
+  --selection-text: #F3E8FF;
 }
 
 @theme {
@@ -320,9 +324,16 @@
 .bg-\[\#3e342b\]\/60 {
   background-color: rgba(124, 58, 237, 0.6) !important;
 }
-.bg-\[\#3E342B\]\/40,
-.bg-\[\#3e342b\]\/40 {
-  background-color: rgba(124, 58, 237, 0.4) !important;
+/* Hide scrollbar utility for sleek tab bars and carousels */
+.no-scrollbar::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none !important;  /* IE and Edge */
+  scrollbar-width: none !important;  /* Firefox */
 }
 .bg-\[\#3E342B\]\/80,
 .bg-\[\#3e342b\]\/80 {

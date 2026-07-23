@@ -71,11 +71,11 @@ export default function TenantSidebar({ roomInfo = 'ไม่ระบุ', user
       >
         <div className="p-6 border-b border-white/20/10 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-emerald-400 to-teal-600 flex items-center justify-center font-black text-white text-lg shadow-lg">
-              T
+            <div className="h-12 w-12 rounded-2xl bg-white p-1 flex items-center justify-center shadow-lg border border-white/20 flex-shrink-0">
+              <img src="/up-logo.png" alt="ตรามหาวิทยาลัยพะเยา" className="w-full h-full object-contain" />
             </div>
             <div>
-              <h2 className="font-bold text-base tracking-tight text-white">SmartDom</h2>
+              <h2 className="font-bold text-sm sm:text-base tracking-tight text-white">แพลตฟอร์มหอพักหน้ามหาวิทยาลัยพะเยา</h2>
               <p className="text-[10px] font-black text-emerald-400 uppercase tracking-[0.15em] leading-none mt-1">Tenant</p>
             </div>
           </div>

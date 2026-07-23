@@ -61,10 +61,12 @@ export default function SignInContent() {
         const data = await res.json();
         
         const path = callbackUrl || data.redirectUrl || '/explore';
-        router.push(path);
-        router.refresh();
+        if (typeof window !== 'undefined') {
+          window.location.href = path;
+        }
       }
     } catch (err: any) {
+
       setError('เกิดข้อผิดพลาดในการเชื่อมต่อ');
     } finally {
       setLoading(false);

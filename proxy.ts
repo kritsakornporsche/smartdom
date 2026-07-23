@@ -21,7 +21,8 @@ export default auth((req) => {
   if (protectedPrefixes.includes(currentPrefix)) {
     if (!isLoggedIn) {
       const callbackUrl = nextUrl.pathname + nextUrl.search;
-      return NextResponse.redirect(new URL(`/signin?callbackUrl=${encodeURIComponent(callbackUrl)}`, nextUrl));
+      const signInUrl = new URL(`/signin?callbackUrl=${encodeURIComponent(callbackUrl)}`, req.url);
+      return NextResponse.redirect(signInUrl);
     }
     
     // Strict role check
@@ -29,9 +30,10 @@ export default auth((req) => {
     if (user.role !== requiredRole && !(currentPrefix === 'admin' && user.role === 'platform_admin')) {
       const role = user?.role || 'guest';
       const fallback = role === 'platform_admin' ? '/platform' : (role === 'guest' ? '/explore' : `/${role}`);
-      return NextResponse.redirect(new URL(fallback, nextUrl));
+      return NextResponse.redirect(new URL(fallback, req.url));
     }
   }
+
 
   return NextResponse.next();
 });

@@ -8,10 +8,8 @@ import { getDb } from '@/lib/db';
 import bcrypt from 'bcryptjs';
 import { authConfig } from './auth.config';
 
-process.env.NEXTAUTH_URL = 'http://kritsakorn.thddns.net:5993';
-process.env.AUTH_URL = 'http://kritsakorn.thddns.net:5993';
-process.env.AUTH_TRUST_HOST = 'true';
-process.env.AUTH_SECRET = 'A3B4C5D6E7F8G9H0I1J2K3L4M5N6O7P8Q9R0S1T2U3V4W5X6Y7Z8';
+
+
 
 
 
@@ -163,14 +161,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     },
 
     async redirect({ url, baseUrl }) {
-      const publicBase = 'http://kritsakorn.thddns.net:5993';
-      if (url.startsWith('/')) return `${publicBase}${url}`;
-      if (url.includes('0.0.0.0') || url.includes('localhost')) {
-        return url.replace(/http:\/\/(0\.0\.0\.0|localhost):[0-9]+/, publicBase);
-      }
-      return url;
+      if (url.startsWith("/")) return `${baseUrl}${url}`;
+      else if (new URL(url).origin === baseUrl) return url;
+      return baseUrl;
     },
   },
 });
+
 
 

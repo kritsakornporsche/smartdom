@@ -8,7 +8,13 @@ import { getDb } from '@/lib/db';
 import bcrypt from 'bcryptjs';
 import { authConfig } from './auth.config';
 
+if (!process.env.NEXTAUTH_URL && !process.env.AUTH_URL) {
+  process.env.NEXTAUTH_URL = 'http://kritsakorn.thddns.net:5993';
+  process.env.AUTH_URL = 'http://kritsakorn.thddns.net:5993';
+}
+
 export const { handlers, signIn, signOut, auth } = NextAuth({
+
   ...authConfig,
   secret: process.env.AUTH_SECRET,
 

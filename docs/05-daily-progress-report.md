@@ -222,3 +222,39 @@
 
 > **สถานะการจัดเก็บ:** ทำการบันทึกรายงานประจำวัน (Daily Log) เรียบร้อยแล้ว
 
+---
+
+**วันที่:** 24 - 25 กรกฎาคม 2026  
+**โปรเจกต์:** SmartDom (ระบบบริหารจัดการหอพักหน้ามหาวิทยาลัยพะเยา)
+
+---
+
+## 🚀 สิ่งที่ได้ดำเนินการสำเร็จในวันนี้ (Completed Tasks)
+
+### 1. แก้ไขปัญหาระบบล็อกอิน และ NextAuth 0.0.0.0 Redirect
+- **ตั้งค่า Runtime Fallback บน `auth.ts`**: เพิ่มการตรวจสอบและ fallback ค่า `NEXTAUTH_URL` และ `AUTH_URL` ไปยัง `http://kritsakorn.thddns.net:5993` โดยอัตโนมัติหากพบ `0.0.0.0` หรือค่าว่างในสภาพแวดล้อม Production
+- **ปรับปรุง PM2 Ecosystem & Dynamic Reload**: ตั้งค่า `--update-env` และผูกพอร์ตคู่ (Port 3000 และ Port 5993) ใน `ecosystem.config.js` เพื่อให้รองรับทราฟฟิกทั้งสองพอร์ตสำหรับ THDDNS / Router Mapping
+
+### 2. แก้ไขปัญหา Tailwind CSS v4 ไม่ถูกคอมไพล์ลงไฟล์ CSS ใน Production Build
+- **ค้นพบและแก้ไขปัญหาระบบบิลด์ Turbopack ใน Next.js 16**: ตรวจพบว่า `next build` แบบ Turbopack ข้ามการประมวลผล PostCSS สำหรับ `@import "tailwindcss"` ใน Tailwind CSS v4 ส่งผลให้ไฟล์ HTML ไม่มีสไตล์
+- **สลับมาใช้ Webpack Build**: ปรับเปลี่ยนสคริปต์ใน `package.json` เป็น `"build": "next build --webpack"` บังคับให้ Next.js รันผ่าน Webpack + PostCSS ส่งผลให้คอมไพล์สไตล์ Tailwind CSS v4 ได้สมบูรณ์ 100% (ขนาดไฟล์ ~133KB)
+- **ปรับปรุง `app/globals.css`**: นำคำสั่ง `@apply` ภายใน `@layer` ที่ไม่รองรับใน Tailwind v4 ออก และใช้ CSS Variables สดแทน
+
+### 3. ล้าง Zombie Node Processes และแก้ไขการเคลียร์แคชบน Windows Server
+- **ยุติ Zombie Node Processes**: สั่งยุติโปรเซส `node.exe` ตกค้างในระบบเดิมกว่า 30 โปรเซสที่ถือครองพอร์ตและให้แคชไฟล์ HTML/CSS เก่าค้างอยู่
+- **แก้ไขไวยากรณ์ `rmdir /s /q .next` ใน SSH Deploy**: ปรับแต่งคำสั่งลบแคชโฟลเดอร์ `.next` ใน `deploy-remote.js` ให้ลบแคชเก่าได้อย่าง 100% บน Windows CMD
+
+### 4. ปรับปรุงสคริปต์ Remote Deploy และการรันแบบ Detached Process
+- **ใช้ WMIC Process Creation (`deploy-remote.js`)**: ปรับคำสั่งเริ่มต้น PM2 ผ่าน `wmic process call create` เพื่อหลีกเลี่ยงการโดน Windows OpenSSH Job Object ตัดการทำงานของ PM2 Daemon เมื่อปิด SSH Connection
+- **กำหนด Windows Firewall Inbound Rules**: เพิ่มกฎ Windows Firewall ปลดล็อก TCP พอร์ต 3000 และ 5993 บนเครื่องเซิร์ฟเวอร์
+
+---
+
+## 📌 แผนงานขั้นต่อไป (Next Steps)
+- **ทดสอบความถูกต้องของ UI & สไตล์ Tailwind CSS บน Production**: เข้าใช้งานผ่าน `http://kritsakorn.thddns.net:5993/explore` (กด `Ctrl + F5`) ตรวจสอบความสวยงามของหน้าเว็บและการแสดงผลธีม UP Purple & Gold
+- **ทดสอบระบบยืนยันตัวตนและการเปลี่ยนหน้าบทบาท (Role-based Navigation)**: ทดสอบล็อกอินในบทบาท Owner, Tenant, Keeper และ Platform Admin
+- **ทดสอบฟังก์ชันการทำงานหลัก**: สัญญาเช่า, การจดมิเตอร์น้ำ-ไฟ, บิลชำระเงิน และระบบแจ้งซ่อมบนสภาพแวดล้อม Production
+
+> **สถานะการจัดเก็บ:** ทำการบันทึกรายงานประจำวัน (Daily Log) เรียบร้อยแล้ว
+
+

@@ -6,7 +6,7 @@ console.log('🚀 Connecting to Server via SSH to pull latest git changes, build
 
 conn.on('ready', () => {
   console.log('✅ SSH Connected! Pulling git, cleaning .next cache, building & restarting PM2...');
-  const cmd = 'cd /d D:\\kritsakorn\\smartdom && git pull origin main && npm install && (npx pm2 stop all || echo ok) && (if exist .next rmdir /s /q .next) && npm run build && npx pm2 startOrReload ecosystem.config.js --update-env && npx pm2 save';
+  const cmd = 'cd /d D:\\kritsakorn\\smartdom && git pull origin main && npm install && (npx pm2 delete all || echo ok) && rmdir /s /q .next & npm run build && npx pm2 start ecosystem.config.js --update-env && npx pm2 save';
   
   conn.exec(cmd, (err, stream) => {
     if (err) {

@@ -92,26 +92,42 @@ export default function OwnerSidebar() {
         <div className="flex items-center gap-3">
           <button 
             onClick={() => setIsOpen(true)}
-            className="p-2 -ml-2 text-white/50 hover:bg-[#0F172A]/5 hover:text-white rounded-xl transition-colors focus:outline-none"
+            className="p-2 -ml-2 text-white/50 hover:bg-[#0F172A]/5 hover:text-white rounded-xl transition-colors focus:outline-none cursor-pointer"
+            title="เปิดเมนู"
           >
             <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
             </svg>
           </button>
           
-          <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-white p-1 flex items-center justify-center shadow-lg border border-white/20 flex-shrink-0">
-            <img src="/up-logo.png" alt="ตรามหาวิทยาลัยพะเยา" className="w-full h-full object-contain" />
-          </div>
-          <div className="hidden sm:block">
-            <h2 className="font-black text-white tracking-tight text-sm sm:text-base">แพลตฟอร์มหอพักหน้ามหาวิทยาลัยพะเยา</h2>
-            <p className="text-[9px] font-bold text-primary uppercase tracking-[0.15em] leading-none">{(session?.user as any)?.role || 'Owner'} Portal</p>
-          </div>
+          <Link
+            href="/explore"
+            className="flex items-center gap-3 hover:opacity-90 transition-opacity cursor-pointer group"
+            title="กลับไปหน้าสำรวจหอพัก"
+          >
+            <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-white p-1 flex items-center justify-center shadow-lg border border-white/20 flex-shrink-0 group-hover:scale-105 transition-transform">
+              <img src="/up-logo.png" alt="ตรามหาวิทยาลัยพะเยา" className="w-full h-full object-contain" />
+            </div>
+            <div className="hidden sm:block">
+              <h2 className="font-black text-white tracking-tight text-sm sm:text-base group-hover:text-primary transition-colors">แพลตฟอร์มหอพักหน้ามหาวิทยาลัยพะเยา</h2>
+              <p className="text-[9px] font-bold text-primary uppercase tracking-[0.15em] leading-none">{(session?.user as any)?.role || 'Owner'} Portal</p>
+            </div>
+          </Link>
         </div>
 
-        {/* Right side - Profile */}
-        <div className="flex items-center gap-4">
+        {/* Right side - Profile & Explore Button */}
+        <div className="flex items-center gap-3">
+          <Link
+            href="/explore"
+            className="px-3.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition-all flex items-center gap-1.5 border border-white/10 shadow-sm cursor-pointer hover:scale-105 active:scale-95"
+            title="กลับไปหน้าสำรวจหอพัก"
+          >
+            <span>🏠</span>
+            <span className="hidden md:inline">สำรวจหอพัก</span>
+          </Link>
+
           <NotificationsPopover />
-          <div className="text-right hidden sm:block ml-2">
+          <div className="text-right hidden sm:block ml-1">
             <p className="text-sm font-bold text-white">{session?.user?.name || 'Owner'}</p>
             <p className="text-xs text-white/40 truncate max-w-[150px]">{dormName || 'Loading...'}</p>
           </div>
@@ -136,15 +152,15 @@ export default function OwnerSidebar() {
         }`}
       >
         <div className="p-6 border-b border-white/20 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-700 flex items-center justify-center font-black text-white text-lg shadow-lg flex-shrink-0">
+          <Link href="/explore" onClick={() => setIsOpen(false)} className="flex items-center gap-3 hover:opacity-90 transition-opacity cursor-pointer group">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-700 flex items-center justify-center font-black text-white text-lg shadow-lg flex-shrink-0 group-hover:scale-105 transition-transform">
               S
             </div>
             <div>
-              <h2 className="font-black text-white tracking-tight text-sm">SmartDom</h2>
+              <h2 className="font-black text-white tracking-tight text-sm group-hover:text-primary transition-colors">SmartDom</h2>
               <p className="text-[10px] font-bold text-primary uppercase tracking-widest leading-none mt-1">Owner Portal</p>
             </div>
-          </div>
+          </Link>
           <button 
             onClick={() => setIsOpen(false)}
             className="p-2 text-white/50 hover:bg-[#0F172A]/5 hover:text-white rounded-full transition-colors"

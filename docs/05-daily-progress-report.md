@@ -256,6 +256,10 @@
 - **สร้าง API คืนค่ารายการอัปเดต ([app/api/updates/route.ts](file:///d:/Works/thesiss/smartdom-1/app/api/updates/route.ts))**: ดึงข้อมูลอัปเดตระบบจาก [lib/updatesData.ts](file:///d:/Works/thesiss/smartdom-1/lib/updatesData.ts)
 - **เพิ่มแท็บในปุ่มแจ้งเตือน ([components/NotificationsPopover.tsx](file:///d:/Works/thesiss/smartdom-1/components/NotificationsPopover.tsx))**: เพิ่มแท็บสลับ `🚀 อัปเดตระบบ` ใน Popover ของปุ่มแจ้งเตือน 🔔 สำหรับเรียกดูไฮไลต์ Daily Progress ล่าสุด พร้อมปุ่มลิงก์สลับไปยังหน้า `/updates` เต็มรูปแบบ
 
+### 7. ปรับปรุงการนำทางไปยังหน้าสำรวจหอพัก (Header Brand Link & Dedicated Explore Button)
+- **ปรับแต่งส่วนหัว Brand Logo**: เพิ่มการครอบ Link `/explore` ที่โลโก้และชื่อแบรนด์ฝั่งซ้ายบน Header ของทุกบทบาท ([PlatformSidebar.tsx](file:///d:/Works/thesiss/smartdom-1/app/platform/components/PlatformSidebar.tsx), [OwnerSidebar.tsx](file:///d:/Works/thesiss/smartdom-1/app/owner/components/OwnerSidebar.tsx), [TenantSidebar.tsx](file:///d:/Works/thesiss/smartdom-1/app/tenant/components/TenantSidebar.tsx), [KeeperSidebar.tsx](file:///d:/Works/thesiss/smartdom-1/app/keeper/components/KeeperSidebar.tsx)) เพื่อให้ผู้ใช้งานทุกบทบาทคลิกกลับไปยังหน้าสำรวจหอพักได้ทันที
+- **เพิ่มปุ่มกลับหน้าสำรวจหอพัก (`🏠 สำรวจหอพัก`)**: เพิ่มปุ่มนำทางลัดไปยังหน้า `/explore` ทั้งในแถบนำทางส่วนหัวและเมนูด้านข้างของทุกบทบาท
+
 ---
 
 ## 📌 แผนงานขั้นต่อไป (Next Steps)

@@ -42,23 +42,39 @@ export default function KeeperSidebar() {
         <div className="flex items-center gap-3">
           <button 
             onClick={() => setIsOpen(true)}
-            className="p-2 -ml-2 text-white/50 hover:bg-[#0F172A]/5 hover:text-white rounded-xl transition-colors focus:outline-none"
+            className="p-2 -ml-2 text-white/50 hover:bg-[#0F172A]/5 hover:text-white rounded-xl transition-colors focus:outline-none cursor-pointer"
+            title="เปิดเมนู"
           >
             <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
             </svg>
           </button>
           
-          <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-orange-500 to-red-600 flex items-center justify-center font-black text-white text-lg shadow-lg border border-white/20/10">
-            K
-          </div>
-          <div className="hidden sm:block">
-            <h2 className="font-bold text-base tracking-tight text-white">SmartDom</h2>
-            <p className="text-[9px] font-black text-orange-400 uppercase tracking-[0.15em] leading-none">Keeper Portal</p>
-          </div>
+          <Link 
+            href="/explore" 
+            className="flex items-center gap-3 hover:opacity-90 transition-opacity cursor-pointer group"
+            title="กลับไปหน้าสำรวจหอพัก"
+          >
+            <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-orange-500 to-red-600 flex items-center justify-center font-black text-white text-lg shadow-lg border border-white/20/10 group-hover:scale-105 transition-transform">
+              K
+            </div>
+            <div className="hidden sm:block">
+              <h2 className="font-bold text-base tracking-tight text-white group-hover:text-orange-300 transition-colors">SmartDom</h2>
+              <p className="text-[9px] font-black text-orange-400 uppercase tracking-[0.15em] leading-none">Keeper Portal</p>
+            </div>
+          </Link>
         </div>
 
         <div className="flex items-center gap-3">
+          <Link
+            href="/explore"
+            className="px-3.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition-all flex items-center gap-1.5 border border-white/10 shadow-sm cursor-pointer hover:scale-105 active:scale-95"
+            title="กลับไปหน้าสำรวจหอพัก"
+          >
+            <span>🏠</span>
+            <span className="hidden md:inline">สำรวจหอพัก</span>
+          </Link>
+
           <div className="text-right hidden sm:block">
             <p className="text-sm font-bold text-white">{session?.user?.name || 'Keeper'}</p>
             <p className="text-xs text-white/40">{userSubRole === 'maid' ? 'แม่บ้าน' : 'ช่างซ่อม'}</p>
@@ -82,15 +98,15 @@ export default function KeeperSidebar() {
         }`}
       >
         <div className="p-6 border-b border-white/20/10 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-orange-500 to-red-600 flex items-center justify-center font-black text-white text-lg shadow-lg">
+          <Link href="/explore" onClick={() => setIsOpen(false)} className="flex items-center gap-3 hover:opacity-90 transition-opacity cursor-pointer group">
+            <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-orange-500 to-red-600 flex items-center justify-center font-black text-white text-lg shadow-lg group-hover:scale-105 transition-transform">
               K
             </div>
             <div>
-              <h2 className="font-bold text-base tracking-tight text-white">SmartDom</h2>
+              <h2 className="font-bold text-base tracking-tight text-white group-hover:text-orange-300 transition-colors">SmartDom</h2>
               <p className="text-[10px] font-black text-orange-400 uppercase tracking-[0.15em] leading-none mt-1">Keeper</p>
             </div>
-          </div>
+          </Link>
           <button 
             onClick={() => setIsOpen(false)}
             className="p-2 text-white/50 hover:bg-[#0F172A]/5 hover:text-white rounded-full transition-colors"

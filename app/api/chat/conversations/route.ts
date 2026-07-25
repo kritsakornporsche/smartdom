@@ -16,19 +16,19 @@ export async function GET() {
     let conversations;
     if (user.role === 'owner') {
       conversations = await sql`
-        SELECT c.*, u.name as guest_name, u.role as guest_role, d.name as dorm_name
+        SELECT c.*, u.name as guest_name, u.primary_role as guest_role, dr.dorm_name
         FROM conversations c
         JOIN users u ON c.guest_id = u.id
-        JOIN dormitory_profile d ON c.dorm_id = d.id
+        JOIN dormitory_registry dr ON c.dorm_id = dr.id
         WHERE c.owner_id = ${user.id}
         ORDER BY c.updated_at DESC
       `;
     } else {
       conversations = await sql`
-        SELECT c.*, u.name as owner_name, d.name as dorm_name
+        SELECT c.*, u.name as owner_name, dr.dorm_name
         FROM conversations c
         JOIN users u ON c.owner_id = u.id
-        JOIN dormitory_profile d ON c.dorm_id = d.id
+        JOIN dormitory_registry dr ON c.dorm_id = dr.id
         WHERE c.guest_id = ${user.id}
         ORDER BY c.updated_at DESC
       `;
@@ -51,7 +51,7 @@ export async function POST(request: Request) {
     const sql = getDormDbFromSession(session);
     
     // Get initiating user and their role
-    const userResult = await sql`SELECT id, role FROM users WHERE email = ${session.user.email} LIMIT 1`;
+    const userResult = await sql`SELECT id, primary_role as role FROM users WHERE email = ${session.user.email} LIMIT 1`;
     const user = userResult[0];
 
     // Ensure owners cannot initiate contact themselves
@@ -62,7 +62,7 @@ export async function POST(request: Request) {
     const guestId = user.id;
 
     // Get owner_id from dormId
-    const dormResult = await sql`SELECT owner_id FROM dormitory_profile WHERE id = ${dormId} LIMIT 1`;
+    const dormResult = await sql`SELECT owner_id FROM dormitory_registry WHERE id = ${dormId} LIMIT 1`;
     if (dormResult.length === 0) {
       return NextResponse.json({ success: false, message: 'Dorm not found' }, { status: 404 });
     }

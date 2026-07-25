@@ -2,7 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ReactNode } from 'react';
 import { auth } from '@/auth';
-import { neon } from '@/lib/mysql-adapter';
+import { getDb } from '@/lib/db';
 
 import TenantSidebar from './components/TenantSidebar';
 
@@ -13,17 +13,19 @@ export default async function TenantLayout({ children }: { children: ReactNode }
 
   let roomInfo = 'ยังไม่ระบุห้อง';
   if (userEmail) {
-    const sql = neon(process.env.DATABASE_URL || 'mysql://smartdom:smartdom@kritsakorn.thddns.net:5994/smartdom_dorm_1');
+    const sql = getDb();
     const res = await sql`
-      SELECT r.room_number, r.floor, d.name as dorm_name
+      SELECT r.room_number, r.floor, dr.dorm_name
       FROM tenants t
-      JOIN rooms r ON t.room_id = r.id
-      JOIN dormitory_profile d ON r.dorm_id = d.id
-      WHERE t.email = ${userEmail}
+      LEFT JOIN contracts c ON t.id = c.tenant_id AND c.status = 'Active'
+      LEFT JOIN rooms r ON r.id = COALESCE(t.room_id, c.room_id)
+      LEFT JOIN dormitory_registry dr ON r.dorm_id = dr.id
+      WHERE t.email = ${userEmail} OR t.user_id = ${(session?.user as any)?.id || 0}
+      ORDER BY c.created_at DESC
       LIMIT 1
     `;
-    if (res.length > 0) {
-      roomInfo = `ห้อง ${res[0].room_number} • ชั้น ${res[0].floor} (${res[0].dorm_name})`;
+    if (res.length > 0 && res[0].room_number) {
+      roomInfo = `ห้อง ${res[0].room_number} • ชั้น ${res[0].floor || 1} (${res[0].dorm_name || 'SmartDom'})`;
     }
   }
 

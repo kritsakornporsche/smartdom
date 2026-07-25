@@ -22,13 +22,13 @@ export async function GET() {
         c.end_date,
         c.deposit_amount,
         c.status as contract_status,
-        d.name as dorm_name,
-        d.address as dorm_address
+        dr.dorm_name,
+        dr.address as dorm_address
       FROM tenants t
-      JOIN rooms r ON t.room_id = r.id
-      LEFT JOIN contracts c ON t.id = c.tenant_id
-      LEFT JOIN dormitory_profile d ON r.dorm_id = d.id
-      WHERE t.email = ${session.user.email}
+      LEFT JOIN contracts c ON t.id = c.tenant_id AND c.status = 'Active'
+      LEFT JOIN rooms r ON r.id = COALESCE(t.room_id, c.room_id)
+      LEFT JOIN dormitory_registry dr ON r.dorm_id = dr.id
+      WHERE t.email = ${session.user.email} OR t.user_id = ${(session.user as any).id || 0}
       ORDER BY c.created_at DESC
       LIMIT 1
     `;

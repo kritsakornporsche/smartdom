@@ -1,4 +1,4 @@
-import { neon } from '@/lib/mysql-adapter';
+import { getDb } from '@/lib/db';
 import { auth } from '@/auth';
 import Link from 'next/link';
 import AnnouncementsSection from '../components/AnnouncementsSection';
@@ -10,7 +10,7 @@ async function getDashboardData() {
   const session = await auth();
   if (!session?.user?.email) return { unpaidBills: [], recentMaintenance: [], roomInfo: null };
 
-  const sql = neon(process.env.DATABASE_URL || 'mysql://smartdom:smartdom@kritsakorn.thddns.net:5994/smartdom_dorm_1');
+  const sql = getDb();
   
   // Find tenant and room info using COALESCE to bridge data gaps
   const roomRes = await sql`
@@ -21,12 +21,12 @@ async function getDashboardData() {
       r.floor,
       c.start_date,
       c.deposit_amount,
-      d.name as dorm_name
+      dr.dorm_name
     FROM tenants t
     LEFT JOIN contracts c ON t.id = c.tenant_id AND c.status = 'Active'
     LEFT JOIN rooms r ON r.id = COALESCE(t.room_id, c.room_id)
-    LEFT JOIN dormitory_profile d ON r.dorm_id = d.id
-    WHERE t.email = ${session.user.email}
+    LEFT JOIN dormitory_registry dr ON r.dorm_id = dr.id
+    WHERE t.email = ${session.user.email} OR t.user_id = ${(session.user as any).id || 0}
     ORDER BY c.created_at DESC
     LIMIT 1
   `;

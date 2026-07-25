@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 
 interface Stats {
   totalRooms: number;
@@ -12,6 +13,7 @@ interface Stats {
 }
 
 export default function OwnerDashboard() {
+  const { data: session } = useSession();
   const [stats, setStats] = useState<Stats>({
     totalRooms: 0,
     occupiedRooms: 0,
@@ -25,10 +27,11 @@ export default function OwnerDashboard() {
 
   useEffect(() => {
     const checkOnboarding = async () => {
-      const email = localStorage.getItem('userEmail') || 'owner@smartdom.com';
+      const email = session?.user?.email || (typeof window !== 'undefined' ? localStorage.getItem('userEmail') : null);
+      if (!email) return;
       const savedDb = localStorage.getItem('selectedDormDbName');
       try {
-        const res = await fetch(`/api/owner/onboarding?email=${email}${savedDb ? `&dormDbName=${savedDb}` : ''}`);
+        const res = await fetch(`/api/owner/onboarding?email=${encodeURIComponent(email)}${savedDb ? `&dormDbName=${savedDb}` : ''}`);
         const data = await res.json();
         
         if (data.success && !data.hasDorm) {
@@ -55,7 +58,7 @@ export default function OwnerDashboard() {
     };
 
     checkOnboarding();
-  }, [router]);
+  }, [router, session]);
 
   if (loading) return (
     <div className="h-screen flex items-center justify-center bg-[#080F1E]">

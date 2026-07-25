@@ -16,15 +16,15 @@ export async function GET() {
       SELECT 
         u.id as user_id, 
         u.name, 
-        u.role,
+        u.primary_role as role,
         t.id as tenant_id,
         r.dorm_id,
-        d.name as dorm_name,
-        d.owner_id
+        dr.dorm_name,
+        dr.owner_id
       FROM users u
-      LEFT JOIN tenants t ON u.id = t.user_id
+      LEFT JOIN tenants t ON u.id = t.user_id OR u.email = t.email
       LEFT JOIN rooms r ON t.room_id = r.id
-      LEFT JOIN dormitory_profile d ON r.dorm_id = d.id
+      LEFT JOIN dormitory_registry dr ON r.dorm_id = dr.id
       WHERE u.email = ${session.user.email}
       LIMIT 1
     `;

@@ -295,6 +295,16 @@
 - **เปลี่ยนแบบฟอร์มสมัครสมาชิกใช้ Username ([app/signup/SignupContent.tsx](file:///d:/Works/thesiss/smartdom-1/app/signup/SignupContent.tsx), [app/api/auth/signup/route.ts](file:///d:/Works/thesiss/smartdom-1/app/api/auth/signup/route.ts))**: ปรับเปลี่ยนช่องกรอกข้อมูลการสมัครสมาชิกจากเดิมชื่อ-นามสกุล เป็น *"ชื่อผู้ใช้งาน (Username)"* พร้อมระบบเช็คชื่อผู้ใช้งานซ้ำแบบ Real-time และบันทึกลงคอลัมน์ `name` ในตาราง `users`
 - **เพิ่มขั้นตอนลงทะเบียนข้อมูลบุคคลก่อนลงทะเบียนหอพัก ([app/owner/onboarding/page.tsx](file:///d:/Works/thesiss/smartdom-1/app/owner/onboarding/page.tsx), [app/api/owner/onboarding/route.ts](file:///d:/Works/thesiss/smartdom-1/app/api/owner/onboarding/route.ts))**: สร้างกระบวนการ Onboarding แบบ 2 ขั้นตอน (Step 1: 👤 ข้อมูลบุคคล/เจ้าของหอพัก ตามเอกสาร `docs/dormitory_registration_data.md` เว้นส่วนการเงิน เช่น ชื่อ-นามสกุลจริง, เลขบัตรประชาชน, สำเนาบัตร, ที่อยู่ตามทะเบียนบ้าน, เบอร์โทร, LINE ID, ผู้ติดต่อฉุกเฉิน -> Step 2: 🏢 ตั้งค่าข้อมูลหอพัก)
 
+### 17. ยกระดับระบบ Onboarding เจ้าของหอพัก แยกช่องกรอกข้อมูล เพิ่มปุ่มทดสอบ ปักหมุดแผนที่ และสิ่งอำนวยความสะดวก 4 หมวดหมู่ (Enhanced Onboarding Wizard, Map Pinning & Categorized Amenities)
+- **แยกช่องกรอกข้อมูลและเพิ่มระบบแนบไฟล์ ([app/owner/onboarding/page.tsx](file:///d:/Works/thesiss/smartdom-1/app/owner/onboarding/page.tsx))**:
+  - เพิ่ม Dropdown เลือกคำนำหน้านาม (`นาย`, `นาง`, `นางสาว`, `อื่นๆ`)
+  - แยกช่องกรอก `ชื่อจริง` และ `นามสกุล` ออกจากกัน
+  - แยกช่องข้อมูลผู้ติดต่อฉุกเฉินออกเป็น 3 ฟิลด์ (`ชื่อ-นามสกุล`, `ความสัมพันธ์`, `เบอร์โทรศัพท์ฉุกเฉิน`)
+  - เปลี่ยนช่องแนบสำเนาบัตรประชาชนเป็น Real File Upload พร้อมปุ่ม `⚡ ทดสอบ: ข้ามการแนบไฟล์` และปุ่ม `⚡ เติมข้อมูลทดสอบทั้งหมดอัตโนมัติ (Auto-fill Demo)` ด้านบนสุด
+- **ระบบปักหมุดแผนที่และสิ่งอำนวยความสะดวก 4 หมวดหมู่ ([app/owner/onboarding/page.tsx](file:///d:/Works/thesiss/smartdom-1/app/owner/onboarding/page.tsx), [app/api/owner/onboarding/route.ts](file:///d:/Works/thesiss/smartdom-1/app/api/owner/onboarding/route.ts))**:
+  - เพิ่มส่วน Map Pinning ให้ระบุ Latitude/Longitude, Google Maps URL พร้อมกล่อง Interactive Map Preview และปุ่มทดสอบปักหมุดพิกัด ม.พะเยา
+  - เพิ่มรายการเลือกสิ่งอำนวยความสะดวกละเอียดจัดกลุ่ม 4 หมวดหมู่ (1. สิ่งอำนวยความสะดวกในห้องพักระดับพื้นฐาน & พรีเมียม/คอนโด, 2. สิ่งอำนวยความสะดวกส่วนกลางพื้นฐาน & พรีเมียม, 3. เทคโนโลยี อินเทอร์เน็ต พัสดุ & บริการเสริม, 4. สิ่งอำนวยความสะดวกเฉพาะกลุ่ม Pet-Friendly & หอพักหญิงล้วน)
+
 ---
 
 ## 📌 แผนงานขั้นต่อไป (Next Steps)

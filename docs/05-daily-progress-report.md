@@ -291,6 +291,10 @@
 - **เพิ่มการตรวจสอบชื่อซ้ำใน API ([app/api/auth/signup/route.ts](file:///d:/Works/thesiss/smartdom-1/app/api/auth/signup/route.ts))**: เพิ่มการเช็ค `LOWER(name)` ในตาราง `users` ทั้งใน POST Handler (ปฏิเสธด้วย HTTP 409 พร้อมแจ้ง *"ชื่อ-นามสกุลนี้ถูกใช้งานแล้วในระบบ กรุณาใช้ชื่ออื่น"*) และ GET Handler (รองรับการตรวจสอบชื่อและอีเมลแบบ Real-time)
 - **การแจ้งเตือน Real-time บน UI ([app/signup/SignupContent.tsx](file:///d:/Works/thesiss/smartdom-1/app/signup/SignupContent.tsx))**: เพิ่มตัวตรวจจับขณะผู้ใช้พิมพ์ชื่อ-นามสกุล แสดงขอบสีแดงพร้อมข้อความแจ้งเตือนทันที และปิดการใช้งานปุ่มสมัครสมาชิกหากชื่อนั้นถูกใช้งานแล้วในระบบ
 
+### 16. ปรับปรุงระบบสมัครสมาชิกใช้ชื่อผู้ใช้งาน (Username) และเพิ่มขั้นตอนลงทะเบียนข้อมูลบุคคลก่อนตั้งค่าหอพัก (Username Signup & Personal Registration Onboarding Step)
+- **เปลี่ยนแบบฟอร์มสมัครสมาชิกใช้ Username ([app/signup/SignupContent.tsx](file:///d:/Works/thesiss/smartdom-1/app/signup/SignupContent.tsx), [app/api/auth/signup/route.ts](file:///d:/Works/thesiss/smartdom-1/app/api/auth/signup/route.ts))**: ปรับเปลี่ยนช่องกรอกข้อมูลการสมัครสมาชิกจากเดิมชื่อ-นามสกุล เป็น *"ชื่อผู้ใช้งาน (Username)"* พร้อมระบบเช็คชื่อผู้ใช้งานซ้ำแบบ Real-time และบันทึกลงคอลัมน์ `name` ในตาราง `users`
+- **เพิ่มขั้นตอนลงทะเบียนข้อมูลบุคคลก่อนลงทะเบียนหอพัก ([app/owner/onboarding/page.tsx](file:///d:/Works/thesiss/smartdom-1/app/owner/onboarding/page.tsx), [app/api/owner/onboarding/route.ts](file:///d:/Works/thesiss/smartdom-1/app/api/owner/onboarding/route.ts))**: สร้างกระบวนการ Onboarding แบบ 2 ขั้นตอน (Step 1: 👤 ข้อมูลบุคคล/เจ้าของหอพัก ตามเอกสาร `docs/dormitory_registration_data.md` เว้นส่วนการเงิน เช่น ชื่อ-นามสกุลจริง, เลขบัตรประชาชน, สำเนาบัตร, ที่อยู่ตามทะเบียนบ้าน, เบอร์โทร, LINE ID, ผู้ติดต่อฉุกเฉิน -> Step 2: 🏢 ตั้งค่าข้อมูลหอพัก)
+
 ---
 
 ## 📌 แผนงานขั้นต่อไป (Next Steps)

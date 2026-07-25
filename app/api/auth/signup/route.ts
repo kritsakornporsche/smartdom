@@ -7,12 +7,19 @@ import bcrypt from 'bcryptjs';
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { first_name, last_name, email, password, role = 'guest', sub_role = null } = body;
+    const { username, email, password, role = 'guest', sub_role = null } = body;
 
     // ── Validate required fields ──────────────────────────────────────────────
-    if (!first_name || !last_name || !email || !password) {
+    if (!username || !username.trim() || !email || !password) {
       return NextResponse.json(
-        { success: false, message: 'กรุณากรอกข้อมูลให้ครบถ้วน (ชื่อ, นามสกุล, อีเมล, รหัสผ่าน)' },
+        { success: false, message: 'กรุณากรอกข้อมูลให้ครบถ้วน (ชื่อผู้ใช้งาน, อีเมล, รหัสผ่าน)' },
+        { status: 400 }
+      );
+    }
+
+    if (username.trim().length < 3) {
+      return NextResponse.json(
+        { success: false, message: 'ชื่อผู้ใช้งานต้องมีความยาวอย่างน้อย 3 ตัวอักษร' },
         { status: 400 }
       );
     }
@@ -54,8 +61,8 @@ export async function POST(request: Request) {
     }
 
     const sql = getDb();
-    const fullName = `${first_name.trim()} ${last_name.trim()}`;
-    const nameNorm = fullName.toLowerCase().trim();
+    const usernameClean = username.trim();
+    const usernameNorm = usernameClean.toLowerCase();
 
     // ── Check duplicate email ─────────────────────────────────────────────────
     const existingEmail = await sql`
@@ -68,13 +75,13 @@ export async function POST(request: Request) {
       );
     }
 
-    // ── Check duplicate full name ──────────────────────────────────────────────
-    const existingName = await sql`
-      SELECT id FROM users WHERE LOWER(name) = ${nameNorm} LIMIT 1
+    // ── Check duplicate username ──────────────────────────────────────────────
+    const existingUsername = await sql`
+      SELECT id FROM users WHERE LOWER(name) = ${usernameNorm} LIMIT 1
     `;
-    if (existingName.length > 0) {
+    if (existingUsername.length > 0) {
       return NextResponse.json(
-        { success: false, message: 'ชื่อ-นามสกุลนี้ถูกใช้งานแล้วในระบบ กรุณาใช้ชื่ออื่น' },
+        { success: false, message: 'ชื่อผู้ใช้งานนี้ถูกใช้งานแล้วในระบบ กรุณาใช้ชื่อผู้ใช้งานอื่น' },
         { status: 409 }
       );
     }
@@ -82,18 +89,17 @@ export async function POST(request: Request) {
     // ── Hash password with BCrypt ─────────────────────────────────────────────
     const hashedPassword = await bcrypt.hash(password, 12);
 
-    // ── Insert user (matches users table schema: id, name, email, password, primary_role) ───
+    // ── Insert user (stores username into name column) ───────────────────────
     const result = await sql`
       INSERT INTO users (name, email, password, primary_role)
       VALUES (
-        ${fullName},
+        ${usernameClean},
         ${email.toLowerCase().trim()},
         ${hashedPassword},
         ${role}
       )
     `;
     
-    // In mysql, INSERT returns an object with insertId, not RETURNING rows
     const insertId = result.insertId;
 
     return NextResponse.json(
@@ -102,9 +108,8 @@ export async function POST(request: Request) {
         message: 'สมัครสมาชิกสำเร็จ! ยินดีต้อนรับสู่ SmartDom',
         data: {
           id: insertId,
-          first_name: first_name.trim(),
-          last_name: last_name.trim(),
-          full_name: fullName,
+          username: usernameClean,
+          name: usernameClean,
           email: email.toLowerCase().trim(),
           role: role,
           sub_role: role === 'keeper' ? sub_role : null,
@@ -115,10 +120,9 @@ export async function POST(request: Request) {
   } catch (error: any) {
     console.error('[POST /api/auth/signup] Error:', error);
 
-    // Handle unique constraint violation gracefully
     if (error.code === 'ER_DUP_ENTRY') {
       return NextResponse.json(
-        { success: false, message: 'อีเมลหรือชื่อนี้ถูกใช้งานแล้วในระบบ' },
+        { success: false, message: 'อีเมลหรือชื่อผู้ใช้งานนี้ถูกใช้งานแล้วในระบบ' },
         { status: 409 }
       );
     }
@@ -130,23 +134,23 @@ export async function POST(request: Request) {
   }
 }
 
-// ─── GET /api/auth/signup?email=xxx&name=yyy — check availability ─────────────
+// ─── GET /api/auth/signup?email=xxx&username=yyy — check availability ─────────
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const email = searchParams.get('email');
-    const name = searchParams.get('name');
+    const username = searchParams.get('username') || searchParams.get('name');
 
-    if (!email && !name) {
+    if (!email && !username) {
       return NextResponse.json(
-        { success: false, message: 'กรุณาระบุอีเมลหรือชื่อเพื่อตรวจสอบ' },
+        { success: false, message: 'กรุณาระบุอีเมลหรือชื่อผู้ใช้งานเพื่อตรวจสอบ' },
         { status: 400 }
       );
     }
 
     const sql = getDb();
     let emailAvailable = true;
-    let nameAvailable = true;
+    let usernameAvailable = true;
 
     if (email) {
       const existingEmail = await sql`
@@ -155,23 +159,23 @@ export async function GET(request: Request) {
       emailAvailable = existingEmail.length === 0;
     }
 
-    if (name && name.trim()) {
-      const existingName = await sql`
-        SELECT id FROM users WHERE LOWER(name) = ${name.toLowerCase().trim()} LIMIT 1
+    if (username && username.trim()) {
+      const existingUser = await sql`
+        SELECT id FROM users WHERE LOWER(name) = ${username.toLowerCase().trim()} LIMIT 1
       `;
-      nameAvailable = existingName.length === 0;
+      usernameAvailable = existingUser.length === 0;
     }
 
-    const available = emailAvailable && nameAvailable;
+    const available = emailAvailable && usernameAvailable;
 
     return NextResponse.json({
       success: true,
       available,
       emailAvailable,
-      nameAvailable,
-      message: (!emailAvailable && !nameAvailable) ? 'อีเมลและชื่อนี้ถูกใช้งานแล้ว' :
+      usernameAvailable,
+      message: (!emailAvailable && !usernameAvailable) ? 'อีเมลและชื่อผู้ใช้งานนี้ถูกใช้งานแล้ว' :
                !emailAvailable ? 'อีเมลนี้ถูกใช้งานแล้ว' :
-               !nameAvailable ? 'ชื่อ-นามสกุลนี้ถูกใช้งานแล้ว' : 'ข้อมูลนี้พร้อมใช้งาน',
+               !usernameAvailable ? 'ชื่อผู้ใช้งานนี้ถูกใช้งานแล้ว' : 'ข้อมูลนี้พร้อมใช้งาน',
     });
   } catch (error: any) {
     console.error('[GET /api/auth/signup] Error:', error);

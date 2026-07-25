@@ -81,7 +81,7 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
   try {
-    const { ownerEmail, dormData, packageId } = await req.json();
+    const { ownerEmail, personalData, dormData, packageId } = await req.json();
     if (!ownerEmail || !dormData) {
       return NextResponse.json({ success: false, message: 'Missing required data' }, { status: 400 });
     }
@@ -92,17 +92,27 @@ export async function POST(req: Request) {
     // Get user id
     let users = await sql`SELECT id FROM users WHERE email = ${ownerEmail} LIMIT 1`;
     let ownerId;
+    const ownerDisplayName = personalData?.fullName || dormData?.ownerName || 'Owner';
+
     if (users.length === 0) {
       // Create owner user if not exist
       const bcrypt = require('bcryptjs');
       const hash = await bcrypt.hash('temp_password', 12);
       const res = await sql`
-        INSERT INTO users (email, password, name, primary_role)
-        VALUES (${ownerEmail}, ${hash}, ${dormData.ownerName || 'Owner'}, 'owner')
+        INSERT INTO users (email, password, name, phone, primary_role)
+        VALUES (${ownerEmail}, ${hash}, ${ownerDisplayName}, ${personalData?.mobilePhone || null}, 'owner')
       `;
       ownerId = (res as any).insertId;
     } else {
       ownerId = users[0].id;
+      // Update owner personal name and phone in users table
+      if (personalData?.fullName || personalData?.mobilePhone) {
+        await sql`
+          UPDATE users 
+          SET name = ${ownerDisplayName}, phone = ${personalData?.mobilePhone || null}
+          WHERE id = ${ownerId}
+        `;
+      }
     }
 
     // Check existing active dorms for this owner

@@ -45,8 +45,7 @@ export default function SignupContent() {
   const emailCheckTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const [fields, setFields] = useState({
-    first_name: '',
-    last_name: '',
+    username: '',
     email: '',
     password: '',
     confirm_password: '',
@@ -54,23 +53,22 @@ export default function SignupContent() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [pdpaConsent, setPdpaConsent] = useState(false);
-  const [nameAvailable, setNameAvailable] = useState<boolean | null>(null);
+  const [usernameAvailable, setUsernameAvailable] = useState<boolean | null>(null);
   const [checkingName, setCheckingName] = useState(false);
   const nameCheckTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const checkNameAvailability = (first: string, last: string) => {
-    setNameAvailable(null);
+  const checkUsernameAvailability = (val: string) => {
+    setUsernameAvailable(null);
     if (nameCheckTimer.current) clearTimeout(nameCheckTimer.current);
-    const fullName = `${first.trim()} ${last.trim()}`.trim();
-    if (fullName.length >= 3) {
+    if (val.trim().length >= 3) {
       setCheckingName(true);
       nameCheckTimer.current = setTimeout(async () => {
         try {
-          const res = await fetch(`/api/auth/signup?name=${encodeURIComponent(fullName)}`);
+          const res = await fetch(`/api/auth/signup?username=${encodeURIComponent(val.trim())}`);
           const data = await res.json();
-          setNameAvailable(data.nameAvailable);
+          setUsernameAvailable(data.usernameAvailable ?? data.available);
         } catch {
-          setNameAvailable(null);
+          setUsernameAvailable(null);
         } finally {
           setCheckingName(false);
         }
@@ -84,8 +82,8 @@ export default function SignupContent() {
     const { name, value } = e.target;
     setFields(prev => {
       const next = { ...prev, [name]: value };
-      if (name === 'first_name' || name === 'last_name') {
-        checkNameAvailability(next.first_name, next.last_name);
+      if (name === 'username') {
+        checkUsernameAvailability(value);
       }
       return next;
     });
@@ -117,13 +115,18 @@ export default function SignupContent() {
     if (formState === 'loading') return;
     setMessage('');
 
-    if (!fields.first_name.trim() || !fields.last_name.trim() || !fields.email.trim()) {
+    if (!fields.username.trim() || !fields.email.trim()) {
       setMessage('กรุณากรอกข้อมูลให้ครบถ้วน');
       return;
     }
 
     if (emailAvailable === false) {
       setMessage('อีเมลนี้ถูกใช้งานแล้ว กรุณาใช้อีเมลอื่น');
+      return;
+    }
+
+    if (usernameAvailable === false) {
+      setMessage('ชื่อผู้ใช้งานนี้ถูกใช้งานแล้ว กรุณาใช้ชื่ออื่น');
       return;
     }
 
@@ -149,8 +152,7 @@ export default function SignupContent() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          first_name: fields.first_name,
-          last_name: fields.last_name,
+          username: fields.username,
           email: fields.email,
           password: fields.password,
           role: selectedRole,
@@ -243,39 +245,31 @@ export default function SignupContent() {
           <div className="bg-card rounded-[2rem] sm:rounded-[2.5rem] p-5 sm:p-8 border border-border shadow-2xl">
             <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
               
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                <div className="space-y-1.5">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">ชื่อ</label>
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">ชื่อผู้ใช้งาน (Username)</label>
+                <div className="relative">
                   <input
-                    name="first_name"
+                    name="username"
                     required
-                    value={fields.first_name}
+                    minLength={3}
+                    value={fields.username}
                     onChange={handleChange}
                     className={cn(
-                      "w-full rounded-2xl border bg-[#0F172A] px-5 py-3 text-sm font-bold text-white focus:bg-[#0F172A] outline-none transition-all placeholder:text-white/30",
-                      nameAvailable === false ? 'border-destructive' : nameAvailable === true ? 'border-emerald-400 font-black' : 'border-white/10 focus:border-primary'
+                      "w-full rounded-2xl border bg-[#0F172A] px-5 py-3 text-sm font-bold text-white focus:bg-[#0F172A] outline-none transition-all placeholder:text-white/30 pr-12",
+                      usernameAvailable === false ? 'border-destructive' : usernameAvailable === true ? 'border-emerald-400 font-black' : 'border-white/10 focus:border-primary'
                     )}
-                    placeholder="สมชาย"
+                    placeholder="เช่น smartowner99"
                   />
+                  <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none">
+                    {checkingName && <div className="w-4 h-4 border-2 border-primary/20 border-t-primary rounded-full animate-spin" />}
+                    {!checkingName && usernameAvailable === true && <svg className="w-4 h-4 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7"/></svg>}
+                    {!checkingName && usernameAvailable === false && <svg className="w-4 h-4 text-destructive" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M6 18L18 6M6 6l12 12"/></svg>}
+                  </div>
                 </div>
-                <div className="space-y-1.5">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">นามสกุล</label>
-                  <input
-                    name="last_name"
-                    required
-                    value={fields.last_name}
-                    onChange={handleChange}
-                    className={cn(
-                      "w-full rounded-2xl border bg-[#0F172A] px-5 py-3 text-sm font-bold text-white focus:bg-[#0F172A] outline-none transition-all placeholder:text-white/30",
-                      nameAvailable === false ? 'border-destructive' : nameAvailable === true ? 'border-emerald-400 font-black' : 'border-white/10 focus:border-primary'
-                    )}
-                    placeholder="ใจดี"
-                  />
-                </div>
+                {usernameAvailable === false && (
+                  <p className="text-[11px] font-bold text-destructive mt-1">⚠️ ชื่อผู้ใช้งานนี้ถูกใช้งานแล้วในระบบ กรุณาใช้ชื่อผู้ใช้งานอื่น</p>
+                )}
               </div>
-              {nameAvailable === false && (
-                <p className="text-[11px] font-bold text-destructive -mt-2">⚠️ ชื่อ-นามสกุลนี้ถูกใช้งานแล้วในระบบ กรุณาใช้ชื่ออื่น</p>
-              )}
 
               <div className="space-y-1.5">
                 <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">อีเมล</label>
@@ -369,7 +363,7 @@ export default function SignupContent() {
 
               <button
                 type="submit"
-                disabled={formState === 'loading' || emailAvailable === false || nameAvailable === false}
+                disabled={formState === 'loading' || emailAvailable === false || usernameAvailable === false}
                 className="w-full rounded-full bg-primary py-4 text-[10px] font-black uppercase tracking-[0.2em] text-primary-foreground shadow-2xl shadow-primary/20 hover:-translate-y-0.5 transition-all active:scale-95 disabled:opacity-50 cursor-pointer mt-2"
               >
                 {formState === 'loading' ? 'กำลังดำเนินการ...' : 'สมัครสมาชิก →'}

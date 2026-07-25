@@ -69,14 +69,12 @@ export async function POST(request: Request) {
     // ── Hash password with BCrypt ─────────────────────────────────────────────
     const hashedPassword = await bcrypt.hash(password, 12);
 
-    // ── Insert user (use 'name' column to match existing DB schema) ───────────
+    // ── Insert user (matches users table schema: id, name, email, password, primary_role) ───
     const fullName = `${first_name.trim()} ${last_name.trim()}`;
     const result = await sql`
-      INSERT INTO users (name, first_name, last_name, email, password, primary_role)
+      INSERT INTO users (name, email, password, primary_role)
       VALUES (
         ${fullName},
-        ${first_name.trim()},
-        ${last_name.trim()},
         ${email.toLowerCase().trim()},
         ${hashedPassword},
         ${role}

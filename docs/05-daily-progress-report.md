@@ -248,6 +248,14 @@
 - **ใช้ WMIC Process Creation (`deploy-remote.js`)**: ปรับคำสั่งเริ่มต้น PM2 ผ่าน `wmic process call create` เพื่อหลีกเลี่ยงการโดน Windows OpenSSH Job Object ตัดการทำงานของ PM2 Daemon เมื่อปิด SSH Connection
 - **กำหนด Windows Firewall Inbound Rules**: เพิ่มกฎ Windows Firewall ปลดล็อก TCP พอร์ต 3000 และ 5993 บนเครื่องเซิร์ฟเวอร์
 
+### 5. แก้ไขข้อผิดพลาด TypeScript (Strict Type Audit)
+- **แก้ไข Type Mismatch บน `app/page.tsx`**: แก้ไขการเปรียบเทียบ `dorm.pet_friendly`, `dorm.has_parking`, `dorm.has_air_con` ซึ่งเป็น boolean กับตัวเลข `1` (TS2367 Error) ให้เป็น `!!dorm.<property>` ส่งผลให้ผ่านการตรวจสอบ Strict TypeScript (`npx tsc --noEmit`) สำเร็จ 100% ปราศจาก Error
+
+### 6. พัฒนาหน้า Release Notes / System Updates และผูกแท็บปุ่มแจ้งเตือน
+- **สร้างหน้าประวัติการอัปเดตระบบ ([app/updates/page.tsx](file:///d:/Works/thesiss/smartdom-1/app/updates/page.tsx))**: สร้างหน้าดีไซน์ Premium Glassmorphism + UP Purple Theme สำหรับแสดงผล Release Notes จาก Daily Progress พร้อมฟิลเตอร์คัดกรองหมวดหมู่ (Feature, Fix, Design, Performance, Security) และช่องค้นหา
+- **สร้าง API คืนค่ารายการอัปเดต ([app/api/updates/route.ts](file:///d:/Works/thesiss/smartdom-1/app/api/updates/route.ts))**: ดึงข้อมูลอัปเดตระบบจาก [lib/updatesData.ts](file:///d:/Works/thesiss/smartdom-1/lib/updatesData.ts)
+- **เพิ่มแท็บในปุ่มแจ้งเตือน ([components/NotificationsPopover.tsx](file:///d:/Works/thesiss/smartdom-1/components/NotificationsPopover.tsx))**: เพิ่มแท็บสลับ `🚀 อัปเดตระบบ` ใน Popover ของปุ่มแจ้งเตือน 🔔 สำหรับเรียกดูไฮไลต์ Daily Progress ล่าสุด พร้อมปุ่มลิงก์สลับไปยังหน้า `/updates` เต็มรูปแบบ
+
 ---
 
 ## 📌 แผนงานขั้นต่อไป (Next Steps)

@@ -243,9 +243,9 @@ export default function Home() {
 
                    {/* Features display */}
                    <div className="flex flex-wrap gap-2 mb-6 mt-auto">
-                     {dorm.pet_friendly === 1 && <span className="text-xs font-bold bg-secondary text-secondary-foreground border border-border px-3 py-1.5 rounded-xl">🐱 เลี้ยงสัตว์ได้</span>}
-                     {dorm.has_parking === 1 && <span className="text-xs font-bold bg-secondary text-secondary-foreground border border-border px-3 py-1.5 rounded-xl">🚗 มีที่จอดรถ</span>}
-                     {dorm.has_air_con === 1 && <span className="text-xs font-bold bg-secondary text-secondary-foreground border border-border px-3 py-1.5 rounded-xl">❄️ ห้องแอร์</span>}
+                     {!!dorm.pet_friendly && <span className="text-xs font-bold bg-secondary text-secondary-foreground border border-border px-3 py-1.5 rounded-xl">🐱 เลี้ยงสัตว์ได้</span>}
+                     {!!dorm.has_parking && <span className="text-xs font-bold bg-secondary text-secondary-foreground border border-border px-3 py-1.5 rounded-xl">🚗 มีที่จอดรถ</span>}
+                     {!!dorm.has_air_con && <span className="text-xs font-bold bg-secondary text-secondary-foreground border border-border px-3 py-1.5 rounded-xl">❄️ ห้องแอร์</span>}
                    </div>
                    
                    <div className="pt-5 border-t border-border flex items-center justify-between mt-auto">

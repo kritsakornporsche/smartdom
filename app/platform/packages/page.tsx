@@ -119,7 +119,7 @@ export default function PlatformPackages() {
                     ฿{Number(pkg.price).toLocaleString()}
                     <span className="text-sm text-white/30 font-semibold">/เดือน</span>
                   </p>
-                  <p className="text-white/40 text-xs mb-6">สูงสุด {pkg.max_rooms.toLocaleString()} ห้อง • {(pkg.max_dorms || 1).toLocaleString()} หอพัก • {pkg.duration_days} วัน</p>
+                  <p className="text-white/40 text-xs mb-6">{pkg.max_rooms.toLocaleString()} ห้อง/หอพัก • {(pkg.max_dorms || 1).toLocaleString()} หอพัก • {pkg.duration_days} วัน</p>
                   <ul className="space-y-2 mb-6">
                     {pkg.features.map((f, j) => (
                       <li key={j} className="flex items-start gap-2 text-white/60 text-sm">
@@ -131,13 +131,13 @@ export default function PlatformPackages() {
                   <div className="flex gap-2">
                     <button
                       onClick={() => openEdit(pkg)}
-                      className="flex-1 py-2.5 bg-white/5 hover:bg-white/10 text-white/60 hover:text-white rounded-xl text-sm font-bold transition-all"
+                      className="flex-1 py-2.5 bg-white/5 hover:bg-white/10 text-white/60 hover:text-white rounded-xl text-sm font-bold transition-all cursor-pointer"
                     >
                       แก้ไข
                     </button>
                     <button
                       onClick={() => handleDelete(pkg.id)}
-                      className="py-2.5 px-4 bg-red-500/10 hover:bg-red-500/20 text-red-400 hover:text-red-300 rounded-xl text-sm font-bold transition-all"
+                      className="py-2.5 px-4 bg-red-500/10 hover:bg-red-500/20 text-red-400 hover:text-red-300 rounded-xl text-sm font-bold transition-all cursor-pointer"
                     >
                       ลบ
                     </button>
@@ -151,8 +151,8 @@ export default function PlatformPackages() {
 
       {/* Modal Form */}
       {showForm && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50" onClick={() => setShowForm(false)}>
-          <div className="bg-[#1E293B] border border-white/10 rounded-2xl p-8 w-full max-w-md shadow-2xl" onClick={e => e.stopPropagation()}>
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-[#1E293B] border border-white/10 rounded-2xl p-8 w-full max-w-md shadow-2xl">
             <h2 className="text-white font-black text-lg mb-6">{editPkg ? 'แก้ไขแพ็กเกจ' : 'เพิ่มแพ็กเกจใหม่'}</h2>
             <div className="space-y-4">
               <div>
@@ -175,7 +175,7 @@ export default function PlatformPackages() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-white/50 text-xs font-bold uppercase tracking-wider block mb-1.5">จำนวนห้องสูงสุด</label>
+                  <label className="text-white/50 text-xs font-bold uppercase tracking-wider block mb-1.5">จำนวนห้องต่อหอพัก</label>
                   <input
                     type="number"
                     value={form.max_rooms}

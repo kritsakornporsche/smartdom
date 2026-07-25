@@ -263,6 +263,10 @@
 ### 8. แก้ไขการแสดงผล Platform Admin Dashboard และ SQL Column Mismatches
 - **แก้ไขปัญหารายงานสถิติขึ้น 0 บน Platform Dashboard**: แก้ไข API ([app/api/platform/dashboard/route.ts](file:///d:/Works/thesiss/smartdom-1/app/api/platform/dashboard/route.ts), [app/api/platform/dormitories/route.ts](file:///d:/Works/thesiss/smartdom-1/app/api/platform/dormitories/route.ts), [app/api/platform/subscriptions/route.ts](file:///d:/Works/thesiss/smartdom-1/app/api/platform/subscriptions/route.ts)) ให้เปลี่ยนจากการ SELECT `owner_name` จาก `dormitory_registry` ตรงๆ (ซึ่งไม่มีคอลัมน์นี้) เป็นการ `LEFT JOIN users u ON d.owner_id = u.id` พร้อมเปลี่ยนการเชื่อมต่อจาก `smartdom_platform` มาใช้ `getDb()` บน `smartdomdb` ทำให้แสดงจำนวนหอพัก (6 หอพัก), สมาชิก (2 สมาชิก), แพ็กเกจ และหอพักเพิ่งสมัครใหม่บน Platform Dashboard ได้ตรงกับฐานข้อมูล 100%
 
+### 9. ปรับแต่งฟอร์มจัดการแพ็กเกจ (Package Modal UI & Label Fix)
+- **ปรับป้ายกำกับจำนวนห้อง**: ปรับเปลี่ยนข้อความในหน้าจัดการแพ็กเกจ ([app/platform/packages/page.tsx](file:///d:/Works/thesiss/smartdom-1/app/platform/packages/page.tsx)) จากเดิม *"จำนวนห้องสูงสุด"* เป็น **"จำนวนห้องต่อหอพัก"** เพื่อความชัดเจนในการกำหนดสิทธิ์ของแพ็กเกจ
+- **ป้องกันการปิด Modal โดยไม่ตั้งใจ**: นำตัวตรวจจับเหตุการณ์ `onClick` ปิดโมดอลออกจากแบล็กดร็อปพื้นหลัง ป้องกันปัญหากล่องแบบฟอร์มปิดหายไปเองเมื่อผู้ใช้คลิกภายนอกกรอบ
+
 ---
 
 ## 📌 แผนงานขั้นต่อไป (Next Steps)

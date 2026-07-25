@@ -54,14 +54,27 @@ export async function POST(request: Request) {
     }
 
     const sql = getDb();
+    const fullName = `${first_name.trim()} ${last_name.trim()}`;
+    const nameNorm = fullName.toLowerCase().trim();
 
     // ── Check duplicate email ─────────────────────────────────────────────────
-    const existing = await sql`
-      SELECT id FROM users WHERE email = ${email.toLowerCase().trim()}
+    const existingEmail = await sql`
+      SELECT id FROM users WHERE email = ${email.toLowerCase().trim()} LIMIT 1
     `;
-    if (existing.length > 0) {
+    if (existingEmail.length > 0) {
       return NextResponse.json(
         { success: false, message: 'อีเมลนี้ถูกใช้งานแล้ว กรุณาใช้อีเมลอื่น' },
+        { status: 409 }
+      );
+    }
+
+    // ── Check duplicate full name ──────────────────────────────────────────────
+    const existingName = await sql`
+      SELECT id FROM users WHERE LOWER(name) = ${nameNorm} LIMIT 1
+    `;
+    if (existingName.length > 0) {
+      return NextResponse.json(
+        { success: false, message: 'ชื่อ-นามสกุลนี้ถูกใช้งานแล้วในระบบ กรุณาใช้ชื่ออื่น' },
         { status: 409 }
       );
     }
@@ -70,7 +83,6 @@ export async function POST(request: Request) {
     const hashedPassword = await bcrypt.hash(password, 12);
 
     // ── Insert user (matches users table schema: id, name, email, password, primary_role) ───
-    const fullName = `${first_name.trim()} ${last_name.trim()}`;
     const result = await sql`
       INSERT INTO users (name, email, password, primary_role)
       VALUES (
@@ -106,7 +118,7 @@ export async function POST(request: Request) {
     // Handle unique constraint violation gracefully
     if (error.code === 'ER_DUP_ENTRY') {
       return NextResponse.json(
-        { success: false, message: 'อีเมลนี้ถูกใช้งานแล้ว' },
+        { success: false, message: 'อีเมลหรือชื่อนี้ถูกใช้งานแล้วในระบบ' },
         { status: 409 }
       );
     }
@@ -118,29 +130,48 @@ export async function POST(request: Request) {
   }
 }
 
-// ─── GET /api/auth/signup?email=xxx — check email availability ────────────────
+// ─── GET /api/auth/signup?email=xxx&name=yyy — check availability ─────────────
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const email = searchParams.get('email');
+    const name = searchParams.get('name');
 
-    if (!email) {
+    if (!email && !name) {
       return NextResponse.json(
-        { success: false, message: 'กรุณาระบุอีเมล' },
+        { success: false, message: 'กรุณาระบุอีเมลหรือชื่อเพื่อตรวจสอบ' },
         { status: 400 }
       );
     }
 
     const sql = getDb();
+    let emailAvailable = true;
+    let nameAvailable = true;
 
-    const existing = await sql`
-      SELECT id FROM users WHERE email = ${email.toLowerCase().trim()}
-    `;
+    if (email) {
+      const existingEmail = await sql`
+        SELECT id FROM users WHERE email = ${email.toLowerCase().trim()} LIMIT 1
+      `;
+      emailAvailable = existingEmail.length === 0;
+    }
+
+    if (name && name.trim()) {
+      const existingName = await sql`
+        SELECT id FROM users WHERE LOWER(name) = ${name.toLowerCase().trim()} LIMIT 1
+      `;
+      nameAvailable = existingName.length === 0;
+    }
+
+    const available = emailAvailable && nameAvailable;
 
     return NextResponse.json({
       success: true,
-      available: existing.length === 0,
-      message: existing.length === 0 ? 'อีเมลนี้พร้อมใช้งาน' : 'อีเมลนี้ถูกใช้งานแล้ว',
+      available,
+      emailAvailable,
+      nameAvailable,
+      message: (!emailAvailable && !nameAvailable) ? 'อีเมลและชื่อนี้ถูกใช้งานแล้ว' :
+               !emailAvailable ? 'อีเมลนี้ถูกใช้งานแล้ว' :
+               !nameAvailable ? 'ชื่อ-นามสกุลนี้ถูกใช้งานแล้ว' : 'ข้อมูลนี้พร้อมใช้งาน',
     });
   } catch (error: any) {
     console.error('[GET /api/auth/signup] Error:', error);

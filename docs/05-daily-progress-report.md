@@ -287,6 +287,10 @@
 - **ครอบคลุมข้อยกเว้นการสร้างเซสชันในหน้าสมัครสมาชิก ([app/signup/SignupContent.tsx](file:///d:/Works/thesiss/smartdom-1/app/signup/SignupContent.tsx))**: ครอบทับ `try/catch` ในคำสั่ง `signIn('credentials', ...)` ป้องกันปัญหา NextAuth client-side host mismatch หลุดเข้าเซกชันข้อผิดพลาดโดยไม่จำเป็น แม้บันทึกข้อมูลในฐานข้อมูลสำเร็จแล้ว
 - **อัปเดต LocalStorage & Navigation**: บันทึก `userEmail` ลงใน `localStorage` อัตโนมัติหลังสมัครสมาชิก พร้อมรีไดเรกต์ไปยังหน้า Dashboard ของบทบาทนั้นๆ ได้อย่างราบรื่น
 
+### 15. ระบบป้องกันการสมัครสมาชิกด้วยชื่อ-นามสกุลซ้ำกัน (Duplicate User Name Validation)
+- **เพิ่มการตรวจสอบชื่อซ้ำใน API ([app/api/auth/signup/route.ts](file:///d:/Works/thesiss/smartdom-1/app/api/auth/signup/route.ts))**: เพิ่มการเช็ค `LOWER(name)` ในตาราง `users` ทั้งใน POST Handler (ปฏิเสธด้วย HTTP 409 พร้อมแจ้ง *"ชื่อ-นามสกุลนี้ถูกใช้งานแล้วในระบบ กรุณาใช้ชื่ออื่น"*) และ GET Handler (รองรับการตรวจสอบชื่อและอีเมลแบบ Real-time)
+- **การแจ้งเตือน Real-time บน UI ([app/signup/SignupContent.tsx](file:///d:/Works/thesiss/smartdom-1/app/signup/SignupContent.tsx))**: เพิ่มตัวตรวจจับขณะผู้ใช้พิมพ์ชื่อ-นามสกุล แสดงขอบสีแดงพร้อมข้อความแจ้งเตือนทันที และปิดการใช้งานปุ่มสมัครสมาชิกหากชื่อนั้นถูกใช้งานแล้วในระบบ
+
 ---
 
 ## 📌 แผนงานขั้นต่อไป (Next Steps)

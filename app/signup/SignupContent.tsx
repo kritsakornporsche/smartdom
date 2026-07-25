@@ -54,10 +54,41 @@ export default function SignupContent() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [pdpaConsent, setPdpaConsent] = useState(false);
+  const [nameAvailable, setNameAvailable] = useState<boolean | null>(null);
+  const [checkingName, setCheckingName] = useState(false);
+  const nameCheckTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const checkNameAvailability = (first: string, last: string) => {
+    setNameAvailable(null);
+    if (nameCheckTimer.current) clearTimeout(nameCheckTimer.current);
+    const fullName = `${first.trim()} ${last.trim()}`.trim();
+    if (fullName.length >= 3) {
+      setCheckingName(true);
+      nameCheckTimer.current = setTimeout(async () => {
+        try {
+          const res = await fetch(`/api/auth/signup?name=${encodeURIComponent(fullName)}`);
+          const data = await res.json();
+          setNameAvailable(data.nameAvailable);
+        } catch {
+          setNameAvailable(null);
+        } finally {
+          setCheckingName(false);
+        }
+      }, 600);
+    } else {
+      setCheckingName(false);
+    }
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFields(prev => ({ ...prev, [name]: value }));
+    setFields(prev => {
+      const next = { ...prev, [name]: value };
+      if (name === 'first_name' || name === 'last_name') {
+        checkNameAvailability(next.first_name, next.last_name);
+      }
+      return next;
+    });
 
     if (name === 'email') {
       setEmailAvailable(null);
@@ -68,7 +99,7 @@ export default function SignupContent() {
           try {
             const res = await fetch(`/api/auth/signup?email=${encodeURIComponent(value)}`);
             const data = await res.json();
-            setEmailAvailable(data.available);
+            setEmailAvailable(data.emailAvailable ?? data.available);
           } catch {
             setEmailAvailable(null);
           } finally {
@@ -220,7 +251,10 @@ export default function SignupContent() {
                     required
                     value={fields.first_name}
                     onChange={handleChange}
-                    className="w-full rounded-2xl border border-white/10 bg-[#0F172A] px-5 py-3 text-sm font-bold text-white focus:bg-[#0F172A] focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-white/30"
+                    className={cn(
+                      "w-full rounded-2xl border bg-[#0F172A] px-5 py-3 text-sm font-bold text-white focus:bg-[#0F172A] outline-none transition-all placeholder:text-white/30",
+                      nameAvailable === false ? 'border-destructive' : nameAvailable === true ? 'border-emerald-400 font-black' : 'border-white/10 focus:border-primary'
+                    )}
                     placeholder="สมชาย"
                   />
                 </div>
@@ -231,11 +265,17 @@ export default function SignupContent() {
                     required
                     value={fields.last_name}
                     onChange={handleChange}
-                    className="w-full rounded-2xl border border-white/10 bg-[#0F172A] px-5 py-3 text-sm font-bold text-white focus:bg-[#0F172A] focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-white/30"
+                    className={cn(
+                      "w-full rounded-2xl border bg-[#0F172A] px-5 py-3 text-sm font-bold text-white focus:bg-[#0F172A] outline-none transition-all placeholder:text-white/30",
+                      nameAvailable === false ? 'border-destructive' : nameAvailable === true ? 'border-emerald-400 font-black' : 'border-white/10 focus:border-primary'
+                    )}
                     placeholder="ใจดี"
                   />
                 </div>
               </div>
+              {nameAvailable === false && (
+                <p className="text-[11px] font-bold text-destructive -mt-2">⚠️ ชื่อ-นามสกุลนี้ถูกใช้งานแล้วในระบบ กรุณาใช้ชื่ออื่น</p>
+              )}
 
               <div className="space-y-1.5">
                 <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">อีเมล</label>
@@ -329,7 +369,7 @@ export default function SignupContent() {
 
               <button
                 type="submit"
-                disabled={formState === 'loading' || emailAvailable === false}
+                disabled={formState === 'loading' || emailAvailable === false || nameAvailable === false}
                 className="w-full rounded-full bg-primary py-4 text-[10px] font-black uppercase tracking-[0.2em] text-primary-foreground shadow-2xl shadow-primary/20 hover:-translate-y-0.5 transition-all active:scale-95 disabled:opacity-50 cursor-pointer mt-2"
               >
                 {formState === 'loading' ? 'กำลังดำเนินการ...' : 'สมัครสมาชิก →'}

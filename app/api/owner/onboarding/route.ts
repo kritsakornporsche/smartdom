@@ -153,17 +153,24 @@ export async function POST(req: Request) {
       VALUES (${ownerId}, ${dormRegistryId}, 'owner')
     `;
 
+    // Build facilities list string
+    const facilitiesList = Array.isArray(dormData.selectedAmenities) && dormData.selectedAmenities.length > 0
+      ? dormData.selectedAmenities.join(', ')
+      : (dormData.facilities || '');
+
+    const mapUrlStr = dormData.mapUrl || (dormData.latitude && dormData.longitude ? `https://maps.google.com/?q=${dormData.latitude},${dormData.longitude}` : '');
+
     // Create dormitory profile
     await sql`
       INSERT INTO dormitory_profile (
         dorm_id, water_rate, electricity_rate,
         has_wifi, has_parking, pet_friendly, has_lan,
-        has_air_con, facilities
+        has_air_con, facilities, map_url
       )
       VALUES (
         ${dormRegistryId}, ${dormData.water_rate || 18.0}, ${dormData.electricity_rate || 8.0},
         ${dormData.has_wifi ? 1 : 0}, ${dormData.has_parking ? 1 : 0}, ${dormData.pet_friendly ? 1 : 0}, ${dormData.has_lan ? 1 : 0},
-        ${dormData.has_air_con ? 1 : 0}, ${dormData.facilities || ''}
+        ${dormData.has_air_con ? 1 : 0}, ${facilitiesList}, ${mapUrlStr}
       )
     `;
 

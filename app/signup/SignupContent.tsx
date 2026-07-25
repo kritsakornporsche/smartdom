@@ -129,11 +129,19 @@ export default function SignupContent() {
       const data = await res.json();
 
       if (data.success) {
-        await signIn('credentials', {
-           email: fields.email,
-           password: fields.password,
-           redirect: false
-        });
+        try {
+          await signIn('credentials', {
+             email: fields.email,
+             password: fields.password,
+             redirect: false
+          });
+        } catch (e) {
+          console.warn('[NextAuth signIn error ignored]', e);
+        }
+
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('userEmail', fields.email.toLowerCase().trim());
+        }
 
         setFormState('success');
         setMessage(data.message);
@@ -144,14 +152,21 @@ export default function SignupContent() {
           redirectPath = callbackUrl;
         }
 
-        setTimeout(() => router.push(redirectPath), 2000);
+        setTimeout(() => {
+          if (typeof window !== 'undefined') {
+            window.location.href = redirectPath;
+          } else {
+            router.push(redirectPath);
+          }
+        }, 1500);
       } else {
         setFormState('error');
         setMessage(data.message);
       }
-    } catch {
+    } catch (err: any) {
+      console.error('[Signup submit error]', err);
       setFormState('error');
-      setMessage('เกิดข้อผิดพลาดในการเชื่อมต่อ กรุณาลองใหม่');
+      setMessage(err?.message || 'เกิดข้อผิดพลาดในการเชื่อมต่อ กรุณาลองใหม่');
     }
   };
 

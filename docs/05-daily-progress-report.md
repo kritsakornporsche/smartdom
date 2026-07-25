@@ -283,6 +283,10 @@
 ### 13. แก้ไขข้อผิดพลาดการสมัครสมาชิก (Signup SQL Insert Fix)
 - **แก้ไขคิวรีบันทึกข้อมูลผู้ใช้ใหม่ ([app/api/auth/signup/route.ts](file:///d:/Works/thesiss/smartdom-1/app/api/auth/signup/route.ts))**: แก้ไขปัญหาสมัครสมาชิกขึ้น *"เกิดข้อผิดพลาดภายในระบบ"* โดยนำคอลัมน์ที่ไม่มีในฐานข้อมูลออกจากการ INSERT (`first_name`, `last_name`) และใช้คอลัมน์ชื่อเต็ม `name` ตามสคีมาฐานข้อมูล Single DB (`smartdomdb`) ทำให้สมัครสมาชิกทุกบทบาทสำเร็จ 100%
 
+### 14. ปรับปรุงการล็อกอินอัตโนมัติหลังสมัครสมาชิก (Signup NextAuth Session & LocalStorage Sync)
+- **ครอบคลุมข้อยกเว้นการสร้างเซสชันในหน้าสมัครสมาชิก ([app/signup/SignupContent.tsx](file:///d:/Works/thesiss/smartdom-1/app/signup/SignupContent.tsx))**: ครอบทับ `try/catch` ในคำสั่ง `signIn('credentials', ...)` ป้องกันปัญหา NextAuth client-side host mismatch หลุดเข้าเซกชันข้อผิดพลาดโดยไม่จำเป็น แม้บันทึกข้อมูลในฐานข้อมูลสำเร็จแล้ว
+- **อัปเดต LocalStorage & Navigation**: บันทึก `userEmail` ลงใน `localStorage` อัตโนมัติหลังสมัครสมาชิก พร้อมรีไดเรกต์ไปยังหน้า Dashboard ของบทบาทนั้นๆ ได้อย่างราบรื่น
+
 ---
 
 ## 📌 แผนงานขั้นต่อไป (Next Steps)

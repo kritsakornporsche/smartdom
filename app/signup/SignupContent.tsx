@@ -156,28 +156,28 @@ export default function SignupContent() {
   };
 
   return (
-    <div className="relative flex min-h-screen flex-col bg-background px-4 sm:px-6 py-12 sm:py-20 overflow-hidden">
+    <div className="relative flex min-h-screen flex-col bg-background px-4 sm:px-6 py-6 sm:py-10 overflow-x-hidden overflow-y-auto">
       {/* Decorative blobs */}
       <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/4 w-[600px] h-[600px] bg-primary/5 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute bottom-0 left-0 translate-y-1/2 -translate-x-1/4 w-[500px] h-[500px] bg-accent/10 rounded-full blur-3xl pointer-events-none" />
 
       <Link
         href="/"
-        className="absolute top-6 left-4 sm:top-10 sm:left-10 flex items-center gap-3 text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors group z-20"
+        className="absolute top-4 left-4 sm:top-8 sm:left-8 flex items-center gap-3 text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors group z-20"
       >
         <span className="h-px w-8 bg-border group-hover:bg-primary transition-colors" />
         กลับหน้าหลัก
       </Link>
 
-      <div className="relative z-10 w-full max-w-lg mx-auto my-auto animate-reveal pt-16 sm:pt-0">
-        <div className="text-center mb-8 sm:mb-10">
-          <div className="mx-auto flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-2xl bg-primary font-display font-bold text-primary-foreground text-xl shadow-2xl shadow-primary/20 mb-6 sm:mb-8">
+      <div className="relative z-10 w-full max-w-lg mx-auto my-auto animate-reveal pt-12 sm:pt-4 pb-8">
+        <div className="text-center mb-6 sm:mb-8">
+          <div className="mx-auto flex h-11 w-11 sm:h-13 sm:w-13 items-center justify-center rounded-2xl bg-primary font-display font-bold text-primary-foreground text-lg shadow-2xl shadow-primary/20 mb-4 sm:mb-5">
             S
           </div>
-          <h1 className="text-3xl sm:text-4xl font-display tracking-tight text-foreground font-black italic ornament">
+          <h1 className="text-2xl sm:text-3xl font-display tracking-tight text-foreground font-black italic ornament">
             สร้างบัญชีใหม่
           </h1>
-          <p className="mt-3 text-muted-foreground font-black uppercase text-[10px] tracking-widest">
+          <p className="mt-2 text-muted-foreground font-black uppercase text-[10px] tracking-widest">
             เข้าร่วมคอมมูนิตี้ SmartDom เพื่อชีวิตที่จัดการง่ายขึ้น
           </p>
         </div>
@@ -194,35 +194,35 @@ export default function SignupContent() {
             <p className="text-xs text-muted-foreground font-bold">ระบบกำลังพาคุณไปยังหน้าหลัก...</p>
           </div>
         ) : (
-          <div className="bg-card rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-10 border border-border shadow-xl">
-            <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6">
+          <div className="bg-card rounded-[2rem] sm:rounded-[2.5rem] p-5 sm:p-8 border border-border shadow-2xl">
+            <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
               
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                <div className="space-y-1.5">
                   <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">ชื่อ</label>
                   <input
                     name="first_name"
                     required
                     value={fields.first_name}
                     onChange={handleChange}
-                    className="w-full rounded-2xl border border-white/10 bg-[#0F172A] px-6 py-4 text-sm font-bold text-white focus:bg-[#0F172A] focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-white/30"
+                    className="w-full rounded-2xl border border-white/10 bg-[#0F172A] px-5 py-3 text-sm font-bold text-white focus:bg-[#0F172A] focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-white/30"
                     placeholder="สมชาย"
                   />
                 </div>
-                <div className="space-y-2">
+                <div className="space-y-1.5">
                   <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">นามสกุล</label>
                   <input
                     name="last_name"
                     required
                     value={fields.last_name}
                     onChange={handleChange}
-                    className="w-full rounded-2xl border border-white/10 bg-[#0F172A] px-6 py-4 text-sm font-bold text-white focus:bg-[#0F172A] focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-white/30"
+                    className="w-full rounded-2xl border border-white/10 bg-[#0F172A] px-5 py-3 text-sm font-bold text-white focus:bg-[#0F172A] focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-white/30"
                     placeholder="ใจดี"
                   />
                 </div>
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">อีเมล</label>
                 <div className="relative">
                   <input
@@ -232,12 +232,12 @@ export default function SignupContent() {
                     value={fields.email}
                     onChange={handleChange}
                     className={cn(
-                      "w-full rounded-2xl border bg-[#0F172A] px-6 py-4 text-sm font-bold text-white focus:bg-[#0F172A] outline-none transition-all placeholder:text-white/30 pr-12",
+                      "w-full rounded-2xl border bg-[#0F172A] px-5 py-3 text-sm font-bold text-white focus:bg-[#0F172A] outline-none transition-all placeholder:text-white/30 pr-12",
                       emailAvailable === false ? 'border-destructive' : emailAvailable === true ? 'border-emerald-400 font-black' : 'border-white/10 focus:border-primary'
                     )}
                     placeholder="you@example.com"
                   />
-                  <div className="absolute inset-y-0 right-5 flex items-center pointer-events-none">
+                  <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none">
                     {checkingEmail && <div className="w-4 h-4 border-2 border-primary/20 border-t-primary rounded-full animate-spin" />}
                     {!checkingEmail && emailAvailable === true && <svg className="w-4 h-4 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7"/></svg>}
                     {!checkingEmail && emailAvailable === false && <svg className="w-4 h-4 text-destructive" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M6 18L18 6M6 6l12 12"/></svg>}
@@ -245,35 +245,33 @@ export default function SignupContent() {
                 </div>
               </div>
 
-              <div className="space-y-4">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">รหัสผ่าน</label>
-                    <input
-                      name="password"
-                      type={showPassword ? 'text' : 'password'}
-                      required
-                      minLength={8}
-                      value={fields.password}
-                      onChange={handleChange}
-                      className="w-full rounded-2xl border border-white/10 bg-[#0F172A] px-6 py-4 text-sm font-bold text-white focus:bg-[#0F172A] focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-white/30"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">ยืนยันรหัสผ่าน</label>
-                    <input
-                      name="confirm_password"
-                      type={showConfirmPassword ? 'text' : 'password'}
-                      required
-                      value={fields.confirm_password}
-                      onChange={handleChange}
-                      className="w-full rounded-2xl border border-white/10 bg-[#0F172A] px-6 py-4 text-sm font-bold text-white focus:bg-[#0F172A] focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-white/30"
-                    />
-                  </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">รหัสผ่าน</label>
+                  <input
+                    name="password"
+                    type={showPassword ? 'text' : 'password'}
+                    required
+                    minLength={8}
+                    value={fields.password}
+                    onChange={handleChange}
+                    className="w-full rounded-2xl border border-white/10 bg-[#0F172A] px-5 py-3 text-sm font-bold text-white focus:bg-[#0F172A] focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-white/30"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">ยืนยันรหัสผ่าน</label>
+                  <input
+                    name="confirm_password"
+                    type={showConfirmPassword ? 'text' : 'password'}
+                    required
+                    value={fields.confirm_password}
+                    onChange={handleChange}
+                    className="w-full rounded-2xl border border-white/10 bg-[#0F172A] px-5 py-3 text-sm font-bold text-white focus:bg-[#0F172A] focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-white/30"
+                  />
                 </div>
               </div>
 
-              <div className="space-y-3 pt-2">
+              <div className="space-y-2 pt-1">
                 <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">ฉันคือ...</label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {(Object.keys(roleConfig) as Role[]).map((role) => (
@@ -282,13 +280,13 @@ export default function SignupContent() {
                       type="button"
                       onClick={() => setSelectedRole(role)}
                       className={cn(
-                        "flex flex-col items-center justify-center gap-2 p-4 rounded-2xl border transition-all text-center h-full",
-                        selectedRole === role ? "border-primary bg-primary/5 shadow-sm" : "border-border hover:bg-secondary"
+                        "flex flex-col items-center justify-center gap-1.5 p-3 rounded-2xl border transition-all text-center h-full cursor-pointer",
+                        selectedRole === role ? "border-primary bg-primary/10 shadow-sm ring-1 ring-primary" : "border-border hover:bg-secondary"
                       )}
                     >
-                      <span className="text-3xl">{roleConfig[role].icon}</span>
+                      <span className="text-2xl">{roleConfig[role].icon}</span>
                       <div>
-                        <p className="text-xs font-black text-foreground leading-tight mb-1">{roleConfig[role].label}</p>
+                        <p className="text-xs font-black text-foreground leading-tight">{roleConfig[role].label}</p>
                       </div>
                     </button>
                   ))}
@@ -296,19 +294,19 @@ export default function SignupContent() {
               </div>
 
               {/* PDPA Consent Checkbox */}
-              <div className="flex items-start gap-3 p-4 bg-muted/40 rounded-2xl border border-border mt-4">
+              <div className="flex items-start gap-3 p-3 bg-muted/40 rounded-2xl border border-border mt-3">
                 <input
                   type="checkbox"
                   id="pdpa-consent"
                   checked={pdpaConsent}
                   onChange={(e) => setPdpaConsent(e.target.checked)}
-                  className="mt-1 w-4 h-4 rounded text-primary border-border focus:ring-primary focus:ring-1 cursor-pointer bg-background"
+                  className="mt-0.5 w-4 h-4 rounded text-primary border-border focus:ring-primary focus:ring-1 cursor-pointer bg-background"
                 />
                 <label htmlFor="pdpa-consent" className="text-xs text-muted-foreground font-semibold leading-relaxed cursor-pointer select-none">
-                  ฉันยินยอมให้รวบรวม ใช้ และเปิดเผยข้อมูลส่วนบุคคลของฉันเพื่อวัตถุประสงค์ในการให้บริการ ตาม{' '}
+                  ฉันยินยอมให้รวบรวม ใช้ และเปิดเผยข้อมูลส่วนบุคคล ตาม{' '}
                   <span className="text-primary hover:underline font-bold">นโยบายความเป็นส่วนตัว (PDPA)</span>{' '}
-                  และยอมรับ{' '}
-                  <span className="text-primary hover:underline font-bold">ข้อตกลงและเงื่อนไขการใช้บริการ</span>
+                  และ{' '}
+                  <span className="text-primary hover:underline font-bold">ข้อตกลงการใช้บริการ</span>
                 </label>
               </div>
 
@@ -317,7 +315,7 @@ export default function SignupContent() {
               <button
                 type="submit"
                 disabled={formState === 'loading' || emailAvailable === false}
-                className="w-full rounded-full bg-primary py-5 text-[10px] font-black uppercase tracking-[0.2em] text-primary-foreground shadow-2xl shadow-primary/20 hover:-translate-y-1 transition-all active:scale-95 disabled:opacity-50"
+                className="w-full rounded-full bg-primary py-4 text-[10px] font-black uppercase tracking-[0.2em] text-primary-foreground shadow-2xl shadow-primary/20 hover:-translate-y-0.5 transition-all active:scale-95 disabled:opacity-50 cursor-pointer mt-2"
               >
                 {formState === 'loading' ? 'กำลังดำเนินการ...' : 'สมัครสมาชิก →'}
               </button>
@@ -325,9 +323,9 @@ export default function SignupContent() {
           </div>
         )}
 
-        <p className="text-center text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground mt-10">
+        <p className="text-center text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground mt-6">
           มีบัญชีอยู่แล้ว?{' '}
-          <Link href="/signin" className="text-primary border-b border-primary/20">เข้าสู่ระบบที่นี่</Link>
+          <Link href="/signin" className="text-primary border-b border-primary/20 font-bold">เข้าสู่ระบบที่นี่</Link>
         </p>
       </div>
     </div>

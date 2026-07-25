@@ -276,6 +276,10 @@
 - **ปรับแต่งสีพื้นหลังช่องกรอกข้อมูล ([SignupContent.tsx](file:///d:/Works/thesiss/smartdom-1/app/signup/SignupContent.tsx), [SigninContent.tsx](file:///d:/Works/thesiss/smartdom-1/app/signin/SigninContent.tsx))**: ปรับเปลี่ยนสีพื้นหลังช่องอินพุตในหน้าล็อกอินและสมัครสมาชิกจากเดิมสีสว่าง `bg-background` เป็นสีสีกรมท่าเข้ม `bg-[#0F172A]` สอดรับกับดีไซน์การ์ดและไม่แสบตา
 - **เพิ่มกฎ Override การเติมข้อมูลอัตโนมัติ (Autofill CSS in [app/globals.css](file:///d:/Works/thesiss/smartdom-1/app/globals.css))**: เพิ่ม CSS `-webkit-autofill` ป้องกันไม่ให้เบราว์เซอร์ Chrome/Edge บังคับเปลี่ยนช่องกรอกข้อมูลเป็นสีฟ้า/ขาวสว่างจ้าเวลากดเติมข้อมูลอัตโนมัติ
 
+### 12. ปรับปรุงเลย์เอาต์หน้าสมัครสมาชิกและแก้ปัญหาปุ่มยืนยันตกจอ (Signup Form Vertical Overflow Fix)
+- **แก้ไขปัญหากล่องแบบฟอร์มถูกตัด/เลื่อนดูไม่ได้ ([app/signup/SignupContent.tsx](file:///d:/Works/thesiss/smartdom-1/app/signup/SignupContent.tsx))**: ปรับแก้จากเดิม `overflow-hidden` เป็น `overflow-y-auto` ทำให้หน้าเว็บสามารถเลื่อนดู (Scroll) ได้สมบูรณ์บนทุกขนาดหน้าจอ
+- **ปรับสมดุลระยะขอบและขนาดปุ่ม (Compact Form Spacing)**: ปรับลด ระยะ Padding ของช่องอินพุต ปุ่มบทบาท และกล่องยินยอม PDPA ให้กระชับสวยงาม พอดีกับหน้าจอแล็ปท็อป/คอมพิวเตอร์ ทำให้ปุ่ม `สมัครสมาชิก →` ปรากฏเด่นชัด ไม่หลุดหรือตกขอบจอ
+
 ---
 
 ## 📌 แผนงานขั้นต่อไป (Next Steps)

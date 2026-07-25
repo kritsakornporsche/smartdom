@@ -272,6 +272,10 @@
 - **สร้างหน้าทะเบียนผู้เช่า ([app/platform/tenants/page.tsx](file:///d:/Works/thesiss/smartdom-1/app/platform/tenants/page.tsx))**: หน้าตารางดีไซน์ Premium Glassmorphic พร้อมระบบค้นหา ฟิลเตอร์เลือกหอพัก สถิติผู้เช่า และติดแท็กสิทธิ์ `🔒 เฉพาะเรียกดู (Read Only)` โดยไม่มีปุ่มแก้ไข/ลบหรือปุ่มจัดการใดๆ ตามข้อกำหนดความปลอดภัย
 - **เพิ่มลิงก์นำทางบน Platform Admin ([PlatformSidebar.tsx](file:///d:/Works/thesiss/smartdom-1/app/platform/components/PlatformSidebar.tsx), [app/platform/page.tsx](file:///d:/Works/thesiss/smartdom-1/app/platform/page.tsx))**: เพิ่มเมนู `👥 ทะเบียนผู้เช่าทั้งหมด` ในแถบด้านข้างและการ์ดทางลัดบน Dashboard
 
+### 11. ปรับปรุงสไตล์ช่องกรอกข้อมูลและป้องกันแสงสะท้อนตา (Dark Input & Autofill Glare Fix)
+- **ปรับแต่งสีพื้นหลังช่องกรอกข้อมูล ([SignupContent.tsx](file:///d:/Works/thesiss/smartdom-1/app/signup/SignupContent.tsx), [SigninContent.tsx](file:///d:/Works/thesiss/smartdom-1/app/signin/SigninContent.tsx))**: ปรับเปลี่ยนสีพื้นหลังช่องอินพุตในหน้าล็อกอินและสมัครสมาชิกจากเดิมสีสว่าง `bg-background` เป็นสีสีกรมท่าเข้ม `bg-[#0F172A]` สอดรับกับดีไซน์การ์ดและไม่แสบตา
+- **เพิ่มกฎ Override การเติมข้อมูลอัตโนมัติ (Autofill CSS in [app/globals.css](file:///d:/Works/thesiss/smartdom-1/app/globals.css))**: เพิ่ม CSS `-webkit-autofill` ป้องกันไม่ให้เบราว์เซอร์ Chrome/Edge บังคับเปลี่ยนช่องกรอกข้อมูลเป็นสีฟ้า/ขาวสว่างจ้าเวลากดเติมข้อมูลอัตโนมัติ
+
 ---
 
 ## 📌 แผนงานขั้นต่อไป (Next Steps)

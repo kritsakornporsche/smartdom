@@ -117,7 +117,7 @@ export default function SignInContent() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full rounded-2xl border border-border bg-background px-6 py-4 text-sm font-bold text-foreground focus:bg-card focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-muted-foreground/40"
+                className="w-full rounded-2xl border border-white/10 bg-[#0F172A] px-6 py-4 text-sm font-bold text-white focus:bg-[#0F172A] focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-white/30"
                 placeholder="you@example.com หรือ admin"
               />
             </div>
@@ -133,7 +133,7 @@ export default function SignInContent() {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full rounded-2xl border border-border bg-background px-6 py-4 text-sm font-bold text-foreground focus:bg-card focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-muted-foreground/40 pr-12"
+                  className="w-full rounded-2xl border border-white/10 bg-[#0F172A] px-6 py-4 text-sm font-bold text-white focus:bg-[#0F172A] focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-white/30 pr-12"
                   placeholder="••••••••"
                 />
                 <button

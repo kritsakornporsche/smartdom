@@ -347,4 +347,15 @@
 .bg-\[\#3e342b\]\/80 {
   background-color: rgba(124, 58, 237, 0.8) !important;
 }
+
+/* Autofill Background Override for Blinding White Chrome/Edge Autofill */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px #0F172A inset !important;
+  -webkit-text-fill-color: #F8FAFC !important;
+  transition: background-color 5000s ease-in-out 0s;
+  caret-color: #F8FAFC !important;
+}
 

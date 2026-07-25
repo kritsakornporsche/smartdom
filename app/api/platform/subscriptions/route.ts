@@ -1,14 +1,14 @@
 import { NextResponse } from 'next/server';
-import { neon } from '@/lib/mysql-adapter';
-
-const platformSql = neon('mysql://smartdom:smartdom@kritsakorn.thddns.net:5994/smartdom_platform');
+import { getDb } from '@/lib/db';
 
 export async function GET() {
   try {
+    const platformSql = getDb();
     const subs = await platformSql`
-      SELECT s.*, d.dorm_name, d.owner_name, d.owner_email, p.name as package_name, p.price as package_price
+      SELECT s.*, d.dorm_name, COALESCE(u.name, 'ไม่ระบุ') as owner_name, u.email as owner_email, p.name as package_name, p.price as package_price
       FROM subscriptions s
       JOIN dormitory_registry d ON s.dormitory_id = d.id
+      LEFT JOIN users u ON d.owner_id = u.id
       JOIN packages p ON s.package_id = p.id
       ORDER BY s.created_at DESC
     `;

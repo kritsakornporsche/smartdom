@@ -260,6 +260,9 @@
 - **ปรับแต่งส่วนหัว Brand Logo**: เพิ่มการครอบ Link `/explore` ที่โลโก้และชื่อแบรนด์ฝั่งซ้ายบน Header ของทุกบทบาท ([PlatformSidebar.tsx](file:///d:/Works/thesiss/smartdom-1/app/platform/components/PlatformSidebar.tsx), [OwnerSidebar.tsx](file:///d:/Works/thesiss/smartdom-1/app/owner/components/OwnerSidebar.tsx), [TenantSidebar.tsx](file:///d:/Works/thesiss/smartdom-1/app/tenant/components/TenantSidebar.tsx), [KeeperSidebar.tsx](file:///d:/Works/thesiss/smartdom-1/app/keeper/components/KeeperSidebar.tsx)) เพื่อให้ผู้ใช้งานทุกบทบาทคลิกกลับไปยังหน้าสำรวจหอพักได้ทันที
 - **เพิ่มปุ่มกลับหน้าสำรวจหอพัก (`🏠 สำรวจหอพัก`)**: เพิ่มปุ่มนำทางลัดไปยังหน้า `/explore` ทั้งในแถบนำทางส่วนหัวและเมนูด้านข้างของทุกบทบาท
 
+### 8. แก้ไขการแสดงผล Platform Admin Dashboard และ SQL Column Mismatches
+- **แก้ไขปัญหารายงานสถิติขึ้น 0 บน Platform Dashboard**: แก้ไข API ([app/api/platform/dashboard/route.ts](file:///d:/Works/thesiss/smartdom-1/app/api/platform/dashboard/route.ts), [app/api/platform/dormitories/route.ts](file:///d:/Works/thesiss/smartdom-1/app/api/platform/dormitories/route.ts), [app/api/platform/subscriptions/route.ts](file:///d:/Works/thesiss/smartdom-1/app/api/platform/subscriptions/route.ts)) ให้เปลี่ยนจากการ SELECT `owner_name` จาก `dormitory_registry` ตรงๆ (ซึ่งไม่มีคอลัมน์นี้) เป็นการ `LEFT JOIN users u ON d.owner_id = u.id` พร้อมเปลี่ยนการเชื่อมต่อจาก `smartdom_platform` มาใช้ `getDb()` บน `smartdomdb` ทำให้แสดงจำนวนหอพัก (6 หอพัก), สมาชิก (2 สมาชิก), แพ็กเกจ และหอพักเพิ่งสมัครใหม่บน Platform Dashboard ได้ตรงกับฐานข้อมูล 100%
+
 ---
 
 ## 📌 แผนงานขั้นต่อไป (Next Steps)

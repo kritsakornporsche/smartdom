@@ -267,6 +267,11 @@
 - **ปรับป้ายกำกับจำนวนห้อง**: ปรับเปลี่ยนข้อความในหน้าจัดการแพ็กเกจ ([app/platform/packages/page.tsx](file:///d:/Works/thesiss/smartdom-1/app/platform/packages/page.tsx)) จากเดิม *"จำนวนห้องสูงสุด"* เป็น **"จำนวนห้องต่อหอพัก"** เพื่อความชัดเจนในการกำหนดสิทธิ์ของแพ็กเกจ
 - **ป้องกันการปิด Modal โดยไม่ตั้งใจ**: นำตัวตรวจจับเหตุการณ์ `onClick` ปิดโมดอลออกจากแบล็กดร็อปพื้นหลัง ป้องกันปัญหากล่องแบบฟอร์มปิดหายไปเองเมื่อผู้ใช้คลิกภายนอกกรอบ
 
+### 10. ระบบตรวจสอบข้อมูลทะเบียนผู้เช่ารายหอพักแบบเรียกดูอย่างเดียว (Platform Read-Only Tenant Audit)
+- **สร้าง API ตรวจสอบทะเบียนผู้เช่า ([app/api/platform/tenants/route.ts](file:///d:/Works/thesiss/smartdom-1/app/api/platform/tenants/route.ts))**: สร้าง GET API สำหรับ Platform Admin เพื่อดึงข้อมูลผู้เช่าทั้งหมดในระบบ พร้อมหอพักสังกัด หมายเลขห้อง เบอร์ติดต่อ อีเมล และสถานะสัญญาเช่า พร้อมตัวกรองค้นหาและคัดกรองตามหอพัก
+- **สร้างหน้าทะเบียนผู้เช่า ([app/platform/tenants/page.tsx](file:///d:/Works/thesiss/smartdom-1/app/platform/tenants/page.tsx))**: หน้าตารางดีไซน์ Premium Glassmorphic พร้อมระบบค้นหา ฟิลเตอร์เลือกหอพัก สถิติผู้เช่า และติดแท็กสิทธิ์ `🔒 เฉพาะเรียกดู (Read Only)` โดยไม่มีปุ่มแก้ไข/ลบหรือปุ่มจัดการใดๆ ตามข้อกำหนดความปลอดภัย
+- **เพิ่มลิงก์นำทางบน Platform Admin ([PlatformSidebar.tsx](file:///d:/Works/thesiss/smartdom-1/app/platform/components/PlatformSidebar.tsx), [app/platform/page.tsx](file:///d:/Works/thesiss/smartdom-1/app/platform/page.tsx))**: เพิ่มเมนู `👥 ทะเบียนผู้เช่าทั้งหมด` ในแถบด้านข้างและการ์ดทางลัดบน Dashboard
+
 ---
 
 ## 📌 แผนงานขั้นต่อไป (Next Steps)

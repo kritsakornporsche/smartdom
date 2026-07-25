@@ -148,7 +148,7 @@ export default function PlatformDashboard() {
           </div>
 
           {/* Quick Actions */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             <a href="/platform/packages" className="bg-white/5 border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition-all group flex items-center justify-between">
               <div className="flex items-center gap-4">
                  <div className="w-10 h-10 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center text-xl">📦</div>
@@ -168,6 +168,16 @@ export default function PlatformDashboard() {
                  </div>
               </div>
               <span className="text-white/20 group-hover:text-emerald-400 group-hover:translate-x-1 transition-all">→</span>
+            </a>
+            <a href="/platform/tenants" className="bg-white/5 border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition-all group flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                 <div className="w-10 h-10 rounded-full bg-violet-500/20 text-violet-400 flex items-center justify-center text-xl">👥</div>
+                 <div>
+                   <h3 className="text-white font-bold group-hover:text-violet-400 transition-colors">ทะเบียนผู้เช่า</h3>
+                   <p className="text-white/50 text-xs mt-0.5">เรียกดูรายชื่อตามหอพัก</p>
+                 </div>
+              </div>
+              <span className="text-white/20 group-hover:text-violet-400 group-hover:translate-x-1 transition-all">→</span>
             </a>
             <a href="/platform/accounting" className="bg-white/5 border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition-all group flex items-center justify-between">
               <div className="flex items-center gap-4">

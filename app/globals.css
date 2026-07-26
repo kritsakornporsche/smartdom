@@ -272,15 +272,15 @@
   border-color: var(--border) !important;
 }
 
-/* ── Overrides to replace remaining brown tones (#3E342B) with Purple/Violet ── */
+/* ── Overrides to replace remaining brown tones (#3E342B) with Dark Slate/Navy ── */
 :root {
-  --brown-override: #7C3AED; /* Purple 600 */
-  --brown-glow: rgba(124, 58, 237, 0.2);
+  --brown-override: #0F172A; /* Dark Navy Slate */
+  --brown-glow: rgba(15, 23, 42, 0.2);
 }
 
 .dark {
-  --brown-override: #8B5CF6; /* Purple 500 */
-  --brown-glow: rgba(139, 92, 246, 0.2);
+  --brown-override: #0F172A;
+  --brown-glow: rgba(15, 23, 42, 0.2);
 }
 
 /* Backgrounds */
@@ -294,23 +294,23 @@
 /* Gradients */
 .from-\[\#2C241B\],
 .from-\[\#2c241b\] {
-  --tw-gradient-from: #4C1D95 !important; /* Purple 900 */
-  --tw-gradient-to: #6D28D9 !important;
+  --tw-gradient-from: #0F172A !important; /* Slate 900 */
+  --tw-gradient-to: #1E293B !important;
   --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important;
 }
 .to-\[\#3E342B\],
 .to-\[\#3e342b\] {
-  --tw-gradient-to: #6D28D9 !important; /* Purple 700 */
+  --tw-gradient-to: #1E293B !important; /* Slate 800 */
 }
 
 /* Borders and Focus outline */
 .border-\[\#3E342B\],
 .border-\[\#3e342b\] {
-  border-color: var(--brown-override) !important;
+  border-color: #1E293B !important;
 }
 .focus\:border-\[\#3E342B\]:focus,
 .focus\:border-\[\#3e342b\]:focus {
-  border-color: var(--brown-override) !important;
+  border-color: var(--ring) !important;
 }
 
 /* Shadow Glows */
@@ -324,13 +324,13 @@
 }
 .shadow-\[\#3E342B\]\/5,
 .shadow-\[\#3e342b\]\/5 {
-  box-shadow: 0 4px 6px -1px rgba(124, 58, 237, 0.05) !important;
+  box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.05) !important;
 }
 
-/* Overlay and Backdrop shades */
+/* Overlay and Backdrop shades - Dark semi-transparent backdrop (not purple) */
 .bg-\[\#3E342B\]\/60,
 .bg-\[\#3e342b\]\/60 {
-  background-color: rgba(124, 58, 237, 0.6) !important;
+  background-color: rgba(15, 23, 42, 0.75) !important;
 }
 /* Hide scrollbar utility for sleek tab bars and carousels */
 .no-scrollbar::-webkit-scrollbar {
@@ -345,7 +345,7 @@
 }
 .bg-\[\#3E342B\]\/80,
 .bg-\[\#3e342b\]\/80 {
-  background-color: rgba(124, 58, 237, 0.8) !important;
+  background-color: rgba(15, 23, 42, 0.85) !important;
 }
 
 /* Autofill Background Override for Blinding White Chrome/Edge Autofill */

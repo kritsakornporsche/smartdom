@@ -254,7 +254,7 @@ export default function RoomsManagement() {
             className={`px-8 py-3.5 rounded-2xl font-black text-sm shadow-xl flex items-center gap-3 transition-all duration-300 group ${
               !ownerDormId 
               ? 'bg-white/10 text-white/50 cursor-not-allowed opacity-50' 
-              : 'bg-[#3E342B] text-white shadow-[#3E342B]/20 hover:-translate-y-1 active:scale-95'
+              : 'bg-primary text-white shadow-lg hover:brightness-110 active:scale-95'
             }`}
           >
             <div className="p-1 bg-[#0F172A]/20 rounded-lg group-hover:rotate-90 transition-transform duration-500">
@@ -356,7 +356,7 @@ export default function RoomsManagement() {
                         <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">SMARTDOM UNIT</span>
                      </div>
                    )}
-                   <div className="absolute top-4 left-4 bg-[#3E342B] text-white px-4 py-2 rounded-2xl text-sm font-black shadow-lg z-10">
+                   <div className="absolute top-4 left-4 bg-[#0F172A]/90 border border-white/20 backdrop-blur-md text-white px-4 py-2 rounded-2xl text-sm font-black shadow-lg z-10">
                       ห้อง {room.room_number}
                    </div>
                    <div className={`absolute top-4 right-4 px-4 py-2 rounded-2xl text-[10px] font-black uppercase tracking-widest border backdrop-blur-md shadow-xl z-10 ${
@@ -400,10 +400,9 @@ export default function RoomsManagement() {
 
       {/* CRUD Modal - Premium Redesign */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-[#3E342B]/60 backdrop-blur-md z-50 flex items-center justify-center p-6 animate-in fade-in duration-300">
-          <div className="bg-[#0F172A] rounded-[48px] w-full max-w-2xl overflow-hidden shadow-2xl animate-in zoom-in slide-in-from-bottom duration-500 border border-primary/20 max-h-[90vh] flex flex-col">
-             <div className="bg-[#3E342B] px-10 py-10 text-white relative overflow-hidden shrink-0">
-                <div className="absolute -right-20 -top-20 w-64 h-64 bg-primary rounded-full blur-[100px] opacity-20" />
+        <div className="fixed inset-0 bg-black/75 backdrop-blur-md z-50 flex items-center justify-center p-6 animate-in fade-in duration-300">
+          <div className="bg-[#0F172A] rounded-[48px] w-full max-w-2xl overflow-hidden shadow-2xl animate-in zoom-in slide-in-from-bottom duration-500 border border-white/10 max-h-[90vh] flex flex-col">
+             <div className="bg-[#0F172A] border-b border-white/10 px-10 py-8 text-white relative overflow-hidden shrink-0">
                 <div className="relative z-10 text-center">
                   <h2 className="text-3xl font-black mb-1 tracking-tight">{editingRoom ? 'แก้ไขข้อมูลยูนิต' : 'เพิ่มยูนิตใหม่'}</h2>
                   <p className="text-white/40 text-[9px] font-black uppercase tracking-[0.3em] font-display font-medium">SMARTDOM PREMIUM REAL ESTATE</p>
@@ -522,7 +521,7 @@ export default function RoomsManagement() {
                     </button>
                     <button 
                       type="submit" 
-                      className="flex-[2] py-5 bg-[#3E342B] text-white font-black rounded-[28px] shadow-2xl shadow-[#3E342B]/30 hover:-translate-y-1 active:scale-95 transition-all"
+                      className="flex-[2] py-5 bg-primary text-white font-black rounded-[28px] shadow-xl hover:brightness-110 active:scale-95 transition-all"
                     >
                         {editingRoom ? 'อัปเดตข้อมูล' : 'บันทึกลงฐานข้อมูล'}
                     </button>

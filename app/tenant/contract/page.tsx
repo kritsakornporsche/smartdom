@@ -1,199 +1,385 @@
-import { neon } from '@/lib/mysql-adapter';
-import { auth } from '@/auth';
-import Link from 'next/link';
-import ContractPDFButton from '@/components/ContractPDFButton';
+'use client';
 
-async function getContractData(selectedId?: string) {
-  const session = await auth();
-  if (!session?.user?.email) return { current: null, all: [] };
+import { useState, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
-  const sql = neon(process.env.DATABASE_URL || 'mysql://smartdom:smartdom@kritsakorn.thddns.net:5994/smartdom_dorm_1');
-  
-  // Find tenant by email
-  const tenantRes = await sql`SELECT id FROM tenants WHERE email = ${session.user.email}`;
-  if (tenantRes.length === 0) return { current: null, all: [] };
-  const tenantId = tenantRes[0].id;
-
-  const allContracts = await sql`
-    SELECT * FROM contracts WHERE tenant_id = ${tenantId} ORDER BY id DESC
-  `;
-
-  let currentContract = allContracts.length > 0 ? allContracts[0] : null;
-
-  if (selectedId) {
-    const found = allContracts.find((c: any) => c.id.toString() === selectedId);
-    if (found) currentContract = found;
-  }
-
-  return { current: currentContract, all: allContracts };
+interface Contract {
+  id: number;
+  room_number?: string;
+  room_type?: string;
+  monthly_rent?: number;
+  start_date: string;
+  end_date: string;
+  deposit_amount: number;
+  status: string;
+  contract_file_url?: string | null;
+  renewal_requested?: number;
+  renewal_note?: string | null;
+  parent_contract_id?: number | null;
+  created_at: string;
 }
 
-export default async function TenantContract({ searchParams }: { searchParams: Promise<{ id?: string }> }) {
-  const params = await searchParams;
-  const { current: contract, all: contracts } = await getContractData(params.id);
+export default function TenantContractPage() {
+  const { data: session, status: authStatus } = useSession();
+  const router = useRouter();
+
+  const [contracts, setContracts] = useState<Contract[]>([]);
+  const [activeContract, setActiveContract] = useState<Contract | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  // Renewal Modal
+  const [isRenewModalOpen, setIsRenewModalOpen] = useState(false);
+  const [renewalNote, setRenewalNote] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+
+  // Preview File Modal
+  const [previewingFileUrl, setPreviewingFileUrl] = useState<string | null>(null);
+
+  const fetchTenantContracts = async () => {
+    setLoading(true);
+    try {
+      const email = session?.user?.email;
+      if (!email) return;
+
+      const res = await fetch(`/api/tenant/me?email=${email}`);
+      const data = await res.json();
+
+      if (data.success && data.contracts) {
+        setContracts(data.contracts);
+        const currentActive = data.contracts.find((c: Contract) => c.status === 'Active') || data.contracts[0] || null;
+        setActiveContract(currentActive);
+      }
+    } catch (err) {
+      console.error('Error fetching tenant contracts:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (authStatus === 'unauthenticated') {
+      router.push('/signin');
+      return;
+    }
+
+    if (authStatus === 'authenticated' && session?.user?.email) {
+      fetchTenantContracts();
+    }
+  }, [authStatus, session, router]);
+
+  const handleRequestRenewal = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!activeContract) return;
+
+    setSubmitting(true);
+    try {
+      const res = await fetch('/api/tenant/contract/request-renewal', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contract_id: activeContract.id,
+          renewal_note: renewalNote
+        })
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        alert('🎉 ส่งคำขอต่อสัญญาเช่าไปยังเจ้าของหอพักเรียบร้อยแล้ว!');
+        setIsRenewModalOpen(false);
+        fetchTenantContracts();
+      } else {
+        alert(data.message || 'เกิดข้อผิดพลาดในการส่งคำขอ');
+      }
+    } catch (err: any) {
+      console.error(err);
+      alert('เกิดข้อผิดพลาด: ' + err.message);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const historyContracts = contracts.filter(c => c.id !== activeContract?.id);
 
   return (
-    <div className="p-8 lg:p-10 max-w-6xl mx-auto">
-      <div className="space-y-12 pb-16">
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-        <div className="relative">
-          <div className="absolute -left-4 top-1/2 -translate-y-1/2 w-1 h-12 bg-primary rounded-full opacity-20"></div>
-          <h1 className="text-3xl font-bold text-white tracking-tight flex items-center gap-3">
-             <span className="p-2 bg-[#0F172A] rounded-xl border border-white/20/10 text-muted-foreground">
-               <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
-             </span>
-             สัญญาเช่า (Contract)
-          </h1>
-          <p className="text-muted-foreground mt-2 font-medium flex items-center gap-2">
-            <span className="h-1 w-1 rounded-full bg-[#DCD3C6]"></span>
-            รายละเอียดสัญญาเช่าปัจจุบันและการบันทึกข้อตกลง
+    <div className="p-6 lg:p-10 max-w-6xl mx-auto space-y-10">
+      {/* Header */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div>
+          <div className="flex items-center gap-3">
+            <div className="w-1.5 h-8 bg-primary rounded-full" />
+            <h1 className="text-3xl font-black text-white tracking-tight">สัญญาเช่าห้องพัก (Lease Contract)</h1>
+          </div>
+          <p className="text-white/50 text-sm font-medium ml-4 mt-1">
+            รายละเอียดสัญญาเช่าปัจจุบัน และไฟล์เอกสารสัญญาฉบับจริงที่เซ็นรับรองแล้ว
           </p>
         </div>
       </div>
 
-      {!contract ? (
-         <div className="bg-[#0F172A] border border-white/20/10 rounded-3xl p-12 text-center shadow-sm">
-            <h3 className="text-xl font-bold text-white mb-2">ไม่พบข้อมูลสัญญาเช่า</h3>
-            <p className="text-muted-foreground">ยังไม่มีการบันทึกสัญญาเช่าของคุณในระบบ กรุณาติดต่อผู้ดูแล</p>
-         </div>
+      {loading ? (
+        <div className="bg-[#0F172A] border border-white/10 rounded-3xl p-16 text-center text-white/40 font-bold animate-pulse">
+          กำลังโหลดข้อมูลสัญญาเช่าของคุณ...
+        </div>
+      ) : !activeContract ? (
+        <div className="bg-[#0F172A] border border-white/10 rounded-3xl p-16 text-center shadow-xl space-y-4">
+          <div className="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center text-4xl mx-auto mb-2">📄</div>
+          <h3 className="text-2xl font-black text-white">ไม่พบข้อมูลสัญญาเช่า</h3>
+          <p className="text-white/50 max-w-md mx-auto">
+            ยังไม่มีการบันทึกสัญญาเช่าของคุณในระบบ หรือสัญญาเช่ากำลังอยู่ระหว่างการบันทึกโดยเจ้าของหอพัก กรุณาติดต่อผู้ดูแลหอพัก
+          </p>
+        </div>
       ) : (
-        <div className="flex flex-col lg:flex-row gap-8">
-          {/* Main Contract Viewer */}
-          <div className="flex-1">
-            <div id="contract-document" className="bg-[#0F172A] rounded-3xl border border-white/20/10 shadow-sm overflow-hidden flex flex-col h-full">
-              {/* Status Header */}
-              <div className={`p-4 border-b text-center font-bold tracking-widest uppercase text-[10px] ${
-                contract.status === 'Active' ? 'bg-[#0F172A] text-primary border-white/20/10' : 
-                contract.status === 'Expired' ? 'bg-rose-50 text-rose-700 border-rose-200' :
-                'bg-[#F0F4F0] text-[#4CAF50] border-[#E0E0E0]'
-              }`}>
-                 สถานะสัญญา: {contract.status === 'Active' ? 'มีผลบังคับใช้ (Active)' : contract.status}
+        <div className="space-y-10">
+          {/* Active Contract Card */}
+          <div className="bg-[#0F172A] rounded-3xl border border-white/10 shadow-2xl overflow-hidden">
+            {/* Status Header */}
+            <div className={`p-4 text-center font-black tracking-widest uppercase text-xs border-b ${
+              activeContract.status === 'Active' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-white/5 text-white/50 border-white/10'
+            }`}>
+              สถานะสัญญา: {activeContract.status === 'Active' ? '🟢 มีผลบังคับใช้ (Active)' : activeContract.status}
+              {activeContract.renewal_requested === 1 && ' — 🔔 แจ้งส่งคำขอต่อสัญญาแล้ว (รอเจ้าของหอพักดำเนินการ)'}
+            </div>
+
+            <div className="p-8 lg:p-12 space-y-8">
+              <div className="flex flex-col md:flex-row justify-between items-start gap-6 pb-6 border-b border-white/10">
+                <div>
+                  <h2 className="text-3xl font-black text-white">สัญญาเช่าที่พักอาศัย</h2>
+                  <p className="text-white/50 text-sm font-medium mt-1">
+                    ห้องพักหมายเลข <span className="text-white font-bold text-lg">ห้อง {activeContract.room_number || '-'}</span>
+                  </p>
+                </div>
+                <div className="bg-white/5 px-6 py-3 rounded-2xl border border-white/10 text-right">
+                  <p className="text-[10px] font-black text-white/50 uppercase tracking-widest">รหัสสัญญา</p>
+                  <p className="text-lg font-mono font-bold text-white">SD-CONTRACT-{activeContract.id.toString().padStart(4, '0')}</p>
+                </div>
               </div>
 
-              <div className="p-8 md:p-12">
-                <div className="flex flex-col md:flex-row justify-between items-start gap-8 mb-12">
+              {/* Specs Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                <div className="bg-white/5 p-6 rounded-2xl border border-white/10">
+                  <p className="text-[10px] font-black text-white/50 uppercase tracking-widest mb-1">ระยะเวลาเช่า</p>
+                  <p className="text-white font-bold text-sm">
+                    {new Date(activeContract.start_date).toLocaleDateString('th-TH')} - {new Date(activeContract.end_date).toLocaleDateString('th-TH')}
+                  </p>
+                </div>
+
+                <div className="bg-white/5 p-6 rounded-2xl border border-white/10">
+                  <p className="text-[10px] font-black text-white/50 uppercase tracking-widest mb-1">เงินประกันการเช่า (Deposit)</p>
+                  <p className="text-emerald-400 font-black text-xl">
+                    ฿{Number(activeContract.deposit_amount || 0).toLocaleString()}
+                  </p>
+                </div>
+
+                <div className="bg-white/5 p-6 rounded-2xl border border-white/10">
+                  <p className="text-[10px] font-black text-white/50 uppercase tracking-widest mb-1">วันที่ทำสัญญา/บันทึก</p>
+                  <p className="text-white font-bold text-sm">
+                    {new Date(activeContract.created_at).toLocaleDateString('th-TH')}
+                  </p>
+                </div>
+              </div>
+
+              {/* Uploaded Contract Document Attachment */}
+              <div className="p-8 bg-white/5 rounded-3xl border border-white/10 space-y-6">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div>
-                    <h2 className="text-3xl font-serif text-white mb-2">สัญญาเช่าที่พักอาศัย</h2>
-                    <p className="text-white/50 font-medium">SmartDom Apartment</p>
+                    <h3 className="text-lg font-black text-white flex items-center gap-2">
+                      <span>📄 เอกสารสัญญาเช่าฉบับจริง (Signed Document)</span>
+                    </h3>
+                    <p className="text-xs text-white/50 mt-1">สำเนาภาพถ่าย/ไฟล์สัญญาที่เซ็นรับรองร่วมกับเจ้าของหอพัก</p>
                   </div>
-                  <div className="text-right">
-                    <p className="text-[11px] text-white/50 font-bold uppercase tracking-widest mb-1 text-right">รหัสสัญญา</p>
-                    <p className="text-lg font-mono text-white">SD-2026-{contract.id.toString().padStart(4, '0')}</p>
-                  </div>
-                </div>
 
-                <div className="grid sm:grid-cols-2 gap-6 mb-12">
-                  <div className="bg-[#0F172A] p-6 rounded-2xl border border-[#F2EFE9]">
-                    <p className="text-[11px] text-white/50 font-bold uppercase tracking-widest mb-1 font-mono">ระยะเวลาเช่า</p>
-                    <div className="text-white font-medium flex items-center justify-between">
-                      <span className="text-sm">{new Date(contract.start_date).toLocaleDateString('th-TH')}</span>
-                      <svg className="w-4 h-4 text-[#C2B7A8]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
-                      <span className="text-sm">{new Date(contract.end_date).toLocaleDateString('th-TH')}</span>
-                    </div>
-                  </div>
-                  <div className="bg-[#0F172A] p-6 rounded-2xl border border-[#F2EFE9]">
-                    <p className="text-[11px] text-white/50 font-bold uppercase tracking-widest mb-1 font-mono">เงินประกัน (Deposit)</p>
-                    <div className="text-primary text-xl font-bold">
-                      ฿{Number(contract.deposit_amount || 0).toLocaleString()}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Agreement Details */}
-                <div className="mb-12">
-                  <p className="text-[11px] text-white/50 font-bold uppercase tracking-widest mb-4 font-mono">ข้อกำหนดและข้อตกลง (Terms & Conditions)</p>
-                  <div className="bg-[#080F1E] border border-white/20/10 rounded-2xl p-6 text-sm text-white/80 space-y-4 max-h-60 overflow-y-auto custom-scrollbar">
-                    <p><strong>ข้อ 1. วัตถุประสงค์การเช่า:</strong> ผู้เช่าตกลงเช่าห้องพักเพื่อการอยู่อาศัยเท่านั้น และจะไม่นำห้องพักไปใช้ในการประกอบกิจการพาณิชย์ หรือสิ่งผิดกฎหมายใดๆ</p>
-                    <p><strong>ข้อ 2. ค่าเช่าและค่าบริการ:</strong> ผู้เช่าตกลงชำระค่าเช่าทุกเดือน ภายในวันที่ 5 ของเดือน หากชำระล่าช้า ผู้เช่าตกลงชำระค่าปรับตามที่ทางโครงการกำหนด</p>
-                    <p><strong>ข้อ 3. การรักษาความสะอาด:</strong> ผู้เช่าต้องรักษาความสะอาดภายในห้องพักและพื้นที่ส่วนกลาง และไม่ส่งเสียงดังรบกวนผู้อาศัยท่านอื่น</p>
-                    <p><strong>ข้อ 4. เงินประกัน:</strong> เงินประกันการเช่าจะได้รับคืนเมื่อสิ้นสุดสัญญา ภายใน 30 วัน หลังจากหักค่าความเสียหาย (หากมี)</p>
-                    <p><strong>ข้อ 5. การยกเลิกสัญญา:</strong> หากผู้เช่าต้องการย้ายออกก่อนครบกำหนดสัญญา ผู้เช่ายินยอมให้โครงการยึดเงินประกันเต็มจำนวน</p>
-                  </div>
-                </div>
-
-                {/* Signature Section */}
-                <div className="mb-12 border-t border-dashed border-white/20/10 pt-8">
-                  <p className="text-[11px] text-white/50 font-bold uppercase tracking-widest mb-4 font-mono">ลายมือชื่ออิเล็กทรอนิกส์</p>
-                  <div className="inline-block p-4 border border-white/20/10 rounded-2xl bg-[#0F172A]">
-                    {contract.signature_data ? (
-                      <div 
-                        style={{ 
-                          backgroundImage: `url(${contract.signature_data})`, 
-                          backgroundSize: 'contain', 
-                          backgroundRepeat: 'no-repeat', 
-                          backgroundPosition: 'center',
-                          height: '96px', 
-                          width: '192px' 
-                        }} 
-                        className="opacity-100"
-                        title="Signature"
-                      />
-                    ) : (
-                      <div className="h-24 w-48 flex items-center justify-center italic text-[#C2B7A8]">No Signature</div>
-                    )}
-                  </div>
-                  <div className="mt-4 text-xs text-white/50">
-                    ลงชื่อเมื่อ: {new Date(contract.created_at).toLocaleString('th-TH')}
-                  </div>
-                </div>
-
-                <div id="action-buttons" className="flex flex-col sm:flex-row gap-4 border-t border-white/20/10 pt-8">
-                  <ContractPDFButton 
-                    contractId={contract.id.toString()} 
-                    targetId="contract-document" 
-                    signatureData={contract.signature_data}
-                  />
-                  {contract.status === 'Active' && (
-                    <button className="flex-1 bg-primary hover:bg-primary/90 text-white font-bold py-3.5 px-4 rounded-xl transition-all shadow-md active:scale-[0.98]">
-                      แจ้งต่อสัญญา (Renew)
-                    </button>
+                  {activeContract.contract_file_url && (
+                    <a
+                      href={activeContract.contract_file_url}
+                      download={`contract_room_${activeContract.room_number}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="px-6 py-3 bg-primary text-white font-bold text-xs rounded-xl shadow-lg hover:brightness-110 transition-all flex items-center gap-2 cursor-pointer self-start sm:self-auto"
+                    >
+                      📥 ดาวน์โหลดเอกสารสัญญา
+                    </a>
                   )}
                 </div>
+
+                {activeContract.contract_file_url ? (
+                  <div className="relative rounded-2xl overflow-hidden border border-white/10 bg-black/40 flex items-center justify-center min-h-[350px]">
+                    {activeContract.contract_file_url.startsWith('data:image') || activeContract.contract_file_url.startsWith('http') ? (
+                      <Image
+                        src={activeContract.contract_file_url}
+                        alt="Contract Document"
+                        width={700}
+                        height={900}
+                        unoptimized
+                        className="max-w-full h-auto object-contain cursor-pointer hover:scale-105 transition-transform duration-500 p-4"
+                        onClick={() => setPreviewingFileUrl(activeContract.contract_file_url || null)}
+                      />
+                    ) : (
+                      <iframe
+                        src={activeContract.contract_file_url}
+                        className="w-full h-[500px]"
+                        title="Signed Contract PDF"
+                      />
+                    )}
+                  </div>
+                ) : (
+                  <div className="p-12 text-center text-white/40 italic bg-black/20 rounded-2xl border border-white/5">
+                    ยังไม่มีการแนบไฟล์ภาพสัญญาเช่าฉบับจริงในระบบ
+                  </div>
+                )}
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex flex-col sm:flex-row gap-4 pt-4 border-t border-white/10">
+                <button
+                  onClick={() => setIsRenewModalOpen(true)}
+                  disabled={activeContract.renewal_requested === 1}
+                  className="flex-1 py-4 bg-amber-500 text-white font-black rounded-2xl shadow-xl hover:brightness-110 active:scale-95 transition-all disabled:opacity-50 disabled:scale-100 cursor-pointer flex items-center justify-center gap-2"
+                >
+                  <span>🔄 {activeContract.renewal_requested === 1 ? 'ส่งคำขอต่อสัญญาแล้ว' : 'แจ้งความประสงค์ขอต่อสัญญาเช่า'}</span>
+                </button>
               </div>
             </div>
           </div>
 
-          {/* Sidebar: Contract History */}
-          <div className="lg:w-80 shrink-0">
-            <div className="bg-white/5/50 border border-white/20/10 rounded-3xl p-6">
-              <h3 className="text-sm font-bold text-white/80 uppercase tracking-widest mb-6 flex items-center gap-2">
-                <svg className="w-4 h-4 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                ประวัติสัญญา
+          {/* History Contracts Section */}
+          {historyContracts.length > 0 && (
+            <div className="space-y-6 pt-6">
+              <h3 className="text-xl font-black text-white flex items-center gap-2">
+                <span>📜 ประวัติสัญญาเช่าที่ผ่านมา ({historyContracts.length})</span>
               </h3>
-              
-              <div className="space-y-3">
-                {contracts.map((c: any) => (
-                  <Link 
-                    key={c.id} 
-                    href={`/tenant/contract?id=${c.id}`}
-                    className={`block p-4 rounded-2xl border transition-all ${
-                      contract.id === c.id 
-                        ? 'bg-[#0F172A] border-primary shadow-sm ring-1 ring-primary/10' 
-                        : 'bg-[#0F172A]/50 border-transparent hover:border-border hover:bg-[#0F172A]'
-                    }`}
-                  >
-                    <div className="flex justify-between items-start mb-1">
-                      <span className="text-[10px] font-mono font-bold text-white/50">#{c.id.toString().padStart(4, '0')}</span>
-                      <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full ${
-                        c.status === 'Active' ? 'bg-[#0F172A] text-primary' : 'bg-gray-100 text-gray-500'
-                      }`}>
-                        {c.status}
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {historyContracts.map(hc => (
+                  <div key={hc.id} className="bg-[#0F172A] p-6 rounded-3xl border border-white/10 space-y-4">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <p className="font-black text-white text-base">สัญญา #{hc.id}</p>
+                        <p className="text-xs text-white/50">
+                          {new Date(hc.start_date).toLocaleDateString('th-TH')} - {new Date(hc.end_date).toLocaleDateString('th-TH')}
+                        </p>
+                      </div>
+                      <span className="px-3 py-1 text-[10px] font-black uppercase tracking-widest rounded-lg bg-purple-500/10 text-purple-400 border border-purple-500/20">
+                        {hc.status === 'Renewed' ? 'ต่ออายุแล้ว' : hc.status}
                       </span>
                     </div>
-                    <div className="text-xs font-bold text-white truncate mb-1">
-                      {new Date(c.start_date).getFullYear() + 543} - {new Date(c.end_date).getFullYear() + 543}
-                    </div>
-                    <div className="text-[10px] text-muted-foreground">
-                       ลงนาม: {new Date(c.created_at).toLocaleDateString('th-TH')}
-                    </div>
-                  </Link>
+
+                    {hc.contract_file_url && (
+                      <button
+                        onClick={() => setPreviewingFileUrl(hc.contract_file_url || null)}
+                        className="w-full py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-xs font-bold text-white transition-all cursor-pointer"
+                      >
+                        📄 ดูไฟล์สัญญาย้อนหลัง
+                      </button>
+                    )}
+                  </div>
                 ))}
               </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Renewal Modal */}
+      {isRenewModalOpen && activeContract && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-6">
+          <div className="bg-[#0F172A] rounded-[32px] w-full max-w-lg border border-white/10 shadow-2xl overflow-hidden">
+            <div className="bg-[#0B0F19] border-b border-white/10 p-6 flex items-center justify-between">
+              <h3 className="text-xl font-black text-white">🔄 แจ้งขอต่อสัญญาเช่า</h3>
+              <button
+                onClick={() => setIsRenewModalOpen(false)}
+                className="w-10 h-10 bg-white/5 hover:bg-white/10 rounded-xl text-white/50 hover:text-white flex items-center justify-center transition-all cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+
+            <form onSubmit={handleRequestRenewal} className="p-6 space-y-6">
+              <div className="p-4 bg-amber-500/10 border border-amber-500/20 rounded-2xl text-amber-300 text-xs font-medium space-y-1">
+                <p className="font-bold">สัญญาปัจจุบัน: ห้อง {activeContract.room_number}</p>
+                <p>สิ้นสุดสัญญา: {new Date(activeContract.end_date).toLocaleDateString('th-TH')}</p>
+              </div>
+
+              <div className="space-y-2">
+                <label className="block text-[10px] font-black text-white/50 uppercase tracking-widest">หมายเหตุ / ความประสงค์ขอต่อสัญญา</label>
+                <textarea
+                  rows={3}
+                  placeholder="เช่น ประสงค์ขอต่อสัญญาเช่าเพิ่มอีก 1 ปีครับ..."
+                  value={renewalNote}
+                  onChange={(e) => setRenewalNote(e.target.value)}
+                  className="w-full px-5 py-4 bg-white/5 border border-white/20 rounded-2xl text-white text-sm outline-none focus:border-primary transition-all custom-scrollbar"
+                />
+              </div>
+
+              <div className="flex gap-4 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setIsRenewModalOpen(false)}
+                  className="flex-1 py-4 text-white/50 font-bold hover:bg-white/5 rounded-2xl transition-all"
+                >
+                  ยกเลิก
+                </button>
+                <button
+                  type="submit"
+                  disabled={submitting}
+                  className="flex-[2] py-4 bg-amber-500 text-white font-black rounded-2xl shadow-xl hover:brightness-110 active:scale-95 transition-all disabled:opacity-50 cursor-pointer"
+                >
+                  {submitting ? 'กำลังส่งคำขอ...' : 'ส่งคำขอต่อสัญญา →'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* File Preview Modal */}
+      {previewingFileUrl && (
+        <div className="fixed inset-0 bg-black/90 backdrop-blur-md z-50 flex items-center justify-center p-6">
+          <div className="bg-[#0F172A] rounded-[36px] w-full max-w-4xl max-h-[90vh] border border-white/10 shadow-2xl flex flex-col overflow-hidden">
+            <div className="bg-[#0B0F19] border-b border-white/10 p-6 flex items-center justify-between shrink-0">
+              <h3 className="text-lg font-black text-white">เอกสารสัญญาเช่า</h3>
+              <div className="flex items-center gap-3">
+                <a
+                  href={previewingFileUrl}
+                  download="contract_document"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="px-4 py-2 bg-primary text-white text-xs font-bold rounded-xl shadow-lg hover:brightness-110 transition-all"
+                >
+                  📥 ดาวน์โหลดเอกสาร
+                </a>
+                <button
+                  onClick={() => setPreviewingFileUrl(null)}
+                  className="w-10 h-10 bg-white/5 hover:bg-white/10 rounded-xl text-white/50 hover:text-white flex items-center justify-center transition-all cursor-pointer"
+                >
+                  ✕
+                </button>
+              </div>
+            </div>
+
+            <div className="flex-1 overflow-y-auto p-8 flex items-center justify-center custom-scrollbar">
+              {previewingFileUrl.startsWith('data:image') || previewingFileUrl.startsWith('http') ? (
+                <div className="relative w-full min-h-[500px] flex items-center justify-center">
+                  <Image
+                    src={previewingFileUrl}
+                    alt="Contract Document"
+                    width={800}
+                    height={1000}
+                    unoptimized
+                    className="max-w-full h-auto object-contain rounded-2xl shadow-2xl"
+                  />
+                </div>
+              ) : (
+                <iframe
+                  src={previewingFileUrl}
+                  className="w-full h-[600px] rounded-2xl border border-white/10"
+                  title="Document Preview"
+                />
+              )}
             </div>
           </div>
         </div>
       )}
-      </div>
     </div>
   );
 }

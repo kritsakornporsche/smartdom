@@ -1,23 +1,31 @@
 import { NextResponse } from 'next/server';
-import { getDormDbFromSession } from '@/lib/db';
+import { getDb } from '@/lib/db';
 import { auth } from '@/auth';
 
-export async function GET() {
-  const session = await auth();
-  if (!session?.user?.email) {
-    return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
-  }
-
+export async function GET(req: Request) {
   try {
-    const sql = getDormDbFromSession(session);
-    
-    // Get user and their tenant/dorm info
+    const session = await auth();
+    const { searchParams } = new URL(req.url);
+    const emailParam = searchParams.get('email');
+    const userEmail = session?.user?.email || emailParam;
+
+    if (!userEmail) {
+      return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
+    }
+
+    const sql = getDb();
+
+    // 1. Get user and tenant details
     const result = await sql`
       SELECT 
         u.id as user_id, 
         u.name, 
+        u.email,
+        u.phone,
         u.primary_role as role,
         t.id as tenant_id,
+        r.id as room_id,
+        r.room_number,
         r.dorm_id,
         dr.dorm_name,
         dr.owner_id
@@ -25,7 +33,7 @@ export async function GET() {
       LEFT JOIN tenants t ON u.id = t.user_id OR u.email = t.email
       LEFT JOIN rooms r ON t.room_id = r.id
       LEFT JOIN dormitory_registry dr ON r.dorm_id = dr.id
-      WHERE u.email = ${session.user.email}
+      WHERE u.email = ${userEmail}
       LIMIT 1
     `;
 
@@ -33,7 +41,39 @@ export async function GET() {
       return NextResponse.json({ success: false, message: 'User not found' }, { status: 404 });
     }
 
-    return NextResponse.json({ success: true, data: result[0] });
+    const tenantInfo = result[0];
+    let contracts: any[] = [];
+
+    // 2. Fetch all contracts for this tenant
+    if (tenantInfo.tenant_id || tenantInfo.user_id) {
+      contracts = await sql`
+        SELECT 
+          c.id,
+          c.start_date,
+          c.end_date,
+          c.deposit_amount,
+          c.status,
+          c.contract_file_url,
+          c.renewal_requested,
+          c.renewal_note,
+          c.parent_contract_id,
+          c.created_at,
+          r.room_number,
+          r.room_type,
+          r.price as monthly_rent
+        FROM contracts c
+        JOIN rooms r ON c.room_id = r.id
+        LEFT JOIN tenants t ON c.tenant_id = t.id
+        WHERE t.id = ${tenantInfo.tenant_id || 0} OR t.user_id = ${tenantInfo.user_id} OR t.email = ${userEmail}
+        ORDER BY c.id DESC
+      `;
+    }
+
+    return NextResponse.json({
+      success: true,
+      data: tenantInfo,
+      contracts
+    });
   } catch (error: any) {
     console.error('[GET /api/tenant/me] Error:', error);
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });

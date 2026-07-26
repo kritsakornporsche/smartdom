@@ -333,6 +333,16 @@
 - **ปรับปรุง CSS Overlay ใน ([app/globals.css](file:///d:/Works/thesiss/smartdom-1/app/globals.css))**: แก้ไขกฎ CSS `.bg-[#3E342B]/60` จากเดิมที่เป็นสีม่วงสว่างเปลี่ยนเป็นสีดำ/กรมท่าเข้มแบบโปร่งแสง (`rgba(15, 23, 42, 0.75)`) ป้องกันไม่ให้แบล็กดร็อปของโมดอลกลายเป็นสีม่วงสว่างบดบังหน้าจอ
 - **ปรับปรุงดีไซน์โมดอลจัดการห้องพัก ([app/owner/rooms/page.tsx](file:///d:/Works/thesiss/smartdom-1/app/owner/rooms/page.tsx))**: ปรับเปลี่ยนส่วนหัวโมดอลเพิ่มยูนิตใหม่จากแถบสีม่วงเป็นดีไซน์ Premium Dark Navy Slate (`bg-[#0F172A] border-b border-white/10`) พร้อมปรับแต่งปุ่มและป้ายหมายเลขห้องพักให้กลมกลืน คมชัด สบายตา
 
+### 6. พัฒนาระบบบันทึกสัญญาเช่าแนบไฟล์จริงและปรับเปลี่ยนสิทธิ์ลูกหออัตโนมัติ (Signed Contract File Upload & Auto Tenant Activation)
+- **สร้างสคริปต์ Migration ฐานข้อมูล ([scripts/add-contract-renewal-cols.js](file:///d:/Works/thesiss/smartdom-1/scripts/add-contract-renewal-cols.js))**: เพิ่มคอลัมน์ `contract_file_url`, `renewal_requested`, `renewal_note`, `parent_contract_id` ในตาราง `contracts` บนฐานข้อมูล Single DB (`smartdomdb`)
+- **ปรับปรุง API บันทึกสัญญาเช่า ([app/api/owner/contracts/route.ts](file:///d:/Works/thesiss/smartdom-1/app/api/owner/contracts/route.ts))**: บันทึกเอกสารสัญญาเช่าฉบับจริง (`contract_file_url`) ยกระดับบทบาทผู้เช่าในตาราง `users` และ `user_dorm_roles` ให้เป็น `tenant` (ลูกหอ) อัตโนมัติ พร้อมอัปเดตสถานะห้องพักเป็น `Occupied`
+- **ปรับปรุงหน้าบันทึกสัญญาเจ้าของหอพัก ([app/owner/contracts/page.tsx](file:///d:/Works/thesiss/smartdom-1/app/owner/contracts/page.tsx))**: แบบฟอร์มบันทึกสัญญาใหม่พร้อมช่องอัปโหลดรูปถ่าย/ไฟล์ PDF สัญญาเช่าจริง ปุ่ม `⚡ เติมข้อมูลทดสอบสัญญา (Auto-fill Demo)` และพรีวิวเอกสารสัญญาฉบับจริง
+
+### 7. พัฒนาระบบต่ออายุสัญญาเช่าและดูสัญญาย้อนหลัง (Lease Renewal System & Contract History Timeline)
+- **สร้าง API รองรับการต่อสัญญา ([app/api/owner/contracts/renew/route.ts](file:///d:/Works/thesiss/smartdom-1/app/api/owner/contracts/renew/route.ts))**: เปลี่ยนสถานะสัญญาเดิมเป็น `Renewed` สร้างสัญญาฉบับต่ออายุใหม่พร้อมแนบเอกสารสัญญาต่ออายุฉบับใหม่
+- **สร้าง API รับคำขอต่อสัญญาจากลูกหอ ([app/api/tenant/contract/request-renewal/route.ts](file:///d:/Works/thesiss/smartdom-1/app/api/tenant/contract/request-renewal/route.ts))**: ลูกหอกดส่งคำขอต่อสัญญาเช่าพร้อมหมายเหตุส่งตรงถึงเจ้าของหอพัก
+- **ปรับปรุงแดชบอร์ดลูกหอ ([app/tenant/contract/page.tsx](file:///d:/Works/thesiss/smartdom-1/app/tenant/contract/page.tsx))**: แสดงผลสัญญาฉบับมีผลบังคับใช้ พร้อมกล่องแสดง/ดาวน์โหลดเอกสารสัญญาฉบับจริง ปุ่มแจ้งขอต่อสัญญา และแท็บแสดงประวัติสัญญาเช่าย้อนหลัง
+
 ---
 
 ## 📌 แผนงานขั้นต่อไป (Next Steps)

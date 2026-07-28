@@ -9,6 +9,11 @@ interface Stats {
   occupiedRooms: number;
   totalTenants: number;
   pendingMaintenance: number;
+  latestMaintenance?: {
+    roomNumber?: string;
+    issueType?: string;
+    description?: string;
+  } | null;
 }
 
 export default function OwnerDashboard() {
@@ -81,7 +86,7 @@ export default function OwnerDashboard() {
               <div className="flex-1">
                 <h2 className="text-3xl font-black text-white mb-2">สวัสดีครับ, คุณเจ้าของหอ! 👋</h2>
                 <p className="text-white/50 font-medium leading-relaxed max-w-md">
-                  ยินดีต้อนรับสู่ระบบจัดการ SmartDom วันนี้หอพักของคุณมีการจองใหม่ 0 รายการ และมีการแจ้งซ่อม 1 รายการ
+                  ยินดีต้อนรับสู่ระบบจัดการ SmartDom วันนี้หอพักของคุณมีการจองใหม่ 0 รายการ และ{stats.pendingMaintenance > 0 ? `มีการแจ้งซ่อม ${stats.pendingMaintenance} รายการ` : 'ไม่มีรายการแจ้งซ่อม'}
                 </p>
                 <div className="mt-8 flex gap-3">
                   <button 
@@ -179,8 +184,16 @@ export default function OwnerDashboard() {
             <div className="bg-[#0F172A] border border-white/10 rounded-[32px] p-8 text-white shadow-xl flex flex-col items-center text-center justify-center relative overflow-hidden">
                <div className="absolute top-0 right-0 w-32 h-32 bg-rose-500/5 rounded-full -mr-16 -mt-16 pointer-events-none" />
                <div className="w-16 h-16 bg-rose-500/10 text-rose-400 border border-rose-500/20 rounded-2xl flex items-center justify-center text-3xl mb-4">🔧</div>
-               <h3 className="text-lg font-bold mb-2 text-white">แจ้งซ่อมรอนุมัติ</h3>
-               <p className="text-white/50 text-sm mb-6 max-w-xs">มีรายการแจ้งซ่อมใหม่จากผู้เช่า ห้อง 102 (แอร์เสีย)</p>
+               <h3 className="text-lg font-bold mb-2 text-white">
+                 {stats.pendingMaintenance > 0 ? "แจ้งซ่อมรออนุมัติ" : "การแจ้งซ่อม"}
+               </h3>
+               <p className="text-white/50 text-sm mb-6 max-w-xs">
+                 {stats.pendingMaintenance > 0 
+                   ? (stats.latestMaintenance?.roomNumber 
+                       ? `มีรายการแจ้งซ่อมใหม่จากผู้เช่า ห้อง ${stats.latestMaintenance.roomNumber}${stats.latestMaintenance.issueType || stats.latestMaintenance.description ? ` (${stats.latestMaintenance.issueType || stats.latestMaintenance.description})` : ''}`
+                       : `มีรายการแจ้งซ่อมรออนุมัติ ${stats.pendingMaintenance} รายการ`)
+                   : "ไม่มีรายการแจ้งซ่อม"}
+               </p>
                <button 
                  onClick={() => router.push('/owner/maintenance')}
                  className="w-full py-3.5 bg-rose-500 text-white rounded-2xl font-bold shadow-lg shadow-rose-500/10 hover:scale-105 active:scale-95 transition-all"

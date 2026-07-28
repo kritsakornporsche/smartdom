@@ -20,10 +20,24 @@ export default function RoomsManagement() {
   const [rooms, setRooms] = useState<Room[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isBatchModalOpen, setIsBatchModalOpen] = useState(false);
+  const [batchLoading, setBatchLoading] = useState(false);
   const [editingRoom, setEditingRoom] = useState<Room | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterStatus, setFilterStatus] = useState('All');
   const router = useRouter();
+
+  // Batch Form State
+  const [batchForm, setBatchForm] = useState({
+    prefix: 'A',
+    floor: 1,
+    startRoom: 1,
+    endRoom: 10,
+    pattern: 'prefix_floor_num', // 'prefix_floor_num' (A101), 'prefix_num' (A1), 'prefix_floor_dash' (A1-01)
+    room_type: 'Standard',
+    price: 4500,
+    status: 'Available',
+  });
 
   // Updated Form State to handle multiple images
   const [formData, setFormData] = useState({
@@ -87,6 +101,70 @@ export default function RoomsManagement() {
       setLoading(false);
     }
   }, [authStatus, session, router]);
+
+  const getGeneratedRoomNumbers = () => {
+    const list: string[] = [];
+    const start = Math.min(batchForm.startRoom, batchForm.endRoom);
+    const end = Math.max(batchForm.startRoom, batchForm.endRoom);
+
+    if (isNaN(start) || isNaN(end) || end - start > 200) return list;
+
+    for (let i = start; i <= end; i++) {
+      const numStr = i.toString();
+      let roomNum = '';
+      if (batchForm.pattern === 'prefix_floor_num') {
+        const formattedNum = numStr.padStart(2, '0');
+        roomNum = `${batchForm.prefix}${batchForm.floor}${formattedNum}`;
+      } else if (batchForm.pattern === 'prefix_floor_dash') {
+        const formattedNum = numStr.padStart(2, '0');
+        roomNum = `${batchForm.prefix}${batchForm.floor}-${formattedNum}`;
+      } else {
+        roomNum = `${batchForm.prefix}${numStr}`;
+      }
+      list.push(roomNum);
+    }
+    return list;
+  };
+
+  const handleBatchSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const roomNumbers = getGeneratedRoomNumbers();
+    if (roomNumbers.length === 0) {
+      alert('กรุณาระบุช่วงเลขห้องให้ถูกต้อง');
+      return;
+    }
+
+    setBatchLoading(true);
+    try {
+      const roomsToCreate = roomNumbers.map(num => ({
+        room_number: num,
+        room_type: batchForm.room_type,
+        price: batchForm.price,
+        floor: batchForm.floor,
+        status: batchForm.status,
+        dorm_id: ownerDormId
+      }));
+
+      const res = await fetch('/api/rooms/batch', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ rooms: roomsToCreate, dorm_id: ownerDormId }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        alert(data.message || `เพิ่มห้องพักสำเร็จ ${data.createdCount} ห้อง`);
+        setIsBatchModalOpen(false);
+        if (ownerDormId) fetchRooms(ownerDormId);
+      } else {
+        alert(`เกิดข้อผิดพลาด: ${data.message}`);
+      }
+    } catch (err: any) {
+      console.error(err);
+      alert('เกิดข้อผิดพลาดในการสร้างห้องพัก');
+    } finally {
+      setBatchLoading(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -250,8 +328,25 @@ export default function RoomsManagement() {
 
           <button 
             disabled={!ownerDormId}
+            onClick={() => setIsBatchModalOpen(true)}
+            className={`px-6 py-3.5 rounded-2xl font-black text-sm shadow-xl flex items-center gap-2.5 transition-all duration-300 group ${
+              !ownerDormId 
+              ? 'bg-white/10 text-white/50 cursor-not-allowed opacity-50' 
+              : 'bg-emerald-600 text-white hover:bg-emerald-500 shadow-lg hover:brightness-110 active:scale-95'
+            }`}
+          >
+            <div className="p-1 bg-black/20 rounded-lg group-hover:scale-110 transition-transform">
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+              </svg>
+            </div>
+            {ownerDormId ? 'เพิ่มหลายห้อง' : 'กำลังเตรียมข้อมูล...'}
+          </button>
+
+          <button 
+            disabled={!ownerDormId}
             onClick={() => { setEditingRoom(null); setFormData({ room_number: '', room_type: 'Standard', price: 4500, floor: 1, status: 'Available', images: [] }); setIsModalOpen(true); }}
-            className={`px-8 py-3.5 rounded-2xl font-black text-sm shadow-xl flex items-center gap-3 transition-all duration-300 group ${
+            className={`px-6 py-3.5 rounded-2xl font-black text-sm shadow-xl flex items-center gap-2.5 transition-all duration-300 group ${
               !ownerDormId 
               ? 'bg-white/10 text-white/50 cursor-not-allowed opacity-50' 
               : 'bg-primary text-white shadow-lg hover:brightness-110 active:scale-95'
@@ -524,6 +619,185 @@ export default function RoomsManagement() {
                       className="flex-[2] py-5 bg-primary text-white font-black rounded-[28px] shadow-xl hover:brightness-110 active:scale-95 transition-all"
                     >
                         {editingRoom ? 'อัปเดตข้อมูล' : 'บันทึกลงฐานข้อมูล'}
+                    </button>
+                  </div>
+               </form>
+             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Batch Create Modal */}
+      {isBatchModalOpen && (
+        <div className="fixed inset-0 bg-black/75 backdrop-blur-md z-50 flex items-center justify-center p-6 animate-in fade-in duration-300">
+          <div className="bg-[#0F172A] rounded-[48px] w-full max-w-2xl overflow-hidden shadow-2xl animate-in zoom-in slide-in-from-bottom duration-500 border border-white/10 max-h-[90vh] flex flex-col">
+             <div className="bg-gradient-to-r from-emerald-600 to-teal-700 border-b border-white/10 px-10 py-8 text-white relative overflow-hidden shrink-0">
+                <div className="relative z-10 text-center">
+                  <h2 className="text-3xl font-black mb-1 tracking-tight">เพิ่มข้อมูลหลายห้อง (Batch)</h2>
+                  <p className="text-white/80 text-[10px] font-black uppercase tracking-[0.25em]">สร้างยูนิตหลายห้องพร้อมกัน เช่น ตึก A ชั้น 1 ห้อง 1-10</p>
+                </div>
+             </div>
+             
+             <div className="overflow-y-auto p-10 custom-scrollbar space-y-8">
+               <form onSubmit={handleBatchSubmit} className="space-y-8">
+                  <div className="grid grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                        <label className="block text-[10px] font-black text-white/50 uppercase tracking-widest ml-1">ตึก / คำนำหน้า (Building / Prefix)</label>
+                        <input 
+                          type="text" 
+                          value={batchForm.prefix}
+                          onChange={(e) => setBatchForm({...batchForm, prefix: e.target.value})}
+                          className="w-full px-6 py-4 bg-white/5 border border-white/20/10 rounded-[24px] focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 focus:bg-[#0F172A] outline-none font-black text-white text-lg transition-all"
+                          placeholder="เช่น A หรือ ตึก A-"
+                        />
+                    </div>
+                    <div className="space-y-2">
+                        <label className="block text-[10px] font-black text-white/50 uppercase tracking-widest ml-1">ชั้น (Floor)</label>
+                        <input 
+                          type="number" 
+                          required
+                          min={1}
+                          value={batchForm.floor}
+                          onChange={(e) => setBatchForm({...batchForm, floor: parseInt(e.target.value) || 1})}
+                          className="w-full px-6 py-4 bg-white/5 border border-white/20/10 rounded-[24px] focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 focus:bg-[#0F172A] outline-none font-black text-white text-lg transition-all"
+                        />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                        <label className="block text-[10px] font-black text-white/50 uppercase tracking-widest ml-1">เลขห้องเริ่มต้น (Start)</label>
+                        <input 
+                          type="number" 
+                          required
+                          min={1}
+                          value={batchForm.startRoom}
+                          onChange={(e) => setBatchForm({...batchForm, startRoom: parseInt(e.target.value) || 1})}
+                          className="w-full px-6 py-4 bg-white/5 border border-white/20/10 rounded-[24px] focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 focus:bg-[#0F172A] outline-none font-black text-white text-lg transition-all"
+                          placeholder="1"
+                        />
+                    </div>
+                    <div className="space-y-2">
+                        <label className="block text-[10px] font-black text-white/50 uppercase tracking-widest ml-1">เลขห้องสิ้นสุด (End)</label>
+                        <input 
+                          type="number" 
+                          required
+                          min={1}
+                          value={batchForm.endRoom}
+                          onChange={(e) => setBatchForm({...batchForm, endRoom: parseInt(e.target.value) || 1})}
+                          className="w-full px-6 py-4 bg-white/5 border border-white/20/10 rounded-[24px] focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 focus:bg-[#0F172A] outline-none font-black text-white text-lg transition-all"
+                          placeholder="10"
+                        />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="block text-[10px] font-black text-white/50 uppercase tracking-widest ml-1">รูปแบบการสร้างเลขห้อง (Format Pattern)</label>
+                    <div className="grid grid-cols-3 gap-3">
+                      {[
+                        { id: 'prefix_floor_num', label: 'ตึก + ชั้น + เลขห้อง', example: `${batchForm.prefix}${batchForm.floor}01` },
+                        { id: 'prefix_num', label: 'ตึก + เลขห้องตรงๆ', example: `${batchForm.prefix}${batchForm.startRoom}` },
+                        { id: 'prefix_floor_dash', label: 'ตึก + ชั้น - เลขห้อง', example: `${batchForm.prefix}${batchForm.floor}-01` },
+                      ].map((p) => (
+                        <button
+                          key={p.id}
+                          type="button"
+                          onClick={() => setBatchForm({...batchForm, pattern: p.id})}
+                          className={`p-4 rounded-2xl border text-left flex flex-col gap-1 transition-all ${
+                            batchForm.pattern === p.id 
+                            ? 'bg-emerald-500/10 border-emerald-500 text-white' 
+                            : 'bg-white/5 border-white/10 text-white/60 hover:text-white hover:bg-white/10'
+                          }`}
+                        >
+                          <span className="text-xs font-bold">{p.label}</span>
+                          <span className="text-[10px] text-emerald-400 font-mono font-bold">เช่น {p.example}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                        <label className="block text-[10px] font-black text-white/50 uppercase tracking-widest ml-1">ประเภท (Type)</label>
+                        <select 
+                            value={batchForm.room_type}
+                            onChange={(e) => setBatchForm({...batchForm, room_type: e.target.value})}
+                            className="w-full px-6 py-4 bg-white/5 border border-white/20/10 rounded-[24px] font-black outline-none text-white transition-all focus:bg-[#0F172A] cursor-pointer"
+                        >
+                            <option>Standard</option>
+                            <option>Deluxe</option>
+                            <option>Premium</option>
+                            <option>Suite</option>
+                        </select>
+                    </div>
+                    <div className="space-y-2">
+                        <label className="block text-[10px] font-black text-white/50 uppercase tracking-widest ml-1">สถานะเริ่มต้น (Status)</label>
+                        <select 
+                            value={batchForm.status}
+                            onChange={(e) => setBatchForm({...batchForm, status: e.target.value})}
+                            className="w-full px-6 py-4 bg-white/5 border border-white/20/10 rounded-[24px] font-black outline-none text-white focus:bg-[#0F172A] cursor-pointer"
+                        >
+                            <option value="Available">ว่าง (Available)</option>
+                            <option value="Occupied">มีผู้เช่า (Occupied)</option>
+                            <option value="Maintenance">ปิดปรับปรุง (Maintenance)</option>
+                        </select>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="block text-[10px] font-black text-white/50 uppercase tracking-widest ml-1 text-center">ราคาเช่ารายเดือนทุกห้อง (Rental Price)</label>
+                    <div className="relative group max-w-xs mx-auto">
+                        <span className="absolute left-6 top-1/2 -translate-y-1/2 text-2xl font-black text-muted-foreground group-focus-within:scale-110 transition-transform">฿</span>
+                        <input 
+                          type="number" 
+                          required
+                          value={batchForm.price}
+                          onChange={(e) => setBatchForm({...batchForm, price: parseFloat(e.target.value) || 0})}
+                          className="w-full pl-14 pr-6 py-5 bg-white/5 border border-emerald-500/40 rounded-[30px] font-black outline-none text-white text-3xl text-center focus:ring-8 focus:ring-emerald-500/10 focus:bg-[#0F172A] transition-all"
+                        />
+                    </div>
+                  </div>
+
+                  {/* Live Preview Box */}
+                  <div className="bg-white/5 p-6 rounded-3xl border border-white/10 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-black uppercase tracking-widest text-emerald-400">
+                        ตัวอย่างห้องที่จะถูกเพิ่ม (Preview)
+                      </span>
+                      <span className="text-xs font-black text-white bg-emerald-600/30 border border-emerald-500/40 px-3 py-1 rounded-full">
+                        รวม {getGeneratedRoomNumbers().length} ห้อง
+                      </span>
+                    </div>
+                    <div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto custom-scrollbar pt-1">
+                      {getGeneratedRoomNumbers().map((num, idx) => (
+                        <span key={idx} className="px-3 py-1.5 bg-[#0F172A] border border-emerald-500/30 text-emerald-300 font-mono text-xs font-bold rounded-xl shadow-sm">
+                          {num}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="flex gap-4 pt-4 shrink-0">
+                    <button 
+                      type="button" 
+                      onClick={() => setIsBatchModalOpen(false)} 
+                      className="flex-1 py-4 text-white/50 font-black hover:bg-white/5 rounded-[24px] transition-all text-sm"
+                    >
+                      ยกเลิก
+                    </button>
+                    <button 
+                      type="submit" 
+                      disabled={batchLoading || getGeneratedRoomNumbers().length === 0}
+                      className="flex-[2] py-4 bg-emerald-600 text-white font-black rounded-[24px] shadow-xl hover:bg-emerald-500 active:scale-95 transition-all disabled:opacity-50 text-sm flex items-center justify-center gap-2"
+                    >
+                      {batchLoading ? (
+                        <>
+                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                          <span>กำลังบันทึกข้อมูล...</span>
+                        </>
+                      ) : (
+                        `สร้างห้องพักทั้งหมด (${getGeneratedRoomNumbers().length} ห้อง)`
+                      )}
                     </button>
                   </div>
                </form>

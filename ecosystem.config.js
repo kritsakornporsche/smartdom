@@ -5,7 +5,7 @@ module.exports = {
       script: 'node_modules/next/dist/bin/next',
       args: 'start -p 3001 -H 0.0.0.0',
       exec_mode: 'fork',
-      cwd: 'D:/kritsakorn/smartdom',
+      cwd: 'C:/kritsakorn/smartdom',
       autorestart: true,
       env: {
         NODE_ENV: 'production',

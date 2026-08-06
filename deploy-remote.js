@@ -9,7 +9,7 @@ const remoteEnvPath = 'set PATH=C:\\Users\\buain\\AppData\\Local\\OpenAI\\Codex\
 conn.on('ready', () => {
   console.log('✅ SSH Connected! Pulling git repo, restoring database, building & starting server...');
   
-  const cmd = `cmd /c "${remoteEnvPath} & if not exist C:\\kritsakorn\\smartdom (git clone https://github.com/kritsakornporsche/smartdom.git C:\\kritsakorn\\smartdom) else (cd /d C:\\kritsakorn\\smartdom && git pull origin main) & cd /d C:\\kritsakorn\\smartdom && mysql -u smartdom -psmartdom < smartdom_all.sql && npm install && (rmdir /s /q .next || echo clean) && npm run build && (npx pm2 restart ecosystem.config.js || npx pm2 start ecosystem.config.js)"`;
+  const cmd = `cmd /c "${remoteEnvPath} & if not exist C:\\kritsakorn\\smartdom (git clone https://github.com/kritsakornporsche/smartdom.git C:\\kritsakorn\\smartdom) else (cd /d C:\\kritsakorn\\smartdom && git pull origin main) & cd /d C:\\kritsakorn\\smartdom && (npx pm2 delete all || echo clean) && (rmdir /s /q .next || echo clean) && npm run build && npx pm2 start ecosystem.config.js"`;
 
   conn.exec(cmd, (err, stream) => {
     if (err) {

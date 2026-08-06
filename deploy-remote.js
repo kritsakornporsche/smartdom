@@ -4,7 +4,7 @@ const conn = new Client();
 
 console.log('🚀 Connecting to Server via SSH to pull latest git changes, import database, build, and start server...');
 
-const remoteEnvPath = 'set PATH=C:\\Users\\buain\\AppData\\Local\\OpenAI\\Codex\\runtimes\\cua_node\\f8d2abcb7481383b\\bin;C:\\Users\\buain\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\git\\cmd;C:\\xampp\\mysql\\bin;%PATH%';
+const remoteEnvPath = 'set PATH=C:\\kritsakorn\\smartdom\\node_modules\\.bin;C:\\Program Files\\nodejs;C:\\Users\\buain\\AppData\\Roaming\\npm;C:\\Users\\buain\\AppData\\Local\\OpenAI\\Codex\\runtimes\\cua_node\\f8d2abcb7481383b\\bin;C:\\Users\\buain\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\git\\cmd;C:\\xampp\\mysql\\bin;%PATH%';
 
 conn.on('ready', () => {
   console.log('✅ SSH Connected! Pulling git repo, restoring database, building & starting server...');

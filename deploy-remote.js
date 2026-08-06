@@ -2,19 +2,22 @@ const { Client } = require('ssh2');
 
 const conn = new Client();
 
-console.log('🚀 Connecting to Server via SSH to pull latest git changes, build, and restart PM2...');
+console.log('🚀 Connecting to Server via SSH to pull latest git changes, import database, build, and start server...');
+
+const remoteEnvPath = 'set PATH=C:\\Users\\buain\\AppData\\Local\\OpenAI\\Codex\\runtimes\\cua_node\\f8d2abcb7481383b\\bin;C:\\Users\\buain\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\git\\cmd;C:\\xampp\\mysql\\bin;%PATH%';
 
 conn.on('ready', () => {
-  console.log('✅ SSH Connected! Pulling git, cleaning .next cache, building & restarting PM2...');
-  const cmd = 'cd /d D:\\kritsakorn\\smartdom && git pull origin main && (taskkill /F /IM node.exe || echo ok) && ping 127.0.0.1 -n 3 > nul && npm install && rmdir /s /q .next & npm run build && wmic process call create "cmd /c cd /d D:\\kritsakorn\\smartdom && npx pm2 start ecosystem.config.js --update-env && npx pm2 save"';
+  console.log('✅ SSH Connected! Pulling git repo, restoring database, building & starting server...');
   
+  const cmd = `cmd /c "${remoteEnvPath} & if not exist C:\\kritsakorn\\smartdom (git clone https://github.com/kritsakornporsche/smartdom.git C:\\kritsakorn\\smartdom) else (cd /d C:\\kritsakorn\\smartdom && git pull origin main) & cd /d C:\\kritsakorn\\smartdom && mysql -u smartdom -psmartdom < smartdom_all.sql && npm install && (rmdir /s /q .next || echo clean) && npm run build && (npx pm2 restart ecosystem.config.js || npx pm2 start ecosystem.config.js)"`;
+
   conn.exec(cmd, (err, stream) => {
     if (err) {
       console.error('Execution Error:', err);
       conn.end();
       return;
     }
-    stream.on('close', (code, signal) => {
+    stream.on('close', (code) => {
       console.log(`🎉 Deployment finished with code: ${code}`);
       conn.end();
     }).on('data', (data) => {
@@ -24,11 +27,11 @@ conn.on('ready', () => {
     });
   });
 }).on('error', (err) => {
-  console.error('SSH Connection Notice/Error:', err.message);
+  console.error('SSH Connection Error:', err.message);
 }).connect({
   host: 'kritsakorn.thddns.net',
   port: 5995,
-  username: 'user',
+  username: 'buain',
   password: 'Zn@27124700',
   readyTimeout: 30000,
 });

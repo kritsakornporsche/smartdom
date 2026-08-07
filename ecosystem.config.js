@@ -2,8 +2,9 @@ module.exports = {
   apps: [
     {
       name: 'smartdom-3001',
-      script: 'npm',
-      args: 'start',
+      script: 'node_modules/next/dist/bin/next',
+      interpreter: 'node',
+      args: 'start -p 3001 -H 0.0.0.0',
       exec_mode: 'fork',
       cwd: 'C:/kritsakorn/smartdom',
       autorestart: true,

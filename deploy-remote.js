@@ -9,7 +9,7 @@ const remoteEnvPath = 'set PATH=C:\\kritsakorn\\smartdom\\node_modules\\.bin;C:\
 conn.on('ready', () => {
   console.log('✅ SSH Connected! Pulling git repo, restoring database, building & starting server...');
   
-  const cmd = `cmd /c "${remoteEnvPath} & if not exist C:\\kritsakorn\\smartdom (git clone https://github.com/kritsakornporsche/smartdom.git C:\\kritsakorn\\smartdom) else (cd /d C:\\kritsakorn\\smartdom && git pull origin main) & cd /d C:\\kritsakorn\\smartdom && (npx pm2 delete all || echo clean) && (rmdir /s /q .next || echo clean) && npm run build && start /b cmd /c C:\\kritsakorn\\smartdom\\run_server.bat"`;
+  const cmd = `cmd /c "${remoteEnvPath} & if not exist C:\\kritsakorn\\smartdom (git clone https://github.com/kritsakornporsche/smartdom.git C:\\kritsakorn\\smartdom) else (cd /d C:\\kritsakorn\\smartdom && git pull origin main) & cd /d C:\\kritsakorn\\smartdom && (npx pm2 delete all || echo clean) && (rmdir /s /q .next || echo clean) && npm run build && npx pm2 start ecosystem.config.js & npx pm2 save"`;
 
   conn.exec(cmd, (err, stream) => {
     if (err) {

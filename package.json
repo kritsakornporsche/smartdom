@@ -12,7 +12,9 @@
     "db:switch": "node scripts/switch-db.js",
     "db:dump": "node scripts/export-local-db-dump.js",
     "db:push-remote": "node scripts/import-db-to-target.js remote",
-    "report:screenshots": "node scripts/capture-lighthouse-screenshots.js"
+    "report:run": "node scripts/run-lighthouse-all.js",
+    "report:screenshots": "node scripts/capture-lighthouse-screenshots.js",
+    "report:all": "node scripts/run-lighthouse-all.js && node scripts/capture-lighthouse-screenshots.js"
   },
   "dependencies": {
     "@tailwindcss/postcss": "^4",

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Aug 24, 2026 at 03:51 PM
+-- Generation Time: Aug 24, 2026 at 04:12 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -3887,7 +3887,8 @@ INSERT INTO `users` (`id`, `email`, `password`, `name`, `role`, `is_active`, `su
 (147, 'tenant_d4_r403@smartdom.ac.th', '$2b$10$TeCA2t55FWKtm4X2jTF97OeVjpVqi26WRwLZFIcKo3sFMGUNN7A5q', 'นางสาวจิราภรณ์ สุขเกษม', 'tenant', 1, NULL, '2026-08-24 07:08:35', NULL, 'tenant'),
 (148, 'tenant_d4_r404@smartdom.ac.th', '$2b$10$TeCA2t55FWKtm4X2jTF97OeVjpVqi26WRwLZFIcKo3sFMGUNN7A5q', 'นายยุรนันท์ ตันติวิทย์', 'tenant', 1, NULL, '2026-08-24 07:08:35', NULL, 'tenant'),
 (149, 'tenant_d4_r405@smartdom.ac.th', '$2b$10$TeCA2t55FWKtm4X2jTF97OeVjpVqi26WRwLZFIcKo3sFMGUNN7A5q', 'นางสาวณิชาภัทร รัตนโชติ', 'tenant', 1, NULL, '2026-08-24 07:08:35', NULL, 'tenant'),
-(150, 'tenant_d4_r406@smartdom.ac.th', '$2b$10$TeCA2t55FWKtm4X2jTF97OeVjpVqi26WRwLZFIcKo3sFMGUNN7A5q', 'นายวิศรุต มิ่งขวัญ', 'tenant', 1, NULL, '2026-08-24 07:08:36', NULL, 'tenant');
+(150, 'tenant_d4_r406@smartdom.ac.th', '$2b$10$TeCA2t55FWKtm4X2jTF97OeVjpVqi26WRwLZFIcKo3sFMGUNN7A5q', 'นายวิศรุต มิ่งขวัญ', 'tenant', 1, NULL, '2026-08-24 07:08:36', NULL, 'tenant'),
+(151, 'newuser_1787580274202@example.com', '$2b$10$I7pPtJEUq3n53fU8D41ZheTCuTEC9YKcahwmpQ8FoimuVI/oTEATK', 'user_1787580274202', 'owner', 1, NULL, '2026-08-24 14:04:34', NULL, 'owner');
 
 -- --------------------------------------------------------
 
@@ -4188,7 +4189,7 @@ ALTER TABLE `tenants`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=151;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=152;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

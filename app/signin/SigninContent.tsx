@@ -49,28 +49,26 @@ export default function SignInContent() {
       
       if (!data.success) {
         setError(data.message || 'อีเมลหรือรหัสผ่านไม่ถูกต้อง');
-      } else {
-        if (typeof window !== 'undefined') {
-          localStorage.setItem('userEmail', email);
-        }
-        
-        // NextAuth Credentials Session sign in without auto redirecting to 0.0.0.0
-        try {
-          await signIn('credentials', { email, password, redirect: false });
-        } catch (e) {
-          // ignore NextAuth client host mismatch
-        }
+        setLoading(false);
+        return;
+      }
 
-        const path = callbackUrl || data.redirectUrl || '/explore';
-        if (typeof window !== 'undefined') {
-          window.location.href = path;
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('userEmail', email.toLowerCase().trim());
+        if (data.user) {
+          localStorage.setItem('userRole', data.user.role || 'guest');
+          localStorage.setItem('userSubRole', data.user.sub_role || '');
+          localStorage.setItem('userName', data.user.name || '');
+          localStorage.setItem('userId', String(data.user.id || ''));
         }
       }
+
+      const targetPath = callbackUrl || data.redirectUrl || '/explore';
+      if (typeof window !== 'undefined') {
+        window.location.href = targetPath;
+      }
     } catch (err: any) {
-
-
-      setError('เกิดข้อผิดพลาดในการเชื่อมต่อ');
-    } finally {
+      setError('เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์');
       setLoading(false);
     }
   };

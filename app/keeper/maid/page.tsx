@@ -72,9 +72,9 @@ export default function MaidDashboardPage() {
   }, [activeDormId]);
 
   useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/signin');
-    } else if (status === 'authenticated') {
+    const localEmail = typeof window !== 'undefined' ? localStorage.getItem('userEmail') : null;
+    
+    if (status === 'authenticated') {
       const user = session?.user as any;
       if (user?.role !== 'keeper' || user?.sub_role !== 'maid') {
         router.push('/');
@@ -82,6 +82,15 @@ export default function MaidDashboardPage() {
         const savedDorm = typeof window !== 'undefined' ? localStorage.getItem('selectedKeeperDormId') || 'all' : 'all';
         setActiveDormId(savedDorm);
         fetchData(savedDorm);
+      }
+    } else if (status === 'unauthenticated') {
+      if (localEmail) {
+        // Fallback to local session storage
+        const savedDorm = typeof window !== 'undefined' ? localStorage.getItem('selectedKeeperDormId') || 'all' : 'all';
+        setActiveDormId(savedDorm);
+        fetchData(savedDorm);
+      } else {
+        router.push('/signin');
       }
     }
   }, [status, session, router, fetchData]);

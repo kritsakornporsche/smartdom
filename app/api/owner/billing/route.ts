@@ -1,24 +1,19 @@
 import { auth } from '@/auth';
-import { getDormDbFromSession } from '@/lib/db';
+import { getDb } from '@/lib/db';
 import { NextResponse } from 'next/server';
 
-
 export async function GET(req: Request) {
-    const session = await auth();
-  if (!session || !(session.user as any)?.dormDbName) return new Response(JSON.stringify({ success: false, message: 'Unauthorized or missing dormDbName' }), { status: 401, headers: { 'Content-Type': 'application/json' } });
-  const sql = getDormDbFromSession(session);
-
-const { searchParams } = new URL(req.url);
-  const dormId = searchParams.get('dormId');
-
-  if (!dormId) {
-    return NextResponse.json({ success: false, message: 'Dorm ID is required' }, { status: 400 });
+  const session = await auth();
+  if (!session) {
+    return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
   }
+  const sql = getDb();
+
+  const { searchParams } = new URL(req.url);
+  const dormId = searchParams.get('dormId') || '1';
 
   try {
-    
-    
-    // Fetch all bills for tenants in this dormitory
+    const targetDormId = parseInt(dormId, 10) || 1;
     const bills = await sql`
       SELECT 
         b.id, 
@@ -31,9 +26,9 @@ const { searchParams } = new URL(req.url);
         t.name as tenant_name,
         r.room_number
       FROM bills b
-      JOIN tenants t ON b.tenant_id = t.id
-      JOIN rooms r ON r.id = COALESCE(t.room_id, (SELECT room_id FROM contracts WHERE tenant_id = t.id AND status = 'Active' LIMIT 1))
-      WHERE r.dorm_id = ${parseInt(dormId)}
+      LEFT JOIN tenants t ON b.tenant_id = t.id
+      LEFT JOIN rooms r ON r.id = t.room_id
+      WHERE b.dorm_id = ${targetDormId} OR r.dorm_id = ${targetDormId}
       ORDER BY b.due_date DESC, b.created_at DESC
     `;
     
@@ -45,27 +40,26 @@ const { searchParams } = new URL(req.url);
 }
 
 export async function POST(req: Request) {
-    const session = await auth();
-  if (!session || !(session.user as any)?.dormDbName) return new Response(JSON.stringify({ success: false, message: 'Unauthorized or missing dormDbName' }), { status: 401, headers: { 'Content-Type': 'application/json' } });
-  const sql = getDormDbFromSession(session);
+  const session = await auth();
+  if (!session) {
+    return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
+  }
+  const sql = getDb();
 
-try {
+  try {
     const body = await req.json();
-    const { tenant_id, title, amount, billing_cycle, due_date } = body;
+    const { tenant_id, title, amount, billing_cycle, due_date, dorm_id, room_number, water_units, electric_units, water_amount, electric_amount, room_amount } = body;
 
     if (!tenant_id || !title || !amount || !due_date) {
       return NextResponse.json({ success: false, message: 'Missing required fields' }, { status: 400 });
     }
 
-    
-    
     const result = await sql`
-      INSERT INTO bills (tenant_id, title, amount, billing_cycle, due_date, status)
-      VALUES (${tenant_id}, ${title}, ${amount}, ${billing_cycle}, ${due_date}, 'Unpaid')
-      RETURNING *
+      INSERT INTO bills (tenant_id, title, amount, billing_cycle, due_date, status, dorm_id, room_number, water_units, electric_units, water_amount, electric_amount, room_amount)
+      VALUES (${tenant_id}, ${title}, ${amount}, ${billing_cycle}, ${due_date}, 'Unpaid', ${dorm_id || 1}, ${room_number || null}, ${water_units || 0}, ${electric_units || 0}, ${water_amount || 0}, ${electric_amount || 0}, ${room_amount || 0})
     `;
 
-    return NextResponse.json({ success: true, data: result[0] });
+    return NextResponse.json({ success: true, data: { id: (result as any).insertId, ...body } });
   } catch (err: any) {
     console.error('[Billing API POST] Error:', err);
     return NextResponse.json({ success: false, message: err.message }, { status: 500 });

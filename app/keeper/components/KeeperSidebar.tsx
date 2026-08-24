@@ -9,32 +9,65 @@ const navItems = [
   {
     href: '/keeper/maid',
     label: 'งานแม่บ้าน',
-    roles: ['maid'],
+    roles: ['maid', 'keeper'],
     icon: '🧹',
   },
   {
     href: '/keeper/technician',
     label: 'งานซ่อมบำรุง',
-    roles: ['technician'],
+    roles: ['technician', 'keeper'],
     icon: '🔧',
   },
 ];
 
-export default function KeeperSidebar() {
+export default function KeeperSidebar({ onDormChange }: { onDormChange?: (dormId: string) => void }) {
   const pathname = usePathname();
   const { data: session } = useSession();
   const [mounted, setMounted] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [dorms, setDorms] = useState<any[]>([]);
+  const [selectedDormId, setSelectedDormId] = useState<string>('all');
 
   const userSubRole = (session?.user as any)?.sub_role;
 
   useEffect(() => {
     setMounted(true);
+    // Fetch assigned dormitories
+    fetch('/api/keeper/dorms')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && data.dorms) {
+          setDorms(data.dorms);
+          const savedDorm = typeof window !== 'undefined' ? localStorage.getItem('selectedKeeperDormId') : null;
+          if (savedDorm) {
+            setSelectedDormId(savedDorm);
+          } else if (data.dorms.length > 0) {
+            const firstId = String(data.dorms[0].id);
+            setSelectedDormId(firstId);
+            localStorage.setItem('selectedKeeperDormId', firstId);
+          }
+        }
+      })
+      .catch(console.error);
   }, []);
+
+  const handleSelectDorm = (dormId: string) => {
+    setSelectedDormId(dormId);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('selectedKeeperDormId', dormId);
+      window.dispatchEvent(new CustomEvent('keeperDormChanged', { detail: { dormId } }));
+    }
+    if (onDormChange) onDormChange(dormId);
+  };
 
   if (!mounted) return <header className="h-16 bg-[#0F172A] border-b border-white/20/10 shrink-0" />;
 
-  const allowedNav = navItems.filter(item => item.roles.includes(userSubRole));
+  const allowedNav = navItems.filter(item => {
+    if (!userSubRole) return true;
+    return item.roles.includes(userSubRole);
+  });
+
+  const activeDormObj = dorms.find(d => String(d.id) === selectedDormId);
 
   return (
     <>
@@ -65,21 +98,47 @@ export default function KeeperSidebar() {
           </Link>
         </div>
 
+        {/* Multi-Dormitory Switcher Dropdown */}
         <div className="flex items-center gap-3">
+          {dorms.length > 0 && (
+            <div className="relative flex items-center bg-white/5 border border-white/10 rounded-xl px-3 py-1.5 hover:border-orange-500/50 transition-colors">
+              <span className="text-sm mr-2">🏢</span>
+              <select
+                id="keeper-dorm-switcher"
+                value={selectedDormId}
+                onChange={(e) => handleSelectDorm(e.target.value)}
+                className="bg-transparent text-xs font-bold text-white focus:outline-none cursor-pointer appearance-none pr-5"
+              >
+                <option value="all" className="bg-[#0F172A] text-white">ทุกหอพักที่ดูแล ({dorms.length} หอพัก)</option>
+                {dorms.map(d => (
+                  <option key={d.id} value={String(d.id)} className="bg-[#0F172A] text-white">
+                    {d.dorm_name}
+                  </option>
+                ))}
+              </select>
+              <div className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-white/50 text-[10px]">
+                ▼
+              </div>
+            </div>
+          )}
+
           <Link
             href="/explore"
-            className="px-3.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition-all flex items-center gap-1.5 border border-white/10 shadow-sm cursor-pointer hover:scale-105 active:scale-95"
+            className="px-3.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition-all flex items-center gap-1.5 border border-white/10 shadow-sm cursor-pointer hover:scale-105 active:scale-95 hidden md:flex"
             title="กลับไปหน้าสำรวจหอพัก"
           >
             <span>🏠</span>
-            <span className="hidden md:inline">สำรวจหอพัก</span>
+            <span>สำรวจหอพัก</span>
           </Link>
 
           <div className="text-right hidden sm:block">
             <p className="text-sm font-bold text-white">{session?.user?.name || 'Keeper'}</p>
-            <p className="text-xs text-white/40">{userSubRole === 'maid' ? 'แม่บ้าน' : 'ช่างซ่อม'}</p>
+            <p className="text-xs text-orange-400">
+              {userSubRole === 'maid' ? 'แม่บ้าน' : userSubRole === 'technician' ? 'ช่างซ่อมบำรุง' : 'ผู้ดูแล'}
+              {activeDormObj ? ` • ${activeDormObj.dorm_name}` : ''}
+            </p>
           </div>
-          <div className="h-9 w-9 rounded-full bg-[#0F172A]/10 border-2 border-white/20/20 shadow-sm overflow-hidden flex justify-center items-center">
+          <div className="h-9 w-9 rounded-full bg-orange-500/10 border-2 border-orange-500/30 shadow-sm overflow-hidden flex justify-center items-center">
             <span className="text-lg">{userSubRole === 'maid' ? '🧹' : '🔧'}</span>
           </div>
         </div>
@@ -104,7 +163,7 @@ export default function KeeperSidebar() {
             </div>
             <div>
               <h2 className="font-bold text-base tracking-tight text-white group-hover:text-orange-300 transition-colors">SmartDom</h2>
-              <p className="text-[10px] font-black text-orange-400 uppercase tracking-[0.15em] leading-none mt-1">Keeper</p>
+              <p className="text-[10px] font-black text-orange-400 uppercase tracking-[0.15em] leading-none mt-1">Keeper Portal</p>
             </div>
           </Link>
           <button 
@@ -117,7 +176,31 @@ export default function KeeperSidebar() {
           </button>
         </div>
 
-        <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
+        {/* Mobile menu dorm switcher */}
+        {dorms.length > 0 && (
+          <div className="px-4 pt-4 pb-2 border-b border-white/10">
+            <label className="text-[10px] font-bold text-white/50 uppercase tracking-wider block mb-1">
+              สลับหอพักที่ดูแล
+            </label>
+            <select
+              value={selectedDormId}
+              onChange={(e) => {
+                handleSelectDorm(e.target.value);
+                setIsOpen(false);
+              }}
+              className="w-full bg-[#1E293B] border border-white/10 rounded-xl px-3 py-2 text-xs font-bold text-white focus:outline-none"
+            >
+              <option value="all">ทุกหอพักที่ดูแล ({dorms.length} หอพัก)</option>
+              {dorms.map(d => (
+                <option key={d.id} value={String(d.id)}>
+                  {d.dorm_name}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+
+        <nav className="flex-1 px-4 py-4 space-y-2 overflow-y-auto">
           {allowedNav.map((item) => {
             const isActive = pathname === item.href;
             return (

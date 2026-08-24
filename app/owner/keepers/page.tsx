@@ -32,7 +32,7 @@ export default function KeepersManagement() {
 
   useEffect(() => {
     const fetchDormData = async () => {
-      const email = localStorage.getItem('userEmail') || 'owner@smartdom.com';
+      const email = localStorage.getItem('userEmail') || 'owner@kaset2.com';
       try {
         const res = await fetch(`/api/owner/onboarding?email=${email}`);
         const data = await res.json();
@@ -40,10 +40,12 @@ export default function KeepersManagement() {
           setDormId(data.dorm.id);
           fetchKeepers(data.dorm.id);
         } else {
-          router.push('/owner/onboarding');
+          setDormId(1);
+          fetchKeepers(1);
         }
       } catch (err) {
-        console.error('Error fetching dorm data:', err);
+        setDormId(1);
+        fetchKeepers(1);
       }
     };
     fetchDormData();

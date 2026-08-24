@@ -4,7 +4,7 @@
  */
 const mysql = require('mysql2/promise');
 
-const MYSQL_BASE = process.env.DATABASE_URL || 'mysql://smartdom:smartdom@kritsakorn.thddns.net:5994/smartdomdb';
+const MYSQL_BASE = process.env.DATABASE_URL || 'mysql://smartdom:smartdom@localhost:3306/smartdomdb';
 
 async function migrate() {
   console.log('🔄 Connecting to database for contracts table migration...');

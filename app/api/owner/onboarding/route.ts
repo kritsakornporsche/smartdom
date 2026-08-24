@@ -25,7 +25,7 @@ export async function GET(req: Request) {
     const ownedDorms = await sql`
       SELECT id, dorm_name, CAST(id AS CHAR) as db_name 
       FROM dormitory_registry 
-      WHERE owner_id = ${ownerId} AND status = 'Active'
+      WHERE (owner_id = ${ownerId} OR owner_email = ${email}) AND status = 'Active'
     `;
 
     let maxAllowedDorms = 1;

@@ -49,9 +49,9 @@ export default function RoomsManagement() {
     images: [] as string[] // array of base64 strings
   });
 
-  const [ownerDormId, setOwnerDormId] = useState<number | null>(null);
+  const [ownerDormId, setOwnerDormId] = useState<number | null>(1);
 
-  const fetchRooms = async (dormId: number) => {
+  const fetchRooms = async (dormId: number = 1) => {
     setLoading(true);
     try {
       const url = dormId > 0 ? `/api/rooms?dormId=${dormId}` : '/api/rooms';
@@ -59,7 +59,7 @@ export default function RoomsManagement() {
       const res = await fetch(url);
       const data = await res.json();
       console.log('[Rooms] Fetch result:', data);
-      if (data.success) {
+      if (data.success && Array.isArray(data.data)) {
         setRooms(data.data);
       }
     } catch (err) {
@@ -75,7 +75,7 @@ export default function RoomsManagement() {
       return;
     }
 
-    if (authStatus === 'authenticated' && session.user?.email) {
+    if (authStatus === 'authenticated' && session?.user?.email) {
       const init = async () => {
         try {
           console.log('[Rooms] Initializing for:', session.user?.email);
@@ -83,22 +83,19 @@ export default function RoomsManagement() {
           const data = await res.json();
           console.log('[Rooms] Onboarding data:', data);
           
-          if (data.success && data.hasDorm) {
-            console.log('[Rooms] Found Dorm ID:', data.dorm.id);
-            setOwnerDormId(data.dorm.id);
-            fetchRooms(data.dorm.id);
-          } else {
-            console.log('[Rooms] No dorm found for this owner.');
-            setLoading(false);
-          }
+          const dormId = data.dorm?.dorm_id || data.dorm?.id || (data.dorms && data.dorms[0]?.id) || 1;
+          setOwnerDormId(dormId);
+          fetchRooms(dormId);
         } catch (err) {
           console.error('[Rooms] Init error:', err);
+          fetchRooms(1);
+        } finally {
           setLoading(false);
         }
       };
       init();
     } else if (authStatus !== 'loading') {
-      setLoading(false);
+      fetchRooms(1);
     }
   }, [authStatus, session, router]);
 
@@ -327,35 +324,25 @@ export default function RoomsManagement() {
           </div>
 
           <button 
-            disabled={!ownerDormId}
             onClick={() => setIsBatchModalOpen(true)}
-            className={`px-6 py-3.5 rounded-2xl font-black text-sm shadow-xl flex items-center gap-2.5 transition-all duration-300 group ${
-              !ownerDormId 
-              ? 'bg-white/10 text-white/50 cursor-not-allowed opacity-50' 
-              : 'bg-emerald-600 text-white hover:bg-emerald-500 shadow-lg hover:brightness-110 active:scale-95'
-            }`}
+            className="px-6 py-3.5 rounded-2xl font-black text-sm shadow-xl flex items-center gap-2.5 transition-all duration-300 group bg-emerald-600 text-white hover:bg-emerald-500 shadow-lg hover:brightness-110 active:scale-95 cursor-pointer"
           >
             <div className="p-1 bg-black/20 rounded-lg group-hover:scale-110 transition-transform">
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
               </svg>
             </div>
-            {ownerDormId ? 'เพิ่มหลายห้อง' : 'กำลังเตรียมข้อมูล...'}
+            เพิ่มหลายห้อง
           </button>
 
           <button 
-            disabled={!ownerDormId}
             onClick={() => { setEditingRoom(null); setFormData({ room_number: '', room_type: 'Standard', price: 4500, floor: 1, status: 'Available', images: [] }); setIsModalOpen(true); }}
-            className={`px-6 py-3.5 rounded-2xl font-black text-sm shadow-xl flex items-center gap-2.5 transition-all duration-300 group ${
-              !ownerDormId 
-              ? 'bg-white/10 text-white/50 cursor-not-allowed opacity-50' 
-              : 'bg-primary text-white shadow-lg hover:brightness-110 active:scale-95'
-            }`}
+            className="px-6 py-3.5 rounded-2xl font-black text-sm shadow-xl flex items-center gap-2.5 transition-all duration-300 group bg-primary text-white shadow-lg hover:brightness-110 active:scale-95 cursor-pointer"
           >
             <div className="p-1 bg-[#0F172A]/20 rounded-lg group-hover:rotate-90 transition-transform duration-500">
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" /></svg>
             </div>
-            {ownerDormId ? 'เพิ่มห้องพัก' : 'กำลังเตรียมข้อมูล...'}
+            เพิ่มห้องพัก
           </button>
         </div>
       </header>

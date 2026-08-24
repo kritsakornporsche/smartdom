@@ -1,21 +1,21 @@
 import { NextResponse } from 'next/server';
-import { neon } from '@/lib/mysql-adapter';
-
-const MYSQL_BASE = 'mysql://smartdom:smartdom@kritsakorn.thddns.net:5994';
+import { getDb } from '@/lib/db';
+import { auth } from '@/auth';
 
 export async function GET(req: Request) {
-  const { searchParams } = new URL(req.url);
-  const dormDbName = searchParams.get('dormDbName');
-
-  if (!dormDbName) {
-    return NextResponse.json({ success: false, message: 'dormDbName required' }, { status: 400 });
-  }
-
   try {
-    const sql = neon(`${MYSQL_BASE}/${dormDbName}`);
+    const session = await auth();
+    if (!session) {
+      return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
+    }
+
+    const { searchParams } = new URL(req.url);
+    const dormId = parseInt(searchParams.get('dormId') || (session.user as any)?.dormId || '1', 10);
+    const sql = getDb();
     
     const transactions = await sql`
       SELECT * FROM accounting_transactions
+      WHERE dorm_id = ${dormId}
       ORDER BY transaction_date DESC, created_at DESC
       LIMIT 100
     `;
@@ -28,6 +28,7 @@ export async function GET(req: Request) {
         SUM(CASE WHEN type = 'Income' THEN amount ELSE 0 END) as income,
         SUM(CASE WHEN type = 'Expense' THEN amount ELSE 0 END) as expense
       FROM accounting_transactions
+      WHERE dorm_id = ${dormId}
       GROUP BY YEAR(transaction_date), MONTH(transaction_date)
       ORDER BY year DESC, month DESC
       LIMIT 12
@@ -47,25 +48,33 @@ export async function GET(req: Request) {
       totals: { income: totalIncome, expense: totalExpense, profit: totalIncome - totalExpense },
     });
   } catch (err: any) {
+    console.error('[Accounting API Error]', err);
     return NextResponse.json({ success: false, message: err.message }, { status: 500 });
   }
 }
 
 export async function POST(req: Request) {
   try {
-    const { dormDbName, type, category, amount, description, transaction_date } = await req.json();
-    if (!dormDbName || !type || !category || !amount || !transaction_date) {
+    const session = await auth();
+    if (!session) {
+      return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
+    }
+
+    const { type, category, amount, description, transaction_date, dorm_id } = await req.json();
+    if (!type || !category || !amount || !transaction_date) {
       return NextResponse.json({ success: false, message: 'Missing fields' }, { status: 400 });
     }
 
-    const sql = neon(`${MYSQL_BASE}/${dormDbName}`);
+    const dormId = parseInt(dorm_id || (session.user as any)?.dormId || '1', 10);
+    const sql = getDb();
     const result = await sql`
-      INSERT INTO accounting_transactions (type, category, amount, description, transaction_date)
-      VALUES (${type}, ${category}, ${amount}, ${description || ''}, ${transaction_date})
-      RETURNING id
+      INSERT INTO accounting_transactions (dorm_id, type, category, amount, description, transaction_date)
+      VALUES (${dormId}, ${type}, ${category}, ${amount}, ${description || null}, ${transaction_date})
     `;
-    return NextResponse.json({ success: true, data: result[0] }, { status: 201 });
+
+    return NextResponse.json({ success: true, data: { id: (result as any).insertId } });
   } catch (err: any) {
+    console.error('[Accounting POST Error]', err);
     return NextResponse.json({ success: false, message: err.message }, { status: 500 });
   }
 }

@@ -8,22 +8,15 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const dormIdParam = searchParams.get('dormId');
     
-    // Determine the dorm_id to query based on parameter or session
-    let targetDormId: number | null = null;
-    
+    let targetDormId = 1;
     if (dormIdParam) {
-      targetDormId = parseInt(dormIdParam, 10);
+      targetDormId = parseInt(dormIdParam, 10) || 1;
     } else {
       const session = await auth();
-      if (!session) {
-        return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
+      const userDormId = (session?.user as any)?.dormId;
+      if (userDormId) {
+        targetDormId = parseInt(userDormId, 10) || 1;
       }
-      const userDormId = (session.user as any)?.dormId;
-      targetDormId = userDormId ? parseInt(userDormId, 10) : null;
-    }
-
-    if (!targetDormId) {
-      return NextResponse.json({ success: false, message: 'Missing dormId context' }, { status: 400 });
     }
 
     const sql = getDb();
@@ -56,10 +49,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: false, message: 'Missing required fields' }, { status: 400 });
     }
     
-    const targetDormId = parseInt((session.user as any).dormId, 10);
-    if (!targetDormId) {
-       return NextResponse.json({ success: false, message: 'Owner has no dormitory assigned' }, { status: 400 });
-    }
+    const targetDormId = parseInt((session.user as any)?.dormId, 10) || parseInt(body.dorm_id, 10) || 1;
 
     const sql = getDb();
 

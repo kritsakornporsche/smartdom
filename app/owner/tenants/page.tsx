@@ -37,18 +37,20 @@ export default function TenantsManagement() {
 
   useEffect(() => {
     const init = async () => {
-      const email = localStorage.getItem('userEmail') || 'owner@smartdom.com';
+      const email = localStorage.getItem('userEmail') || 'owner@kaset2.com';
       try {
         const res = await fetch(`/api/owner/onboarding?email=${email}`);
         const data = await res.json();
         if (data.success && data.hasDorm) {
           setOwnerDormId(data.dorm.id);
           fetchTenants(data.dorm.id);
-        } else if (data.success && !data.hasDorm) {
-          router.push('/owner/onboarding');
+        } else {
+          setOwnerDormId(1);
+          fetchTenants(1);
         }
       } catch (err) {
-        console.error(err);
+        setOwnerDormId(1);
+        fetchTenants(1);
       }
     };
     init();

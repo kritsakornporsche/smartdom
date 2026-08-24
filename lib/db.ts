@@ -10,7 +10,7 @@ import { Pool } from '@/lib/mysql-adapter';
 
 const MYSQL_BASE = process.env.DATABASE_URL 
   ? process.env.DATABASE_URL.replace(/\/[^\/]+$/, '')
-  : 'mysql://smartdom:smartdom@kritsakorn.thddns.net:5994';
+  : 'mysql://smartdom:smartdom@localhost:3306';
 
 // Use a singleton pool to prevent MySQL max_connections exhaustion
 let globalDbPool: any = null;

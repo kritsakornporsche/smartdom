@@ -1,29 +1,20 @@
-import { getDormDbFromSession } from '@/lib/db';
+import { getDb } from '@/lib/db';
 import { NextResponse } from 'next/server';
-
 import { auth } from '@/auth';
 
-// Get current user id from session helper (if needed)
-const getUserFromSession = async () => {
-  const session = await auth();
-  return session?.user;
-};
-
-export async function GET() {
+export async function GET(req: Request) {
+  try {
     const session = await auth();
-  if (!session || !(session.user as any)?.dormDbName) return new Response(JSON.stringify({ success: false, message: 'Unauthorized or missing dormDbName' }), { status: 401, headers: { 'Content-Type': 'application/json' } });
-  const sql = getDormDbFromSession(session);
-
-try {
+    const { searchParams } = new URL(req.url);
+    const dormId = parseInt(searchParams.get('dormId') || (session?.user as any)?.dormId || '1', 10);
+    const sql = getDb();
     
-    
-    // Fetch active announcements, newest first
     const news = await sql`
-      SELECT a.*, u.name as author_name 
+      SELECT a.*, COALESCE(u.name, 'เจ้าของหอพัก') as author_name 
       FROM announcements a
-      LEFT JOIN users u ON a.created_by = u.id
-      WHERE a.is_active = TRUE
-      ORDER BY a.created_at DESC
+      LEFT JOIN users u ON a.dorm_id = u.id
+      WHERE a.is_active = TRUE AND (a.dorm_id = ${dormId} OR a.dorm_id IS NULL)
+      ORDER BY a.is_important DESC, a.created_at DESC
     `;
 
     return NextResponse.json({ success: true, data: news });
@@ -34,31 +25,25 @@ try {
 }
 
 export async function POST(request: Request) {
+  try {
     const session = await auth();
-  if (!session || !(session.user as any)?.dormDbName) return new Response(JSON.stringify({ success: false, message: 'Unauthorized or missing dormDbName' }), { status: 401, headers: { 'Content-Type': 'application/json' } });
-  const sql = getDormDbFromSession(session);
-
-try {
-    const user = await getUserFromSession();
-    // Only 'owner' or 'admin' can post news
-    const role = (user as any)?.role;
-    if (!user || (role !== 'owner' && role !== 'admin')) {
+    if (!session) {
       return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
     }
 
-    const { title, content, category } = await request.json();
+    const { title, content, category, is_important, dorm_id } = await request.json();
     if (!title || !content) {
       return NextResponse.json({ success: false, message: 'Missing fields' }, { status: 400 });
     }
 
-    
+    const targetDormId = parseInt(dorm_id || (session.user as any)?.dormId || '1', 10);
+    const sql = getDb();
     const result = await sql`
-      INSERT INTO announcements (title, content, category, created_by)
-      VALUES (${title}, ${content}, ${category || 'info'}, ${user.id})
-      RETURNING *
+      INSERT INTO announcements (dorm_id, title, content, category, is_important, is_active)
+      VALUES (${targetDormId}, ${title}, ${content}, ${category || 'general'}, ${is_important ? 1 : 0}, 1)
     `;
 
-    return NextResponse.json({ success: true, data: result[0] });
+    return NextResponse.json({ success: true, data: { id: (result as any).insertId } });
   } catch (error: any) {
     console.error('Announcements POST Error:', error);
     return NextResponse.json({ success: false, message: 'Server Error' }, { status: 500 });

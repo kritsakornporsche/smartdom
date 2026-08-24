@@ -2,12 +2,14 @@
 
 import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useCallback } from 'react';
 import Image from 'next/image';
 import KeeperSidebar from '../components/KeeperSidebar';
 
 interface MaidJob {
   id: number;
+  dorm_id?: number;
+  dorm_name?: string;
   status: string;
   job_type: string;
   created_at: string;
@@ -44,6 +46,7 @@ export default function MaidDashboardPage() {
   const [currentTime, setCurrentTime] = useState<string>('');
   const [data, setData] = useState<MaidData | null>(null);
   const [loadingData, setLoadingData] = useState(true);
+  const [activeDormId, setActiveDormId] = useState<string>('all');
   
   // Filtering & Search
   const [filter, setFilter] = useState<'all' | 'pending' | 'in_progress' | 'completed'>('all');
@@ -55,6 +58,19 @@ export default function MaidDashboardPage() {
   const [finishNotes, setFinishNotes] = useState('');
   const [finishPhoto, setFinishPhoto] = useState('');
 
+  const fetchData = useCallback(async (dormId = activeDormId, showLoading = true) => {
+    if (showLoading) setLoadingData(true);
+    try {
+      const res = await fetch(`/api/keeper/maid/jobs?dormId=${dormId}`);
+      const json = await res.json();
+      if (json.success) setData(json.data);
+    } catch (err) {
+      console.error('Error fetching maid jobs:', err);
+    } finally {
+      if (showLoading) setTimeout(() => setLoadingData(false), 200);
+    }
+  }, [activeDormId]);
+
   useEffect(() => {
     if (status === 'unauthenticated') {
       router.push('/signin');
@@ -63,18 +79,32 @@ export default function MaidDashboardPage() {
       if (user?.role !== 'keeper' || user?.sub_role !== 'maid') {
         router.push('/');
       } else {
-        fetchData();
+        const savedDorm = typeof window !== 'undefined' ? localStorage.getItem('selectedKeeperDormId') || 'all' : 'all';
+        setActiveDormId(savedDorm);
+        fetchData(savedDorm);
       }
     }
-  }, [status, session, router]);
+  }, [status, session, router, fetchData]);
+
+  // Listen to dorm changes from sidebar
+  useEffect(() => {
+    const handleDormChange = (e: any) => {
+      const newDormId = e.detail?.dormId || 'all';
+      setActiveDormId(newDormId);
+      fetchData(newDormId);
+    };
+
+    window.addEventListener('keeperDormChanged', handleDormChange);
+    return () => window.removeEventListener('keeperDormChanged', handleDormChange);
+  }, [fetchData]);
 
   // Polling every 30 seconds
   useEffect(() => {
     const poll = setInterval(() => {
-      fetchData(false);
+      fetchData(activeDormId, false);
     }, 30000);
     return () => clearInterval(poll);
-  }, []);
+  }, [activeDormId, fetchData]);
 
   useEffect(() => {
     setCurrentTime(new Date().toLocaleTimeString('th-TH'));
@@ -84,17 +114,18 @@ export default function MaidDashboardPage() {
     return () => clearInterval(timer);
   }, []);
 
-  const fetchData = async (showLoading = true) => {
-    if (showLoading) setLoadingData(true);
-    try {
-      const res = await fetch('/api/keeper/maid/jobs');
-      const json = await res.json();
-      if (json.success) setData(json.data);
-    } catch (err) {
-      console.error('Error fetching maid jobs:', err);
-    } finally {
-      if (showLoading) setTimeout(() => setLoadingData(false), 300);
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      alert('ขนาดไฟล์ภาพต้องไม่เกิน 5MB');
+      return;
     }
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      setFinishPhoto(event.target?.result as string);
+    };
+    reader.readAsDataURL(file);
   };
 
   const updateStatus = async (id: number, newStatus: string, notes?: string, photo?: string) => {
@@ -106,11 +137,15 @@ export default function MaidDashboardPage() {
       });
       const json = await res.json();
       if (json.success) {
-        setIsFinishing(false);
-        setFinishNotes('');
-        setFinishPhoto('');
-        setSelectedJob(null);
-        fetchData(); 
+        if (newStatus === 'in_progress' && selectedJob && selectedJob.id === id) {
+          setSelectedJob({ ...selectedJob, status: 'in_progress' });
+        } else {
+          setIsFinishing(false);
+          setFinishNotes('');
+          setFinishPhoto('');
+          setSelectedJob(null);
+        }
+        fetchData(activeDormId, false); 
       } else {
         alert('เกิดข้อผิดพลาด: ' + json.message);
       }
@@ -125,7 +160,8 @@ export default function MaidDashboardPage() {
     return data.jobs.filter(job => {
       const matchesFilter = filter === 'all' || job.status === filter;
       const matchesSearch = job.room_number.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                            (jobTypeConfig[job.job_type] || '').toLowerCase().includes(searchQuery.toLowerCase());
+                            (jobTypeConfig[job.job_type] || job.job_type || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+                            (job.dorm_name || '').toLowerCase().includes(searchQuery.toLowerCase());
       return matchesFilter && matchesSearch;
     });
   }, [data, filter, searchQuery]);
@@ -136,13 +172,18 @@ export default function MaidDashboardPage() {
 
   return (
     <div className="flex flex-col h-screen bg-[#080F1E]">
-      <KeeperSidebar />
+      <KeeperSidebar onDormChange={(id) => { setActiveDormId(id); fetchData(id); }} />
       
       <main className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
         {/* Header */}
         <header className="h-20 bg-[#0F172A] border-b border-white/20/10 flex items-center justify-between px-10 shrink-0">
           <div>
-            <h1 className="font-display text-xl font-bold tracking-tight text-white">ภาพรวมงานแม่บ้าน</h1>
+            <div className="flex items-center gap-3">
+              <h1 className="font-display text-xl font-bold tracking-tight text-white">ภาพรวมงานแม่บ้าน</h1>
+              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-orange-500/20 text-orange-400 border border-orange-500/30">
+                Multi-Dormitory
+              </span>
+            </div>
             <p className="text-xs text-white/50 font-medium mt-0.5">ยินดีต้อนรับคุณ {session?.user?.name}</p>
           </div>
           <div className="flex items-center gap-4">
@@ -167,7 +208,7 @@ export default function MaidDashboardPage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="bg-[#0F172A] border border-white/20/10 shadow-sm p-6 rounded-3xl flex flex-col relative overflow-hidden group">
                 <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform">🧹</div>
-                <span className="text-sm font-semibold text-white">งานทั้งหมดวันนี้</span>
+                <span className="text-sm font-semibold text-white">งานทั้งหมดในระบบ</span>
                 <div className="mt-4 flex items-baseline gap-2">
                   <span className="text-4xl font-display font-semibold text-muted-foreground">{loadingData ? '-' : data?.stats?.total || 0}</span>
                   <span className="text-sm text-white/50 font-medium">ห้อง</span>
@@ -183,7 +224,7 @@ export default function MaidDashboardPage() {
               </div>
               <div className="bg-[#0F172A] border border-white/20/10 shadow-sm p-6 rounded-3xl flex flex-col relative overflow-hidden group">
                 <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform">✨</div>
-                <span className="text-sm font-semibold text-white">เสร็จสมบูรณ์วันนี้</span>
+                <span className="text-sm font-semibold text-white">เสร็จสมบูรณ์แล้ว</span>
                 <div className="mt-4 flex items-baseline gap-2">
                   <span className="text-4xl font-display font-semibold text-emerald-500">{loadingData ? '-' : data?.stats?.completed || 0}</span>
                   <span className="text-sm text-emerald-500/70 font-medium">ห้อง</span>
@@ -211,7 +252,7 @@ export default function MaidDashboardPage() {
               <div className="relative w-full md:w-64">
                 <input 
                   type="text" 
-                  placeholder="ค้นหาเลขห้อง..."
+                  placeholder="ค้นหาเลขห้อง หรือ หอพัก..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full bg-[#0F172A] border border-white/20/10 rounded-2xl px-10 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 text-white"
@@ -226,11 +267,11 @@ export default function MaidDashboardPage() {
             <section className="bg-[#0F172A] border border-white/20/10 rounded-3xl shadow-sm overflow-hidden min-h-[400px]">
               <div className="px-7 py-5 border-b border-white/20/10 flex items-center justify-between bg-[#0F172A]/50 backdrop-blur-sm sticky top-0 z-10">
                 <div>
-                  <h2 className="font-display text-base font-bold text-white">คิวงาน ({filteredJobs.length})</h2>
-                  <p className="text-xs text-white/50 mt-0.5">รายการงานที่ตรงตามเงื่อนไข</p>
+                  <h2 className="font-display text-base font-bold text-white">คิวงานทำความสะอาด ({filteredJobs.length})</h2>
+                  <p className="text-xs text-white/50 mt-0.5">รายการงานที่ตรงตามเงื่อนไขหอพักที่เลือก</p>
                 </div>
                 <button 
-                  onClick={() => fetchData()} 
+                  onClick={() => fetchData(activeDormId)} 
                   disabled={loadingData}
                   className={`text-xs font-semibold hover:text-white/80 flex items-center gap-1 transition-all ${loadingData ? 'text-white/50 opacity-50 cursor-not-allowed' : 'text-muted-foreground'}`}
                 >
@@ -249,23 +290,31 @@ export default function MaidDashboardPage() {
               ) : filteredJobs.length === 0 ? (
                 <div className="p-20 text-center flex flex-col items-center gap-4">
                   <div className="text-4xl">📭</div>
-                  <p className="text-sm font-medium text-white/50">ไม่พบรายการงานที่ต้องการ</p>
+                  <p className="text-sm font-medium text-white/50">ไม่พบรายการงานในหอพักนี้</p>
                 </div>
               ) : (
-                <div className="divide-y divide-[#E5DFD3]">
+                <div className="divide-y divide-white/5">
                   {filteredJobs.map((task) => (
                     <div 
                       key={task.id} 
-                      className="px-7 py-6 flex items-center gap-6 hover:bg-[#0F172A] transition-colors cursor-pointer group"
+                      className="px-7 py-6 flex items-center gap-6 hover:bg-white/5 transition-colors cursor-pointer group"
                       onClick={() => setSelectedJob(task)}
                     >
-                      <div className="h-14 w-14 rounded-2xl bg-white/5 flex flex-col items-center justify-center shrink-0 border border-white/20/10 group-hover:border-primary transition-colors">
-                        <span className="text-[10px] font-bold text-white/50 uppercase leading-none mb-1">ห้อง</span>
-                        <span className="text-lg font-black text-white leading-none">{task.room_number || '-'}</span>
+                      <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-orange-500/20 to-amber-500/10 flex flex-col items-center justify-center shrink-0 border-2 border-orange-500/40 group-hover:border-orange-400 group-hover:scale-105 transition-all shadow-md shadow-orange-500/10">
+                        <span className="text-[10px] font-black text-orange-400 uppercase leading-none mb-1">ห้อง</span>
+                        <span className="text-2xl font-black text-white leading-none tracking-tight">{task.room_number || '-'}</span>
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-3">
-                           <h3 className="text-sm font-bold text-white truncate">{jobTypeConfig[task.job_type] || task.job_type}</h3>
+                           <h3 className="text-base font-bold text-white truncate">{jobTypeConfig[task.job_type] || task.job_type}</h3>
+                           <span className="px-2.5 py-0.5 rounded-lg text-xs font-black bg-orange-500/20 text-orange-300 border border-orange-500/30">
+                             ห้อง {task.room_number}
+                           </span>
+                           {task.dorm_name && (
+                             <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-blue-500/20 text-blue-300 border border-blue-500/30">
+                               🏢 {task.dorm_name}
+                             </span>
+                           )}
                            <span className={`px-2 py-0.5 rounded-full text-[9px] font-black tracking-wider uppercase ${statusConfig[task.status]?.bg || 'bg-white/10 text-white/80'}`}>
                             {statusConfig[task.status]?.label || task.status}
                           </span>
@@ -278,7 +327,7 @@ export default function MaidDashboardPage() {
                             มอบหมายเมื่อ {new Date(task.created_at).toLocaleDateString('th-TH')}
                           </span>
                           {task.completed_at && (
-                            <span className="text-[10px] text-emerald-600 flex items-center gap-1 font-bold italic">
+                            <span className="text-[10px] text-emerald-400 flex items-center gap-1 font-bold italic">
                               สำเร็จเมื่อ {new Date(task.completed_at).toLocaleTimeString('th-TH')}
                             </span>
                           )}
@@ -319,19 +368,32 @@ export default function MaidDashboardPage() {
             <div className="absolute inset-0 bg-[#3E342B]/40 backdrop-blur-sm" onClick={() => { setSelectedJob(null); setIsFinishing(false); }}></div>
             <div className="bg-[#0F172A] rounded-[40px] shadow-2xl w-full max-w-lg relative z-10 overflow-hidden border border-white/20/10 animate-in fade-in zoom-in duration-200">
               <div className="p-8">
-                <div className="flex items-center justify-between mb-8">
+                {/* Enhanced Modal Header with Prominent Room Badge */}
+                <div className="flex items-center justify-between mb-8 pb-6 border-b border-white/10">
                     <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center text-2xl">
-                            {statusConfig[selectedJob.status]?.icon}
+                        <div className="h-16 w-16 bg-gradient-to-br from-orange-500 to-amber-600 rounded-2xl flex flex-col items-center justify-center text-white shadow-xl shadow-orange-500/20 border border-white/20 shrink-0">
+                            <span className="text-[10px] font-black uppercase tracking-wider text-white/80 leading-none">ห้อง</span>
+                            <span className="text-2xl font-black leading-none mt-1">{selectedJob.room_number}</span>
                         </div>
                         <div>
-                            <h3 className="text-xl font-display font-bold text-white">
-                                {isFinishing ? 'ยืนยันงานเสร็จสิ้น' : 'รายละเอียดงาน'}
-                            </h3>
-                            <p className="text-xs text-white/50 font-medium">ห้อง {selectedJob.room_number}</p>
+                            <div className="flex items-center gap-2">
+                                <h3 className="text-xl font-display font-black text-white">
+                                    {isFinishing ? 'ยืนยันงานเสร็จสิ้น' : 'รายละเอียดงาน'}
+                                </h3>
+                            </div>
+                            <div className="flex items-center gap-2 mt-1.5 flex-wrap">
+                                <span className="px-3 py-1 rounded-xl text-xs font-black bg-orange-500/20 text-orange-300 border border-orange-500/30">
+                                    🚪 ห้องพัก {selectedJob.room_number}
+                                </span>
+                                {selectedJob.dorm_name && (
+                                    <span className="px-2.5 py-1 rounded-xl text-xs font-medium bg-blue-500/10 text-blue-300 border border-blue-500/20">
+                                        🏢 {selectedJob.dorm_name}
+                                    </span>
+                                )}
+                            </div>
                         </div>
                     </div>
-                    <button onClick={() => { setSelectedJob(null); setIsFinishing(false); }} className="text-white/50 hover:text-white transition-colors">
+                    <button onClick={() => { setSelectedJob(null); setIsFinishing(false); }} className="p-2 text-white/50 hover:text-white hover:bg-white/10 rounded-xl transition-all">
                         <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                         </svg>
@@ -346,23 +408,46 @@ export default function MaidDashboardPage() {
                         value={finishNotes}
                         onChange={(e) => setFinishNotes(e.target.value)}
                         placeholder="ระบุสิ่งที่ทำลงไป หรือสิ่งที่พบล่าสุด..."
-                        className="w-full bg-[#0F172A] border border-white/20/10 rounded-2xl p-4 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 h-24"
+                        className="w-full bg-[#1E293B] border border-white/20/10 rounded-2xl p-4 text-sm text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 h-24"
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-bold uppercase tracking-wider text-white/50 mb-2">ลิ้งก์รูปภาพหลักฐาน (หรือระบุข้อความ)</label>
-                      <input 
-                        type="text" 
-                        value={finishPhoto}
-                        onChange={(e) => setFinishPhoto(e.target.value)}
-                        placeholder="https://images.com/done.jpg"
-                        className="w-full bg-[#0F172A] border border-white/20/10 rounded-2xl px-4 py-3 text-sm focus:outline-none"
-                      />
+                      <label className="block text-xs font-bold uppercase tracking-wider text-white/70 mb-2">
+                        📸 อัปโหลดรูปภาพหลักฐานการทำงาน
+                      </label>
+                      {finishPhoto ? (
+                        <div className="relative rounded-2xl overflow-hidden border border-emerald-500/40 bg-black/40 p-2">
+                          <img src={finishPhoto} alt="หลักฐานการทำงาน" className="h-44 w-full object-cover rounded-xl" />
+                          <button
+                            type="button"
+                            onClick={() => setFinishPhoto('')}
+                            className="absolute top-4 right-4 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold px-3 py-1.5 rounded-xl shadow-lg transition-all flex items-center gap-1 cursor-pointer"
+                          >
+                            ✕ ลบรูปภาพ
+                          </button>
+                        </div>
+                      ) : (
+                        <label className="flex flex-col items-center justify-center border-2 border-dashed border-white/20 hover:border-orange-500/60 bg-white/5 hover:bg-white/10 rounded-2xl p-6 cursor-pointer transition-all group">
+                          <div className="h-12 w-12 rounded-full bg-orange-500/10 border border-orange-500/30 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform mb-2">
+                            📷
+                          </div>
+                          <span className="text-sm font-bold text-white group-hover:text-orange-300 transition-colors">
+                            คลิกหรือแตะเพื่อเลือกรูปภาพจากเครื่อง / ถ่ายภาพ
+                          </span>
+                          <span className="text-xs text-white/40 mt-1">รองรับ JPG, PNG สูงสุด 5MB</span>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={handleFileChange}
+                            className="hidden"
+                          />
+                        </label>
+                      )}
                     </div>
                     <div className="flex gap-3 pt-4">
                        <button 
                         onClick={() => setIsFinishing(false)}
-                        className="flex-1 px-4 py-3.5 rounded-2xl border border-white/20/10 text-white/50 text-xs font-bold hover:bg-[#0F172A] transition-all"
+                        className="flex-1 px-4 py-3.5 rounded-2xl border border-white/20/10 text-white/50 text-xs font-bold hover:bg-[#1E293B] transition-all"
                        >
                          ยกเลิก
                        </button>
@@ -376,8 +461,14 @@ export default function MaidDashboardPage() {
                   </div>
                 ) : (
                   <div className="space-y-6">
-                    <div className="bg-[#0F172A] rounded-3xl p-6 border border-white/20/10">
+                    <div className="bg-[#1E293B] rounded-3xl p-6 border border-white/20/10">
                         <dl className="grid grid-cols-2 gap-y-4 text-sm">
+                            <dt className="text-white/50 font-medium">หมายเลขห้องพัก:</dt>
+                            <dd className="text-orange-300 text-base font-black">ห้อง {selectedJob.room_number}</dd>
+
+                            <dt className="text-white/50 font-medium">หอพัก:</dt>
+                            <dd className="text-white font-bold">{selectedJob.dorm_name || 'ไม่ระบุ'}</dd>
+
                             <dt className="text-white/50 font-medium">ประเภทงาน:</dt>
                             <dd className="text-white font-bold">{jobTypeConfig[selectedJob.job_type] || selectedJob.job_type}</dd>
                             
@@ -394,7 +485,7 @@ export default function MaidDashboardPage() {
                             {selectedJob.completed_at && (
                                 <>
                                     <dt className="text-white/50 font-medium">เวลาเสร็จสิ้น:</dt>
-                                    <dd className="text-emerald-600 font-bold">{new Date(selectedJob.completed_at).toLocaleString('th-TH')}</dd>
+                                    <dd className="text-emerald-400 font-bold">{new Date(selectedJob.completed_at).toLocaleString('th-TH')}</dd>
                                 </>
                             )}
                         </dl>
@@ -405,7 +496,7 @@ export default function MaidDashboardPage() {
                             {selectedJob.notes && (
                                 <div>
                                     <h4 className="text-xs font-bold uppercase tracking-wider text-white/50 mb-2">บันทึกจากผู้ทำ:</h4>
-                                    <p className="text-sm text-white bg-[#0F172A] border border-white/20/10 p-4 rounded-2xl">{selectedJob.notes}</p>
+                                    <p className="text-sm text-white bg-[#1E293B] border border-white/20/10 p-4 rounded-2xl">{selectedJob.notes}</p>
                                 </div>
                             )}
                             {selectedJob.photo_url && (
@@ -443,7 +534,7 @@ export default function MaidDashboardPage() {
                         {selectedJob.status === 'completed' && (
                             <button 
                                 onClick={() => setSelectedJob(null)}
-                                className="w-full px-4 py-4 rounded-2xl border border-white/20/10 text-white/50 text-sm font-bold hover:bg-[#0F172A]"
+                                className="w-full px-4 py-4 rounded-2xl border border-white/20/10 text-white/50 text-sm font-bold hover:bg-[#1E293B]"
                             >
                                 ปิดหน้าต่าง
                             </button>

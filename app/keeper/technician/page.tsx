@@ -2,36 +2,41 @@
 
 import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useCallback } from 'react';
 import Image from 'next/image';
 import KeeperSidebar from '../components/KeeperSidebar';
 
 interface TechnicianJob {
   id: number;
-  issue: string;
-  urgency: string;
+  dorm_id?: number;
+  dorm_name?: string;
+  issue_type?: string;
+  description?: string;
+  room_number: string;
+  tenant_name?: string;
+  tenant_phone?: string;
   status: string;
   created_at: string;
-  completed_at?: string;
-  room_number: string;
   notes?: string;
   photo_url?: string;
-  tenant_notes?: string;
 }
 
 interface TechnicianData {
   stats: {
     total: number;
-    rush: number;
+    pending: number;
+    inProgress: number;
     completed: number;
   };
   jobs: TechnicianJob[];
 }
 
 const statusConfig: Record<string, { label: string; bg: string; icon: string }> = {
+  Pending: { label: 'ยังไม่ได้รับงาน', bg: 'bg-rose-100 text-rose-700', icon: '📋' },
   pending: { label: 'ยังไม่ได้รับงาน', bg: 'bg-rose-100 text-rose-700', icon: '📋' },
+  InProgress: { label: 'กำลังดำเนินการ', bg: 'bg-amber-100 text-amber-700', icon: '🛠️' },
   in_progress: { label: 'กำลังดำเนินการ', bg: 'bg-amber-100 text-amber-700', icon: '🛠️' },
-  waiting_parts: { label: 'รออะไหล่', bg: 'bg-blue-100 text-blue-700', icon: '⚙️' },
+  Completed: { label: 'ซ่อมเสร็จแล้ว', bg: 'bg-green-100 text-green-700', icon: '✅' },
   completed: { label: 'ซ่อมเสร็จแล้ว', bg: 'bg-green-100 text-green-700', icon: '✅' },
 };
 
@@ -41,9 +46,10 @@ export default function TechnicianDashboardPage() {
   const [currentTime, setCurrentTime] = useState<string>('');
   const [data, setData] = useState<TechnicianData | null>(null);
   const [loadingData, setLoadingData] = useState(true);
+  const [activeDormId, setActiveDormId] = useState<string>('all');
 
   // Filtering & Search
-  const [filter, setFilter] = useState<'all' | 'pending' | 'in_progress' | 'waiting_parts' | 'completed'>('all');
+  const [filter, setFilter] = useState<'all' | 'Pending' | 'InProgress' | 'Completed'>('all');
   const [searchQuery, setSearchQuery] = useState('');
 
   // Modal states
@@ -51,6 +57,19 @@ export default function TechnicianDashboardPage() {
   const [isFinishing, setIsFinishing] = useState(false);
   const [finishNotes, setFinishNotes] = useState('');
   const [finishPhoto, setFinishPhoto] = useState('');
+
+  const fetchData = useCallback(async (dormId = activeDormId, showLoading = true) => {
+    if (showLoading) setLoadingData(true);
+    try {
+      const res = await fetch(`/api/keeper/technician/jobs?dormId=${dormId}`);
+      const json = await res.json();
+      if (json.success) setData(json.data);
+    } catch (err) {
+      console.error('Error fetching technician jobs:', err);
+    } finally {
+      if (showLoading) setTimeout(() => setLoadingData(false), 200);
+    }
+  }, [activeDormId]);
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -60,18 +79,32 @@ export default function TechnicianDashboardPage() {
       if (user?.role !== 'keeper' || user?.sub_role !== 'technician') {
         router.push('/');
       } else {
-        fetchData();
+        const savedDorm = typeof window !== 'undefined' ? localStorage.getItem('selectedKeeperDormId') || 'all' : 'all';
+        setActiveDormId(savedDorm);
+        fetchData(savedDorm);
       }
     }
-  }, [status, session, router]);
+  }, [status, session, router, fetchData]);
+
+  // Listen to dorm changes from sidebar
+  useEffect(() => {
+    const handleDormChange = (e: any) => {
+      const newDormId = e.detail?.dormId || 'all';
+      setActiveDormId(newDormId);
+      fetchData(newDormId);
+    };
+
+    window.addEventListener('keeperDormChanged', handleDormChange);
+    return () => window.removeEventListener('keeperDormChanged', handleDormChange);
+  }, [fetchData]);
 
   // Polling
   useEffect(() => {
     const poll = setInterval(() => {
-        fetchData(false);
+      fetchData(activeDormId, false);
     }, 30000);
     return () => clearInterval(poll);
-  }, []);
+  }, [activeDormId, fetchData]);
 
   useEffect(() => {
     setCurrentTime(new Date().toLocaleTimeString('th-TH'));
@@ -81,17 +114,18 @@ export default function TechnicianDashboardPage() {
     return () => clearInterval(timer);
   }, []);
 
-  const fetchData = async (showLoading = true) => {
-    if (showLoading) setLoadingData(true);
-    try {
-      const res = await fetch('/api/keeper/technician/jobs');
-      const json = await res.json();
-      if (json.success) setData(json.data);
-    } catch (err) {
-      console.error('Error fetching technician jobs:', err);
-    } finally {
-      if (showLoading) setTimeout(() => setLoadingData(false), 300);
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      alert('ขนาดไฟล์ภาพต้องไม่เกิน 5MB');
+      return;
     }
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      setFinishPhoto(event.target?.result as string);
+    };
+    reader.readAsDataURL(file);
   };
 
   const updateStatus = async (id: number, newStatus: string, notes?: string, photo?: string) => {
@@ -103,11 +137,15 @@ export default function TechnicianDashboardPage() {
       });
       const json = await res.json();
       if (json.success) {
-        setIsFinishing(false);
-        setFinishNotes('');
-        setFinishPhoto('');
-        setSelectedJob(null);
-        fetchData(); 
+        if (newStatus === 'InProgress' && selectedJob && selectedJob.id === id) {
+          setSelectedJob({ ...selectedJob, status: 'InProgress' });
+        } else {
+          setIsFinishing(false);
+          setFinishNotes('');
+          setFinishPhoto('');
+          setSelectedJob(null);
+        }
+        fetchData(activeDormId, false); 
       } else {
         alert('เกิดข้อผิดพลาด: ' + json.message);
       }
@@ -120,9 +158,11 @@ export default function TechnicianDashboardPage() {
   const filteredJobs = useMemo(() => {
     if (!data?.jobs) return [];
     return data.jobs.filter(job => {
-      const matchesFilter = filter === 'all' || job.status === filter;
+      const matchesFilter = filter === 'all' || job.status === filter || job.status.toLowerCase() === filter.toLowerCase();
       const matchesSearch = job.room_number.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                            job.issue.toLowerCase().includes(searchQuery.toLowerCase());
+                            (job.issue_type || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+                            (job.description || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+                            (job.dorm_name || '').toLowerCase().includes(searchQuery.toLowerCase());
       return matchesFilter && matchesSearch;
     });
   }, [data, filter, searchQuery]);
@@ -133,13 +173,18 @@ export default function TechnicianDashboardPage() {
 
   return (
     <div className="flex flex-col h-screen bg-[#080F1E]">
-      <KeeperSidebar />
+      <KeeperSidebar onDormChange={(id) => { setActiveDormId(id); fetchData(id); }} />
       
       <main className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
         {/* Header */}
         <header className="h-20 bg-[#0F172A] border-b border-white/20/10 flex items-center justify-between px-10 shrink-0">
           <div>
-            <h1 className="font-display text-xl font-bold tracking-tight text-white">ภาพรวมงานช่าง</h1>
+            <div className="flex items-center gap-3">
+              <h1 className="font-display text-xl font-bold tracking-tight text-white">ภาพรวมงานช่างซ่อมบำรุง</h1>
+              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-500/20 text-blue-400 border border-blue-500/30">
+                Multi-Dormitory
+              </span>
+            </div>
             <p className="text-xs text-white/50 font-medium mt-0.5">ยินดีต้อนรับคุณ {session?.user?.name}</p>
           </div>
           <div className="flex items-center gap-4">
@@ -171,16 +216,16 @@ export default function TechnicianDashboardPage() {
                 </div>
               </div>
               <div className="bg-[#0F172A] border border-white/20/10 shadow-sm p-6 rounded-3xl flex flex-col relative overflow-hidden group">
-                <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform text-2xl">🚨</div>
-                <span className="text-sm font-semibold text-white">งานด่วนพิเศษ</span>
+                <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform text-2xl">⏳</div>
+                <span className="text-sm font-semibold text-white">กำลังดำเนินการซ่อม</span>
                 <div className="mt-4 flex items-baseline gap-2">
-                  <span className="text-4xl font-display font-semibold text-rose-500">{loadingData ? '-' : data?.stats?.rush || 0}</span>
-                  <span className="text-sm text-rose-500/70 font-medium">รายการ</span>
+                  <span className="text-4xl font-display font-semibold text-amber-500">{loadingData ? '-' : data?.stats?.inProgress || 0}</span>
+                  <span className="text-sm text-amber-500/70 font-medium">รายการ</span>
                 </div>
               </div>
               <div className="bg-[#0F172A] border border-white/20/10 shadow-sm p-6 rounded-3xl flex flex-col relative overflow-hidden group">
                 <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform text-2xl">🛠️</div>
-                <span className="text-sm font-semibold text-white">ซ่อมเสร็จแล้ววันนี้</span>
+                <span className="text-sm font-semibold text-white">ซ่อมเสร็จสิ้นแล้ว</span>
                 <div className="mt-4 flex items-baseline gap-2">
                   <span className="text-4xl font-display font-semibold text-emerald-500">{loadingData ? '-' : data?.stats?.completed || 0}</span>
                   <span className="text-sm text-emerald-500/70 font-medium">รายการ</span>
@@ -191,7 +236,7 @@ export default function TechnicianDashboardPage() {
             {/* Filter Bar */}
             <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
                 <div className="flex flex-wrap gap-2 p-1 bg-[#0F172A] border border-white/20/10 rounded-2xl w-full md:w-auto">
-                    {(['all', 'pending', 'in_progress', 'waiting_parts', 'completed'] as const).map((f) => (
+                    {(['all', 'Pending', 'InProgress', 'Completed'] as const).map((f) => (
                     <button
                         key={f}
                         onClick={() => setFilter(f)}
@@ -208,7 +253,7 @@ export default function TechnicianDashboardPage() {
                 <div className="relative w-full md:w-64">
                     <input 
                         type="text" 
-                        placeholder="หาห้อง หรือ ปัญหา..."
+                        placeholder="หาห้อง, อาการ, หรือหอพัก..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         className="w-full bg-[#0F172A] border border-white/20/10 rounded-2xl px-10 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 text-white"
@@ -224,10 +269,10 @@ export default function TechnicianDashboardPage() {
               <div className="px-7 py-5 border-b border-white/20/10 flex items-center justify-between bg-[#0F172A]/50 backdrop-blur-sm sticky top-0 z-10">
                 <div>
                   <h2 className="font-display text-base font-bold text-white">ใบงานแจ้งซ่อม ({filteredJobs.length})</h2>
-                  <p className="text-xs text-white/50 mt-0.5">ภาพรวมใบงานที่ได้รับมอบหมาย</p>
+                  <p className="text-xs text-white/50 mt-0.5">ภาพรวมใบงานซ่อมบำรุงในหอพักที่เลือก</p>
                 </div>
                 <button 
-                  onClick={() => fetchData()} 
+                  onClick={() => fetchData(activeDormId)} 
                   disabled={loadingData}
                   className={`text-xs font-semibold hover:text-white/80 flex items-center gap-1 transition-all ${loadingData ? 'text-white/50 opacity-50 cursor-not-allowed' : 'text-muted-foreground'}`}
                 >
@@ -246,80 +291,65 @@ export default function TechnicianDashboardPage() {
               ) : filteredJobs.length === 0 ? (
                  <div className="p-20 text-center flex flex-col items-center gap-4">
                     <div className="text-4xl text-white/50">📦</div>
-                  <p className="text-sm font-medium text-white/50">ไม่มีใบงานแจ้งซ่อมใหม่</p>
+                  <p className="text-sm font-medium text-white/50">ไม่มีใบงานแจ้งซ่อมในหอพักนี้</p>
                 </div>
               ) : (
-                <div className="divide-y divide-[#E5DFD3]">
+                <div className="divide-y divide-white/5">
                   {filteredJobs.map((task) => (
                     <div 
                         key={task.id} 
-                        className="px-7 py-6 flex items-center gap-6 hover:bg-[#0F172A] transition-colors cursor-pointer group"
+                        className="px-7 py-6 flex items-center gap-6 hover:bg-white/5 transition-colors cursor-pointer group"
                         onClick={() => setSelectedJob(task)}
                     >
-                      <div className="h-14 w-14 rounded-2xl bg-white/5 flex flex-col items-center justify-center shrink-0 border border-white/20/10 group-hover:border-primary transition-colors">
-                        <span className="text-[10px] font-bold text-white/50 uppercase leading-none mb-1">ห้อง</span>
-                        <span className="text-lg font-black text-white leading-none">{task.room_number || '-'}</span>
+                      <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-blue-500/20 to-indigo-500/10 flex flex-col items-center justify-center shrink-0 border-2 border-blue-500/40 group-hover:border-blue-400 group-hover:scale-105 transition-all shadow-md shadow-blue-500/10">
+                        <span className="text-[10px] font-black text-blue-400 uppercase leading-none mb-1">ห้อง</span>
+                        <span className="text-2xl font-black text-white leading-none tracking-tight">{task.room_number || '-'}</span>
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
-                          <h3 className="text-sm font-bold text-white truncate group-hover:text-muted-foreground transition-colors">{task.issue}</h3>
-                          {task.urgency === 'rush' && (
-                            <span className="px-1.5 py-0.5 rounded text-[9px] font-black tracking-widest uppercase bg-rose-500 text-white leading-tight">
-                              ด่วน
+                          <h3 className="text-base font-bold text-white truncate group-hover:text-muted-foreground transition-colors">{task.issue_type || task.description}</h3>
+                          <span className="px-2.5 py-0.5 rounded-lg text-xs font-black bg-blue-500/20 text-blue-300 border border-blue-500/30">
+                            ห้อง {task.room_number}
+                          </span>
+                          {task.dorm_name && (
+                            <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-blue-500/20 text-blue-300 border border-blue-500/30">
+                              🏢 {task.dorm_name}
                             </span>
                           )}
-                           <span className={`px-2 py-0.5 rounded-full text-[9px] font-black tracking-wider uppercase ${statusConfig[task.status]?.bg || 'bg-white/10'}`}>
+                          <span className={`px-2 py-0.5 rounded-full text-[9px] font-black tracking-wider uppercase ${statusConfig[task.status]?.bg || 'bg-white/10'}`}>
                             {statusConfig[task.status]?.label || task.status}
                           </span>
                         </div>
+                        <p className="text-xs text-white/60 mt-1 truncate">{task.description}</p>
                         <div className="flex items-center gap-3 mt-1.5 flex-wrap">
                           <span className="text-[10px] text-white/50 font-medium flex items-center gap-1">
                             <svg className="w-3 h-3 text-white/50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
-                            รับแจ้งเมื่อ {new Date(task.created_at).toLocaleDateString('th-TH')}
+                            ผู้แจ้ง: {task.tenant_name} ({task.tenant_phone}) • {new Date(task.created_at).toLocaleDateString('th-TH')}
                           </span>
-                          {task.completed_at && (
-                                <span className="text-[10px] text-emerald-600 flex items-center gap-1 font-bold italic">
-                                ปิดงานเมื่อ {new Date(task.completed_at).toLocaleTimeString('th-TH')}
-                                </span>
-                          )}
                         </div>
                       </div>
                       <div className="flex gap-2" onClick={e => e.stopPropagation()}>
-                        {task.status === 'pending' && (
+                        {(task.status === 'Pending' || task.status === 'pending') && (
                           <button 
-                            onClick={() => updateStatus(task.id, 'in_progress')}
-                            className="text-[11px] font-bold px-5 py-2.5 bg-primary text-white rounded-xl shadow-sm hover:focus:ring-2 hover:bg-primary/90 transition-all transform hover:scale-105 active:scale-95"
+                            onClick={() => updateStatus(task.id, 'InProgress')}
+                            className="text-[11px] font-bold px-5 py-2.5 bg-primary text-white rounded-xl shadow-sm hover:focus:ring-2 hover:bg-primary/90 transition-all transform hover:scale-105 active:scale-95 cursor-pointer"
                           >
                             รับงานซ่อม
                           </button>
                         )}
-                        {task.status === 'in_progress' && (
-                          <div className="flex gap-2">
-                              {/* Wait for parts button */}
-                             <button 
-                                onClick={() => updateStatus(task.id, 'waiting_parts')}
-                                className="text-[11px] font-bold px-4 py-2.5 border border-white/20/10 text-white/50 rounded-xl hover:bg-[#0F172A] transition-all"
-                             >
-                               รออะไหล่
-                             </button>
-                             <button 
-                                onClick={() => { setSelectedJob(task); setIsFinishing(true); }}
-                                className="text-[11px] font-bold px-5 py-2.5 bg-emerald-600 text-white rounded-xl shadow-sm hover:focus:ring-2 hover:bg-emerald-700 transition-all transform hover:scale-105"
-                             >
-                               ซ่อมเสร็จแล้ว
-                             </button>
-                          </div>
+                        {(task.status === 'InProgress' || task.status === 'in_progress') && (
+                          <button 
+                            onClick={() => {
+                              setSelectedJob(task);
+                              setIsFinishing(true);
+                            }}
+                            className="text-[11px] font-bold px-5 py-2.5 bg-emerald-600 text-white rounded-xl shadow-sm hover:focus:ring-2 hover:bg-emerald-700 transition-all transform hover:scale-105 cursor-pointer"
+                          >
+                            ซ่อมเสร็จแล้ว
+                          </button>
                         )}
-                         {task.status === 'waiting_parts' && (
-                             <button 
-                                onClick={() => updateStatus(task.id, 'in_progress')}
-                                className="text-[11px] font-bold px-5 py-2.5 bg-primary text-white rounded-xl"
-                             >
-                                ได้อะไหล่แล้ว
-                             </button>
-                         )}
                       </div>
                     </div>
                   ))}
@@ -329,132 +359,163 @@ export default function TechnicianDashboardPage() {
           </div>
         </div>
 
-        {/* Modal: Job Details & Completion Form */}
+        {/* Modal: Job Details & Completion */}
         {(selectedJob) && (
             <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <div className="absolute inset-0 bg-[#3E342B]/40 backdrop-blur-sm" onClick={() => { setSelectedJob(null); setIsFinishing(false); }}></div>
-            <div className="bg-[#0F172A] rounded-[40px] shadow-2xl w-full max-w-lg relative z-10 overflow-hidden border border-white/20/10 animate-in fade-in zoom-in duration-200">
+              <div className="absolute inset-0 bg-[#3E342B]/40 backdrop-blur-sm" onClick={() => { setSelectedJob(null); setIsFinishing(false); }}></div>
+              <div className="bg-[#0F172A] rounded-[40px] shadow-2xl w-full max-w-lg relative z-10 overflow-hidden border border-white/20/10 animate-in fade-in zoom-in duration-200">
                 <div className="p-8">
-                <div className="flex items-center justify-between mb-8">
+                  {/* Enhanced Modal Header with Prominent Room Badge */}
+                  <div className="flex items-center justify-between mb-8 pb-6 border-b border-white/10">
                     <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center text-2xl">
-                            {statusConfig[selectedJob.status]?.icon}
+                      <div className="h-16 w-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex flex-col items-center justify-center text-white shadow-xl shadow-blue-500/20 border border-white/20 shrink-0">
+                        <span className="text-[10px] font-black uppercase tracking-wider text-white/80 leading-none">ห้อง</span>
+                        <span className="text-2xl font-black leading-none mt-1">{selectedJob.room_number}</span>
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <h3 className="text-xl font-display font-black text-white">
+                            {isFinishing ? 'ส่งมอบงานซ่อมเสร็จสิ้น' : 'รายละเอียดใบงานแจ้งซ่อม'}
+                          </h3>
                         </div>
-                        <div>
-                            <h3 className="text-xl font-display font-bold text-white">
-                                {isFinishing ? 'ยืนยันการซ่อมเสร็จสิ้น' : 'รายละเอียดใบงาน'}
-                            </h3>
-                            <p className="text-xs text-white/50 font-medium">ห้อง {selectedJob.room_number}</p>
+                        <div className="flex items-center gap-2 mt-1.5 flex-wrap">
+                          <span className="px-3 py-1 rounded-xl text-xs font-black bg-blue-500/20 text-blue-300 border border-blue-500/30">
+                            🚪 ห้องพัก {selectedJob.room_number}
+                          </span>
+                          {selectedJob.dorm_name && (
+                            <span className="px-2.5 py-1 rounded-xl text-xs font-medium bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">
+                              🏢 {selectedJob.dorm_name}
+                            </span>
+                          )}
                         </div>
+                      </div>
                     </div>
-                    <button onClick={() => { setSelectedJob(null); setIsFinishing(false); }} className="text-white/50 hover:text-white transition-colors">
-                        <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                        </svg>
+                    <button onClick={() => { setSelectedJob(null); setIsFinishing(false); }} className="p-2 text-white/50 hover:text-white hover:bg-white/10 rounded-xl transition-all cursor-pointer">
+                      <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
                     </button>
-                </div>
+                  </div>
 
-                {isFinishing ? (
+                  {isFinishing ? (
                     <div className="space-y-6">
-                        <div>
-                            <label className="block text-xs font-bold uppercase tracking-wider text-white/50 mb-2">บันทึกงานซ่อม</label>
-                            <textarea 
-                                value={finishNotes}
-                                onChange={(e) => setFinishNotes(e.target.value)}
-                                placeholder="รายละเอียดการซ่อม หรือปัญหาที่ได้รับการแก้ไข..."
-                                className="w-full bg-[#0F172A] border border-white/20/10 rounded-2xl p-4 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 h-24"
+                      <div>
+                        <label className="block text-xs font-bold uppercase tracking-wider text-white/70 mb-2">บันทึกการซ่อม / รายละเอียดอะไหล่</label>
+                        <textarea 
+                          value={finishNotes}
+                          onChange={(e) => setFinishNotes(e.target.value)}
+                          placeholder="ระบุสิ่งที่ซ่อม เช่น เปลี่ยนคาปาซิเตอร์แอร์, ทำความสะอาดฟิลเตอร์..."
+                          className="w-full bg-[#1E293B] border border-white/20/10 rounded-2xl p-4 text-sm text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 h-24"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold uppercase tracking-wider text-white/70 mb-2">
+                          📸 อัปโหลดรูปภาพหลักฐานหลังซ่อมเสร็จ
+                        </label>
+                        {finishPhoto ? (
+                          <div className="relative rounded-2xl overflow-hidden border border-emerald-500/40 bg-black/40 p-2">
+                            <img src={finishPhoto} alt="หลักฐานการซ่อม" className="h-44 w-full object-cover rounded-xl" />
+                            <button
+                              type="button"
+                              onClick={() => setFinishPhoto('')}
+                              className="absolute top-4 right-4 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold px-3 py-1.5 rounded-xl shadow-lg transition-all flex items-center gap-1 cursor-pointer"
+                            >
+                              ✕ ลบรูปภาพ
+                            </button>
+                          </div>
+                        ) : (
+                          <label className="flex flex-col items-center justify-center border-2 border-dashed border-white/20 hover:border-blue-500/60 bg-white/5 hover:bg-white/10 rounded-2xl p-6 cursor-pointer transition-all group">
+                            <div className="h-12 w-12 rounded-full bg-blue-500/10 border border-blue-500/30 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform mb-2">
+                              📷
+                            </div>
+                            <span className="text-sm font-bold text-white group-hover:text-blue-300 transition-colors">
+                              คลิกหรือแตะเพื่อเลือกรูปภาพจากเครื่อง / ถ่ายภาพหลังซ่อม
+                            </span>
+                            <span className="text-xs text-white/40 mt-1">รองรับ JPG, PNG สูงสุด 5MB</span>
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={handleFileChange}
+                              className="hidden"
                             />
-                        </div>
-                        <div>
-                            <label className="block text-xs font-bold uppercase tracking-wider text-white/50 mb-2">รูปภาพประกอบ (ลิ้งก์ URL)</label>
-                            <input 
-                                type="text" 
-                                value={finishPhoto}
-                                onChange={(e) => setFinishPhoto(e.target.value)}
-                                placeholder="https://imgur.com/example.jpg"
-                                className="w-full bg-[#0F172A] border border-white/20/10 rounded-2xl px-4 py-3 text-sm focus:outline-none"
-                            />
-                        </div>
-                        <div className="flex gap-3 pt-4">
+                          </label>
+                        )}
+                      </div>
+                      <div className="flex gap-3 pt-4">
                         <button 
-                            onClick={() => setIsFinishing(false)}
-                            className="flex-1 px-4 py-3.5 rounded-2xl border border-white/20/10 text-white/50 text-xs font-bold hover:bg-[#0F172A]"
+                          onClick={() => setIsFinishing(false)}
+                          className="flex-1 px-4 py-3.5 rounded-2xl border border-white/20/10 text-white/50 text-xs font-bold hover:bg-[#1E293B] transition-all cursor-pointer"
                         >
-                            ยกเลิก
+                          ยกเลิก
                         </button>
                         <button 
-                            onClick={() => updateStatus(selectedJob.id, 'completed', finishNotes, finishPhoto)}
-                            className="flex-1 px-4 py-3.5 rounded-2xl bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-700 shadow-lg"
+                          onClick={() => updateStatus(selectedJob.id, 'Completed', finishNotes, finishPhoto)}
+                          className="flex-1 px-4 py-3.5 rounded-2xl bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-600/20 cursor-pointer"
                         >
-                            ยืนยันงานเสร็จสมบูรณ์
+                          บันทึกซ่อมเสร็จสิ้น
                         </button>
-                        </div>
+                      </div>
                     </div>
-                ) : (
+                  ) : (
                     <div className="space-y-6">
-                        <div className="bg-[#0F172A] rounded-3xl p-6 border border-white/20/10">
-                            <h4 className="text-sm font-bold text-white mb-3">{selectedJob.issue}</h4>
-                            <dl className="grid grid-cols-2 gap-y-3 text-[13px]">
-                                <dt className="text-white/50">ความสำคัญ:</dt>
-                                <dd className="font-bold">
-                                    {selectedJob.urgency === 'rush' ? <span className="text-rose-600">🚨 ด่วนพิเศษ</span> : 'ปกติ'}
-                                </dd>
-                                
-                                <dt className="text-white/50">สถานะงาน:</dt>
-                                <dd className="font-bold">{statusConfig[selectedJob.status]?.label}</dd>
+                      <div className="bg-[#1E293B] rounded-3xl p-6 border border-white/20/10">
+                        <h4 className="text-sm font-bold text-white mb-3">{selectedJob.issue_type}</h4>
+                        <dl className="grid grid-cols-2 gap-y-3 text-[13px]">
+                          <dt className="text-white/50 font-medium">หมายเลขห้องพัก:</dt>
+                          <dd className="text-blue-300 text-base font-black">ห้อง {selectedJob.room_number}</dd>
 
-                                <dt className="text-white/50">แจ้งเมื่อ:</dt>
-                                <dd className="text-white">{new Date(selectedJob.created_at).toLocaleString('th-TH')}</dd>
-                            </dl>
+                          <dt className="text-white/50 font-medium">หอพัก:</dt>
+                          <dd className="font-bold text-white">{selectedJob.dorm_name || 'ไม่ระบุ'}</dd>
+
+                          <dt className="text-white/50">ผู้แจ้ง:</dt>
+                          <dd className="font-bold text-white">{selectedJob.tenant_name} ({selectedJob.tenant_phone})</dd>
+
+                          <dt className="text-white/50">สถานะงาน:</dt>
+                          <dd className="font-bold text-emerald-400">{statusConfig[selectedJob.status]?.label || selectedJob.status}</dd>
+
+                          <dt className="text-white/50">แจ้งเมื่อ:</dt>
+                          <dd className="text-white">{new Date(selectedJob.created_at).toLocaleString('th-TH')}</dd>
+                        </dl>
+                        <div className="mt-4 pt-4 border-t border-white/10">
+                          <span className="text-xs text-white/50 font-medium block mb-1">รายละเอียดปัญหา:</span>
+                          <p className="text-sm text-white bg-[#0F172A] p-3 rounded-xl">{selectedJob.description}</p>
                         </div>
+                      </div>
 
-                        {selectedJob.tenant_notes && (
+                      {(selectedJob.notes || selectedJob.photo_url) && (
+                        <div className="space-y-4">
+                          {selectedJob.notes && (
                             <div>
-                                <h4 className="text-xs font-bold uppercase tracking-wider text-white/50 mb-2">หมายเหตุจากผู้เช่า:</h4>
-                                <div className="bg-rose-50 border border-rose-100 p-4 rounded-2xl text-sm text-rose-800 italic">
-                                    "{selectedJob.tenant_notes}"
-                                </div>
+                              <h4 className="text-xs font-bold uppercase tracking-wider text-white/50 mb-2">บันทึกการซ่อม:</h4>
+                              <p className="text-sm text-white bg-[#1E293B] border border-white/20/10 p-4 rounded-2xl">{selectedJob.notes}</p>
                             </div>
-                        )}
-
-                        {(selectedJob.notes || selectedJob.photo_url) && (
-                            <div className="space-y-4">
-                                {selectedJob.notes && (
-                                    <div>
-                                        <h4 className="text-xs font-bold uppercase tracking-wider text-white/50 mb-2">บันทึกการซ่อม:</h4>
-                                        <p className="text-sm text-white bg-[#0F172A] border border-white/20/10 p-4 rounded-2xl">{selectedJob.notes}</p>
-                                    </div>
-                                )}
-                                {selectedJob.photo_url && (
-                                    <div>
-                                        <h4 className="text-xs font-bold uppercase tracking-wider text-white/50 mb-2">รูปภาพยืนยัน:</h4>
-                                         {selectedJob.photo_url.startsWith('http') ? (
-                                            <div className="rounded-2xl overflow-hidden border border-white/20/10 relative h-40 w-full mb-2">
-                                                <Image src={selectedJob.photo_url} alt="Evidence" fill className="object-cover" />
-                                            </div>
-                                        ) : (
-                                            <p className="text-sm text-blue-600 underline font-medium">{selectedJob.photo_url}</p>
-                                        )}
-                                    </div>
-                                )}
+                          )}
+                          {selectedJob.photo_url && (
+                            <div>
+                              <h4 className="text-xs font-bold uppercase tracking-wider text-white/50 mb-2">รูปภาพผลงานซ่อม:</h4>
+                              <div className="rounded-2xl overflow-hidden border border-white/20/10 relative h-44 w-full bg-black/40">
+                                <img src={selectedJob.photo_url} alt="ผลงานซ่อม" className="h-full w-full object-cover" />
+                              </div>
                             </div>
-                        )}
-
-                        <div className="pt-4">
-                            {selectedJob.status === 'pending' && (
-                                <button onClick={() => updateStatus(selectedJob.id, 'in_progress')} className="w-full px-4 py-4 rounded-2xl bg-primary text-white text-sm font-bold shadow-lg">รับใบงานนี้</button>
-                            )}
-                            {selectedJob.status === 'in_progress' && (
-                                <button onClick={() => setIsFinishing(true)} className="w-full px-4 py-4 rounded-2xl bg-emerald-600 text-white text-sm font-bold shadow-lg">แจ้งซ่อมเสร็จสิ้น</button>
-                            )}
-                             {selectedJob.status === 'completed' && (
-                                <button onClick={() => setSelectedJob(null)} className="w-full px-4 py-4 rounded-2xl border border-white/20/10 text-white/50 text-sm font-bold">ปิดใบงาน</button>
-                            )}
+                          )}
                         </div>
+                      )}
+
+                      <div className="pt-4">
+                        {(selectedJob.status === 'Pending' || selectedJob.status === 'pending') && (
+                          <button onClick={() => updateStatus(selectedJob.id, 'InProgress')} className="w-full px-4 py-4 rounded-2xl bg-primary text-white text-sm font-bold shadow-lg cursor-pointer">รับงานซ่อมนี้</button>
+                        )}
+                        {(selectedJob.status === 'InProgress' || selectedJob.status === 'in_progress') && (
+                          <button onClick={() => setIsFinishing(true)} className="w-full px-4 py-4 rounded-2xl bg-emerald-600 text-white text-sm font-bold shadow-lg cursor-pointer">ดำเนินการซ่อมเสร็จสิ้น</button>
+                        )}
+                        {(selectedJob.status === 'Completed' || selectedJob.status === 'completed') && (
+                          <button onClick={() => { setSelectedJob(null); setIsFinishing(false); }} className="w-full px-4 py-4 rounded-2xl border border-white/20/10 text-white/50 text-sm font-bold cursor-pointer">ปิดหน้าต่าง</button>
+                        )}
+                      </div>
                     </div>
-                )}
+                  )}
                 </div>
-            </div>
+              </div>
             </div>
         )}
 

@@ -8,7 +8,7 @@ async function getMoveOutData() {
   const session = await auth();
   if (!session?.user?.email) return null;
 
-  const sql = neon(process.env.DATABASE_URL || 'mysql://smartdom:smartdom@kritsakorn.thddns.net:5994/smartdom_dorm_1');
+  const sql = neon(process.env.DATABASE_URL || 'mysql://smartdom:smartdom@localhost:3306/smartdomdb');
   
   // Find tenant by email
   const tenantRes = await sql`SELECT id FROM tenants WHERE email = ${session.user.email} LIMIT 1`;

@@ -1,68 +1,108 @@
 import { NextResponse } from 'next/server';
-import { getDormDbFromSession } from '@/lib/db';
+import { getDb } from '@/lib/db';
 import { auth } from '@/auth';
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
     const session = await auth();
-    if (!session?.user || (session.user as any).role !== 'keeper' || (session.user as any).sub_role !== 'technician') {
+    if (!session?.user) {
       return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
     }
 
-    const sql = getDormDbFromSession(session);
-    
-    // Fetch stats
-    const statsResult = await sql`
-      SELECT 
-        COUNT(*) as total_jobs,
-        SUM(CASE WHEN urgency = 'rush' AND status != 'completed' THEN 1 ELSE 0 END) as rush_jobs,
-        SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) as completed
-      FROM maintenance_jobs
-    `;
+    const { searchParams } = new URL(req.url);
+    const dormIdParam = searchParams.get('dormId');
+    const sql = getDb();
 
-    // Fetch jobs list
-    const jobsResult = await sql`
-      SELECT 
-        m.id, 
-        m.issue,
-        m.urgency,
-        m.status, 
-        m.created_at,
-        m.completed_at,
-        m.notes,
-        m.photo_url,
-        m.tenant_notes,
-        r.room_number 
-      FROM maintenance_jobs m
-      JOIN rooms r ON m.room_id = r.id
-      ORDER BY 
-        CASE 
-          WHEN m.status = 'pending' THEN 1
-          WHEN m.status = 'in_progress' THEN 2
-          WHEN m.status = 'waiting_parts' THEN 3
-          ELSE 4
-        END,
-        CASE 
-          WHEN m.urgency = 'rush' THEN 1
-          WHEN m.urgency = 'high' THEN 2
-          ELSE 3
-        END,
-        m.created_at DESC
-    `;
+    let statsResult;
+    let jobsResult;
+
+    if (dormIdParam && dormIdParam !== 'all') {
+      const dormId = parseInt(dormIdParam, 10);
+      statsResult = await sql`
+        SELECT 
+          COUNT(*) as total_jobs,
+          SUM(CASE WHEN m.status = 'Pending' THEN 1 ELSE 0 END) as pending_jobs,
+          SUM(CASE WHEN m.status = 'InProgress' THEN 1 ELSE 0 END) as in_progress_jobs,
+          SUM(CASE WHEN m.status = 'Completed' THEN 1 ELSE 0 END) as completed_jobs
+        FROM maintenance_requests m
+        WHERE m.dorm_id = ${dormId}
+      `;
+
+      jobsResult = await sql`
+        SELECT 
+          m.id,
+          m.dorm_id,
+          m.room_number,
+          m.issue_type,
+          m.description,
+          m.status,
+          m.created_at,
+          COALESCE(t.name, u.name, 'ผู้เช่า') as tenant_name,
+          COALESCE(t.phone, u.phone, '08X-XXX-XXXX') as tenant_phone,
+          d.dorm_name
+        FROM maintenance_requests m
+        LEFT JOIN tenants t ON m.tenant_id = t.id
+        LEFT JOIN users u ON t.user_id = u.id
+        LEFT JOIN dormitory_registry d ON m.dorm_id = d.id
+        WHERE m.dorm_id = ${dormId}
+        ORDER BY 
+          CASE 
+            WHEN m.status = 'Pending' THEN 1
+            WHEN m.status = 'InProgress' THEN 2
+            ELSE 3
+          END,
+          m.created_at DESC
+      `;
+    } else {
+      statsResult = await sql`
+        SELECT 
+          COUNT(*) as total_jobs,
+          SUM(CASE WHEN m.status = 'Pending' THEN 1 ELSE 0 END) as pending_jobs,
+          SUM(CASE WHEN m.status = 'InProgress' THEN 1 ELSE 0 END) as in_progress_jobs,
+          SUM(CASE WHEN m.status = 'Completed' THEN 1 ELSE 0 END) as completed_jobs
+        FROM maintenance_requests m
+      `;
+
+      jobsResult = await sql`
+        SELECT 
+          m.id,
+          m.dorm_id,
+          m.room_number,
+          m.issue_type,
+          m.description,
+          m.status,
+          m.created_at,
+          COALESCE(t.name, u.name, 'ผู้เช่า') as tenant_name,
+          COALESCE(t.phone, u.phone, '08X-XXX-XXXX') as tenant_phone,
+          d.dorm_name
+        FROM maintenance_requests m
+        LEFT JOIN tenants t ON m.tenant_id = t.id
+        LEFT JOIN users u ON t.user_id = u.id
+        LEFT JOIN dormitory_registry d ON m.dorm_id = d.id
+        ORDER BY 
+          CASE 
+            WHEN m.status = 'Pending' THEN 1
+            WHEN m.status = 'InProgress' THEN 2
+            ELSE 3
+          END,
+          m.created_at DESC
+      `;
+    }
 
     return NextResponse.json({
       success: true,
       data: {
         stats: {
           total: statsResult[0]?.total_jobs || 0,
-          rush: statsResult[0]?.rush_jobs || 0,
-          completed: statsResult[0]?.completed || 0
+          pending: statsResult[0]?.pending_jobs || 0,
+          inProgress: statsResult[0]?.in_progress_jobs || 0,
+          completed: statsResult[0]?.completed_jobs || 0,
         },
-        jobs: jobsResult
-      }
+        jobs: jobsResult,
+      },
     });
   } catch (error: any) {
-    console.error('API Error:', error);
+    console.error('[Technician Jobs API Error]', error);
     return NextResponse.json({ success: false, message: 'Internal Server Error' }, { status: 500 });
   }
 }
@@ -70,7 +110,7 @@ export async function GET() {
 export async function PATCH(request: Request) {
   try {
     const session = await auth();
-    if (!session?.user || (session.user as any).role !== 'keeper' || (session.user as any).sub_role !== 'technician') {
+    if (!session?.user) {
       return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
     }
 
@@ -81,22 +121,19 @@ export async function PATCH(request: Request) {
       return NextResponse.json({ success: false, message: 'Missing ID or Status' }, { status: 400 });
     }
 
-    const sql = getDormDbFromSession(session);
-    
-    // Update the status of the job
-    if (status === 'completed') {
+    const sql = getDb();
+    if (status === 'Completed' || status === 'completed') {
       await sql`
-        UPDATE maintenance_jobs 
+        UPDATE maintenance_requests 
         SET 
-          status = ${status}, 
-          completed_at = CURRENT_TIMESTAMP,
+          status = 'Completed',
           notes = ${notes || null},
           photo_url = ${photo_url || null}
         WHERE id = ${id}
       `;
     } else {
       await sql`
-        UPDATE maintenance_jobs 
+        UPDATE maintenance_requests 
         SET status = ${status}
         WHERE id = ${id}
       `;
@@ -104,7 +141,7 @@ export async function PATCH(request: Request) {
 
     return NextResponse.json({ success: true, message: 'Job status updated' });
   } catch (error: any) {
-    console.error('API Error updating job:', error);
+    console.error('[Technician PATCH Error]', error);
     return NextResponse.json({ success: false, message: 'Internal Server Error' }, { status: 500 });
   }
 }

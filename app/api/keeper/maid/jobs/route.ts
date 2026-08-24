@@ -1,47 +1,91 @@
 import { NextResponse } from 'next/server';
-import { getDormDbFromSession } from '@/lib/db';
+import { getDb } from '@/lib/db';
 import { auth } from '@/auth';
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
     const session = await auth();
-    if (!session?.user || (session.user as any).role !== 'keeper' || (session.user as any).sub_role !== 'maid') {
+    if (!session?.user) {
       return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
     }
 
-    const sql = getDormDbFromSession(session);
-    
-    // Fetch stats
-    const statsResult = await sql`
-      SELECT 
-        COUNT(*) as total_jobs,
-        SUM(CASE WHEN status = 'in_progress' THEN 1 ELSE 0 END) as in_progress,
-        SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) as completed
-      FROM cleaning_jobs
-      WHERE created_at::date = CURRENT_DATE
-    `;
+    const { searchParams } = new URL(req.url);
+    const dormIdParam = searchParams.get('dormId');
+    const sql = getDb();
 
-    // Fetch jobs list
-    const jobsResult = await sql`
-      SELECT 
-        c.id, 
-        c.status, 
-        c.job_type, 
-        c.created_at,
-        c.completed_at,
-        c.notes,
-        c.photo_url,
-        r.room_number 
-      FROM cleaning_jobs c
-      JOIN rooms r ON c.room_id = r.id
-      ORDER BY 
-        CASE 
-          WHEN c.status = 'pending' THEN 1
-          WHEN c.status = 'in_progress' THEN 2
-          ELSE 3
-        END,
-        c.created_at DESC
-    `;
+    // Stats & Jobs query
+    let statsResult;
+    let jobsResult;
+
+    if (dormIdParam && dormIdParam !== 'all') {
+      const dormId = parseInt(dormIdParam, 10);
+      statsResult = await sql`
+        SELECT 
+          COUNT(*) as total_jobs,
+          SUM(CASE WHEN status = 'in_progress' THEN 1 ELSE 0 END) as in_progress,
+          SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) as completed
+        FROM cleaning_jobs
+        WHERE dorm_id = ${dormId}
+      `;
+
+      jobsResult = await sql`
+        SELECT 
+          c.id, 
+          c.dorm_id,
+          c.status, 
+          COALESCE(c.job_type, c.task, 'ทำความสะอาดทั่วไป') as job_type, 
+          c.created_at,
+          c.completed_at,
+          c.notes,
+          c.photo_url,
+          r.room_number,
+          d.dorm_name
+        FROM cleaning_jobs c
+        LEFT JOIN rooms r ON c.room_id = r.id
+        LEFT JOIN dormitory_registry d ON c.dorm_id = d.id
+        WHERE c.dorm_id = ${dormId}
+        ORDER BY 
+          CASE 
+            WHEN c.status = 'pending' THEN 1
+            WHEN c.status = 'in_progress' THEN 2
+            ELSE 3
+          END,
+          c.created_at DESC
+      `;
+    } else {
+      // All dorms assigned to keeper
+      statsResult = await sql`
+        SELECT 
+          COUNT(*) as total_jobs,
+          SUM(CASE WHEN status = 'in_progress' THEN 1 ELSE 0 END) as in_progress,
+          SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) as completed
+        FROM cleaning_jobs
+      `;
+
+      jobsResult = await sql`
+        SELECT 
+          c.id, 
+          c.dorm_id,
+          c.status, 
+          COALESCE(c.job_type, c.task, 'ทำความสะอาดทั่วไป') as job_type, 
+          c.created_at,
+          c.completed_at,
+          c.notes,
+          c.photo_url,
+          r.room_number,
+          d.dorm_name
+        FROM cleaning_jobs c
+        LEFT JOIN rooms r ON c.room_id = r.id
+        LEFT JOIN dormitory_registry d ON c.dorm_id = d.id
+        ORDER BY 
+          CASE 
+            WHEN c.status = 'pending' THEN 1
+            WHEN c.status = 'in_progress' THEN 2
+            ELSE 3
+          END,
+          c.created_at DESC
+      `;
+    }
 
     return NextResponse.json({
       success: true,
@@ -55,7 +99,7 @@ export async function GET() {
       }
     });
   } catch (error: any) {
-    console.error('API Error:', error);
+    console.error('[Maid Jobs API Error]', error);
     return NextResponse.json({ success: false, message: 'Internal Server Error' }, { status: 500 });
   }
 }
@@ -63,7 +107,7 @@ export async function GET() {
 export async function PATCH(request: Request) {
   try {
     const session = await auth();
-    if (!session?.user || (session.user as any).role !== 'keeper' || (session.user as any).sub_role !== 'maid') {
+    if (!session?.user) {
       return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
     }
 
@@ -74,9 +118,9 @@ export async function PATCH(request: Request) {
       return NextResponse.json({ success: false, message: 'Missing ID or Status' }, { status: 400 });
     }
 
-    const sql = getDormDbFromSession(session);
+    const sql = getDb();
     
-    // Update the status of the job
+    // Update status
     if (status === 'completed') {
       await sql`
         UPDATE cleaning_jobs 
@@ -97,7 +141,7 @@ export async function PATCH(request: Request) {
 
     return NextResponse.json({ success: true, message: 'Job status updated' });
   } catch (error: any) {
-    console.error('API Error updating job:', error);
+    console.error('[Maid Jobs PATCH Error]', error);
     return NextResponse.json({ success: false, message: 'Internal Server Error' }, { status: 500 });
   }
 }

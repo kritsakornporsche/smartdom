@@ -30,11 +30,11 @@ export default function OwnerAccounting() {
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({ type: 'Income', category: 'Rent', amount: 0, description: '', transaction_date: new Date().toISOString().split('T')[0] });
 
-  const dormDbName = (session?.user as any)?.dormDbName;
+  const [dormId, setDormId] = useState<number>(1);
 
-  const load = () => {
-    if (!dormDbName) return;
-    fetch(`/api/owner/accounting?dormDbName=${dormDbName}`)
+  const load = (id = 1) => {
+    setLoading(true);
+    fetch(`/api/owner/accounting?dormId=${id}`)
       .then(r => r.json())
       .then(d => {
         if (d.success) {
@@ -43,30 +43,37 @@ export default function OwnerAccounting() {
           setTotals(d.totals);
         }
       })
+      .catch(console.error)
       .finally(() => setLoading(false));
   };
 
   useEffect(() => {
-    if (dormDbName) {
-      load();
-    }
-  }, [dormDbName]);
+    const email = localStorage.getItem('userEmail') || session?.user?.email || 'owner@kaset2.com';
+    fetch(`/api/owner/onboarding?email=${email}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && data.hasDorm) {
+          setDormId(data.dorm.id);
+          load(data.dorm.id);
+        } else {
+          load(1);
+        }
+      })
+      .catch(() => load(1));
+  }, [session]);
 
   const handleSubmit = async () => {
-    if (!dormDbName) return;
     await fetch('/api/owner/accounting', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...form, dormDbName }),
+      body: JSON.stringify({ ...form, dorm_id: dormId }),
     });
     setShowForm(false);
     setForm({ type: 'Income', category: 'Rent', amount: 0, description: '', transaction_date: new Date().toISOString().split('T')[0] });
-    load();
+    load(dormId);
   };
 
   const fmt = (n: number) => Number(n).toLocaleString('th-TH');
-
-  if (!dormDbName) return null;
 
   if (loading) return (
     <div className="flex-1 flex items-center justify-center bg-[#080F1E]">

@@ -1,14 +1,23 @@
-const fs = require('fs');
-const path = require('path');
+const http = require('http');
 
-const srcHeader = path.join(__dirname, 'lib', 'header.jfif');
-const destHeaderJpg = path.join(__dirname, 'public', 'up-header.jpg');
-const destHeaderJfif = path.join(__dirname, 'public', 'header.jfif');
+console.log('Testing GET http://kritsakorn.thddns.net:5993/...');
 
-if (fs.existsSync(srcHeader)) {
-  fs.copyFileSync(srcHeader, destHeaderJpg);
-  fs.copyFileSync(srcHeader, destHeaderJfif);
-  console.log('Successfully copied lib/header.jfif to public/up-header.jpg!');
-} else {
-  console.error('lib/header.jfif not found');
-}
+const req = http.get('http://kritsakorn.thddns.net:5993/', (res) => {
+  console.log('🎉🎉🎉 BINGO! SUCCESS! Status Code:', res.statusCode);
+  console.log('Headers:', res.headers);
+  let data = '';
+  res.on('data', chunk => data += chunk);
+  res.on('end', () => {
+    console.log('Response length:', data.length);
+    console.log('HTML Preview:\n', data.substring(0, 300));
+  });
+});
+
+req.on('error', (e) => {
+  console.error('Request Error:', e.message);
+});
+
+req.setTimeout(8000, () => {
+  console.error('Request Timeout (8s)');
+  req.destroy();
+});

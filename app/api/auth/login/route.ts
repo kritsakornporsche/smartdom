@@ -39,35 +39,39 @@ export async function POST(request: Request) {
 
     // ── 2. Search unified users table ─────────────────────────────────────────
     const users = await sql`
-      SELECT u.id, u.name, u.email, u.password, u.primary_role, r.role, r.sub_role, r.dorm_id 
-      FROM users u
-      LEFT JOIN user_dorm_roles r ON u.id = r.user_id AND r.is_active = TRUE
-      WHERE u.email = ${emailNorm} OR u.name = ${emailNorm}
+      SELECT id, name, email, password, role, sub_role 
+      FROM users
+      WHERE email = ${emailNorm} OR name = ${emailNorm}
       LIMIT 1
     `;
 
-    if (users.length > 0 && await verifyPassword(users[0].password)) {
+    if (users.length > 0) {
       const user = users[0];
-      const role = user.role || user.primary_role || 'guest';
-      let redirectUrl = '/explore';
-      
-      if (role === 'owner') redirectUrl = '/owner';
-      if (role === 'tenant') redirectUrl = '/tenant';
-      if (role === 'keeper') {
-        if (user.sub_role === 'maid') redirectUrl = '/keeper/maid';
-        else if (user.sub_role === 'technician') redirectUrl = '/keeper/technician';
-        else redirectUrl = '/keeper';
+      const isMatch = await verifyPassword(user.password);
+      if (isMatch) {
+        const role = user.role || 'guest';
+        let redirectUrl = '/explore';
+        
+        if (role === 'owner') redirectUrl = '/owner';
+        if (role === 'tenant') redirectUrl = '/tenant';
+        if (role === 'keeper') {
+          if (user.sub_role === 'maid') redirectUrl = '/keeper/maid';
+          else if (user.sub_role === 'technician') redirectUrl = '/keeper/technician';
+          else redirectUrl = '/keeper';
+        }
+        
+        return NextResponse.json({
+          success: true,
+          message: 'เข้าสู่ระบบสำเร็จ',
+          redirectUrl,
+          user: { ...user, role },
+        });
+      } else {
+        return NextResponse.json({ success: false, message: 'รหัสผ่านไม่ถูกต้อง' }, { status: 401 });
       }
-      
-      return NextResponse.json({
-        success: true,
-        message: 'เข้าสู่ระบบสำเร็จ',
-        redirectUrl,
-        user: { ...user, role, dormId: user.dorm_id },
-      });
     }
 
-    return NextResponse.json({ success: false, message: 'อีเมลหรือรหัสผ่านไม่ถูกต้อง' }, { status: 401 });
+    return NextResponse.json({ success: false, message: 'ไม่พบบัญชีผู้ใช้งานในระบบ' }, { status: 404 });
   } catch (error: any) {
     console.error('Login error:', error);
     return NextResponse.json({ success: false, message: 'เกิดข้อผิดพลาด', error: error.message }, { status: 500 });

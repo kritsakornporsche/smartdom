@@ -17,10 +17,10 @@ process.env.AUTH_TRUST_HOST = 'true';
 process.env.AUTH_SECRET = 'A3B4C5D6E7F8G9H0I1J2K3L4M5N6O7P8Q9R0S1T2U3V4W5X6Y7Z8';
 process.env.NEXTAUTH_SECRET = 'A3B4C5D6E7F8G9H0I1J2K3L4M5N6O7P8Q9R0S1T2U3V4W5X6Y7Z8';
 if (!process.env.NEXTAUTH_URL || process.env.NEXTAUTH_URL.includes('0.0.0.0')) {
-  process.env.NEXTAUTH_URL = 'http://kritsakorn.thddns.net:5993';
+  process.env.NEXTAUTH_URL = 'http://localhost:3000';
 }
 if (!process.env.AUTH_URL || process.env.AUTH_URL.includes('0.0.0.0')) {
-  process.env.AUTH_URL = 'http://kritsakorn.thddns.net:5993';
+  process.env.AUTH_URL = 'http://localhost:3000';
 }
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
@@ -82,13 +82,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           }
         } catch (e) { console.error('[Auth: platform check]', e); }
 
-        // ── 2. Search users and their dorm roles ─────────────────────────────
+        // ── 2. Search users ─────────────────────────────────────────────────
         try {
           const users = await sql`
-            SELECT u.id, u.name, u.email, u.password, u.primary_role, r.role, r.sub_role, r.dorm_id 
-            FROM users u
-            LEFT JOIN user_dorm_roles r ON u.id = r.user_id AND r.is_active = TRUE
-            WHERE (u.email = ${email} OR u.name = ${email}) 
+            SELECT id, name, email, password, role, sub_role 
+            FROM users
+            WHERE (email = ${email} OR name = ${email}) 
             LIMIT 1
           `;
           
@@ -99,9 +98,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 id: String(user.id),
                 name: user.name,
                 email: user.email,
-                role: user.role || user.primary_role || 'guest',
-                sub_role: user.sub_role,
-                dormId: user.dorm_id,
+                role: user.role || 'guest',
+                sub_role: user.sub_role || null,
+                dormId: null,
               } as any;
             }
           }

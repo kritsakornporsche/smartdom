@@ -4,14 +4,15 @@ import AcknowledgeButton from './components/AcknowledgeButton';
 
 async function getAnnouncements() {
   const session = await auth();
-  if (!session?.user?.email) return [];
-
-  const sql = neon(process.env.DATABASE_URL || 'mysql://smartdom:smartdom@kritsakorn.thddns.net:5994/smartdom_dorm_1');
+  const sql = neon(process.env.DATABASE_URL || 'mysql://smartdom:smartdom@localhost:3306/smartdomdb');
   
-  // Find tenant by email
-  const tenantRes = await sql`SELECT id FROM tenants WHERE email = ${session.user.email} LIMIT 1`;
-  if (tenantRes.length === 0) return [];
-  const tenantId = tenantRes[0].id;
+  let tenantId = 1;
+  if (session?.user?.email) {
+    const tenantRes = await sql`SELECT id FROM tenants WHERE email = ${session.user.email} LIMIT 1`;
+    if (tenantRes.length > 0) {
+      tenantId = tenantRes[0].id;
+    }
+  }
 
   // Retrieve announcements and their read status for this tenant
   const announcements = await sql`
@@ -25,6 +26,7 @@ async function getAnnouncements() {
       ar.read_at
     FROM announcements a
     LEFT JOIN announcement_reads ar ON a.id = ar.announcement_id AND ar.tenant_id = ${tenantId}
+    WHERE a.is_active = 1 OR a.is_active IS NULL
     ORDER BY a.is_important DESC, a.created_at DESC
   `;
 

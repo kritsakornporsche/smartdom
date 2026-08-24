@@ -1,126 +1,55 @@
 import { auth } from '@/auth';
-import { getDormDbFromSession } from '@/lib/db';
+import { getDb } from '@/lib/db';
 import { NextResponse } from 'next/server';
 
-
 export async function GET(request: Request) {
-    const session = await auth();
-  if (!session || !(session.user as any)?.dormDbName) return new Response(JSON.stringify({ success: false, message: 'Unauthorized or missing dormDbName' }), { status: 401, headers: { 'Content-Type': 'application/json' } });
-  const sql = getDormDbFromSession(session);
+  const session = await auth();
+  if (!session) {
+    return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
+  }
+  const sql = getDb();
 
-try {
+  try {
     const { searchParams } = new URL(request.url);
-    const dormId = searchParams.get('dormId');
+    const dormId = parseInt(searchParams.get('dormId') || (session.user as any)?.dormId || '1', 10);
 
-    if (!dormId) {
-      return NextResponse.json({ success: false, message: 'Missing dormId' }, { status: 400 });
-    }
-
-    
     const keepers = await sql`
       SELECT * FROM keepers 
-      WHERE dorm_id = ${parseInt(dormId)}
-      ORDER BY created_at DESC
+      WHERE dorm_id = ${dormId}
+      ORDER BY id ASC
     `;
 
     return NextResponse.json({ success: true, data: keepers });
   } catch (error: any) {
+    console.error('[Keepers GET Error]', error);
     return NextResponse.json({ success: false, message: error.message }, { status: 500 });
   }
 }
 
 export async function POST(request: Request) {
-    const session = await auth();
-  if (!session || !(session.user as any)?.dormDbName) return new Response(JSON.stringify({ success: false, message: 'Unauthorized or missing dormDbName' }), { status: 401, headers: { 'Content-Type': 'application/json' } });
-  const sql = getDormDbFromSession(session);
+  const session = await auth();
+  if (!session) {
+    return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
+  }
+  const sql = getDb();
 
-try {
+  try {
     const body = await request.json();
     const { name, email, phone, position, dorm_id, password } = body;
 
-    if (!name || !position || !dorm_id) {
+    if (!name || !position) {
       return NextResponse.json({ success: false, message: 'Missing required fields' }, { status: 400 });
     }
 
-    
-    
-    // Helper to hash password (SHA-256 to match signup logic)
-    const hashPassword = async (pass: string) => {
-      const encoder = new TextEncoder();
-      const dataArr = encoder.encode(pass);
-      const hashBuffer = await crypto.subtle.digest('SHA-256', dataArr);
-      const hashArray = Array.from(new Uint8Array(hashBuffer));
-      return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-    };
-
-    const hashedPassword = await hashPassword(password || 'keeper123');
-
-    // 1. Create User Record
-    const userResult = await sql`
-      INSERT INTO users (email, password, name, role)
-      VALUES (${email}, ${hashedPassword}, ${name}, 'keeper')
-      RETURNING id
-    `;
-    const userId = userResult[0].id;
-
-    // 2. Create Keeper Record
+    const targetDormId = parseInt(dorm_id || (session.user as any)?.dormId || '1', 10);
     const result = await sql`
-      INSERT INTO keepers (name, email, phone, position, dorm_id, user_id)
-      VALUES (${name}, ${email || null}, ${phone || null}, ${position}, ${dorm_id}, ${userId})
-      RETURNING *
+      INSERT INTO keepers (name, email, phone, position, dorm_id)
+      VALUES (${name}, ${email || null}, ${phone || null}, ${position}, ${targetDormId})
     `;
 
-    return NextResponse.json({ success: true, data: result[0] });
+    return NextResponse.json({ success: true, message: 'Keeper added successfully', data: { id: (result as any).insertId } });
   } catch (error: any) {
-    return NextResponse.json({ success: false, message: error.message }, { status: 500 });
-  }
-}
-
-export async function PUT(request: Request) {
-    const session = await auth();
-  if (!session || !(session.user as any)?.dormDbName) return new Response(JSON.stringify({ success: false, message: 'Unauthorized or missing dormDbName' }), { status: 401, headers: { 'Content-Type': 'application/json' } });
-  const sql = getDormDbFromSession(session);
-
-try {
-    const body = await request.json();
-    const { id, name, email, phone, position } = body;
-
-    if (!id) {
-      return NextResponse.json({ success: false, message: 'Missing id' }, { status: 400 });
-    }
-
-    
-    const result = await sql`
-      UPDATE keepers 
-      SET name = ${name}, email = ${email}, phone = ${phone}, position = ${position}
-      WHERE id = ${id}
-      RETURNING *
-    `;
-
-    return NextResponse.json({ success: true, data: result[0] });
-  } catch (error: any) {
-    return NextResponse.json({ success: false, message: error.message }, { status: 500 });
-  }
-}
-
-export async function DELETE(request: Request) {
-    const session = await auth();
-  if (!session || !(session.user as any)?.dormDbName) return new Response(JSON.stringify({ success: false, message: 'Unauthorized or missing dormDbName' }), { status: 401, headers: { 'Content-Type': 'application/json' } });
-  const sql = getDormDbFromSession(session);
-
-try {
-    const { searchParams } = new URL(request.url);
-    const id = searchParams.get('id');
-
-    if (!id) {
-      return NextResponse.json({ success: false, message: 'Missing id' }, { status: 400 });
-    }
-
-    
-    await sql`DELETE FROM keepers WHERE id = ${parseInt(id)}`;
-
-    return NextResponse.json({ success: true, message: 'Keeper deleted' });
-  } catch (error: any) {
+    console.error('[Keepers POST Error]', error);
     return NextResponse.json({ success: false, message: error.message }, { status: 500 });
   }
 }

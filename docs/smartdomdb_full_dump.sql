@@ -1,5 +1,5 @@
 -- SmartDom Full Database Export
--- Generated on: 2026-08-24T12:16:33.170Z
+-- Generated on: 2026-08-24T14:04:45.019Z
 
 SET FOREIGN_KEY_CHECKS = 0;
 
@@ -3560,7 +3560,7 @@ CREATE TABLE `users` (
   `primary_role` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=151 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=152 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 INSERT INTO `users` (`id`, `email`, `password`, `name`, `role`, `is_active`, `sub_role`, `created_at`, `phone`, `primary_role`) VALUES
 (1, 'owner@smartdom.com', '$2b$10$GTsNvnwasegy0OTDWI5hcee0PZpOhzo5NzXcAFSt/Vk5Nx8i0e7Cq', 'SmartDom Owner', 'owner', 1, NULL, '2026-06-24 02:46:55', NULL, 'owner'),
@@ -3712,6 +3712,7 @@ INSERT INTO `users` (`id`, `email`, `password`, `name`, `role`, `is_active`, `su
 (147, 'tenant_d4_r403@smartdom.ac.th', '$2b$10$TeCA2t55FWKtm4X2jTF97OeVjpVqi26WRwLZFIcKo3sFMGUNN7A5q', 'นางสาวจิราภรณ์ สุขเกษม', 'tenant', 1, NULL, '2026-08-24 07:08:35', NULL, 'tenant'),
 (148, 'tenant_d4_r404@smartdom.ac.th', '$2b$10$TeCA2t55FWKtm4X2jTF97OeVjpVqi26WRwLZFIcKo3sFMGUNN7A5q', 'นายยุรนันท์ ตันติวิทย์', 'tenant', 1, NULL, '2026-08-24 07:08:35', NULL, 'tenant'),
 (149, 'tenant_d4_r405@smartdom.ac.th', '$2b$10$TeCA2t55FWKtm4X2jTF97OeVjpVqi26WRwLZFIcKo3sFMGUNN7A5q', 'นางสาวณิชาภัทร รัตนโชติ', 'tenant', 1, NULL, '2026-08-24 07:08:35', NULL, 'tenant'),
-(150, 'tenant_d4_r406@smartdom.ac.th', '$2b$10$TeCA2t55FWKtm4X2jTF97OeVjpVqi26WRwLZFIcKo3sFMGUNN7A5q', 'นายวิศรุต มิ่งขวัญ', 'tenant', 1, NULL, '2026-08-24 07:08:36', NULL, 'tenant');
+(150, 'tenant_d4_r406@smartdom.ac.th', '$2b$10$TeCA2t55FWKtm4X2jTF97OeVjpVqi26WRwLZFIcKo3sFMGUNN7A5q', 'นายวิศรุต มิ่งขวัญ', 'tenant', 1, NULL, '2026-08-24 07:08:36', NULL, 'tenant'),
+(151, 'newuser_1787580274202@example.com', '$2b$10$I7pPtJEUq3n53fU8D41ZheTCuTEC9YKcahwmpQ8FoimuVI/oTEATK', 'user_1787580274202', 'owner', 1, NULL, '2026-08-24 14:04:34', NULL, 'owner');
 
 SET FOREIGN_KEY_CHECKS = 1;

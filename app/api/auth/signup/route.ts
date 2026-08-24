@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server';
 import { getDb } from '@/lib/db';
 import bcrypt from 'bcryptjs';
 
-
 // ─── POST /api/auth/signup ─────────────────────────────────────────────────────
 export async function POST(request: Request) {
   try {
@@ -26,7 +25,8 @@ export async function POST(request: Request) {
 
     // ── Validate email format ─────────────────────────────────────────────────
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
+    const cleanEmail = email.toLowerCase().trim();
+    if (!emailRegex.test(cleanEmail)) {
       return NextResponse.json(
         { success: false, message: 'รูปแบบอีเมลไม่ถูกต้อง' },
         { status: 400 }
@@ -34,23 +34,18 @@ export async function POST(request: Request) {
     }
 
     // ── Validate password strength ────────────────────────────────────────────
-    if (password.length < 8) {
+    if (password.length < 6) {
       return NextResponse.json(
-        { success: false, message: 'รหัสผ่านต้องมีอย่างน้อย 8 ตัวอักษร' },
+        { success: false, message: 'รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร' },
         { status: 400 }
       );
     }
 
     // ── Validate role ─────────────────────────────────────────────────────────
     const validRoles = ['guest', 'tenant', 'keeper', 'owner'];
-    if (!validRoles.includes(role)) {
-      return NextResponse.json(
-        { success: false, message: 'ประเภทผู้ใช้งานไม่ถูกต้อง' },
-        { status: 400 }
-      );
-    }
+    const chosenRole = validRoles.includes(role) ? role : 'guest';
 
-    if (role === 'keeper') {
+    if (chosenRole === 'keeper') {
       const validSubRoles = ['maid', 'technician'];
       if (!validSubRoles.includes(sub_role)) {
         return NextResponse.json(
@@ -66,7 +61,7 @@ export async function POST(request: Request) {
 
     // ── Check duplicate email ─────────────────────────────────────────────────
     const existingEmail = await sql`
-      SELECT id FROM users WHERE email = ${email.toLowerCase().trim()} LIMIT 1
+      SELECT id FROM users WHERE LOWER(email) = ${cleanEmail} LIMIT 1
     `;
     if (existingEmail.length > 0) {
       return NextResponse.json(
@@ -87,20 +82,23 @@ export async function POST(request: Request) {
     }
 
     // ── Hash password with BCrypt ─────────────────────────────────────────────
-    const hashedPassword = await bcrypt.hash(password, 12);
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-    // ── Insert user (stores username into name column) ───────────────────────
+    // ── Insert user with role, primary_role, sub_role, is_active ──────────────
     const result = await sql`
-      INSERT INTO users (name, email, password, primary_role)
+      INSERT INTO users (name, email, password, role, primary_role, sub_role, is_active)
       VALUES (
         ${usernameClean},
-        ${email.toLowerCase().trim()},
+        ${cleanEmail},
         ${hashedPassword},
-        ${role}
+        ${chosenRole},
+        ${chosenRole},
+        ${chosenRole === 'keeper' ? sub_role : null},
+        1
       )
     `;
     
-    const insertId = result.insertId;
+    const insertId = (result as any).insertId || (result as any)[0]?.id;
 
     return NextResponse.json(
       {
@@ -110,9 +108,9 @@ export async function POST(request: Request) {
           id: insertId,
           username: usernameClean,
           name: usernameClean,
-          email: email.toLowerCase().trim(),
-          role: role,
-          sub_role: role === 'keeper' ? sub_role : null,
+          email: cleanEmail,
+          role: chosenRole,
+          sub_role: chosenRole === 'keeper' ? sub_role : null,
         },
       },
       { status: 201 }
@@ -128,7 +126,7 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json(
-      { success: false, message: 'เกิดข้อผิดพลาดภายในระบบ กรุณาลองใหม่อีกครั้ง', error: error.message },
+      { success: false, message: 'เกิดข้อผิดพลาดภายในระบบ กรุณาลองใหม่อีกครั้ง: ' + error.message },
       { status: 500 }
     );
   }
@@ -154,7 +152,7 @@ export async function GET(request: Request) {
 
     if (email) {
       const existingEmail = await sql`
-        SELECT id FROM users WHERE email = ${email.toLowerCase().trim()} LIMIT 1
+        SELECT id FROM users WHERE LOWER(email) = ${email.toLowerCase().trim()} LIMIT 1
       `;
       emailAvailable = existingEmail.length === 0;
     }

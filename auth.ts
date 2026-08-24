@@ -85,9 +85,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         // ── 2. Search users ─────────────────────────────────────────────────
         try {
           const users = await sql`
-            SELECT id, name, email, password, role, sub_role 
+            SELECT id, name, email, password, role, primary_role, sub_role 
             FROM users
-            WHERE (email = ${email} OR name = ${email}) 
+            WHERE (LOWER(email) = ${email} OR LOWER(name) = ${email}) 
             LIMIT 1
           `;
           
@@ -98,7 +98,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 id: String(user.id),
                 name: user.name,
                 email: user.email,
-                role: user.role || 'guest',
+                role: user.role || user.primary_role || 'guest',
                 sub_role: user.sub_role || null,
                 dormId: null,
               } as any;

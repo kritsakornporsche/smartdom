@@ -141,9 +141,15 @@ export async function POST(req: Request) {
     }
 
     // Register in dormitory_registry
+    const dbNameGenerated = `dorm_${ownerId}_${Date.now()}`;
     const reg = await sql`
-      INSERT INTO dormitory_registry (owner_id, dorm_name, phone, address, status, approved_at)
-      VALUES (${ownerId}, ${dormData.name}, ${dormData.phone || ''}, ${dormData.address || ''}, 'Active', NOW())
+      INSERT INTO dormitory_registry (
+        owner_id, owner_email, owner_name, dorm_name, db_name, phone, address, status, approved_at
+      )
+      VALUES (
+        ${ownerId}, ${ownerEmail}, ${ownerDisplayName}, ${dormData.name}, ${dbNameGenerated},
+        ${dormData.phone || personalData?.mobilePhone || ''}, ${dormData.address || ''}, 'Active', NOW()
+      )
     `;
     const dormRegistryId = (reg as any).insertId;
 
@@ -151,6 +157,7 @@ export async function POST(req: Request) {
     await sql`
       INSERT INTO user_dorm_roles (user_id, dorm_id, role)
       VALUES (${ownerId}, ${dormRegistryId}, 'owner')
+      ON DUPLICATE KEY UPDATE role = 'owner', is_active = 1
     `;
 
     // Build facilities list string
@@ -163,14 +170,17 @@ export async function POST(req: Request) {
     // Create dormitory profile
     await sql`
       INSERT INTO dormitory_profile (
-        dorm_id, water_rate, electricity_rate,
+        dorm_id, name, address, phone, tax_id, owner_id, water_rate, electricity_rate,
         has_wifi, has_parking, pet_friendly, has_lan,
-        has_air_con, facilities, map_url
+        has_air_con, facilities, map_url, description, cover_image
       )
       VALUES (
-        ${dormRegistryId}, ${dormData.water_rate || 18.0}, ${dormData.electricity_rate || 8.0},
+        ${dormRegistryId}, ${dormData.name}, ${dormData.address || ''}, ${dormData.phone || personalData?.mobilePhone || ''},
+        ${personalData?.taxId || ''}, ${ownerId}, ${dormData.water_rate || 18.0}, ${dormData.electricity_rate || 8.0},
         ${dormData.has_wifi ? 1 : 0}, ${dormData.has_parking ? 1 : 0}, ${dormData.pet_friendly ? 1 : 0}, ${dormData.has_lan ? 1 : 0},
-        ${dormData.has_air_con ? 1 : 0}, ${facilitiesList}, ${mapUrlStr}
+        ${dormData.has_air_con ? 1 : 0}, ${facilitiesList}, ${mapUrlStr},
+        ${dormData.description || 'หอพักคุณภาพ ใกล้สิ่งอำนวยความสะดวก ปลอดภัย สะอาด'},
+        ${dormData.coverImage || dormData.cover_image || '/up-logo.png'}
       )
     `;
 
@@ -178,8 +188,8 @@ export async function POST(req: Request) {
     const endDate = new Date();
     endDate.setDate(endDate.getDate() + 30);
     await sql`
-      INSERT INTO subscriptions (dormitory_id, package_id, status, end_date, amount_paid)
-      VALUES (${dormRegistryId}, ${finalPackageId}, 'Active', ${endDate.toISOString().replace('T', ' ').substring(0, 19)}, 0)
+      INSERT INTO subscriptions (owner_id, dormitory_id, package_id, status, end_date, amount_paid)
+      VALUES (${ownerId}, ${dormRegistryId}, ${finalPackageId}, 'Active', ${endDate.toISOString().replace('T', ' ').substring(0, 19)}, 0)
     `;
 
     return NextResponse.json({

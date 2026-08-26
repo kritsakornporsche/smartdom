@@ -1,0 +1,11 @@
+page,device,run,performance,lcp_s,cls,tbt_ms,used_auth
+explore,desktop,1,97,0.68,0.099,0,none
+explore,mobile,1,99,1.84,0.000,56,none
+signin,desktop,1,100,0.68,0.000,0,none
+signin,mobile,1,96,2.63,0.000,105,none
+owner,desktop,1,98,1.07,0.002,0,owner
+owner,mobile,1,85,4.21,0.000,79,owner
+tenant,desktop,1,99,0.80,0.012,0,tenant
+tenant,mobile,1,88,3.82,0.000,109,tenant
+bills,desktop,1,98,0.89,0.000,0,tenant
+bills,mobile,1,87,3.96,0.051,99,tenant

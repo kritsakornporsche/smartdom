@@ -14,6 +14,8 @@ async function getDashboardData() {
   }
 
   const sql = getDb();
+  const userEmail = session.user.email;
+  const userId = (session.user as any)?.id || 0;
   
   // Find tenant, room info and contract status
   const contractRes = await sql`
@@ -41,7 +43,7 @@ async function getDashboardData() {
     LEFT JOIN rooms r ON r.id = COALESCE(t.room_id, c.room_id)
     LEFT JOIN dormitory_registry dr ON r.dorm_id = dr.id
     LEFT JOIN users u_owner ON dr.owner_id = u_owner.id
-    WHERE (t.email = ${session.user.email} OR t.user_id = ${(session.user as any).id || 0})
+    WHERE (t.email = ${userEmail} OR t.user_id = ${userId} OR t.user_id IN (SELECT id FROM users WHERE email = ${userEmail}))
     ORDER BY c.id DESC
     LIMIT 1
   `;
@@ -52,27 +54,39 @@ async function getDashboardData() {
 
   const latestRecord = contractRes[0];
   const isPending = latestRecord.contract_status === 'PendingOwnerSignature';
-  const isActive = latestRecord.contract_status === 'Active';
+  const hasRoom = Boolean(latestRecord.room_number || latestRecord.room_id);
+  const isActive = latestRecord.contract_status === 'Active' || (!latestRecord.contract_id && hasRoom);
 
-  const tenantId = latestRecord.tenant_id;
+  // Find all unpaid bills for this tenant
+  const unpaidBills = await sql`
+    SELECT * FROM bills 
+    WHERE tenant_id IN (
+      SELECT id FROM tenants 
+      WHERE email = ${userEmail} 
+         OR user_id = ${userId}
+         OR user_id IN (SELECT id FROM users WHERE email = ${userEmail})
+    ) 
+    AND status = 'Unpaid' 
+    ORDER BY due_date ASC
+  `;
 
-  let unpaidBills: any[] = [];
-  let recentMaintenance: any[] = [];
-
-  if (tenantId && isActive) {
-    unpaidBills = await sql`
-      SELECT * FROM bills WHERE tenant_id = ${tenantId} AND status = 'Unpaid' ORDER BY due_date ASC
-    `;
-
-    recentMaintenance = await sql`
-      SELECT * FROM maintenance_requests WHERE tenant_id = ${tenantId} ORDER BY created_at DESC LIMIT 3
-    `;
-  }
+  // Find recent maintenance requests
+  const recentMaintenance = await sql`
+    SELECT * FROM maintenance_requests 
+    WHERE tenant_id IN (
+      SELECT id FROM tenants 
+      WHERE email = ${userEmail} 
+         OR user_id = ${userId}
+         OR user_id IN (SELECT id FROM users WHERE email = ${userEmail})
+    ) 
+    ORDER BY created_at DESC 
+    LIMIT 3
+  `;
 
   return { 
     unpaidBills, 
     recentMaintenance, 
-    roomInfo: isActive ? latestRecord : null,
+    roomInfo: (isActive || hasRoom) ? latestRecord : null,
     pendingContract: isPending ? latestRecord : null
   };
 }

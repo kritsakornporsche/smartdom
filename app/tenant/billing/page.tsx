@@ -14,7 +14,7 @@ interface Bill {
 }
 
 export default function TenantBillingPage() {
-  const { status } = useSession();
+  const { data: session, status } = useSession();
   const router = useRouter();
   
   const [bills, setBills] = useState<Bill[]>([]);
@@ -32,7 +32,7 @@ export default function TenantBillingPage() {
     } else if (status === 'authenticated') {
       fetchBills();
     }
-  }, [status]);
+  }, [status, session]);
 
   const fetchBills = async () => {
     try {

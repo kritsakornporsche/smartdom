@@ -63,6 +63,21 @@ export default function RootLayout({
                 document.documentElement.classList.remove('dark');
               }
             } catch (e) {}
+
+            // Safe guarded chunk reload handler (at most once per 10 seconds)
+            window.addEventListener('error', function(e) {
+              try {
+                var msg = e.message || (e.error && e.error.message) || '';
+                if (/Loading chunk [\d]+ failed|ChunkLoadError/i.test(msg)) {
+                  var lastReload = parseInt(sessionStorage.getItem('last_chunk_reload') || '0', 10);
+                  var now = Date.now();
+                  if (now - lastReload > 10000) {
+                    sessionStorage.setItem('last_chunk_reload', String(now));
+                    window.location.reload();
+                  }
+                }
+              } catch(err) {}
+            });
           })();
         ` }} />
       </head>

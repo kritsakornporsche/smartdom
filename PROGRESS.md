@@ -1,7 +1,7 @@
 # 📈 บันทึกความคืบหน้าการพัฒนาระบบ SmartDom (Progress Log)
 
 **อัปเดตล่าสุด:** 29 สิงหาคม 2026  
-**เวอร์ชันปัจจุบัน:** `v2.4.0-b115`  
+**เวอร์ชันปัจจุบัน:** `v2.4.0-b116`  
 **สถานะเซิร์ฟเวอร์:** 🟢 Online (PM2 Production Server: `http://kritsakorn.thddns.net:5993`)
 
 ---
@@ -42,17 +42,18 @@
 
 ---
 
-### 4. แก้ไขระบบสแกน QR Code ชำระบิลของผู้เช่า (`/tenant/billing`)
-- **แก้ไขปัญหา `Unauthorized (401)`:** ปรับปรุง API `/api/tenant/billing/qr`, `/payment`, `/list` ให้จับคู่ผู้เช่าด้วย `user_id` และ `email` อย่างแม่นยำ
+### 4. ปรับปรุงระบบบิลค่าเช่าและการชำระเงิน (`/tenant/billing` & `/owner/billing`)
+- **แก้ไขปัญหา `Unauthorized (401)`:** ปรับปรุง API `/api/tenant/billing/qr`, `/payment`, `/list` ให้จับคู่ผู้เช่าด้วย `user_id` และ `email` ข้ามทุกหอพักได้อย่างแม่นยำ
 - **แก้ไข Error Database Column:** แก้ไขการดึงข้อมูลเบอร์พร้อมเพย์จาก `dormitory_profile` (`promptpay_number`, `promptpay_name`, `name`) ป้องกัน Error 500
-- **ระบบสำรองข้อมูล:** เพิ่ม Default PromptPay ป้องกันระบบขัดข้องหากหอพักยังไม่ได้ตั้งค่าเบอร์พร้อมเพย์
+- **ปรับปรุง API บิลฝั่งเจ้าของ:** อัปเดต `/api/owner/billing/[id]` และ `/api/owner/billing/batch` ให้รองรับการอัปเดตสลิปและการสร้างบิลอัตโนมัติทุกห้อง
+- **Safe Guarded Chunk Reload Handler:** เพิ่ม Global Error Listener ใน `layout.tsx` จัดการ `ChunkLoadError` เมื่อมีการอัปเดตไฟล์บนเซิร์ฟเวอร์แบบไร้รอยต่อ
 
 ---
 
 ### 5. ระบบอัปเดตเวอร์ชันอัตโนมัติ (Auto-Increment Versioning)
 - สคริปต์ `scripts/generate-version.js` ทำงานอัตโนมัติก่อน Build ทุกครั้ง (`prebuild`)
 - สร้าง Version Badge ที่มุมขวาล่างของแอป เชื่อมต่อไปยังหน้ารายละเอียดการอัปเดต (`/updates`)
-- ปัจจุบันทำงานอยู่ที่เวอร์ชัน **`v2.4.0-b115`**
+- ปัจจุบันทำงานอยู่ที่เวอร์ชัน **`v2.4.0-b116`**
 
 ---
 
@@ -66,8 +67,11 @@
 | `app/owner/page.tsx` | เพิ่มปุ่มทางลัดไปยังหน้ารายการจองห้องพัก |
 | `app/api/tenant/billing/qr/route.ts` | API สร้าง PromptPay QR Code สำหรับชำระบิลรายเดือน |
 | `app/api/tenant/billing/payment/route.ts` | API แนบสลิปชำระบิลรายเดือน |
-| `app/api/tenant/billing/list/route.ts` | API รายการบิลของผู้เช่า |
+| `app/api/tenant/billing/list/route.ts` | API รายการบิลของผู้เช่า รองรับ multi-match |
 | `app/tenant/billing/page.tsx` | หน้ารายการบิลและการชำระเงินของผู้เช่า |
+| `app/api/owner/billing/[id]/route.ts` | API อัปเดตสถานะและข้อมูลบิลของเจ้าของ |
+| `app/api/owner/billing/batch/route.ts` | API ออกบิลค่าเช่าอัตโนมัติแบบกลุ่ม |
+| `app/layout.tsx` | เพิ่ม Safe guarded chunk reload handler |
 | `app/explore/room/[id]/page.tsx` | หน้าจองห้องพักพร้อมระบบสร้าง QR และแนบสลิปเงินประกัน 1 เดือน |
 | `app/api/booking/qr/route.ts` | API สร้าง QR Code เงินประกันการจองห้องพัก |
 | `app/api/booking/cancel/route.ts` | API ขอยกเลิกการจองห้องพักของผู้จอง |

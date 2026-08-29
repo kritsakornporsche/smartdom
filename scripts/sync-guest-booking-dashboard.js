@@ -3,11 +3,14 @@ const path = require('path');
 const { Client } = require('ssh2');
 
 const filesToUpload = [
+  'app/layout.tsx',
   'app/api/booking/qr/route.ts',
   'app/api/booking/cancel/route.ts',
   'app/api/contracts/route.ts',
   'app/api/owner/contracts/route.ts',
   'app/api/owner/bookings/route.ts',
+  'app/api/owner/billing/[id]/route.ts',
+  'app/api/owner/billing/batch/route.ts',
   'app/api/tenant/billing/qr/route.ts',
   'app/api/tenant/billing/payment/route.ts',
   'app/api/tenant/billing/list/route.ts',

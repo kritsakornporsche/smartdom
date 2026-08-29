@@ -17,19 +17,23 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: false, message: 'Missing required fields' }, { status: 400 });
     }
 
-    // 1. Find all active tenants in this dormitory via their active contracts
+    const targetDormId = parseInt(dormId, 10);
+
+    // 1. Find all active tenants in this dormitory via rooms/contracts
     const activeTenants = await sql`
-      SELECT t.id as tenant_id, r.price as amount
+      SELECT 
+        t.id as tenant_id, 
+        COALESCE(r.price, 0) as amount,
+        r.room_number,
+        r.dorm_id
       FROM tenants t
-      JOIN contracts c ON c.tenant_id = t.id
-      JOIN rooms r ON c.room_id = r.id
-      WHERE r.dorm_id = ${parseInt(dormId)} 
+      LEFT JOIN rooms r ON t.room_id = r.id
+      WHERE (r.dorm_id = ${targetDormId} OR t.dorm_id = ${targetDormId})
       AND t.status = 'Active'
-      AND c.status = 'Active'
     `;
 
     if (activeTenants.length === 0) {
-      return NextResponse.json({ success: true, message: 'No active tenants found', count: 0 });
+      return NextResponse.json({ success: true, message: 'ไม่พบผู้เช่าที่มีสถานะ Active ในหอพักนี้', count: 0 });
     }
 
     let createdCount = 0;
@@ -41,8 +45,36 @@ export async function POST(req: Request) {
       
       if (existing.length === 0) {
         await sql`
-          INSERT INTO bills (tenant_id, title, amount, billing_cycle, due_date, status)
-          VALUES (${tenant.tenant_id}, ${title}, ${tenant.amount}, ${billingCycle}, ${dueDate}, 'Unpaid')
+          INSERT INTO bills (
+            tenant_id, 
+            title, 
+            amount, 
+            billing_cycle, 
+            due_date, 
+            status, 
+            dorm_id, 
+            room_number, 
+            room_amount,
+            water_units,
+            electric_units,
+            water_amount,
+            electric_amount
+          )
+          VALUES (
+            ${tenant.tenant_id}, 
+            ${title}, 
+            ${tenant.amount}, 
+            ${billingCycle}, 
+            ${dueDate}, 
+            'Unpaid', 
+            ${targetDormId}, 
+            ${tenant.room_number || null}, 
+            ${tenant.amount},
+            0,
+            0,
+            0,
+            0
+          )
         `;
         createdCount++;
       }
@@ -50,7 +82,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ 
       success: true, 
-      message: `Successfully generated ${createdCount} bills.`,
+      message: `สร้างใบแจ้งหนี้อัตโนมัติสำเร็จ ${createdCount} รายการ`,
       count: createdCount 
     });
 
@@ -59,3 +91,4 @@ export async function POST(req: Request) {
     return NextResponse.json({ success: false, message: err.message }, { status: 500 });
   }
 }
+

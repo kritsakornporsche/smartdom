@@ -1,7 +1,7 @@
 # 📈 บันทึกความคืบหน้าการพัฒนาระบบ SmartDom (Progress Log)
 
 **อัปเดตล่าสุด:** 29 สิงหาคม 2026  
-**เวอร์ชันปัจจุบัน:** `v2.4.0-b119` (`ylxlwz`)  
+**เวอร์ชันปัจจุบัน:** `Auto-Incrementing on Every Build` (`v2.4.0-b...`)  
 **สถานะเซิร์ฟเวอร์:** 🟢 Online (PM2 Production Server: `http://kritsakorn.thddns.net:5993`)
 
 ---

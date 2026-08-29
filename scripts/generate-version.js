@@ -8,11 +8,13 @@ const versionFilePath = path.join(__dirname, '..', 'lib', 'version.json');
 const BASE_VERSION = 'v2.4.0';
 
 let previousData = {
-  version: BASE_VERSION,
-  buildNumber: 100,
-  lastBuild: '',
-  gitHash: '',
-  fullDisplay: ''
+  baseVersion: BASE_VERSION,
+  buildNumber: 119,
+  gitHash: 'ylxlwz',
+  timestamp: '',
+  updatedAt: '',
+  fullDisplay: '',
+  shortDisplay: ''
 };
 
 if (fs.existsSync(versionFilePath)) {
@@ -22,16 +24,17 @@ if (fs.existsSync(versionFilePath)) {
   } catch (e) {}
 }
 
-// Get Git commit short hash
+// 1. Get Git commit short hash (or fallback)
 let gitHash = '';
 try {
-  gitHash = execSync('git rev-parse --short HEAD', { encoding: 'utf8' }).trim();
+  gitHash = execSync('git rev-parse --short HEAD', { encoding: 'utf8', stdio: ['pipe', 'pipe', 'ignore'] }).trim();
 } catch (e) {
+  // If git is not installed on remote server, generate 6-char hash
   gitHash = Math.random().toString(36).substring(2, 8);
 }
 
+// 2. Format Date and Time
 const now = new Date();
-// Format: YYYYMMDD.HHmm (e.g., 20260829.1155)
 const pad = (n) => String(n).padStart(2, '0');
 const dateStr = `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}`;
 const timeStr = `${pad(now.getHours())}${pad(now.getMinutes())}`;
@@ -45,14 +48,10 @@ const thaiDateStr = now.toLocaleDateString('th-TH', {
   minute: '2-digit'
 });
 
-let newBuildNumber = (previousData.buildNumber || 100);
-if (process.env.FORCE_VERSION_UPDATE === 'true') {
-  newBuildNumber = (previousData.buildNumber || 100) + 1;
-}
-if (previousData.gitHash === 'ylxlwz') {
-  gitHash = 'ylxlwz';
-}
+// 3. Auto-increment build number EVERY build
+const newBuildNumber = (previousData.buildNumber || 119) + 1;
 const fullDisplay = `${BASE_VERSION}.${newBuildNumber} (${gitHash})`;
+const shortDisplay = `${BASE_VERSION}-b${newBuildNumber}`;
 
 const versionData = {
   baseVersion: BASE_VERSION,
@@ -61,10 +60,10 @@ const versionData = {
   timestamp: timestampId,
   updatedAt: thaiDateStr,
   fullDisplay: fullDisplay,
-  shortDisplay: `${BASE_VERSION}-b${newBuildNumber}`
+  shortDisplay: shortDisplay
 };
 
 fs.writeFileSync(versionFilePath, JSON.stringify(versionData, null, 2), 'utf8');
-console.log(`🏷️ [Version Updated] -> ${fullDisplay} (${thaiDateStr})`);
+console.log(`🏷️ [Version Updated] -> ${shortDisplay} (${gitHash}) [${thaiDateStr}]`);
 
 module.exports = versionData;

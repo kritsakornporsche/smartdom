@@ -39,6 +39,7 @@ export const viewport: Viewport = {
 
 import SessionProviderWrapper from "./components/SessionProviderWrapper";
 import { Toaster } from "sonner";
+import AppVersionBadge from "./components/AppVersionBadge";
 
 export default function RootLayout({
   children,
@@ -69,6 +70,7 @@ export default function RootLayout({
         <Toaster position="top-center" expand={true} richColors />
         <SessionProviderWrapper>
           {children}
+          <AppVersionBadge />
         </SessionProviderWrapper>
       </body>
     </html>

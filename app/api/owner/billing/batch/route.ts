@@ -1,14 +1,15 @@
 import { auth } from '@/auth';
-import { getDormDbFromSession } from '@/lib/db';
+import { getDb } from '@/lib/db';
 import { NextResponse } from 'next/server';
 
-
 export async function POST(req: Request) {
-    const session = await auth();
-  if (!session || !(session.user as any)?.dormDbName) return new Response(JSON.stringify({ success: false, message: 'Unauthorized or missing dormDbName' }), { status: 401, headers: { 'Content-Type': 'application/json' } });
-  const sql = getDormDbFromSession(session);
+  const session = await auth();
+  if (!session || !session.user) {
+    return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
+  }
+  const sql = getDb();
 
-try {
+  try {
     const body = await req.json();
     const { dormId, billingCycle, dueDate, title } = body;
 
@@ -16,8 +17,6 @@ try {
       return NextResponse.json({ success: false, message: 'Missing required fields' }, { status: 400 });
     }
 
-    
-    
     // 1. Find all active tenants in this dormitory via their active contracts
     const activeTenants = await sql`
       SELECT t.id as tenant_id, r.price as amount
@@ -33,14 +32,8 @@ try {
       return NextResponse.json({ success: true, message: 'No active tenants found', count: 0 });
     }
 
-    // 2. Batch insert bills
-    // We'll map through tenants and create insertion promises
-    // In a production environment with many tenants, a single multi-row INSERT would be better.
-    // Here we'll do it for clarity.
-    
     let createdCount = 0;
     for (const tenant of activeTenants) {
-      // Check if bill already exists for this tenant and cycle to avoid duplicates
       const existing = await sql`
         SELECT id FROM bills 
         WHERE tenant_id = ${tenant.tenant_id} AND billing_cycle = ${billingCycle} AND title = ${title}
@@ -62,7 +55,7 @@ try {
     });
 
   } catch (err: any) {
-    console.error('[Batch Billing API Error]:', err);
+    console.error('[Billing Batch API] Error:', err);
     return NextResponse.json({ success: false, message: err.message }, { status: 500 });
   }
 }

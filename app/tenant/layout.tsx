@@ -15,17 +15,21 @@ export default async function TenantLayout({ children }: { children: ReactNode }
   if (userEmail) {
     const sql = getDb();
     const res = await sql`
-      SELECT r.room_number, r.floor, dr.dorm_name
+      SELECT r.room_number, r.floor, dr.dorm_name, c.status as contract_status
       FROM tenants t
-      LEFT JOIN contracts c ON t.id = c.tenant_id AND c.status = 'Active'
+      LEFT JOIN contracts c ON t.id = c.tenant_id
       LEFT JOIN rooms r ON r.id = COALESCE(t.room_id, c.room_id)
       LEFT JOIN dormitory_registry dr ON r.dorm_id = dr.id
       WHERE t.email = ${userEmail} OR t.user_id = ${(session?.user as any)?.id || 0}
-      ORDER BY c.created_at DESC
+      ORDER BY c.id DESC
       LIMIT 1
     `;
     if (res.length > 0 && res[0].room_number) {
-      roomInfo = `ห้อง ${res[0].room_number} • ชั้น ${res[0].floor || 1} (${res[0].dorm_name || 'SmartDom'})`;
+      if (res[0].contract_status === 'PendingOwnerSignature') {
+        roomInfo = `ห้อง ${res[0].room_number} (รออนุมัติสัญญา)`;
+      } else {
+        roomInfo = `ห้อง ${res[0].room_number} • ชั้น ${res[0].floor || 1} (${res[0].dorm_name || 'SmartDom'})`;
+      }
     }
   }
 
@@ -35,7 +39,6 @@ export default async function TenantLayout({ children }: { children: ReactNode }
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col overflow-hidden relative">
-
         {/* Scrollable Content */}
         <div className="flex-1 overflow-y-auto">
           {children}

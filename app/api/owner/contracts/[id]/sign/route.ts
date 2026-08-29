@@ -1,30 +1,24 @@
-import { getDormDbFromSession } from '@/lib/db';
+import { getDb } from '@/lib/db';
 import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
 
-
 export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
-    const session = await auth();
-  if (!session || !(session.user as any)?.dormDbName) return new Response(JSON.stringify({ success: false, message: 'Unauthorized or missing dormDbName' }), { status: 401, headers: { 'Content-Type': 'application/json' } });
-  const sql = getDormDbFromSession(session);
+  const session = await auth();
+  if (!session || !session.user) {
+    return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
+  }
+  const sql = getDb();
 
-try {
-    const session = await auth();
-    // In production we should verify role is owner here
-    if (!session?.user?.email) {
-      return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
-    }
-
+  try {
     const { id } = await params;
-    const body = await req.json();
-    const { ownerSignatureData } = body;
+    let ownerSignatureData = 'APPROVED_DIGITALLY';
+    try {
+      const body = await req.json();
+      if (body?.ownerSignatureData) {
+        ownerSignatureData = body.ownerSignatureData;
+      }
+    } catch (e) {}
 
-    if (!ownerSignatureData) {
-      return NextResponse.json({ success: false, message: 'Owner signature is required' }, { status: 400 });
-    }
-
-    
-    
     // 1. Get contract and tenant details
     const contracts = await sql`
       SELECT c.room_id, t.email as tenant_email 
@@ -39,7 +33,7 @@ try {
 
     const { room_id, tenant_email } = contracts[0];
 
-    // 2. Update contract status to Active and save owner signature
+    // 2. Update contract status to Active and save owner approval
     const updateContract = await sql`
       UPDATE contracts 
       SET 
@@ -65,7 +59,7 @@ try {
       `;
     }
 
-    // 5. Update room_id for the tenant record to link them to the room logically
+    // 5. Update room_id for the tenant record
     await sql`
       UPDATE tenants
       SET room_id = ${room_id}
@@ -77,8 +71,8 @@ try {
       message: 'Contract approved successfully',
       data: updateContract[0]
     });
-  } catch (err: any) {
-    console.error('[Owner Contract Sign Error]', err);
-    return NextResponse.json({ success: false, message: err.message }, { status: 500 });
+  } catch (error: any) {
+    console.error('Error approving contract:', error);
+    return NextResponse.json({ success: false, message: error.message }, { status: 500 });
   }
 }

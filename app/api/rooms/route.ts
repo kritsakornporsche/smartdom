@@ -20,13 +20,49 @@ export async function GET(req: NextRequest) {
     }
 
     const sql = getDb();
-    const rooms = await sql`
-      SELECT id, room_number, room_type, price, status, floor, image_url, created_at 
-      FROM rooms 
-      WHERE dorm_id = ${targetDormId}
-      ORDER BY room_number ASC
-    `;
-    
+    const isExplore = searchParams.get('explore') === 'true';
+
+    let query;
+    if (isExplore) {
+      query = sql`
+        SELECT 
+          r.id, r.room_number, r.room_type, r.price, r.status, r.floor, r.image_url, r.created_at, r.dorm_id,
+          mor.move_out_date,
+          mor.status as move_out_status,
+          mor.id as move_out_request_id,
+          CASE 
+            WHEN r.status IN ('Available', 'ว่าง') THEN 'Available'
+            WHEN r.status IN ('MovingOut', 'Moving Out', 'กำลังจะย้ายออก') OR mor.id IS NOT NULL THEN 'MovingOut'
+            ELSE r.status
+          END as display_status
+        FROM rooms r
+        LEFT JOIN tenants t ON t.room_id = r.id AND t.status = 'Active'
+        LEFT JOIN move_out_requests mor ON (mor.room_id = r.id OR mor.tenant_id = t.id) AND mor.status IN ('Pending', 'Approved')
+        WHERE r.dorm_id = ${targetDormId}
+          AND (r.status IN ('Available', 'ว่าง', 'MovingOut', 'Moving Out', 'กำลังจะย้ายออก') OR mor.id IS NOT NULL)
+        ORDER BY r.floor ASC, r.room_number ASC
+      `;
+    } else {
+      query = sql`
+        SELECT 
+          r.id, r.room_number, r.room_type, r.price, r.status, r.floor, r.image_url, r.created_at, r.dorm_id,
+          mor.move_out_date,
+          mor.status as move_out_status,
+          mor.id as move_out_request_id,
+          CASE 
+            WHEN r.status IN ('Available', 'ว่าง') THEN 'Available'
+            WHEN r.status IN ('MovingOut', 'Moving Out', 'กำลังจะย้ายออก') OR mor.id IS NOT NULL THEN 'MovingOut'
+            ELSE r.status
+          END as display_status
+        FROM rooms r
+        LEFT JOIN tenants t ON t.room_id = r.id AND t.status = 'Active'
+        LEFT JOIN move_out_requests mor ON (mor.room_id = r.id OR mor.tenant_id = t.id) AND mor.status IN ('Pending', 'Approved')
+        WHERE r.dorm_id = ${targetDormId}
+        ORDER BY r.floor ASC, r.room_number ASC
+      `;
+    }
+
+    const rooms = await query;
     return NextResponse.json({ success: true, data: rooms });
 
   } catch (error: any) {

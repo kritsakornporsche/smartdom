@@ -39,6 +39,7 @@ export async function GET(req: Request) {
         c.deposit_amount, 
         c.status, 
         c.created_at,
+        c.slip_url,
         c.contract_file_url,
         c.renewal_requested,
         c.renewal_note,

@@ -1,19 +1,15 @@
-import { getDormDbFromSession } from '@/lib/db';
+import { getDb } from '@/lib/db';
 import { NextResponse } from 'next/server';
-
 import { auth } from '@/auth';
 
 export async function GET(request: Request) {
-    const session = await auth();
-  if (!session || !(session.user as any)?.dormDbName) return new Response(JSON.stringify({ success: false, message: 'Unauthorized or missing dormDbName' }), { status: 401, headers: { 'Content-Type': 'application/json' } });
-  const sql = getDormDbFromSession(session);
+  const session = await auth();
+  if (!session?.user?.email) {
+    return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
+  }
+  const sql = getDb();
 
-try {
-    const session = await auth();
-    if (!session?.user?.email) {
-      return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
-    }
-
+  try {
     const { searchParams } = new URL(request.url);
     const roomId = searchParams.get('roomId');
 
@@ -21,8 +17,6 @@ try {
       return NextResponse.json({ success: false, message: 'Room ID is required' }, { status: 400 });
     }
 
-    
-    
     const progress = await sql`
       SELECT current_step, booking_data 
       FROM booking_progress 
@@ -41,33 +35,36 @@ try {
 }
 
 export async function POST(request: Request) {
-    const session = await auth();
-  if (!session || !(session.user as any)?.dormDbName) return new Response(JSON.stringify({ success: false, message: 'Unauthorized or missing dormDbName' }), { status: 401, headers: { 'Content-Type': 'application/json' } });
-  const sql = getDormDbFromSession(session);
+  const session = await auth();
+  if (!session?.user?.email) {
+    return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
+  }
+  const sql = getDb();
 
-try {
-    const session = await auth();
-    if (!session?.user?.email) {
-      return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
-    }
-
+  try {
     const { roomId, currentStep, bookingData } = await request.json();
 
     if (!roomId || !currentStep) {
       return NextResponse.json({ success: false, message: 'Missing required fields' }, { status: 400 });
     }
 
-    
-    
-    await sql`
-      INSERT INTO booking_progress (user_email, room_id, current_step, booking_data, updated_at)
-      VALUES (${session.user.email}, ${roomId}, ${currentStep}, ${JSON.stringify(bookingData)}, CURRENT_TIMESTAMP)
-      ON CONFLICT (user_email, room_id) 
-      DO UPDATE SET 
-        current_step = EXCLUDED.current_step,
-        booking_data = EXCLUDED.booking_data,
-        updated_at = CURRENT_TIMESTAMP
+    const existing = await sql`
+      SELECT id FROM booking_progress 
+      WHERE user_email = ${session.user.email} AND room_id = ${parseInt(roomId)}
     `;
+
+    if (existing.length > 0) {
+      await sql`
+        UPDATE booking_progress 
+        SET current_step = ${currentStep}, booking_data = ${JSON.stringify(bookingData)}, updated_at = NOW()
+        WHERE user_email = ${session.user.email} AND room_id = ${parseInt(roomId)}
+      `;
+    } else {
+      await sql`
+        INSERT INTO booking_progress (user_email, room_id, current_step, booking_data, updated_at)
+        VALUES (${session.user.email}, ${parseInt(roomId)}, ${currentStep}, ${JSON.stringify(bookingData)}, NOW())
+      `;
+    }
 
     return NextResponse.json({ success: true, message: 'Progress saved successfully' });
   } catch (error: any) {
@@ -77,23 +74,18 @@ try {
 }
 
 export async function DELETE(request: Request) {
-    const session = await auth();
-  if (!session || !(session.user as any)?.dormDbName) return new Response(JSON.stringify({ success: false, message: 'Unauthorized or missing dormDbName' }), { status: 401, headers: { 'Content-Type': 'application/json' } });
-  const sql = getDormDbFromSession(session);
+  const session = await auth();
+  if (!session?.user?.email) {
+    return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
+  }
+  const sql = getDb();
 
-try {
-    const session = await auth();
-    if (!session?.user?.email) {
-      return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
-    }
-
+  try {
     const { roomId } = await request.json();
 
-    
-    
     await sql`
       DELETE FROM booking_progress 
-      WHERE user_email = ${session.user.email} AND room_id = ${roomId}
+      WHERE user_email = ${session.user.email} AND room_id = ${parseInt(roomId)}
     `;
 
     return NextResponse.json({ success: true, message: 'Progress cleared successfully' });

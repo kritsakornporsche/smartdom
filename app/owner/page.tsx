@@ -88,24 +88,25 @@ export default function OwnerDashboard() {
                 <p className="text-white/50 font-medium leading-relaxed max-w-md">
                   ยินดีต้อนรับสู่ระบบจัดการ SmartDom วันนี้หอพักของคุณมีการจองใหม่ 0 รายการ และ{stats.pendingMaintenance > 0 ? `มีการแจ้งซ่อม ${stats.pendingMaintenance} รายการ` : 'ไม่มีรายการแจ้งซ่อม'}
                 </p>
-                <div className="mt-8 flex gap-3">
+                <div className="mt-8 flex gap-3 flex-wrap">
+                  <button 
+                    onClick={() => router.push('/owner/bookings')}
+                    className="px-6 py-3 bg-amber-500 hover:bg-amber-400 text-slate-950 rounded-2xl font-bold shadow-lg shadow-amber-500/20 hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center gap-2"
+                  >
+                    <span>🛎️</span>
+                    <span>ดูรายการจองห้องพัก</span>
+                  </button>
                   <button 
                     onClick={() => router.push('/owner/tenants')}
-                    className="px-6 py-3 bg-primary text-white rounded-2xl font-bold shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 transition-all"
+                    className="px-6 py-3 bg-primary text-white rounded-2xl font-bold shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 transition-all cursor-pointer"
                   >
-                     เพิ่มผู้เช่าใหม่
+                     ทะเบียนผู้เช่า
                   </button>
                   <button 
                     onClick={() => router.push('/owner/billing')}
-                    className="px-6 py-3 bg-[#0F172A] border border-white/10 text-white/80 rounded-2xl font-bold hover:bg-white/5 transition-all active:scale-95"
+                    className="px-6 py-3 bg-[#0F172A] border border-white/10 text-white/80 rounded-2xl font-bold hover:bg-white/5 transition-all active:scale-95 cursor-pointer"
                   >
                      ออกใบแจ้งหนี้
-                  </button>
-                  <button 
-                    onClick={() => router.push('/tenant/contract/simulate')}
-                    className="px-6 py-3 bg-white/5 text-white/60 rounded-2xl font-bold hover:bg-white/10 transition-all active:scale-95"
-                  >
-                     จำลองสัญญา
                   </button>
                 </div>
               </div>

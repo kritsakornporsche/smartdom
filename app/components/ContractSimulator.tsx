@@ -15,8 +15,8 @@ interface SimulatorProps {
 export default function ContractSimulator({ initialPrice = 5000, roomNumber = 'A101', onClose }: SimulatorProps) {
   const { data: session } = useSession();
   const [price, setPrice] = useState(initialPrice);
-  const [depositMonths, setDepositMonths] = useState(2);
-  const [advanceMonths, setAdvanceMonths] = useState(1);
+  const [depositMonths, setDepositMonths] = useState(1);
+  const [advanceMonths, setAdvanceMonths] = useState(0);
   const [contractMonths, setContractMonths] = useState(12);
   const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0]);
   const [showSigner, setShowSigner] = useState(false);

@@ -1,17 +1,12 @@
-import { getDormDbFromSession } from '@/lib/db';
+import { getDb } from '@/lib/db';
 import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
 
-
-
-
 export async function POST(req: Request) {
-    const session = await auth();
-  if (!session || !(session.user as any)?.dormDbName) return new Response(JSON.stringify({ success: false, message: 'Unauthorized or missing dormDbName' }), { status: 401, headers: { 'Content-Type': 'application/json' } });
-  const sql = getDormDbFromSession(session);
+  const session = await auth();
+  const sql = getDb();
 
-try {
-    const session = await auth();
+  try {
     const data = await req.json();
     const { roomNumber, monthlyRent, depositAmount, startDate, endDate, signatureData } = data;
 
@@ -37,18 +32,14 @@ try {
       if (tenants.length > 0) {
         tenantId = tenants[0].id;
       } else {
-        // Atomic insert of tenant based on user session
         const newTenants = await sql`
-          INSERT INTO tenants (user_id, name, email, status)
-          SELECT id, name, email, 'Active'
-          FROM users 
-          WHERE email = ${userEmail}
+          INSERT INTO tenants (name, email, status)
+          VALUES (${session.user.name || 'User'}, ${userEmail}, 'Active')
           RETURNING id
         `;
         tenantId = newTenants.length > 0 ? newTenants[0].id : null;
       }
     } else {
-      // Demo fallback: use the first available tenant if session is missing
       const fallbackTenants = await sql`SELECT id FROM tenants LIMIT 1`;
       tenantId = fallbackTenants.length > 0 ? fallbackTenants[0].id : null;
     }
@@ -58,25 +49,17 @@ try {
     }
 
     // 3. Persist contract with 'PendingOwnerSignature' status.
-    // The owner must sign later to finalize the tenant approval.
-    try {
-      // Save the digital contract
-      await sql`
-        INSERT INTO contracts (tenant_id, room_id, start_date, end_date, deposit_amount, signature_data, status)
-        VALUES (${tenantId}, ${roomId}, ${startDate}, ${endDate}, ${depositAmount}, ${signatureData}, 'PendingOwnerSignature')
-      `;
+    await sql`
+      INSERT INTO contracts (tenant_id, room_id, start_date, end_date, deposit_amount, signature_data, status)
+      VALUES (${tenantId}, ${roomId}, ${startDate}, ${endDate}, ${depositAmount}, ${signatureData || 'CONFIRMED_E_CONTRACT'}, 'PendingOwnerSignature')
+    `;
 
-      return NextResponse.json({ 
-        success: true, 
-        message: 'Contract signed. pending owner approval.' 
-      });
-    } catch (dbError) {
-      console.error('[DB Transaction Error]', dbError);
-      return NextResponse.json({ error: 'Failed to complete signing process' }, { status: 500 });
-    }
-
-  } catch (error) {
-    console.error('[API_CONTRACT_SIGN_ERROR]', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json({ 
+      success: true, 
+      message: 'Contract signed. pending owner approval.' 
+    });
+  } catch (dbError: any) {
+    console.error('[DB Transaction Error]', dbError);
+    return NextResponse.json({ error: 'Failed to complete signing process', message: dbError.message }, { status: 500 });
   }
 }

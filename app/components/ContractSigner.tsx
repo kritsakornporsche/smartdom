@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState } from 'react';
 import { cn } from '@/lib/utils';
 
 interface ContractSignerProps {
@@ -10,7 +10,7 @@ interface ContractSignerProps {
   depositAmount: number;
   startDate: string;
   endDate: string;
-  onSign: (signatureBase64: string) => void;
+  onSign: (signatureValue: string) => void;
   onCancel: () => void;
   readOnly?: boolean;
 }
@@ -26,85 +26,31 @@ export default function ContractSigner({
   onCancel,
   readOnly = false
 }: ContractSignerProps) {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [isDrawing, setIsDrawing] = useState(false);
-  const [hasSigned, setHasSigned] = useState(false);
-
-  useEffect(() => {
-    if (readOnly) return;
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    ctx.strokeStyle = '#000';
-    ctx.lineWidth = 3;
-    ctx.lineCap = 'round';
-  }, [readOnly]);
-
-  const startDrawing = (e: React.MouseEvent | React.TouchEvent) => {
-    setIsDrawing(true);
-    draw(e);
-  };
-
-  const stopDrawing = () => {
-    setIsDrawing(false);
-  };
-
-  const draw = (e: React.MouseEvent | React.TouchEvent) => {
-    if (!isDrawing) return;
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    const rect = canvas.getBoundingClientRect();
-    let x, y;
-
-    if ('touches' in e) {
-      x = e.touches[0].clientX - rect.left;
-      y = e.touches[0].clientY - rect.top;
-    } else {
-      x = e.clientX - rect.left;
-      y = e.clientY - rect.top;
-    }
-
-    ctx.lineTo(x, y);
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.moveTo(x, y);
-    setHasSigned(true);
-  };
-
-  const clearCanvas = () => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.beginPath();
-    setHasSigned(false);
-  };
+  const [agreed, setAgreed] = useState(false);
 
   const handleConfirm = () => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const dataUrl = canvas.toDataURL();
-    onSign(dataUrl);
+    if (!agreed) return;
+    onSign('CONFIRMED_E_CONTRACT');
   };
 
+  const currentDateFormatted = new Date().toLocaleDateString('th-TH', { 
+    day: 'numeric', 
+    month: 'long', 
+    year: 'numeric' 
+  });
+
   return (
-    <div className="bg-background rounded-[4rem] p-5 sm:p-8 lg:p-14 border border-border/40 shadow-2xl max-w-5xl w-full mx-auto space-y-10 animate-reveal">
+    <div className="bg-background rounded-[3.5rem] p-5 sm:p-8 lg:p-12 border border-border shadow-2xl max-w-5xl w-full mx-auto space-y-8 animate-reveal">
       <div className="text-center space-y-2">
         <h2 className="text-3xl sm:text-4xl font-display font-black tracking-tight italic">ข้อตกลงและเงื่อนไขสัญญาเช่า</h2>
-        <p className="text-[10px] font-black uppercase tracking-[0.4em] text-primary">SmartDom Agreement Terms</p>
+        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">SmartDom Agreement Terms</p>
       </div>
 
       {/* Contract Content Area */}
-      <div className="bg-card border border-border/60 rounded-[3rem] p-5 sm:p-8 lg:p-12 overflow-y-auto max-h-[55vh] space-y-10 text-foreground shadow-inner font-sans leading-relaxed relative">
-        <div className="text-center space-y-3 pb-8 border-b border-border/40">
+      <div className="bg-card border border-border rounded-[2.5rem] p-5 sm:p-8 lg:p-10 overflow-y-auto max-h-[50vh] space-y-8 text-foreground shadow-inner font-sans leading-relaxed relative custom-scrollbar">
+        <div className="text-center space-y-2 pb-6 border-b border-border">
           <h3 className="text-xl font-bold">รายละเอียดสัญญาเช่าที่พักอาศัย</h3>
-          <p className="text-xs text-muted-foreground">จัดทำขึ้นและมีผลบังคับใช้ ณ วันที่ {new Date().toLocaleDateString('th-TH', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
+          <p className="text-xs text-muted-foreground">จัดทำขึ้นและมีผลบังคับใช้ ณ วันที่ {currentDateFormatted}</p>
         </div>
 
         <div className="space-y-6 text-sm">
@@ -134,16 +80,12 @@ export default function ContractSigner({
             </div>
           </div>
 
-          <ol className="list-decimal pl-6 space-y-4 text-foreground/90">
+          <ol className="list-decimal pl-6 space-y-3 text-foreground/90 leading-relaxed">
             <li><strong>การชำระเงิน:</strong> ผู้เช่าตกลงชำระค่าเช่าภายในวันที่ 5 ของทุกเดือน หากล่าช้าจะมีค่าปรับตามที่หอพักกำหนด</li>
             <li><strong>ระเบียบที่พัก:</strong> ผู้เช่าต้องปฏิบัติตามกฎระเบียบของหอพักอย่างเคร่งครัดเพื่อความสงบเรียบร้อยของส่วนรวม</li>
             <li><strong>ความรับผิดชอบ:</strong> ผู้เช่าต้องดูแลรักษาความสะอาดและไม่กระทำการที่ก่อให้เกิดความเสียหายต่อทรัพย์สินของผู้อื่น</li>
             <li><strong>การสิ้นสุดสัญญา:</strong> เมื่อครบกำหนดเวลาเช่า ผู้เช่าต้องย้ายออกและคืนห้องในสภาพเดิม</li>
           </ol>
-
-          <p className="pt-6 italic text-xs text-muted-foreground">
-            * หน้านี้ใช้สำหรับอ่านและตรวจสอบข้อตกลงสัญญาเช่าเบื้องต้น การลงลายมือชื่อจริงจะเกิดขึ้นในขั้นตอนการทำสัญญาตามกระบวนการจอง
-          </p>
         </div>
         
         {/* Watermark */}
@@ -152,43 +94,25 @@ export default function ContractSigner({
         </div>
       </div>
 
-      {/* Signature Pad Area - rendered ONLY if NOT readOnly */}
+      {/* Confirmation Area - rendered ONLY if NOT readOnly */}
       {!readOnly && (
-        <div className="space-y-6">
-          <div className="flex justify-between items-end px-2">
-            <label className="text-xs font-bold uppercase tracking-wider text-foreground">ลงลายมือชื่อผู้เช่า (Electronic Signature)</label>
-            <button 
-              onClick={clearCanvas} 
-              className="text-xs font-bold text-rose-500 uppercase tracking-widest hover:text-rose-600 transition-colors"
-            >
-              ล้างข้อมูล
-            </button>
-          </div>
-
-          <div className="relative group">
-            <canvas 
-              ref={canvasRef}
-              width={1200}
-              height={300}
-              onMouseDown={startDrawing}
-              onMouseMove={draw}
-              onMouseUp={stopDrawing}
-              onMouseLeave={stopDrawing}
-              onTouchStart={startDrawing}
-              onTouchMove={draw}
-              onTouchEnd={stopDrawing}
-              className={cn(
-                "w-full h-[220px] border-2 border-dashed border-border rounded-[2.5rem] bg-white cursor-crosshair",
-                "transition-all duration-500 hover:border-primary focus:border-primary",
-                hasSigned && "border-primary shadow-inner"
-              )}
+        <div className="p-6 bg-primary/[0.03] border border-primary/20 rounded-3xl space-y-4">
+          <label className="flex items-start gap-3 cursor-pointer group select-none">
+            <input 
+              type="checkbox"
+              checked={agreed}
+              onChange={(e) => setAgreed(e.target.checked)}
+              className="mt-1 w-5 h-5 rounded-md border-border text-primary focus:ring-primary cursor-pointer accent-primary"
             />
-            {!hasSigned && (
-              <div className="absolute inset-0 flex items-center justify-center pointer-events-none transition-opacity duration-500">
-                 <span className="text-xs font-black text-slate-400 uppercase tracking-[0.5em] italic">Sign Here</span>
-              </div>
-            )}
-          </div>
+            <div className="space-y-1 text-xs">
+              <span className="font-bold text-foreground group-hover:text-primary transition-colors">
+                ข้าพเจ้าได้ตรวจสอบข้อมูลและตกลงยอมรับข้อกำหนดและเงื่อนไขในสัญญาเช่าฉบับนี้ทุกประการ
+              </span>
+              <p className="text-muted-foreground text-[11px]">
+                การยืนยันนี้ถือเป็นการทำสัญญาทางอิเล็กทรอนิกส์ในนาม <strong>คุณ{tenantName}</strong> ณ วันที่ {currentDateFormatted}
+              </p>
+            </div>
+          </label>
         </div>
       )}
 
@@ -212,14 +136,14 @@ export default function ContractSigner({
           </button>
           <button 
             onClick={handleConfirm}
-            disabled={!hasSigned}
+            disabled={!agreed}
             className={cn(
               "flex-[2.5] py-4 bg-primary text-primary-foreground rounded-full text-xs font-black uppercase tracking-widest",
               "hover:scale-[1.02] hover:shadow-xl hover:shadow-primary/30 transition-all duration-500 active:scale-95",
               "disabled:opacity-40 disabled:scale-100 disabled:cursor-not-allowed cursor-pointer"
             )}
           >
-            ยืนยันข้อมูลและลงนามสัญญาเช่า
+            ✓ ยอมรับสัญญาเช่าและไปขั้นตอนชำระเงินค่าจอง →
           </button>
         </div>
       )}

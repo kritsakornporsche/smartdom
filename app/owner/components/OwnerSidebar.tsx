@@ -11,6 +11,7 @@ const navItems = [
     group: 'ภาพรวม',
     items: [
       { href: '/owner', label: 'ภาพรวมหอพัก', icon: '📊', exact: true },
+      { href: '/owner/bookings', label: 'รายการจองห้องพัก', icon: '🛎️' },
       { href: '/owner/rooms', label: 'การจัดการห้องพัก', icon: '🚪' },
       { href: '/owner/tenants', label: 'ทะเบียนผู้เช่า', icon: '👥' },
     ],

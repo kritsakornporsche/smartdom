@@ -36,7 +36,8 @@ export default function TenantBillingPage() {
 
   const fetchBills = async () => {
     try {
-      const res = await fetch('/api/tenant/billing/list');
+      const email = session?.user?.email || (typeof window !== 'undefined' ? localStorage.getItem('userEmail') : '');
+      const res = await fetch(`/api/tenant/billing/list${email ? `?email=${encodeURIComponent(email)}` : ''}`);
       const json = await res.json();
       if (json.success) setBills(json.data);
     } catch (err) {
@@ -51,7 +52,7 @@ export default function TenantBillingPage() {
     if (!file || !selectedBill) return;
 
     if (file.size > 5 * 1024 * 1024) {
-      alert('ไฟล์รูปต้องมีขนาดไม่เกิน 5MB');
+      alert('ขนาดไฟล์ต้องไม่เกิน 5MB');
       return;
     }
 
@@ -60,13 +61,15 @@ export default function TenantBillingPage() {
       const base64Data = event.target?.result;
       setUploading(true);
       try {
+        const email = session?.user?.email || (typeof window !== 'undefined' ? localStorage.getItem('userEmail') : '');
         const res = await fetch('/api/tenant/billing/payment', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ billId: selectedBill.id, slipData: base64Data }),
+          body: JSON.stringify({ billId: selectedBill.id, slipData: base64Data, email }),
         });
         const json = await res.json();
         if (json.success) {
+          alert('✓ ส่งสลิปชำระเงินเรียบร้อยแล้ว');
           setModalType(null);
           fetchBills();
         } else {
@@ -88,7 +91,8 @@ export default function TenantBillingPage() {
     setQrLoading(true);
     setQrData(null);
     try {
-      const res = await fetch(`/api/tenant/billing/qr?billId=${bill.id}`);
+      const email = session?.user?.email || (typeof window !== 'undefined' ? localStorage.getItem('userEmail') : '');
+      const res = await fetch(`/api/tenant/billing/qr?billId=${bill.id}${email ? `&email=${encodeURIComponent(email)}` : ''}`);
       const data = await res.json();
       if (data.success) {
         setQrData(data);

@@ -9,7 +9,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
     
     const sql = getDb();
     
-    // Fetch room with dorm, owner and keeper info
+    // Fetch room with dorm, owner, keeper, and move-out info
     const result = await sql`
       SELECT 
         r.*, 
@@ -19,12 +19,21 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
         u.name as owner_name,
         ku.name as keeper_name, 
         ku.phone as keeper_phone, 
-        ku.email as keeper_email
+        ku.email as keeper_email,
+        mor.move_out_date,
+        mor.status as move_out_status,
+        CASE 
+          WHEN r.status IN ('Available', 'ว่าง') THEN 'Available'
+          WHEN r.status IN ('MovingOut', 'Moving Out', 'กำลังจะย้ายออก') OR mor.id IS NOT NULL THEN 'MovingOut'
+          ELSE r.status
+        END as display_status
       FROM rooms r
       JOIN dormitory_registry dr ON r.dorm_id = dr.id
       JOIN users u ON dr.owner_id = u.id
       LEFT JOIN keepers k ON dr.id = k.dorm_id
       LEFT JOIN users ku ON k.user_id = ku.id
+      LEFT JOIN tenants t ON t.room_id = r.id AND t.status = 'Active'
+      LEFT JOIN move_out_requests mor ON (mor.room_id = r.id OR mor.tenant_id = t.id) AND mor.status IN ('Pending', 'Approved')
       WHERE r.id = ${id}
       LIMIT 1
     `;

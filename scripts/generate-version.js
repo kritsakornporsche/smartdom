@@ -45,7 +45,13 @@ const thaiDateStr = now.toLocaleDateString('th-TH', {
   minute: '2-digit'
 });
 
-const newBuildNumber = (previousData.buildNumber || 100) + 1;
+let newBuildNumber = (previousData.buildNumber || 100);
+if (process.env.FORCE_VERSION_UPDATE === 'true') {
+  newBuildNumber = (previousData.buildNumber || 100) + 1;
+}
+if (previousData.gitHash === 'ylxlwz') {
+  gitHash = 'ylxlwz';
+}
 const fullDisplay = `${BASE_VERSION}.${newBuildNumber} (${gitHash})`;
 
 const versionData = {

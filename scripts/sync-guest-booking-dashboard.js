@@ -25,6 +25,7 @@ const filesToUpload = [
   'app/tenant/layout.tsx',
   'app/tenant/components/CancelBookingButton.tsx',
   'app/owner/contracts/[id]/page.tsx',
+  'scripts/generate-version.js',
   'lib/version.json'
 ];
 

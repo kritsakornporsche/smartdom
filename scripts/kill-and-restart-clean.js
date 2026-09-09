@@ -1,69 +1,57 @@
 const { Client } = require('ssh2');
 
 const conn = new Client();
-console.log('Force killing stale node process tree and cleanly restarting SmartDom...');
-
 conn.on('ready', () => {
+  console.log('SSH ready. Killing all zombie node processes and restarting PM2 cleanly...');
+
   const psScript = `
-    Write-Host "1. Stopping Scheduled Task..."
-    Stop-ScheduledTask -TaskName "Smartdom3000" -ErrorAction SilentlyContinue
+    Set-Location "C:\\kritsakorn\\smartdom"
+    $pm2 = "C:\\Users\\buain\\AppData\\Roaming\\npm\\pm2.cmd"
     
-    Write-Host "2. Force killing all node.exe processes..."
-    & taskkill.exe /F /IM node.exe /T
+    Write-Host "1. STOPPING PM2..."
+    & $pm2 delete all 2>&1 | Out-Null
+    
+    Write-Host "2. KILLING ALL ORPHAN NODE PROCESSES..."
+    Get-Process -Name node -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
+    Start-Sleep -Seconds 2
+    
+    Write-Host "3. VERIFYING PORT 3000 IS TOTALLY FREE..."
+    Get-NetTCPConnection -LocalPort 3000 -ErrorAction SilentlyContinue | Format-Table LocalAddress, LocalPort, State, OwningProcess
+    
+    Write-Host "4. STARTING FRESH PM2 SMARTDOM SERVICE..."
+    & $pm2 start "node_modules\\next\\dist\\bin\\next" --name smartdom --cwd "C:\\kritsakorn\\smartdom" -- start -p 3000
+    & $pm2 save
+    
+    Write-Host "5. WAITING 3 SECONDS FOR PROCESS..."
     Start-Sleep -Seconds 3
-
-    Write-Host "3. Verifying Port 3000 is cleared..."
-    $conn3000 = Get-NetTCPConnection -LocalPort 3000 -State Listen -ErrorAction SilentlyContinue
-    if ($conn3000) {
-      Write-Host "Force killing PID: $($conn3000.OwningProcess)"
-      Stop-Process -Id $conn3000.OwningProcess -Force -ErrorAction SilentlyContinue
-      Start-Sleep -Seconds 2
-    }
-
-    Write-Host "4. Starting Scheduled Task Smartdom3000..."
-    Start-ScheduledTask -TaskName "Smartdom3000"
-    Start-Sleep -Seconds 5
-
-    Write-Host "5. Checking new running process on Port 3000..."
-    $newConn = Get-NetTCPConnection -LocalPort 3000 -State Listen -ErrorAction SilentlyContinue
-    if ($newConn) {
-      $p = Get-Process -Id $newConn.OwningProcess -ErrorAction SilentlyContinue
-      Write-Host "✅ New Node Process: PID $($p.Id), Started at $($p.StartTime)"
-    } else {
-      Write-Host "❌ Port 3000 is not listening yet"
-    }
-
-    Write-Host "6. Testing Health Check (HTTP http://127.0.0.1:3000)..."
+    
+    Write-Host "6. CHECKING PORT 3000 LISTENING STATUS (SHOULD BE 0.0.0.0 and ::)..."
+    Get-NetTCPConnection -LocalPort 3000 -ErrorAction SilentlyContinue | Format-Table LocalAddress, LocalPort, State, OwningProcess
+    
+    Write-Host "7. TESTING STATIC CHUNK REQUEST ON LOCALHOST:3000..."
     try {
-      $r = Invoke-WebRequest -Uri "http://127.0.0.1:3000" -UseBasicParsing -TimeoutSec 5
-      Write-Host "✅ Server is ONLINE: HTTP $($r.StatusCode)"
+      $res = Invoke-WebRequest -Uri "http://localhost:3000/_next/static/chunks/app/layout-1ffe9631cf7b94c1.js" -UseBasicParsing -TimeoutSec 3
+      Write-Host "✅ Static Chunk Status: $($res.StatusCode), Size: $($res.Content.Length)"
     } catch {
-      Write-Host "❌ Health Check failed: $($_.Exception.Message)"
+      Write-Host "❌ Static Chunk Error: $($_.Exception.Message)"
     }
   `;
 
   const encoded = Buffer.from(psScript, 'utf16le').toString('base64');
-  conn.exec(`powershell.exe -NoProfile -EncodedCommand ${encoded}`, (err, stream) => {
-    if (err) {
-      console.error('Exec error:', err);
-      conn.end();
-      return;
-    }
-    stream.on('data', d => {
-      const s = d.toString();
-      if (!s.startsWith('#< CLIXML') && !s.startsWith('<Objs Version=')) {
-        process.stdout.write(s);
-      }
-    });
+  const cmd = `powershell.exe -NoProfile -EncodedCommand ${encoded}`;
+
+  conn.exec(cmd, (err, stream) => {
+    if (err) throw err;
+    stream.on('data', d => process.stdout.write(d.toString()));
+    stream.stderr.on('data', d => process.stderr.write(d.toString()));
     stream.on('close', code => {
-      console.log('\nRestart finished with exit code:', code);
+      console.log('\nClean kill & restart completed with code:', code);
       conn.end();
     });
   });
-}).on('error', e => console.error('SSH Error:', e.message)).connect({
+}).connect({
   host: 'kritsakorn.thddns.net',
   port: 5995,
   username: 'buain',
-  password: 'Zn@27124700',
-  readyTimeout: 15000
+  password: 'Zn@27124700'
 });

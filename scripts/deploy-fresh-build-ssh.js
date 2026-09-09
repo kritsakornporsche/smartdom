@@ -92,7 +92,7 @@ conn.on('ready', () => {
       Write-Host "2. RESTARTING PM2 SERVICE..."
       Write-Host "=========================================="
       & $pm2 delete smartdom 2>&1 | Out-Null
-      & $pm2 start "node_modules\\next\\dist\\bin\\next" --name smartdom -- start -p 3000
+      & $pm2 start "node_modules\\next\\dist\\bin\\next" --name smartdom --cwd "C:\\kritsakorn\\smartdom" -- start -p 3000
       & $pm2 save
       
       Write-Host ""

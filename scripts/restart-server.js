@@ -18,7 +18,7 @@ conn.on('ready', () => {
     Write-Host ""
     Write-Host "2. STARTING NEXT.JS (SMARTDOM) ON PORT 3000..."
     Write-Host "=========================================="
-    & $pm2 start "node_modules\\next\\dist\\bin\\next" --name smartdom -- start -p 3000
+    & $pm2 start "node_modules\\next\\dist\\bin\\next" --name smartdom --cwd "C:\\kritsakorn\\smartdom" -- start -p 3000
     & $pm2 save
     
     Write-Host ""

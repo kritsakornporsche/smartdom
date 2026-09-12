@@ -1191,24 +1191,6 @@ INSERT INTO `contracts` (`id`, `tenant_id`, `room_id`, `start_date`, `end_date`,
 (129, 133, 156, '2026-02-28 17:00:00', '2027-02-27 17:00:00', '7000.00', 'Active', NULL, NULL, '2026-03-01 03:00:00', 'สัญญาเช่าห้องพักมาตรฐาน 1 ปี มหาวิทยาลัยพะเยา', '2026-08-24 07:08:36', NULL, 0, NULL, NULL),
 (130, 134, 157, '2026-02-28 17:00:00', '2027-02-27 17:00:00', '7000.00', 'Active', NULL, NULL, '2026-03-01 03:00:00', 'สัญญาเช่าห้องพักมาตรฐาน 1 ปี มหาวิทยาลัยพะเยา', '2026-08-24 07:08:36', NULL, 0, NULL, NULL);
 
-DROP TABLE IF EXISTS `dormitory_packages`;
-CREATE TABLE `dormitory_packages` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(100) NOT NULL,
-  `price` decimal(10,2) NOT NULL,
-  `max_rooms` int(11) NOT NULL,
-  `max_dorms` int(11) DEFAULT 1,
-  `features` longtext DEFAULT NULL,
-  `duration_days` int(11) DEFAULT 30,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
-INSERT INTO `dormitory_packages` (`id`, `name`, `price`, `max_rooms`, `max_dorms`, `features`, `duration_days`) VALUES
-(1, 'Starter', '0.00', 10, 1, '[\\"????????????????????????????????????????????? 10 ????????????\\",\\"????????????????????????????????????????????????????????????????????????\\",\\"?????????????????????????????????????????????????????????????????????\\"]', 30),
-(2, 'Professional', '990.00', 50, 1, '[\\"????????????????????????????????????????????? 50 ????????????\\",\\"???????????????????????????????????????????????????????????????\\",\\"?????????????????????????????????????????????????????????\\",\\"Line Notification ???????????????????????????????????????\\"]', 30),
-(3, 'Enterprise', '2490.00', 999, 10, '[\\"???????????????????????????????????????????????????\\",\\"??????????????????????????????????????? Pro\\",\\"??????????????????????????????????????? VIP 24/7\\",\\"?????????????????????????????????????????????????????????????????????????????? (White Label)\\"]', 30);
-
 DROP TABLE IF EXISTS `dormitory_profile`;
 CREATE TABLE `dormitory_profile` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -1252,18 +1234,17 @@ CREATE TABLE `dormitory_registry` (
   `status` enum('Active','Suspended','Cancelled') DEFAULT 'Active',
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `approved_at` timestamp NULL DEFAULT NULL,
-  `coins` int(11) DEFAULT 0,
   `owner_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `db_name` (`db_name`),
   KEY `idx_owner_email` (`owner_email`)
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-INSERT INTO `dormitory_registry` (`id`, `owner_email`, `owner_name`, `dorm_name`, `db_name`, `phone`, `address`, `status`, `created_at`, `approved_at`, `coins`, `owner_id`) VALUES
-(1, 'owner@kaset2.com', 'คุณกฤษณะ เกษตรสมบูรณ์', 'หอพักเกษตร 2 (ม.พะเยา)', 'smartdom_dorm_1', '081-234-5678', '123 หมู่ 6 ถนนพหลโยธิน ต.แม่กา อ.เมือง จ.พะเยา 56000 (หน้า ม.พะเยา)', 'Active', '2026-08-24 07:08:29', NULL, 0, 6),
-(2, 'owner@kaset2.com', 'คุณกฤษณะ เกษตรสมบูรณ์', 'หอพักเกษตรพรีเมียร์ (Kaset Premier)', 'smartdom_dorm_2', '081-234-5678', '188 หมู่ 6 ซอยเสริมสุข ต.แม่กา อ.เมือง จ.พะเยา 56000', 'Active', '2026-08-24 07:08:31', NULL, 0, 6),
-(3, 'owner2@phukham.com', 'คุณวิชัย ภูคำเจริญ', 'หอพักภูคำวิลล่า (Phukham Villa หน้า ม.พะเยา)', 'smartdom_dorm_3', '089-888-9999', '99/1-10 หมู่ 2 ประตูกลาง ม.พะเยา ต.แม่กา อ.เมือง จ.พะเยา 56000', 'Active', '2026-08-24 07:08:32', NULL, 0, 11),
-(4, 'owner3@wiangplace.com', 'คุณพรทิพย์ เวียงพะเยา', 'หอพักเวียงพะเยาเพลส (Wiang Phayao Place)', 'smartdom_dorm_4', '087-777-8888', '55/5 ซอยสุขเกษม หน้า ม.พะเยา ต.แม่กา อ.เมือง จ.พะเยา 56000', 'Active', '2026-08-24 07:08:34', NULL, 0, 12);
+INSERT INTO `dormitory_registry` (`id`, `owner_email`, `owner_name`, `dorm_name`, `db_name`, `phone`, `address`, `status`, `created_at`, `approved_at`, `owner_id`) VALUES
+(1, 'owner@kaset2.com', 'คุณกฤษณะ เกษตรสมบูรณ์', 'หอพักเกษตร 2 (ม.พะเยา)', 'smartdom_dorm_1', '081-234-5678', '123 หมู่ 6 ถนนพหลโยธิน ต.แม่กา อ.เมือง จ.พะเยา 56000 (หน้า ม.พะเยา)', 'Active', '2026-08-24 07:08:29', NULL, 6),
+(2, 'owner@kaset2.com', 'คุณกฤษณะ เกษตรสมบูรณ์', 'หอพักเกษตรพรีเมียร์ (Kaset Premier)', 'smartdom_dorm_2', '081-234-5678', '188 หมู่ 6 ซอยเสริมสุข ต.แม่กา อ.เมือง จ.พะเยา 56000', 'Active', '2026-08-24 07:08:31', NULL, 6),
+(3, 'owner2@phukham.com', 'คุณวิชัย ภูคำเจริญ', 'หอพักภูคำวิลล่า (Phukham Villa หน้า ม.พะเยา)', 'smartdom_dorm_3', '089-888-9999', '99/1-10 หมู่ 2 ประตูกลาง ม.พะเยา ต.แม่กา อ.เมือง จ.พะเยา 56000', 'Active', '2026-08-24 07:08:32', NULL, 11),
+(4, 'owner3@wiangplace.com', 'คุณพรทิพย์ เวียงพะเยา', 'หอพักเวียงพะเยาเพลส (Wiang Phayao Place)', 'smartdom_dorm_4', '087-777-8888', '55/5 ซอยสุขเกษม หน้า ม.พะเยา ต.แม่กา อ.เมือง จ.พะเยา 56000', 'Active', '2026-08-24 07:08:34', NULL, 12);
 
 DROP TABLE IF EXISTS `keeper_dormitories`;
 CREATE TABLE `keeper_dormitories` (
@@ -3377,26 +3358,6 @@ INSERT INTO `rooms` (`id`, `room_number`, `room_type`, `price`, `status`, `floor
 (159, '408', 'Deluxe Air', '3900.00', 'Available', 4, NULL, '2026-08-24 07:08:34', 4),
 (160, '409', 'Deluxe Air', '3900.00', 'Available', 4, NULL, '2026-08-24 07:08:34', 4),
 (161, '410', 'Deluxe Air', '3900.00', 'Available', 4, NULL, '2026-08-24 07:08:34', 4);
-
-DROP TABLE IF EXISTS `subscriptions`;
-CREATE TABLE `subscriptions` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `owner_id` int(11) DEFAULT NULL,
-  `package_id` int(11) DEFAULT NULL,
-  `status` varchar(50) DEFAULT 'Active',
-  `start_date` timestamp NOT NULL DEFAULT current_timestamp(),
-  `end_date` timestamp NULL DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `amount_paid` decimal(10,2) DEFAULT 999.00,
-  `dormitory_id` int(11) DEFAULT 1,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
-INSERT INTO `subscriptions` (`id`, `owner_id`, `package_id`, `status`, `start_date`, `end_date`, `created_at`, `amount_paid`, `dormitory_id`) VALUES
-(1, NULL, 2, 'Active', '2026-02-28 17:00:00', '2027-02-28 16:59:59', '2026-08-24 07:16:27', '999.00', 1),
-(2, NULL, 1, 'Active', '2026-02-28 17:00:00', '2027-02-28 16:59:59', '2026-08-24 07:16:27', '499.00', 2),
-(3, NULL, 3, 'Active', '2026-02-28 17:00:00', '2027-02-28 16:59:59', '2026-08-24 07:16:27', '1999.00', 3),
-(4, NULL, 2, 'Active', '2026-02-28 17:00:00', '2027-02-28 16:59:59', '2026-08-24 07:16:27', '999.00', 4);
 
 DROP TABLE IF EXISTS `tenants`;
 CREATE TABLE `tenants` (

@@ -27,7 +27,7 @@ export default function PlatformAccounting() {
   const [totals, setTotals] = useState({ income: 0, expense: 0, profit: 0 });
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
-  const [form, setForm] = useState({ type: 'Income', category: 'Subscription', amount: 0, description: '', transaction_date: new Date().toISOString().split('T')[0] });
+  const [form, setForm] = useState({ type: 'Income', category: 'Service', amount: 0, description: '', transaction_date: new Date().toISOString().split('T')[0] });
 
   const load = () => {
     fetch('/api/platform/accounting')
@@ -51,7 +51,7 @@ export default function PlatformAccounting() {
       body: JSON.stringify(form),
     });
     setShowForm(false);
-    setForm({ type: 'Income', category: 'Subscription', amount: 0, description: '', transaction_date: new Date().toISOString().split('T')[0] });
+    setForm({ type: 'Income', category: 'Service', amount: 0, description: '', transaction_date: new Date().toISOString().split('T')[0] });
     load();
   };
 
@@ -220,7 +220,7 @@ export default function PlatformAccounting() {
                   value={form.description}
                   onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
                   className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-violet-500"
-                  placeholder="ค่า subscription หอพัก XYZ"
+                  placeholder="ค่าบริการระบบหอพัก XYZ"
                 />
               </div>
               <div className="flex gap-3 pt-2">

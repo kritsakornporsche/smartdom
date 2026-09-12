@@ -55,7 +55,7 @@ export async function POST(request: Request) {
     }
     const result = await platformSql`
       INSERT INTO platform_accounting (type, category, amount, description, dormitory_id, transaction_date)
-      VALUES (${type}, ${category || 'Subscription'}, ${amount}, ${description || ''}, ${dormitory_id || null}, ${transaction_date})
+      VALUES (${type}, ${category || 'Service'}, ${amount}, ${description || ''}, ${dormitory_id || null}, ${transaction_date})
       RETURNING id
     `;
     return NextResponse.json({ success: true, data: result[0] }, { status: 201 });

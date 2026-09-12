@@ -7,14 +7,9 @@ export async function GET() {
     const dorms = await platformSql`
       SELECT d.*, 
              COALESCE(u.name, 'ไม่ระบุ') as owner_name,
-             u.email as owner_email,
-             s.status as sub_status, 
-             p.name as package_name,
-             p.max_rooms
+             u.email as owner_email
       FROM dormitory_registry d
       LEFT JOIN users u ON d.owner_id = u.id
-      LEFT JOIN subscriptions s ON s.dormitory_id = d.id AND s.status = 'Active'
-      LEFT JOIN packages p ON s.package_id = p.id
       ORDER BY d.created_at DESC
     `;
     return NextResponse.json({ success: true, data: dorms });

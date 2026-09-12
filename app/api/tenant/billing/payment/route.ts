@@ -41,6 +41,39 @@ export async function POST(req: Request) {
       WHERE id = ${billId}
     `;
 
+    // 3. Create notifications for owner and staff (keeper) of this dorm
+    try {
+      const dormId = bill.dorm_id || 1;
+      const roomNumber = bill.room_number || '-';
+      const billMonth = bill.billing_cycle || 'ล่าสุด';
+      const amount = Number(bill.amount || 0).toLocaleString('th-TH');
+
+      const staff = await sql`
+        SELECT DISTINCT udr.user_id
+        FROM user_dorm_roles udr
+        WHERE udr.dorm_id = ${dormId}
+          AND udr.role IN ('owner', 'keeper')
+      `;
+
+      for (const person of staff as any[]) {
+        await sql`
+          INSERT INTO notifications (user_id, title, message, type, is_read, link, created_at)
+          VALUES (
+            ${person.user_id},
+            'มีการแจ้งชำระเงินใหม่',
+            ${'ผู้เช่าห้อง ' + roomNumber + ' แจ้งชำระเงินบิลประจำเดือน ' + billMonth + ' จำนวน ' + amount + ' บาท กรุณาตรวจสอบสลิป'},
+            'payment',
+            0,
+            '/owner/billing',
+            NOW()
+          )
+        `;
+      }
+    } catch (notifErr) {
+      console.error('[POST /api/tenant/billing/payment] Notification Error:', notifErr);
+      // Do not block the payment response even if notification insert fails
+    }
+
     return NextResponse.json({ 
       success: true, 
       message: 'ส่งหลักฐานการชำระเงินเรียบร้อยแล้ว รอเจ้าของหอพักตรวจสอบ' 

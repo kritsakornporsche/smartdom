@@ -28,20 +28,8 @@ export async function GET(req: Request) {
       WHERE (owner_id = ${ownerId} OR owner_email = ${email}) AND status = 'Active'
     `;
 
-    let maxAllowedDorms = 1;
-    if (ownedDorms.length > 0) {
-      const dormIds = ownedDorms.map((d: any) => d.id);
-      const activeSubs = await sql`
-        SELECT s.package_id, p.max_dorms FROM subscriptions s
-        JOIN packages p ON s.package_id = p.id
-        WHERE s.dormitory_id IN (${dormIds}) AND s.status = 'Active' AND s.end_date > NOW()
-      `;
-      if (activeSubs.length > 0) {
-        maxAllowedDorms = Math.max(...activeSubs.map((sub: any) => sub.max_dorms || 1));
-      }
-    }
-
-    const canAddDorm = ownedDorms.length < maxAllowedDorms;
+    const canAddDorm = true;
+    const maxAllowedDorms = 99;
 
     if (ownedDorms.length === 0) {
       return NextResponse.json({ success: true, hasDorm: false, canAddDorm: true, dorms: [], maxAllowedDorms });
@@ -52,16 +40,6 @@ export async function GET(req: Request) {
     if (isNaN(selectedDormId)) selectedDormId = ownedDorms[0].id;
 
     const dorm = await sql`SELECT * FROM dormitory_profile WHERE dorm_id = ${selectedDormId} LIMIT 1`;
-    
-    // Get subscription for this specific dorm
-    const subs = await sql`
-      SELECT s.*, p.name as package_name 
-      FROM subscriptions s
-      JOIN packages p ON s.package_id = p.id
-      WHERE s.dormitory_id = ${selectedDormId}
-      ORDER BY s.created_at DESC LIMIT 1
-    `;
-    const subscription = subs[0] || null;
 
     return NextResponse.json({
       success: true,
@@ -70,7 +48,7 @@ export async function GET(req: Request) {
       canAddDorm,
       maxAllowedDorms,
       dorm: dorm[0] || null,
-      subscription,
+      subscription: null,
       dormDbName: selectedDormId.toString(),
     });
   } catch (err: any) {
@@ -81,13 +59,12 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
   try {
-    const { ownerEmail, personalData, dormData, packageId } = await req.json();
+    const { ownerEmail, personalData, dormData } = await req.json();
     if (!ownerEmail || !dormData) {
       return NextResponse.json({ success: false, message: 'Missing required data' }, { status: 400 });
     }
 
     const sql = getDb();
-    const finalPackageId = packageId || 1;
 
     // Get user id
     let users = await sql`SELECT id FROM users WHERE email = ${ownerEmail} LIMIT 1`;
@@ -112,31 +89,6 @@ export async function POST(req: Request) {
           SET name = ${ownerDisplayName}, phone = ${personalData?.mobilePhone || null}
           WHERE id = ${ownerId}
         `;
-      }
-    }
-
-    // Check existing active dorms for this owner
-    const existingDorms = await sql`
-      SELECT id FROM dormitory_registry WHERE owner_id = ${ownerId} AND status = 'Active'
-    `;
-
-    if (existingDorms.length > 0) {
-      const dormIds = existingDorms.map((d: any) => d.id);
-      const activeSubs = await sql`
-        SELECT s.package_id, p.max_dorms FROM subscriptions s
-        JOIN packages p ON s.package_id = p.id
-        WHERE s.dormitory_id IN (${dormIds}) AND s.status = 'Active' AND s.end_date > NOW()
-      `;
-      let maxAllowedDorms = 1;
-      if (activeSubs.length > 0) {
-        maxAllowedDorms = Math.max(...activeSubs.map((sub: any) => sub.max_dorms || 1));
-      }
-      
-      if (existingDorms.length >= maxAllowedDorms) {
-        return NextResponse.json({ 
-          success: false, 
-          message: `คุณถึงขีดจำกัดจำนวนหอพักสำหรับแพ็กเกจปัจจุบันแล้ว (สูงสุด ${maxAllowedDorms} หอพัก)` 
-        }, { status: 400 });
       }
     }
 
@@ -182,14 +134,6 @@ export async function POST(req: Request) {
         ${dormData.description || 'หอพักคุณภาพ ใกล้สิ่งอำนวยความสะดวก ปลอดภัย สะอาด'},
         ${dormData.coverImage || dormData.cover_image || '/up-logo.png'}
       )
-    `;
-
-    // Create subscription
-    const endDate = new Date();
-    endDate.setDate(endDate.getDate() + 30);
-    await sql`
-      INSERT INTO subscriptions (owner_id, dormitory_id, package_id, status, end_date, amount_paid)
-      VALUES (${ownerId}, ${dormRegistryId}, ${finalPackageId}, 'Active', ${endDate.toISOString().replace('T', ' ').substring(0, 19)}, 0)
     `;
 
     return NextResponse.json({

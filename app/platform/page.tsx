@@ -6,9 +6,9 @@ import { useSession } from 'next-auth/react';
 
 interface Stats {
   totalDorms: number;
-  activeSubs: number;
-  monthRevenue: number;
-  totalRevenue: number;
+  totalTenants: number;
+  totalRooms: number;
+  occupiedRooms: number;
 }
 
 interface RecentDorm {
@@ -19,23 +19,11 @@ interface RecentDorm {
   created_at: string;
 }
 
-interface RecentSub {
-  id: number;
-  dorm_name: string;
-  package_name: string;
-  status: string;
-  amount_paid: number;
-  start_date: string;
-  end_date: string;
-}
-
 export default function PlatformDashboard() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const [stats, setStats] = useState<Stats | null>(null);
   const [recentDorms, setRecentDorms] = useState<RecentDorm[]>([]);
-  const [recentSubs, setRecentSubs] = useState<RecentSub[]>([]);
-  const [packageBreakdown, setPackageBreakdown] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [dbStatus, setDbStatus] = useState<'checking' | 'connected' | 'error'>('checking');
   const [errorDetails, setErrorDetails] = useState<string>('');
@@ -67,8 +55,6 @@ export default function PlatformDashboard() {
         if (data.success) {
           setStats(data.stats);
           setRecentDorms(data.recentDorms);
-          setRecentSubs(data.recentSubs);
-          setPackageBreakdown(data.packageBreakdown);
         }
       })
       .finally(() => setLoading(false));
@@ -132,9 +118,9 @@ export default function PlatformDashboard() {
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
             {[
               { label: 'หอพักที่ใช้งาน', value: fmt(stats?.totalDorms ?? 0), icon: '🏢', color: 'from-blue-500 to-cyan-500', sub: 'Active Dorms' },
-              { label: 'สมาชิกทั้งหมด', value: fmt(stats?.activeSubs ?? 0), icon: '🔖', color: 'from-violet-500 to-purple-600', sub: 'Active Subscriptions' },
-              { label: 'รายรับเดือนนี้', value: `฿${fmt(stats?.monthRevenue ?? 0)}`, icon: '💰', color: 'from-emerald-500 to-teal-600', sub: 'Monthly Revenue' },
-              { label: 'รายรับรวมทั้งหมด', value: `฿${fmt(stats?.totalRevenue ?? 0)}`, icon: '📈', color: 'from-amber-500 to-orange-600', sub: 'Total Revenue' },
+              { label: 'ผู้เช่าทั้งหมดในระบบ', value: fmt(stats?.totalTenants ?? 0), icon: '👥', color: 'from-violet-500 to-purple-600', sub: 'Active Tenants' },
+              { label: 'ห้องพักทั้งหมด', value: fmt(stats?.totalRooms ?? 0), icon: '🚪', color: 'from-emerald-500 to-teal-600', sub: 'Total Rooms' },
+              { label: 'ห้องพักที่มีผู้เช่า', value: fmt(stats?.occupiedRooms ?? 0), icon: '🔑', color: 'from-amber-500 to-orange-600', sub: 'Occupied Rooms' },
             ].map((kpi, i) => (
               <div key={i} className="bg-white/5 border border-white/10 rounded-2xl p-6 hover:bg-white/8 transition-all">
                 <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${kpi.color} flex items-center justify-center text-2xl mb-4 shadow-lg`}>
@@ -148,17 +134,7 @@ export default function PlatformDashboard() {
           </div>
 
           {/* Quick Actions */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            <a href="/platform/packages" className="bg-white/5 border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition-all group flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                 <div className="w-10 h-10 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center text-xl">📦</div>
-                 <div>
-                   <h3 className="text-white font-bold group-hover:text-blue-400 transition-colors">จัดการแพ็กเกจ</h3>
-                   <p className="text-white/50 text-xs mt-0.5">กำหนดราคาและฟีเจอร์</p>
-                 </div>
-              </div>
-              <span className="text-white/20 group-hover:text-blue-400 group-hover:translate-x-1 transition-all">→</span>
-            </a>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
             <a href="/platform/dormitories" className="bg-white/5 border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition-all group flex items-center justify-between">
               <div className="flex items-center gap-4">
                  <div className="w-10 h-10 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xl">🏢</div>
@@ -189,64 +165,6 @@ export default function PlatformDashboard() {
               </div>
               <span className="text-white/20 group-hover:text-amber-400 group-hover:translate-x-1 transition-all">→</span>
             </a>
-          </div>
-
-          {/* Package Breakdown + Recent Activity */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Package Breakdown */}
-            <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
-              <h3 className="text-white font-bold mb-5 flex items-center gap-2">
-                <span>📦</span> แพ็กเกจที่ใช้งาน
-              </h3>
-              <div className="space-y-3">
-                {packageBreakdown.length === 0 ? (
-                  <p className="text-white/30 text-sm">ยังไม่มีข้อมูล</p>
-                ) : packageBreakdown.map((pkg: any, i: number) => {
-                  const colors = ['bg-violet-500', 'bg-blue-500', 'bg-emerald-500'];
-                  const total = packageBreakdown.reduce((s: number, p: any) => s + Number(p.count), 0);
-                  const pct = total > 0 ? Math.round((Number(pkg.count) / total) * 100) : 0;
-                  return (
-                    <div key={i}>
-                      <div className="flex justify-between items-center mb-1.5">
-                        <span className="text-white/70 text-sm font-semibold">{pkg.name}</span>
-                        <span className="text-white text-sm font-black">{pkg.count} หอพัก</span>
-                      </div>
-                      <div className="h-2 bg-white/10 rounded-full overflow-hidden">
-                        <div className={`h-full ${colors[i % colors.length]} rounded-full transition-all`} style={{ width: `${pct}%` }} />
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Recent Subscriptions */}
-            <div className="lg:col-span-2 bg-white/5 border border-white/10 rounded-2xl p-6">
-              <div className="flex items-center justify-between mb-5">
-                <h3 className="text-white font-bold flex items-center gap-2"><span>🔖</span> การสมัครล่าสุด</h3>
-                <a href="/platform/subscriptions" className="text-violet-400 hover:text-violet-300 text-xs font-semibold transition-colors">ดูทั้งหมด →</a>
-              </div>
-              <div className="space-y-3">
-                {recentSubs.length === 0 ? (
-                  <p className="text-white/30 text-sm">ยังไม่มีข้อมูล</p>
-                ) : recentSubs.map((sub) => (
-                  <div key={sub.id} className="flex items-center justify-between py-3 border-b border-white/5 last:border-0">
-                    <div>
-                      <p className="text-white font-semibold text-sm">{sub.dorm_name}</p>
-                      <p className="text-white/40 text-xs">{sub.package_name}</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-white font-bold text-sm">฿{fmt(sub.amount_paid)}</p>
-                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                        sub.status === 'Active' ? 'bg-green-500/20 text-green-400' :
-                        sub.status === 'Expired' ? 'bg-red-500/20 text-red-400' :
-                        'bg-yellow-500/20 text-yellow-400'
-                      }`}>{sub.status}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
           </div>
 
           {/* Recent Dormitories */}

@@ -10,8 +10,6 @@ interface Dorm {
   db_name: string;
   phone: string;
   status: string;
-  package_name: string | null;
-  max_rooms: number | null;
   created_at: string;
 }
 
@@ -92,7 +90,6 @@ export default function PlatformDormitories() {
                 <tr className="border-b border-white/10">
                   <th className="text-left px-6 py-4 text-white/30 text-xs uppercase tracking-widest font-bold">หอพัก</th>
                   <th className="text-left px-6 py-4 text-white/30 text-xs uppercase tracking-widest font-bold">เจ้าของ</th>
-                  <th className="text-left px-6 py-4 text-white/30 text-xs uppercase tracking-widest font-bold">แพ็กเกจ</th>
                   <th className="text-left px-6 py-4 text-white/30 text-xs uppercase tracking-widest font-bold">Database</th>
                   <th className="text-left px-6 py-4 text-white/30 text-xs uppercase tracking-widest font-bold">สถานะ</th>
                   <th className="text-right px-6 py-4 text-white/30 text-xs uppercase tracking-widest font-bold">จัดการ</th>
@@ -108,12 +105,6 @@ export default function PlatformDormitories() {
                     <td className="px-6 py-4">
                       <p className="text-white/80 font-semibold">{d.owner_name}</p>
                       <p className="text-white/40 text-xs">{d.owner_email}</p>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className="px-3 py-1 rounded-full bg-violet-500/20 text-violet-300 text-xs font-bold">
-                        {d.package_name || 'ไม่มี'}
-                      </span>
-                      {d.max_rooms && <span className="text-white/30 text-xs ml-2">({d.max_rooms} ห้อง)</span>}
                     </td>
                     <td className="px-6 py-4">
                       <code className="text-white/40 text-xs bg-white/5 px-2 py-1 rounded">{d.db_name}</code>

@@ -35,7 +35,6 @@ const navItems = [
   {
     group: 'ระบบ',
     items: [
-      { href: '/owner/subscription', label: 'แพ็กเกจของฉัน', icon: '💎' },
       { href: '/owner/settings', label: 'ตั้งค่าหอพัก', icon: '⚙️' },
     ],
   },

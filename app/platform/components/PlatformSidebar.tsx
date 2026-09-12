@@ -17,13 +17,6 @@ const navItems = [
     items: [
       { href: '/platform/dormitories', label: 'หอพักทั้งหมด', icon: '🏢' },
       { href: '/platform/tenants', label: 'ทะเบียนผู้เช่าทั้งหมด', icon: '👥' },
-      { href: '/platform/subscriptions', label: 'การสมัครสมาชิก', icon: '🔖' },
-    ],
-  },
-  {
-    group: 'แพ็กเกจ',
-    items: [
-      { href: '/platform/packages', label: 'จัดการแพ็กเกจ', icon: '📦' },
     ],
   },
   {

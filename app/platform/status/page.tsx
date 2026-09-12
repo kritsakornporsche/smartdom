@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
+import versionData from '@/lib/version.json';
 
 interface SystemStatus {
   status: 'checking' | 'connected' | 'error';
@@ -171,17 +172,28 @@ export default function PlatformStatusPage() {
               <span>💻</span> ข้อมูลระบบ (System Information)
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-               {[
-                 { label: 'Environment', value: 'Production' },
-                 { label: 'Database Service', value: 'MySQL Server' },
-                 { label: 'Region', value: 'AWS us-east-1' },
-                 { label: 'API Framework', value: 'Next.js App Router' },
-               ].map((info, i) => (
-                 <div key={i} className="flex justify-between items-center py-3 border-b border-white/5 last:border-0">
-                    <span className="text-white/40 text-sm font-semibold">{info.label}</span>
-                    <span className="text-white text-sm font-bold">{info.value}</span>
-                 </div>
-               ))}
+                {[
+                  { label: 'System Version', value: versionData.fullDisplay || 'v2.5.0' },
+                  { label: 'Environment', value: 'Production' },
+                  { label: 'Database Service', value: 'MySQL Server (21 Tables)' },
+                  { label: 'API Framework', value: 'Next.js 16 (App Router)' },
+                  { label: 'Last Deployed Build', value: versionData.updatedAt || '12 ก.ย. 2569' },
+                  { label: 'Git Commit', value: versionData.gitHash || 'f632a20' },
+                ].map((info, i) => (
+                  <div key={i} className="flex justify-between items-center py-3 border-b border-white/5 last:border-0">
+                     <span className="text-white/40 text-sm font-semibold">{info.label}</span>
+                     <span className="text-white text-sm font-bold font-mono">{info.value}</span>
+                  </div>
+                ))}
+            </div>
+            <div className="mt-6 pt-4 border-t border-white/5 flex justify-end">
+              <a
+                href="/updates"
+                className="text-xs font-bold text-violet-400 hover:text-violet-300 transition-colors flex items-center gap-1"
+              >
+                <span>📜</span>
+                <span>ดูประวัติการอัปเดตระบบทั้งหมด (Changelog) →</span>
+              </a>
             </div>
           </div>
 

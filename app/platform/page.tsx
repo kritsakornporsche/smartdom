@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
+import Link from 'next/link';
+import { SYSTEM_UPDATES } from '@/lib/updatesData';
 
 interface Stats {
   totalDorms: number;
@@ -113,6 +115,63 @@ export default function PlatformDashboard() {
 
       <div className="flex-1 overflow-y-auto p-10">
         <div className="max-w-7xl mx-auto space-y-8">
+
+          {/* System Version & Latest Update Banner */}
+          {(() => {
+            const latestUpdate = SYSTEM_UPDATES[0];
+            return (
+              <div className="bg-gradient-to-r from-violet-950/40 via-purple-900/20 to-slate-900/40 border border-violet-500/30 rounded-3xl p-6 sm:p-7 relative overflow-hidden backdrop-blur-md shadow-xl">
+                <div className="absolute top-0 right-0 w-80 h-80 bg-violet-500/10 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20" />
+                
+                <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-3">
+                      <span className="px-3 py-1 bg-violet-500/20 text-violet-300 border border-violet-500/30 rounded-full text-xs font-black tracking-wider uppercase flex items-center gap-1.5">
+                        <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                        ระบบเวอร์ชัน {latestUpdate?.version || 'v2.5.0'}
+                      </span>
+                      <span className="text-white/40 text-xs font-medium">
+                        อัปเดตล่าสุด: {latestUpdate?.date}
+                      </span>
+                    </div>
+                    <h2 className="text-xl font-black text-white tracking-tight">
+                      {latestUpdate?.tagline}
+                    </h2>
+                    <p className="text-white/60 text-xs max-w-2xl leading-relaxed">
+                      สรุปการปรับปรุงระบบ: ระบบแจ้งเตือนสลิปไปยังเจ้าของหอพักทันที, ปลดระวางโมดูลเหรียญ/Wallet, และจัดระเบียบโครงสร้างฐานข้อมูล Single Database เหลือ 21 ตารางมาตรฐาน
+                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-3 shrink-0">
+                    <Link
+                      href="/updates"
+                      className="px-4 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-500 text-white text-xs font-bold transition-all shadow-lg shadow-violet-600/20 flex items-center gap-2"
+                    >
+                      <span>📋</span>
+                      <span>ดูบันทึกการอัปเดตฉบับเต็ม</span>
+                      <span>→</span>
+                    </Link>
+                  </div>
+                </div>
+
+                {/* Micro Tasks Badges */}
+                <div className="mt-5 pt-4 border-t border-white/10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                  {latestUpdate?.tasks.map((task) => (
+                    <div key={task.id} className="bg-white/5 border border-white/5 rounded-xl p-3 flex flex-col justify-between">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-white/10 text-white/80">
+                          {task.category}
+                        </span>
+                      </div>
+                      <p className="text-xs font-semibold text-white/90 line-clamp-2" title={task.title}>
+                        {task.title}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })()}
 
           {/* KPI Cards */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">

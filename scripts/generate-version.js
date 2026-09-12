@@ -5,11 +5,11 @@ const { execSync } = require('child_process');
 const versionFilePath = path.join(__dirname, '..', 'lib', 'version.json');
 
 // Base semantic version
-const BASE_VERSION = 'v2.4.0';
+const BASE_VERSION = 'v2.5.0';
 
 let previousData = {
   baseVersion: BASE_VERSION,
-  buildNumber: 119,
+  buildNumber: 122,
   gitHash: 'ylxlwz',
   timestamp: '',
   updatedAt: '',

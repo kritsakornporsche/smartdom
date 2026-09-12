@@ -30,6 +30,7 @@ const navItems = [
     group: 'ระบบ',
     items: [
       { href: '/platform/status', label: 'สถานะระบบ', icon: '🔌' },
+      { href: '/updates', label: 'บันทึกการอัปเดต (v2.5.0)', icon: '🚀' },
       { href: '/platform/settings', label: 'ตั้งค่าระบบ', icon: '⚙️' },
     ],
   },

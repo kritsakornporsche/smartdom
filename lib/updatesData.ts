@@ -15,10 +15,58 @@ export interface DailyUpdate {
 
 export const SYSTEM_UPDATES: DailyUpdate[] = [
   {
+    date: '12 กันยายน 2026',
+    version: 'v2.5.0',
+    tagline: 'ระบบแจ้งเตือนสลิปชำระเงินสำหรับเจ้าของหอพัก และปรับปรุงโครงสร้าง Single Database สู่ 21 ตาราง',
+    isLatest: true,
+    tasks: [
+      {
+        id: '2026-09-12-1',
+        title: 'ระบบแจ้งเตือนเจ้าของหอพักและผู้ดูแล (Keeper) เมื่อผู้เช่าแนบสลิปชำระเงิน',
+        category: 'Feature',
+        details: [
+          'ส่งข้อความแจ้งเตือนอัตโนมัติเข้ากล่องข้อความของผู้ดูแลและเจ้าของหอพักทันทีที่ผู้เช่าอัปโหลดสลิป',
+          'ระบุหมายเลขห้อง ยอดเงินที่ชำระ และลิงก์ลัด (/dormitory/bills/verification) เพื่อตรวจสอบและอนุมัติบิลได้รวดเร็ว',
+          'รองรับการทำงานกับตาราง notifications รูปแบบมาตรฐานระบบ (user_id, title, message, type, is_read, created_at)'
+        ]
+      },
+      {
+        id: '2026-09-12-2',
+        title: 'ปลดระวางโมดูลกระเป๋าเงิน (Wallet) และเหรียญ (Coins) ที่ไม่มีตารางรองรับ',
+        category: 'Fix',
+        details: [
+          'นำ UI กระเป๋าเงิน/การเติมเงิน และเหรียญออกจากหน้าโปรไฟล์และเมนู เพื่อป้องกัน Runtime Error จากคอลัมน์ที่ไม่มีอยู่จริง',
+          'ลบ API endpoint เก่าที่ไม่รองรับ (/api/platform/packages, /api/dormitory/packages) ออกอย่างสมบูรณ์',
+          'ทำความสะอาด Schema ของตาราง dormitory_registry โดยตัดฟิลด์ coins ที่ไม่ได้ใช้งาน'
+        ]
+      },
+      {
+        id: '2026-09-12-3',
+        title: 'ปรับปรุงโครงสร้าง Single Database เหลือ 21 ตารางมาตรฐาน',
+        category: 'Performance',
+        details: [
+          'ตัดตารางที่ไม่ได้ใช้งาน subscriptions และ dormitory_packages ออกจากฐานข้อมูล',
+          'คงตาราง accounting_transactions ไว้สำหรับการลงบัญชีรายรับ-รายจ่ายของหอพัก',
+          'อัปเดตไฟล์ Dump ฐานข้อมูลหลัก (smartdomdb_full_dump.sql) และ docs สอดคล้องกับสภาพแวดล้อมจริง 100%'
+        ]
+      },
+      {
+        id: '2026-09-12-4',
+        title: 'ปรับปรุงเมนู Sidebar ทั้ง Platform Admin และ Dormitory Owner',
+        category: 'Design',
+        details: [
+          'ถอดเมนู "แพ็กเกจหอพัก" (Packages) ออกจากแถบเมนู Platform Admin เพื่อความถูกต้องของฟังก์ชันงาน',
+          'ถอดเมนู "เหรียญ / สมัครสมาชิก" ออกจาก Dashboard ของเจ้าของหอพัก',
+          'เพิ่มการสรุปสถานะเวอร์ชันระบบ (v2.5.0) และบันทึกการอัปเดตลงบน Platform Admin Dashboard'
+        ]
+      }
+    ]
+  },
+  {
     date: '24 - 25 กรกฎาคม 2026',
     version: 'v2.4.0',
     tagline: 'ปรับปรุงเสถียรภาพระบบล็อกอิน การบิลด์ Tailwind v4 และระบบ Remote Deployment',
-    isLatest: true,
+    isLatest: false,
     tasks: [
       {
         id: '2026-07-25-1',

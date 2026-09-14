@@ -176,6 +176,25 @@ export default function AdminDashboardPage() {
               </div>
             </section>
 
+            {/* ── Sequence Diagrams & System Architecture Banner ───────────── */}
+            <div className="bg-gradient-to-r from-[#1E293B] to-[#0F172A] rounded-3xl p-6 text-white shadow-md border border-white/10 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+              <div>
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/20 text-primary text-xs font-bold mb-2">
+                  <span>📊 System Workflows</span>
+                </div>
+                <h3 className="text-lg font-bold text-white">แผนภาพกระบวนการทำงานระบบ (Sequence Diagrams)</h3>
+                <p className="text-xs text-white/60 mt-1 max-w-xl">
+                  รวมแผนภาพ Sequence Diagram ทุกขั้นตอนของระบบ: การทำสัญญาเช่ากระดาษ, การจองห้อง, ออกบิลมิเตอร์, การชำระเงิน และงานแจ้งซ่อม
+                </p>
+              </div>
+              <Link
+                href="/admin/diagrams"
+                className="px-5 py-2.5 bg-primary text-white font-bold text-xs rounded-xl shadow hover:brightness-110 active:scale-95 transition-all whitespace-nowrap"
+              >
+                เปิดดูแผนภาพทั้งหมด →
+              </Link>
+            </div>
+
             {/* ── Users Summary KPI ────────────────────────────────────────── */}
             {summary && (
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">

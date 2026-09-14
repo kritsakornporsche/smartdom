@@ -8,6 +8,7 @@ import { useSession } from 'next-auth/react';
 import ChatWidget from '@/app/components/ChatWidget';
 import ContractSimulator from '@/app/components/ContractSimulator';
 import ContractSigner from '@/app/components/ContractSigner';
+import PromptPayBankSelector from '@/app/components/PromptPayBankSelector';
 
 export default function RoomBookingPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = use(params);
@@ -479,7 +480,7 @@ export default function RoomBookingPage({ params }: { params: Promise<{ id: stri
                       </div>
                       <div className="space-y-1">
                         <p className="text-sm font-bold text-white">{qrData.promptpayName}</p>
-                        <p className="text-xs text-white/50 font-mono">PromptPay: {qrData.promptpayNumber}</p>
+                        <p className="text-xs text-white/50 font-mono">พร้อมเพย์: {qrData.promptpayNumber}</p>
                         <div className="pt-1">
                           <span className="text-[10px] uppercase font-bold text-white/50 block">ยอดชำระเงินประกันสัญญา (1 เดือน)</span>
                           <span className="text-2xl font-black text-amber-400">฿{totalDeposit.toLocaleString()}</span>
@@ -492,6 +493,16 @@ export default function RoomBookingPage({ params }: { params: Promise<{ id: stri
                     </div>
                   )}
                 </div>
+
+                {qrData && (
+                  <PromptPayBankSelector
+                    qrImage={qrData.qrImage}
+                    promptpayNumber={qrData.promptpayNumber}
+                    promptpayName={qrData.promptpayName}
+                    amount={totalDeposit}
+                    fileName={`deposit-qr-room-${room.room_number}.png`}
+                  />
+                )}
 
                 <div className="p-4 bg-amber-500/10 border border-amber-500/30 rounded-2xl text-xs text-amber-300 leading-relaxed">
                   💡 <strong>หมายเหตุ:</strong> ชำระเฉพาะเงินประกัน 1 เดือนเพื่อยืนยันการจองห้องพัก สำหรับค่าเช่าเดือนแรก เจ้าของหอพักจะคิดคำนวณและเรียกเก็บเมื่อเข้าพักจริง

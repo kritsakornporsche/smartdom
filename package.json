@@ -27,6 +27,7 @@
     "dotenv": "^17.4.1",
     "html2canvas": "^1.4.1",
     "jspdf": "^4.2.1",
+    "mermaid": "^12.0.0",
     "mysql2": "^3.22.5",
     "next": "^16.2.4",
     "next-auth": "^5.0.0-beta.30",
@@ -37,7 +38,8 @@
     "sonner": "^2.0.7",
     "ssh2": "^1.17.0",
     "tailwind-merge": "^3.5.0",
-    "tailwindcss": "^4"
+    "tailwindcss": "^4",
+    "tesseract.js": "^7.0.0"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",

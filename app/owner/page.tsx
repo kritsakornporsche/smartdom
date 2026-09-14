@@ -3,12 +3,17 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
+import Link from 'next/link';
 
 interface Stats {
   totalRooms: number;
   occupiedRooms: number;
+  availableRooms?: number;
   totalTenants: number;
   pendingMaintenance: number;
+  pendingSlips?: number;
+  unpaidBills?: number;
+  pendingBookings?: number;
   latestMaintenance?: {
     roomNumber?: string;
     issueType?: string;
@@ -21,8 +26,12 @@ export default function OwnerDashboard() {
   const [stats, setStats] = useState<Stats>({
     totalRooms: 0,
     occupiedRooms: 0,
+    availableRooms: 0,
     totalTenants: 0,
     pendingMaintenance: 0,
+    pendingSlips: 0,
+    unpaidBills: 0,
+    pendingBookings: 0,
   });
 
   const [loading, setLoading] = useState(true);
@@ -43,7 +52,7 @@ export default function OwnerDashboard() {
         } else if (data.success) {
           setDormInfo(data.dorm);
           
-          // Fetch Real Stats using dormDbName
+          // Fetch Real Stats
           const dormDbName = data.dormDbName;
           if (dormDbName) {
             const statsRes = await fetch(`/api/owner/stats?dormDbName=${dormDbName}`);
@@ -53,7 +62,6 @@ export default function OwnerDashboard() {
             }
           }
         }
-
       } catch (err) {
         console.error(err);
       } finally {
@@ -64,148 +72,233 @@ export default function OwnerDashboard() {
     checkOnboarding();
   }, [router, session]);
 
-  if (loading) return (
-    <div className="h-screen flex items-center justify-center bg-[#080F1E]">
-      <div className="flex flex-col items-center gap-4">
-        <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin" />
-        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">กำลังโหลดข้อมูล...</p>
+  if (loading) {
+    return (
+      <div className="h-screen flex items-center justify-center bg-[#080F1E]">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-8 h-8 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin" />
+          <p className="text-xs font-semibold text-white/50">กำลังเปิดหอพัก...</p>
+        </div>
       </div>
-    </div>
-  );
+    );
+  }
+
+  const availableCount = stats.availableRooms ?? Math.max(0, stats.totalRooms - stats.occupiedRooms);
+  const hasPendingSlips = (stats.pendingSlips || 0) > 0;
+  const hasPendingMaint = stats.pendingMaintenance > 0;
+  const hasPendingBookings = (stats.pendingBookings || 0) > 0;
 
   return (
-    <div className="flex-1 flex flex-col overflow-hidden bg-[#080F1E]">
-      {/* Content */}
-      <div className="flex-1 overflow-y-auto p-10">
-        <div className="max-w-6xl mx-auto space-y-10">
-          
-          {/* Welcome Section */}
-          <div className="bg-[#0F172A] rounded-[32px] p-10 shadow-xl border border-white/10 relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full -mr-32 -mt-32 blur-3xl" />
-            <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
-              <div className="flex-1">
-                <h2 className="text-3xl font-black text-white mb-2">สวัสดีครับ, คุณเจ้าของหอ! 👋</h2>
-                <p className="text-white/50 font-medium leading-relaxed max-w-md">
-                  ยินดีต้อนรับสู่ระบบจัดการ SmartDom วันนี้หอพักของคุณมีการจองใหม่ 0 รายการ และ{stats.pendingMaintenance > 0 ? `มีการแจ้งซ่อม ${stats.pendingMaintenance} รายการ` : 'ไม่มีรายการแจ้งซ่อม'}
-                </p>
-                <div className="mt-8 flex gap-3 flex-wrap">
-                  <button 
-                    onClick={() => router.push('/owner/bookings')}
-                    className="px-6 py-3 bg-amber-500 hover:bg-amber-400 text-slate-950 rounded-2xl font-bold shadow-lg shadow-amber-500/20 hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center gap-2"
-                  >
-                    <span>🛎️</span>
-                    <span>ดูรายการจองห้องพัก</span>
-                  </button>
-                  <button 
-                    onClick={() => router.push('/owner/tenants')}
-                    className="px-6 py-3 bg-primary text-white rounded-2xl font-bold shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 transition-all cursor-pointer"
-                  >
-                     ทะเบียนผู้เช่า
-                  </button>
-                  <button 
-                    onClick={() => router.push('/owner/billing')}
-                    className="px-6 py-3 bg-[#0F172A] border border-white/10 text-white/80 rounded-2xl font-bold hover:bg-white/5 transition-all active:scale-95 cursor-pointer"
-                  >
-                     ออกใบแจ้งหนี้
-                  </button>
-                </div>
-              </div>
+    <div className="flex-1 overflow-y-auto bg-[#080F1E] text-slate-100 p-6 sm:p-10">
+      <div className="max-w-5xl mx-auto space-y-8">
 
-              <div className="shrink-0">
-                <div className="w-48 h-48 bg-slate-800/40 rounded-[40px] flex items-center justify-center p-8 shadow-inner border border-white/10">
-                   <svg className="w-full h-full text-primary/30" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
-                   </svg>
-                </div>
-              </div>
-            </div>
+        {/* 1. Header: Clean & Personal */}
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-2 border-b border-white/5">
+          <div>
+            <p className="text-xs text-cyan-400 font-bold tracking-wide">
+              สวัสดี, {session?.user?.name || 'คุณเจ้าของหอ'} 👋
+            </p>
+            <h1 className="text-2xl sm:text-3xl font-black text-white mt-1 tracking-tight">
+              {dormInfo?.name || 'SmartDom Dormitory'}
+            </h1>
           </div>
 
-          {/* KPI Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[
-              { label: 'ห้องเช่าทั้งหมด', value: stats.totalRooms, icon: '🏢', color: 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20', href: '/owner/rooms' },
-              { label: 'ห้องที่มีผู้เช่า', value: stats.occupiedRooms, icon: '🔑', color: 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20', href: '/owner/rooms' },
-              { label: 'จำนวนผู้เช่า', value: stats.totalTenants, icon: '👥', color: 'bg-violet-500/10 text-violet-400 border border-violet-500/20', href: '/owner/tenants' },
-              { label: 'รอดำเนินการซ่อม', value: stats.pendingMaintenance, icon: '🛠️', color: 'bg-rose-500/10 text-rose-400 border border-rose-500/20', href: '/owner/maintenance' },
-            ].map((item, i) => (
-              <div 
-                key={i} 
-                onClick={() => item.href && router.push(item.href)}
-                className="bg-[#0F172A] p-6 rounded-[28px] shadow-lg border border-white/10 flex items-center gap-5 hover:-translate-y-1 transition-transform duration-300 cursor-pointer hover:border-primary"
-              >
-                <div className={`w-14 h-14 ${item.color} rounded-2xl flex items-center justify-center text-2xl shadow-md`}>
-                  {item.icon}
-                </div>
-                <div>
-                  <p className="text-[10px] font-bold text-white/50 uppercase tracking-widest mb-1">{item.label}</p>
-                  <p className="text-2xl font-black text-white/80 tracking-tight">{item.value}</p>
-                </div>
-              </div>
-            ))}
+          <div className="flex items-center gap-2 text-xs">
+            <Link
+              href="/owner/settings"
+              className="text-white/40 hover:text-white transition-colors"
+            >
+              ⚙️ ตั้งค่า
+            </Link>
+            <span className="text-white/20">•</span>
+            <Link
+              href="/explore"
+              className="text-white/40 hover:text-white transition-colors"
+            >
+              🌐 ดูหน้าเว็บหอ
+            </Link>
           </div>
-
-          {/* Quick Actions / Dorm Profile */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Dorm Profile Card */}
-            <div className="lg:col-span-2 bg-[#0F172A] rounded-[32px] overflow-hidden border border-white/10 shadow-xl">
-              <div className="bg-gradient-to-r from-primary to-indigo-600 p-8 text-white flex items-center justify-between">
-                 <div>
-                   <h3 className="text-lg font-bold">ข้อมูลหอพัก</h3>
-                   <p className="text-white/70 text-xs">แก้ไขข้อมูลหอพักของคุณได้ที่นี่</p>
-                 </div>
-                 <button 
-                   onClick={() => router.push('/owner/settings')}
-                   className="px-4 py-2 bg-[#0F172A]/20 hover:bg-[#0F172A]/40 rounded-xl text-xs font-bold transition-all border border-white/15 active:scale-95"
-                 >
-                   แก้ไขข้อมูล
-                 </button>
-              </div>
-              <div className="p-8 space-y-6 text-sm">
-                  <div className="grid grid-cols-2 gap-8">
-                    <div>
-                       <label className="block text-[10px] font-bold text-white/50 uppercase tracking-widest mb-1.5">ชื่อกิจการ</label>
-                       <div className="font-bold text-white">{dormInfo?.name || 'SmartDom Mansion'}</div>
-                    </div>
-                    <div>
-                       <label className="block text-[10px] font-bold text-white/50 uppercase tracking-widest mb-1.5">เบอร์โทรศัพท์</label>
-                       <div className="font-bold text-white">{dormInfo?.phone || '088-999-8888'}</div>
-                    </div>
-                 </div>
-                 <div>
-                    <label className="block text-[10px] font-bold text-white/50 uppercase tracking-widest mb-1.5">ที่ตั้งหอพัก</label>
-                    <div className="font-bold text-white leading-relaxed">
-                      {dormInfo?.address || '888 ถนนพระราม 9 แขวงห้วยขวาง เขตห้วยขวาง กรุงเทพฯ 10310'}
-                    </div>
-                 </div>
-              </div>
-            </div>
-
-            {/* Maintenance Summary */}
-            <div className="bg-[#0F172A] border border-white/10 rounded-[32px] p-8 text-white shadow-xl flex flex-col items-center text-center justify-center relative overflow-hidden">
-               <div className="absolute top-0 right-0 w-32 h-32 bg-rose-500/5 rounded-full -mr-16 -mt-16 pointer-events-none" />
-               <div className="w-16 h-16 bg-rose-500/10 text-rose-400 border border-rose-500/20 rounded-2xl flex items-center justify-center text-3xl mb-4">🔧</div>
-               <h3 className="text-lg font-bold mb-2 text-white">
-                 {stats.pendingMaintenance > 0 ? "แจ้งซ่อมรออนุมัติ" : "การแจ้งซ่อม"}
-               </h3>
-               <p className="text-white/50 text-sm mb-6 max-w-xs">
-                 {stats.pendingMaintenance > 0 
-                   ? (stats.latestMaintenance?.roomNumber 
-                       ? `มีรายการแจ้งซ่อมใหม่จากผู้เช่า ห้อง ${stats.latestMaintenance.roomNumber}${stats.latestMaintenance.issueType || stats.latestMaintenance.description ? ` (${stats.latestMaintenance.issueType || stats.latestMaintenance.description})` : ''}`
-                       : `มีรายการแจ้งซ่อมรออนุมัติ ${stats.pendingMaintenance} รายการ`)
-                   : "ไม่มีรายการแจ้งซ่อม"}
-               </p>
-               <button 
-                 onClick={() => router.push('/owner/maintenance')}
-                 className="w-full py-3.5 bg-rose-500 text-white rounded-2xl font-bold shadow-lg shadow-rose-500/10 hover:scale-105 active:scale-95 transition-all"
-               >
-                  ดูรายการแจ้งซ่อม
-               </button>
-            </div>
-
-          </div>
-
         </div>
+
+        {/* 2. Smart Attention Bars (เฉพาะเวลามีงานค้างจริง) */}
+        {(hasPendingSlips || hasPendingMaint || hasPendingBookings) ? (
+          <div className="space-y-2.5">
+            {hasPendingSlips && (
+              <Link
+                href="/owner/billing"
+                className="flex items-center justify-between p-3.5 px-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 hover:bg-amber-500/15 transition-all text-amber-200 text-xs font-semibold group cursor-pointer"
+              >
+                <div className="flex items-center gap-2.5">
+                  <span className="text-base">💰</span>
+                  <span>มีสลิปโอนเงินรอตรวจสอบ <strong>{stats.pendingSlips} รายการ</strong></span>
+                </div>
+                <span className="font-bold text-amber-400 group-hover:translate-x-1 transition-transform">
+                  ตรวจสลิป →
+                </span>
+              </Link>
+            )}
+
+            {hasPendingMaint && (
+              <Link
+                href="/owner/maintenance"
+                className="flex items-center justify-between p-3.5 px-4 rounded-2xl bg-rose-500/10 border border-rose-500/30 hover:bg-rose-500/15 transition-all text-rose-200 text-xs font-semibold group cursor-pointer"
+              >
+                <div className="flex items-center gap-2.5">
+                  <span className="text-base">🔧</span>
+                  <span>
+                    มีรายการแจ้งซ่อมใหม่ <strong>{stats.pendingMaintenance} รายการ</strong>
+                    {stats.latestMaintenance?.roomNumber && ` (ห้อง ${stats.latestMaintenance.roomNumber})`}
+                  </span>
+                </div>
+                <span className="font-bold text-rose-400 group-hover:translate-x-1 transition-transform">
+                  ดูงานซ่อม →
+                </span>
+              </Link>
+            )}
+
+            {hasPendingBookings && (
+              <Link
+                href="/owner/bookings"
+                className="flex items-center justify-between p-3.5 px-4 rounded-2xl bg-blue-500/10 border border-blue-500/30 hover:bg-blue-500/15 transition-all text-blue-200 text-xs font-semibold group cursor-pointer"
+              >
+                <div className="flex items-center gap-2.5">
+                  <span className="text-base">🛎️</span>
+                  <span>มีรายการจองห้องพักใหม่รอตรวจสอบ <strong>{stats.pendingBookings} รายการ</strong></span>
+                </div>
+                <span className="font-bold text-blue-400 group-hover:translate-x-1 transition-transform">
+                  ดูการจอง →
+                </span>
+              </Link>
+            )}
+          </div>
+        ) : (
+          <div className="p-3 px-4 rounded-2xl bg-white/[0.02] border border-white/5 flex items-center gap-2 text-xs text-white/50">
+            <span className="text-emerald-400">✓</span>
+            <span>สถานะปกติ ไม่มีสลิปหรือคำร้องค้างรอดำเนินการ</span>
+          </div>
+        )}
+
+        {/* 3. Big Clean Numbers (3 ตัวเลขสำคัญ) */}
+        <div className="grid grid-cols-3 gap-4 sm:gap-6">
+          <Link
+            href="/owner/rooms"
+            className="p-5 rounded-2xl bg-white/[0.03] hover:bg-white/[0.06] border border-white/5 hover:border-cyan-500/30 transition-all group cursor-pointer"
+          >
+            <p className="text-[11px] font-bold text-white/40 uppercase tracking-wider">ห้องว่าง</p>
+            <div className="mt-1 flex items-baseline gap-1.5">
+              <span className="text-3xl font-black text-white group-hover:text-cyan-300 transition-colors">
+                {availableCount}
+              </span>
+              <span className="text-xs text-white/40">/ {stats.totalRooms} ห้อง</span>
+            </div>
+          </Link>
+
+          <Link
+            href="/owner/tenants"
+            className="p-5 rounded-2xl bg-white/[0.03] hover:bg-white/[0.06] border border-white/5 hover:border-cyan-500/30 transition-all group cursor-pointer"
+          >
+            <p className="text-[11px] font-bold text-white/40 uppercase tracking-wider">ผู้เช่าปัจจุบัน</p>
+            <div className="mt-1 flex items-baseline gap-1.5">
+              <span className="text-3xl font-black text-white group-hover:text-cyan-300 transition-colors">
+                {stats.totalTenants}
+              </span>
+              <span className="text-xs text-white/40">คน</span>
+            </div>
+          </Link>
+
+          <Link
+            href="/owner/billing"
+            className="p-5 rounded-2xl bg-white/[0.03] hover:bg-white/[0.06] border border-white/5 hover:border-cyan-500/30 transition-all group cursor-pointer"
+          >
+            <p className="text-[11px] font-bold text-white/40 uppercase tracking-wider">บิลรอชำระ</p>
+            <div className="mt-1 flex items-baseline gap-1.5">
+              <span className="text-3xl font-black text-white group-hover:text-amber-300 transition-colors">
+                {stats.unpaidBills || 0}
+              </span>
+              <span className="text-xs text-white/40">บิล</span>
+            </div>
+          </Link>
+        </div>
+
+        {/* 4. Three Primary Task Cards (3 งานหลักประจำหอพัก) */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          {/* Task 1: Billing & Meters */}
+          <Link
+            href="/owner/meters"
+            className="p-6 rounded-3xl bg-gradient-to-b from-white/[0.04] to-transparent border border-white/10 hover:border-cyan-400/50 hover:from-cyan-950/20 transition-all flex flex-col justify-between h-48 shadow-lg group cursor-pointer"
+          >
+            <div>
+              <span className="text-2xl">⚡</span>
+              <h3 className="text-base font-bold text-white mt-3 group-hover:text-cyan-300 transition-colors">
+                รอบบิล & มิเตอร์
+              </h3>
+              <p className="text-xs text-white/50 mt-1">
+                จดเลขมิเตอร์น้ำ-ไฟ และออกใบแจ้งหนี้ประจำเดือน
+              </p>
+            </div>
+            <div className="flex items-center gap-1 text-xs font-bold text-cyan-400 group-hover:translate-x-1 transition-transform">
+              <span>เริ่มจดมิเตอร์</span>
+              <span>→</span>
+            </div>
+          </Link>
+
+          {/* Task 2: Rooms & Tenants */}
+          <Link
+            href="/owner/rooms"
+            className="p-6 rounded-3xl bg-gradient-to-b from-white/[0.04] to-transparent border border-white/10 hover:border-blue-400/50 hover:from-blue-950/20 transition-all flex flex-col justify-between h-48 shadow-lg group cursor-pointer"
+          >
+            <div>
+              <span className="text-2xl">🚪</span>
+              <h3 className="text-base font-bold text-white mt-3 group-hover:text-blue-300 transition-colors">
+                ผังห้อง & ผู้เช่า
+              </h3>
+              <p className="text-xs text-white/50 mt-1">
+                ตรวจเช็คห้องว่าง สัญญาเช่า และประวัติลูกหอ
+              </p>
+            </div>
+            <div className="flex items-center gap-1 text-xs font-bold text-blue-400 group-hover:translate-x-1 transition-transform">
+              <span>ดูผังห้องพัก</span>
+              <span>→</span>
+            </div>
+          </Link>
+
+          {/* Task 3: Maintenance & Care */}
+          <Link
+            href="/owner/maintenance"
+            className="p-6 rounded-3xl bg-gradient-to-b from-white/[0.04] to-transparent border border-white/10 hover:border-rose-400/50 hover:from-rose-950/20 transition-all flex flex-col justify-between h-48 shadow-lg group cursor-pointer"
+          >
+            <div>
+              <span className="text-2xl">🔧</span>
+              <h3 className="text-base font-bold text-white mt-3 group-hover:text-rose-300 transition-colors">
+                งานแจ้งซ่อม
+              </h3>
+              <p className="text-xs text-white/50 mt-1">
+                รับเรื่องแจ้งซ่อม และมอบหมายงานให้ช่าง
+              </p>
+            </div>
+            <div className="flex items-center gap-1 text-xs font-bold text-rose-400 group-hover:translate-x-1 transition-transform">
+              <span>ดูรายการซ่อม</span>
+              <span>→</span>
+            </div>
+          </Link>
+        </div>
+
+        {/* 5. Minimal Bottom Shortcuts */}
+        <div className="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-white/5 text-xs text-white/40">
+          <div className="flex items-center gap-4">
+            <Link href="/owner/accounting" className="hover:text-white transition-colors">
+              📈 บัญชีรายรับ-จ่าย
+            </Link>
+            <Link href="/owner/contracts" className="hover:text-white transition-colors">
+              📝 สัญญาเช่ากระดาษ
+            </Link>
+            <Link href="/owner/chat" className="hover:text-white transition-colors">
+              💬 แชทลูกหอ
+            </Link>
+          </div>
+          <span className="font-mono text-[11px] text-white/30">SmartDom Owner v2.5.0</span>
+        </div>
+
       </div>
     </div>
   );

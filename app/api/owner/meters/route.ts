@@ -80,7 +80,7 @@ export async function POST(req: Request) {
       const items = body.items;
       let insertedCount = 0;
       for (const item of items) {
-        const { room_id, type, previous_reading, current_reading, billing_cycle } = item;
+        const { room_id, type, previous_reading, current_reading, billing_cycle, photo_url } = item;
         if (!room_id || !type || current_reading === undefined || !billing_cycle) continue;
 
         // Upsert
@@ -92,13 +92,15 @@ export async function POST(req: Request) {
         if (existing.length > 0) {
           await sql`
             UPDATE meter_readings
-            SET previous_reading = ${previous_reading || 0}, current_reading = ${current_reading}
+            SET previous_reading = ${previous_reading || 0}, 
+                current_reading = ${current_reading},
+                photo_url = COALESCE(${photo_url || null}, photo_url)
             WHERE id = ${existing[0].id}
           `;
         } else {
           await sql`
-            INSERT INTO meter_readings (dorm_id, room_id, type, previous_reading, current_reading, billing_cycle)
-            VALUES (${dormId}, ${room_id}, ${type}, ${previous_reading || 0}, ${current_reading}, ${billing_cycle})
+            INSERT INTO meter_readings (dorm_id, room_id, type, previous_reading, current_reading, billing_cycle, photo_url)
+            VALUES (${dormId}, ${room_id}, ${type}, ${previous_reading || 0}, ${current_reading}, ${billing_cycle}, ${photo_url || null})
           `;
         }
         insertedCount++;
@@ -107,7 +109,7 @@ export async function POST(req: Request) {
     }
 
     // Single insertion
-    const { room_id, type, previous_reading, current_reading, billing_cycle } = body;
+    const { room_id, type, previous_reading, current_reading, billing_cycle, photo_url } = body;
 
     if (!room_id || !type || current_reading === undefined || !billing_cycle) {
       return NextResponse.json({ success: false, message: 'Missing required fields' }, { status: 400 });
@@ -122,15 +124,17 @@ export async function POST(req: Request) {
     if (existing.length > 0) {
       await sql`
         UPDATE meter_readings
-        SET previous_reading = ${previous_reading || 0}, current_reading = ${current_reading}
+        SET previous_reading = ${previous_reading || 0}, 
+            current_reading = ${current_reading},
+            photo_url = COALESCE(${photo_url || null}, photo_url)
         WHERE id = ${existing[0].id}
       `;
       return NextResponse.json({ success: true, message: 'อัปเดตการจดมิเตอร์เรียบร้อยแล้ว' });
     }
 
     const result = await sql`
-      INSERT INTO meter_readings (dorm_id, room_id, type, previous_reading, current_reading, billing_cycle)
-      VALUES (${dormId}, ${room_id}, ${type}, ${previous_reading || 0}, ${current_reading}, ${billing_cycle})
+      INSERT INTO meter_readings (dorm_id, room_id, type, previous_reading, current_reading, billing_cycle, photo_url)
+      VALUES (${dormId}, ${room_id}, ${type}, ${previous_reading || 0}, ${current_reading}, ${billing_cycle}, ${photo_url || null})
     `;
 
     return NextResponse.json({ success: true, message: 'บันทึกมิเตอร์เรียบร้อยแล้ว', data: { id: (result as any).insertId } }, { status: 201 });

@@ -63,6 +63,8 @@ export async function POST(request: Request) {
           if (user.sub_role === 'maid') redirectUrl = '/keeper/maid';
           else if (user.sub_role === 'technician') redirectUrl = '/keeper/technician';
           else redirectUrl = '/keeper';
+        } else if (effectiveRole === 'researcher') {
+          redirectUrl = '/researcher';
         }
 
         return NextResponse.json({

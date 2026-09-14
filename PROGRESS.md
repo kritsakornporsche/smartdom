@@ -1,9 +1,11 @@
 # 📈 บันทึกความคืบหน้าระบบ SmartDom (Progress Log)
 
-**วันที่บันทึก:** 29 สิงหาคม 2026 (รอบค่ำ 22:15 น.)  
-**เวอร์ชันปัจจุบัน:** `v2.4.0-b120` (`9fc8ce6` / `cc4bbd8`)  
-**สถานะเซิร์ฟเวอร์:** 🟢 **Online & Permanent 24/7** (Windows Scheduled Service: `SmartDomServer` บนพอร์ต 3000 -> `http://kritsakorn.thddns.net:5993`)  
-**สถานะ Git:** 🟢 **Up to date with `origin/main`**
+**วันที่บันทึก:** 14 กันยายน 2026  
+**เวอร์ชันปัจจุบัน:** `v2.6.0`  
+**สถานะเซิร์ฟเวอร์:** 🟢 **Online 24/7 (HTTPS + SSL Cloudflare Tunnel)**  
+- 🔒 **HTTPS Domain:** `https://alcohol-houston-structural-oklahoma.trycloudflare.com`  
+- 🌐 **HTTP DDNS:** `http://kritsakorn.thddns.net:5993`  
+**สถานะ Git:** 🟢 **Ready for push to `origin/main`**
 
 ---
 

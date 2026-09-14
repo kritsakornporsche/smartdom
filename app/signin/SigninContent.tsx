@@ -41,10 +41,12 @@ export default function SignInContent() {
 
     try {
       // 1. Authenticate with NextAuth to create HTTP-only session cookie
+      const origin = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000';
       const result = await signIn('credentials', {
         redirect: false,
         email: email.trim(),
         password: password,
+        callbackUrl: origin,
       });
 
       if (result?.error) {

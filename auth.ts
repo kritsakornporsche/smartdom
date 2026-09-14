@@ -59,7 +59,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         try {
           const admins = await sql`
             SELECT id, name, email, password, role FROM platform_admins
-            WHERE (email = ${email} OR name = ${email}) AND is_active = TRUE LIMIT 1
+            WHERE (LOWER(email) = ${email} OR LOWER(name) = ${email}) AND is_active = TRUE LIMIT 1
           `;
           if (admins.length > 0) {
             const admin = admins[0];
@@ -169,12 +169,29 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     },
 
     async redirect({ url, baseUrl }) {
-      if (url.startsWith('/')) return url;
+      const cleanBase = (baseUrl || '').replace(/\/$/, '');
+      if (url.startsWith('/')) {
+        return cleanBase ? `${cleanBase}${url}` : url;
+      }
       try {
         const parsed = new URL(url);
-        return `${parsed.pathname}${parsed.search}`;
+        if (cleanBase) {
+          const baseParsed = new URL(cleanBase);
+          if (parsed.origin === baseParsed.origin) return url;
+        }
+        // Allow same-origin or known trusted dev/prod origins
+        if (
+          ['localhost', '127.0.0.1'].includes(parsed.hostname) ||
+          parsed.hostname.endsWith('thddns.net') ||
+          parsed.hostname.startsWith('192.168.') ||
+          parsed.hostname.startsWith('10.') ||
+          parsed.hostname.startsWith('172.')
+        ) {
+          return url;
+        }
+        return cleanBase ? `${cleanBase}${parsed.pathname}${parsed.search}` : url;
       } catch (e) {
-        return '/explore';
+        return cleanBase ? `${cleanBase}/explore` : '/explore';
       }
     },
   },

@@ -352,5 +352,49 @@
 
 > **สถานะการจัดเก็บ:** ทำการบันทึกรายงานประจำวัน (Daily Log) เรียบร้อยแล้ว
 
+---
+
+**วันที่:** 14 กันยายน 2026  
+**โปรเจกต์:** SmartDom (ระบบบริหารจัดการหอพักหน้ามหาวิทยาลัยพะเยา)  
+**เวอร์ชันระบบ:** `v2.6.0`
+
+---
+
+## 🚀 สิ่งที่ได้ดำเนินการสำเร็จในวันนี้ (Completed Tasks)
+
+### 1. การวิเคราะห์ฐานข้อมูลและการสร้าง ER Diagram สถาปัตยกรรม 21 ตาราง
+- ตรวจสอบโครงสร้าง Single DB (`smartdomdb`) ทั้ง 21 ตาราง
+- พัฒนาหน้าระบบสำหรับผู้วิจัยและผู้ดูแลระบบ ([app/researcher/page.tsx](file:///d:/Works/thesiss/smartdom-1/app/researcher/page.tsx), [app/admin/diagrams/page.tsx](file:///d:/Works/thesiss/smartdom-1/app/admin/diagrams/page.tsx)) พร้อมแผนภาพความสัมพันธ์ Interactive Mermaid
+- จัดทำและตรวจสอบบัญชีผู้ใช้ทดสอบสำหรับทุกบทบาท (Admin, Owner, Tenant, Keeper)
+
+### 2. ปรับปรุงประสบการณ์การใช้งาน (UX) ฝั่งเจ้าของหอพัก
+- ปรับโครงสร้างเมนูและลดความซับซ้อนของข้อมูลบนหน้าแดชบอร์ดเจ้าของหอพัก
+- เพิ่มความกระชับ ชัดเจน และลดความสับสนในการใช้งาน
+
+### 3. ระบบชำระเงินอัจฉริยะ 0% Fee & Deeplink ธนาคาร
+- ตัดระบบ SlipOK และผู้ให้บริการภายนอกที่มีค่าธรรมเนียมรายสลิปออก เพื่อความคล่องตัวสูงสุดของงานวิจัย
+- สร้าง PromptPay Dynamic QR Code มาตรฐานสากล EMVCo ผูกตรงกับเจ้าของหอพัก 100%
+- พัฒนาคอมโพเนนต์ `PromptPayBankSelector` ([app/components/PromptPayBankSelector.tsx](file:///d:/Works/thesiss/smartdom-1/app/components/PromptPayBankSelector.tsx)):
+  - ปุ่มดาวน์โหลดบันทึกรูป QR Code ลงเครื่อง
+  - ปุ่มคัดลอกเลขพร้อมเพย์ลงคลิปบอร์ดแบบ 1-Click
+  - ปุ่ม Deeplink เปิดแอปธนาคารตรง (K PLUS, SCB EASY, Krungthai NEXT, KMA, Bualuang, ttb touch)
+- เชื่อมโยงเข้าทั้งหน้าจ่ายบิลลูกหอ ([app/tenant/billing/page.tsx](file:///d:/Works/thesiss/smartdom-1/app/tenant/billing/page.tsx)) และขั้นตอนจองห้องพัก ([app/explore/room/[id]/page.tsx](file:///d:/Works/thesiss/smartdom-1/app/explore/room/%5Bid%5D/page.tsx))
+- ระบบอนุมัติและปฏิเสธสลิปของเจ้าของหอพักแบบ Side-by-Side 1-Click
+
+### 4. ระบบจดมิเตอร์น้ำ-ไฟอัจฉริยะด้วยกล้อง AI (Hybrid OCR)
+- พัฒนาคอมโพเนนต์ `CameraMeterModal` ([app/owner/meters/components/CameraMeterModal.tsx](file:///d:/Works/thesiss/smartdom-1/app/owner/meters/components/CameraMeterModal.tsx))
+- รองรับทั้ง Native Mobile Camera (ใช้ได้ทุกเบราว์เซอร์บนมือถือ) และ Live Viewfinder Stream บน HTTPS
+- ผสาน Hybrid OCR: Gemini 1.5 Flash Vision + Tesseract.js fallback สำหรับสถานการณ์ออฟไลน์
+- ระบบตรวจจับความผิดปกติของตัวเลขเทียบกับเลขเดือนก่อนหน้า พร้อมบันทึกภาพถ่ายหลักฐาน (`photo_url`) ลงฐานข้อมูล
+
+### 5. ติดตั้งและเปิดใช้งานใบรับรองความปลอดภัย SSL HTTPS (Cloudflare Tunnel)
+- ติดตั้ง `cloudflared` บน Windows Server รันบริการผ่าน Windows Scheduled Task (`SmartDomTunnel`) ตลอด 24/7
+- ปลดล็อกข้อจำกัดของเบราว์เซอร์มือถือให้สามารถเปิดกล้องสด (Live Stream) ได้อย่างปลอดภัย
+- ยกระดับประสิทธิภาพผ่านโปรโตคอล TLS 1.3 และ HTTP/2 - QUIC / HTTP/3
+- URL สาธารณะ: `https://alcohol-houston-structural-oklahoma.trycloudflare.com`
+
+---
+
+
 
 

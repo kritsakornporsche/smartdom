@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import PromptPayBankSelector from '@/app/components/PromptPayBankSelector';
 
 interface Bill {
   id: number;
@@ -216,11 +217,12 @@ export default function TenantBillingPage() {
 
       {/* QR Code Modal */}
       {modalType === 'qr' && selectedBill && (
-         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm animate-in fade-in p-4">
-           <div className="bg-[#0F172A] rounded-[2.5rem] w-full max-w-sm p-10 overflow-hidden shadow-2xl relative animate-in zoom-in-95">
-             <button onClick={() => setModalType(null)} className="absolute top-6 right-6 h-10 w-10 flex items-center justify-center rounded-full hover:bg-black/5 text-white/50">✕</button>
-             <h2 className="text-xl font-black text-white mb-6 text-center">สแกนชำระเงิน</h2>
-             <div className="bg-[#0F172A] p-4 rounded-3xl border border-white/20/10 flex justify-center mb-6 min-h-[220px] items-center">
+         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in p-4 overflow-y-auto">
+           <div className="bg-[#0F172A] rounded-[2.5rem] w-full max-w-sm p-8 overflow-hidden shadow-2xl relative animate-in zoom-in-95 border border-white/10 my-auto">
+             <button onClick={() => setModalType(null)} className="absolute top-5 right-5 h-8 w-8 flex items-center justify-center rounded-full hover:bg-white/10 text-white/50 cursor-pointer">✕</button>
+             <h2 className="text-lg font-black text-white mb-4 text-center">สแกนชำระเงิน</h2>
+             
+             <div className="bg-slate-900 p-4 rounded-3xl border border-white/10 flex justify-center mb-4 min-h-[200px] items-center">
                 {qrLoading ? (
                    <div className="flex flex-col items-center justify-center space-y-3">
                      <svg className="w-8 h-8 text-primary animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg>
@@ -228,22 +230,36 @@ export default function TenantBillingPage() {
                    </div>
                 ) : qrData ? (
                    <div className="flex flex-col items-center">
-                     <img src={qrData.qrImage} alt="QR Code" className="w-56 h-56 object-contain bg-white p-2 rounded-xl" />
-                     <p className="text-xs text-white/50 mt-4 font-bold tracking-widest">PromptPay: {qrData.promptpayNumber}</p>
+                     <img src={qrData.qrImage} alt="QR Code" className="w-52 h-52 object-contain bg-white p-2 rounded-xl shadow-md" />
+                     <p className="text-xs text-white/50 mt-3 font-bold tracking-wider">พร้อมเพย์: {qrData.promptpayNumber}</p>
                    </div>
                 ) : (
-                   <p className="text-destructive font-bold">ไม่สามารถโหลด QR Code ได้</p>
+                   <p className="text-rose-400 font-bold text-xs">ไม่สามารถโหลด QR Code ได้</p>
                 )}
              </div>
-             <div className="text-center space-y-1 mb-8">
-               <p className="text-[10px] text-white/50 font-black uppercase tracking-widest">ยอดที่ต้องชำระ (บาท)</p>
-               <p className="text-3xl font-black text-primary">฿{Number(selectedBill.amount).toLocaleString()}</p>
+
+             <div className="text-center space-y-0.5 mb-4">
+               <p className="text-[10px] text-white/50 font-black uppercase tracking-widest">ยอดที่ต้องชำระ</p>
+               <p className="text-2xl font-black text-emerald-400">฿{Number(selectedBill.amount).toLocaleString()}</p>
              </div>
+
+             {qrData && (
+               <div className="mb-4">
+                 <PromptPayBankSelector
+                   qrImage={qrData.qrImage}
+                   promptpayNumber={qrData.promptpayNumber}
+                   promptpayName={qrData.promptpayName}
+                   amount={Number(selectedBill.amount)}
+                   fileName={`qr-bill-${selectedBill.id}.png`}
+                 />
+               </div>
+             )}
+
              <button 
                 onClick={() => setModalType('upload')}
-                className="w-full bg-[#3E342B] text-white font-black py-4 px-6 rounded-2xl shadow-xl shadow-[#3E342B]/20 active:scale-95"
+                className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black py-3.5 px-6 rounded-2xl shadow-xl shadow-emerald-600/20 active:scale-95 transition-all cursor-pointer text-sm"
              >
-                แนบสลิปการโอน
+                แนบสลิปการโอนเงิน
              </button>
            </div>
          </div>

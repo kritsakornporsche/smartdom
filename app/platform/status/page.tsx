@@ -59,7 +59,9 @@ export default function PlatformStatusPage() {
 
   useEffect(() => {
     if (authStatus === 'loading') return;
-    if ((session?.user as any)?.role !== 'platform_admin') {
+    const localRole = typeof window !== 'undefined' ? localStorage.getItem('userRole') : null;
+    const userRole = (session?.user as any)?.role || localRole;
+    if (userRole !== 'platform_admin') {
       router.push('/signin');
       return;
     }

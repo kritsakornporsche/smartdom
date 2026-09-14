@@ -61,7 +61,7 @@ export interface SmartDomUser {
   id: string;
   name: string;
   email: string;
-  role: 'platform_admin' | 'owner' | 'tenant' | 'keeper' | 'guest';
+  role: 'platform_admin' | 'owner' | 'tenant' | 'keeper' | 'researcher' | 'guest';
   sub_role?: string | null;
   dormId?: number | null;
 }

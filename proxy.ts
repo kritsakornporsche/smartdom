@@ -8,7 +8,7 @@ import type { NextRequest } from 'next/server';
  */
 export default function middleware(req: any) {
   const { nextUrl } = req;
-  const protectedPrefixes = ["admin", "owner", "keeper", "tenant", "platform"];
+  const protectedPrefixes = ["admin", "owner", "keeper", "tenant", "platform", "researcher"];
   const pathParts = nextUrl.pathname.split("/");
   const currentPrefix = pathParts[1];
 

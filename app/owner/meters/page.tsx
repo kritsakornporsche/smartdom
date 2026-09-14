@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import CameraMeterModal from "./components/CameraMeterModal";
 
 interface MeterReading {
   id: number;
@@ -11,6 +12,7 @@ interface MeterReading {
   billing_cycle: string;
   previous_reading: number | string;
   current_reading: number | string;
+  photo_url?: string | null;
   created_at?: string;
 }
 
@@ -27,6 +29,16 @@ export default function MetersPage() {
   const [showBatchModal, setShowBatchModal] = useState(false);
   const [rooms, setRooms] = useState<Room[]>([]);
   const [submitting, setSubmitting] = useState(false);
+
+  // Camera Meter Modal State
+  const [cameraModal, setCameraModal] = useState<{
+    isOpen: boolean;
+    roomNumber: string;
+    roomId?: number;
+    meterType: 'Water' | 'Electricity';
+    previousReading: number;
+    batchIndex?: number;
+  } | null>(null);
 
   // Checkbox Selection States
   const [selectedRoomIds, setSelectedRoomIds] = useState<number[]>([]);
@@ -47,7 +59,8 @@ export default function MetersPage() {
     type: 'Water' as 'Water' | 'Electricity',
     previous_reading: '',
     current_reading: '',
-    billing_cycle: new Date().toISOString().substring(0, 7)
+    billing_cycle: new Date().toISOString().substring(0, 7),
+    photo_url: '',
   });
 
   // Batch Form State
@@ -57,8 +70,10 @@ export default function MetersPage() {
     room_number: string;
     water_prev: number;
     water_curr: string;
+    water_photo?: string;
     elec_prev: number;
     elec_curr: string;
+    elec_photo?: string;
   }[]>([]);
 
   // Calculate Next Month string (YYYY-MM)
@@ -304,6 +319,30 @@ export default function MetersPage() {
     }
   };
 
+  const handleCameraConfirm = (reading: number, photoUrl: string) => {
+    if (cameraModal?.batchIndex !== undefined) {
+      const idx = cameraModal.batchIndex;
+      const type = cameraModal.meterType;
+      setBatchItems((prev) => {
+        const copy = [...prev];
+        if (type === 'Water') {
+          copy[idx].water_curr = String(reading);
+          copy[idx].water_photo = photoUrl;
+        } else {
+          copy[idx].elec_curr = String(reading);
+          copy[idx].elec_photo = photoUrl;
+        }
+        return copy;
+      });
+    } else {
+      setForm((prev) => ({
+        ...prev,
+        current_reading: String(reading),
+        photo_url: photoUrl,
+      }));
+    }
+  };
+
   // Submit Batch Readings
   const handleSubmitBatch = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -321,6 +360,7 @@ export default function MetersPage() {
           previous_reading: item.water_prev,
           current_reading: parseFloat(item.water_curr),
           billing_cycle: batchCycle,
+          photo_url: item.water_photo || null,
         });
       }
       if (item.elec_curr !== '') {
@@ -330,6 +370,7 @@ export default function MetersPage() {
           previous_reading: item.elec_prev,
           current_reading: parseFloat(item.elec_curr),
           billing_cycle: batchCycle,
+          photo_url: item.elec_photo || null,
         });
       }
     });
@@ -398,6 +439,12 @@ export default function MetersPage() {
              className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-lg shadow-emerald-600/20 transition-all transform hover:scale-105 active:scale-95 flex items-center gap-2 cursor-pointer"
            >
              <span>⚡</span> จดมิเตอร์ด่วนทุกห้องรอบใหม่
+           </button>
+           <button 
+             onClick={() => router.push('/owner/billing')}
+             className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 text-xs font-black px-4 py-2.5 rounded-xl shadow-lg shadow-amber-500/20 transition-all transform hover:scale-105 active:scale-95 flex items-center gap-2 cursor-pointer"
+           >
+             <span>💰</span> ไปหน้าออกบิลค่าเช่า →
            </button>
            <button 
              onClick={fetchMeters} 
@@ -974,54 +1021,96 @@ export default function MetersPage() {
                    </tr>
                  </thead>
                  <tbody className="divide-y divide-white/5">
-                   {batchItems.map((item, idx) => (
-                     <tr key={item.room_id} className="hover:bg-white/5">
-                       <td className="py-3 px-4 font-black text-white text-sm">
-                         ห้อง {item.room_number}
-                       </td>
-                       <td className="py-3 px-4 text-center font-mono text-white/60">
-                         {item.water_prev.toFixed(2)}
-                       </td>
-                       <td className="py-3 px-4 text-center">
-                         <input 
-                           type="number" 
-                           step="0.01" 
-                           placeholder={`${item.water_prev}`} 
-                           value={item.water_curr}
-                           onChange={e => {
-                             const val = e.target.value;
-                             setBatchItems(prev => {
-                               const copy = [...prev];
-                               copy[idx].water_curr = val;
-                               return copy;
-                             });
-                           }}
-                           className="w-28 bg-[#1E293B] border border-blue-500/40 rounded-lg px-2.5 py-1.5 text-center font-mono font-bold text-blue-300 outline-none focus:ring-2 focus:ring-blue-500"
-                         />
-                       </td>
-                       <td className="py-3 px-4 text-center font-mono text-white/60">
-                         {item.elec_prev.toFixed(2)}
-                       </td>
-                       <td className="py-3 px-4 text-center">
-                         <input 
-                           type="number" 
-                           step="0.01" 
-                           placeholder={`${item.elec_prev}`} 
-                           value={item.elec_curr}
-                           onChange={e => {
-                             const val = e.target.value;
-                             setBatchItems(prev => {
-                               const copy = [...prev];
-                               copy[idx].elec_curr = val;
-                               return copy;
-                             });
-                           }}
-                           className="w-28 bg-[#1E293B] border border-orange-500/40 rounded-lg px-2.5 py-1.5 text-center font-mono font-bold text-orange-300 outline-none focus:ring-2 focus:ring-orange-500"
-                         />
-                       </td>
-                     </tr>
-                   ))}
-                 </tbody>
+                    {batchItems.map((item, idx) => (
+                      <tr key={item.room_id} className="hover:bg-white/5">
+                        <td className="py-3 px-4 font-black text-white text-sm">
+                          ห้อง {item.room_number}
+                        </td>
+                        <td className="py-3 px-4 text-center font-mono text-white/60">
+                          {item.water_prev.toFixed(2)}
+                        </td>
+                        <td className="py-3 px-4 text-center">
+                          <div className="inline-flex items-center gap-1.5 justify-center">
+                            <input 
+                              type="number" 
+                              step="0.01" 
+                              placeholder={`${item.water_prev}`} 
+                              value={item.water_curr}
+                              onChange={e => {
+                                const val = e.target.value;
+                                setBatchItems(prev => {
+                                  const copy = [...prev];
+                                  copy[idx].water_curr = val;
+                                  return copy;
+                                });
+                              }}
+                              className="w-24 bg-[#1E293B] border border-blue-500/40 rounded-lg px-2 py-1.5 text-center font-mono font-bold text-blue-300 outline-none focus:ring-2 focus:ring-blue-500"
+                            />
+                            <button
+                              type="button"
+                              title="ถ่ายรูป/สแกนมิเตอร์น้ำ"
+                              onClick={() => setCameraModal({
+                                isOpen: true,
+                                roomNumber: item.room_number,
+                                roomId: item.room_id,
+                                meterType: 'Water',
+                                previousReading: item.water_prev,
+                                batchIndex: idx
+                              })}
+                              className={`p-1.5 rounded-lg border transition-all text-xs cursor-pointer ${
+                                item.water_photo 
+                                  ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40' 
+                                  : 'bg-white/5 hover:bg-blue-500/20 text-white/60 hover:text-blue-400 border-white/10'
+                              }`}
+                            >
+                              📸
+                            </button>
+                          </div>
+                        </td>
+                        <td className="py-3 px-4 text-center font-mono text-white/60">
+                          {item.elec_prev.toFixed(2)}
+                        </td>
+                        <td className="py-3 px-4 text-center">
+                          <div className="inline-flex items-center gap-1.5 justify-center">
+                            <input 
+                              type="number" 
+                              step="0.01" 
+                              placeholder={`${item.elec_prev}`} 
+                              value={item.elec_curr}
+                              onChange={e => {
+                                const val = e.target.value;
+                                setBatchItems(prev => {
+                                  const copy = [...prev];
+                                  copy[idx].elec_curr = val;
+                                  return copy;
+                                });
+                              }}
+                              className="w-24 bg-[#1E293B] border border-orange-500/40 rounded-lg px-2 py-1.5 text-center font-mono font-bold text-orange-300 outline-none focus:ring-2 focus:ring-orange-500"
+                            />
+                            <button
+                              type="button"
+                              title="ถ่ายรูป/สแกนมิเตอร์ไฟ"
+                              onClick={() => setCameraModal({
+                                isOpen: true,
+                                roomNumber: item.room_number,
+                                roomId: item.room_id,
+                                meterType: 'Electricity',
+                                previousReading: item.elec_prev,
+                                batchIndex: idx
+                              })}
+                              className={`p-1.5 rounded-lg border transition-all text-xs cursor-pointer ${
+                                item.elec_photo 
+                                  ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40' 
+                                  : 'bg-white/5 hover:bg-orange-500/20 text-white/60 hover:text-orange-400 border-white/10'
+                              }`}
+                            >
+                              📸
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
                </table>
              </div>
 
@@ -1045,6 +1134,19 @@ export default function MetersPage() {
            </div>
          </div>
        )}
-    </div>
+    
+        {/* AI & Camera Meter Reading Modal */}
+        {cameraModal && cameraModal.isOpen && (
+          <CameraMeterModal
+            isOpen={cameraModal.isOpen}
+            onClose={() => setCameraModal(null)}
+            roomNumber={cameraModal.roomNumber}
+            roomId={cameraModal.roomId}
+            meterType={cameraModal.meterType}
+            previousReading={cameraModal.previousReading}
+            onConfirm={handleCameraConfirm}
+          />
+        )}
+      </div>
   );
 }

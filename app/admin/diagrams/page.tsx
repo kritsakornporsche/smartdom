@@ -4,479 +4,19 @@ import { useState } from 'react';
 import AdminSidebar from '../components/AdminSidebar';
 import Link from 'next/link';
 
-interface DiagramItem {
-  id: string;
-  title: string;
-  badge: string;
-  category: string;
-  description: string;
-  actors: string[];
-  steps: { step: number; actor: string; action: string; target: string; note?: string }[];
-  mermaidCode: string;
-}
-
-interface UseCaseActorGroup {
-  actor: string;
-  roleDescription: string;
-  icon: string;
-  badgeColor: string;
-  useCases: { code: string; name: string; desc: string }[];
-}
-
-const useCaseGroups: UseCaseActorGroup[] = [
-  {
-    actor: 'ผู้เยี่ยมชมทั่วไป (Guest / Public User)',
-    roleDescription: 'บุคคลทั่วไป นิสิต หรือผู้สนใจเข้าพักที่ยังไม่ได้ทำสัญญาเช่า',
-    icon: '🌐',
-    badgeColor: 'bg-blue-100 text-blue-800 border-blue-200',
-    useCases: [
-      { code: 'UC01', name: 'ค้นหาและสำรวจหอพัก (Explore Dormitories & Rooms)', desc: 'ค้นหาตามทำเล ราคา สิ่งอำนวยความสะดวก พร้อมดูภาพห้องและพิกัดแผนที่' },
-      { code: 'UC02', name: 'จองห้องพักและจ่ายเงินมัดจำ (Book Room & Deposit)', desc: 'กรอกข้อมูลการจอง สแกนจ่ายเงินมัดจำผ่าน PromptPay QR และแนบสลิป' },
-      { code: 'UC03', name: 'เข้าสู่ระบบ / ลงทะเบียน (Authentication)', desc: 'สมัครสมาชิก หรือเข้าสู่ระบบด้วย Email หรือ Google Account' }
-    ]
-  },
-  {
-    actor: 'ผู้เช่า (Tenant)',
-    roleDescription: 'ผู้ที่ผ่านการทำสัญญาเช่าและพักอาศัยอยู่ในหอพัก',
-    icon: '🏠',
-    badgeColor: 'bg-emerald-100 text-emerald-800 border-emerald-200',
-    useCases: [
-      { code: 'UC04', name: 'ตรวจสอบข้อมูลห้องพักและสัญญา (View Room & Contract)', desc: 'ดูข้อมูลห้องพัก เลขสัญญา ระยะเวลาคงเหลือ และขอยื่นต่ออายุสัญญา' },
-      { code: 'UC05', name: 'ตรวจสอบและชำระค่าเช่า (View & Pay Rental Bills)', desc: 'เปิดดูบิลค่าเช่า ค่าน้ำ ค่าไฟ สแกนจ่ายผ่าน QR Code และแนบสลิปโอนเงิน' },
-      { code: 'UC06', name: 'ส่งเรื่องแจ้งซ่อม (Submit Maintenance Request)', desc: 'ส่งคำขอแจ้งซ่อมแซมสิ่งอำนวยความสะดวก ระบุอาการและแนบรูปภาพจุดชำรุด' },
-      { code: 'UC07', name: 'แชทสนทนากับหอพัก (Chat with Owner)', desc: 'ส่งข้อความและรูปภาพสื่อสารแบบเรียลไทม์กับเจ้าของหอพัก' },
-      { code: 'UC08', name: 'ดูประกาศข่าวสาร (View Announcements)', desc: 'รับการแจ้งเตือนและอ่านประกาศข่าวสาร กฎระเบียบ หรือแจ้งเตือนด่วนจากหอพัก' },
-      { code: 'UC09', name: 'แจ้งย้ายออก (Submit Move-out Request)', desc: 'ยื่นคำร้องแจ้งย้ายออกล่วงหน้า เพื่อนัดหมายตรวจสอบห้องและคืนเงินประกัน' }
-    ]
-  },
-  {
-    actor: 'เจ้าของหอพัก (Owner)',
-    roleDescription: 'เจ้าของหรือผู้จัดการหอพัก มีสิทธิ์จัดการระบบหอพักเต็มรูปแบบ',
-    icon: '🏢',
-    badgeColor: 'bg-purple-100 text-purple-800 border-purple-200',
-    useCases: [
-      { code: 'UC10', name: 'จัดการข้อมูลหอพักและห้องพัก (Manage Dormitory & Rooms)', desc: 'ตั้งค่ากฎระเบียบ ค่าน้ำ ค่าไฟ เพิ่ม/แก้ไข/ลบห้องพัก และกำหนดราคา' },
-      { code: 'UC11', name: 'จัดการรายการจองห้องพัก (Manage Bookings)', desc: 'ตรวจสอบสลิปเงินมัดจำ และกดอนุมัติ (Approve) หรือปฏิเสธคำขอจอง' },
-      { code: 'UC12', name: 'บันทึกสัญญากระดาษและสแกนแนบ (Record & Upload Signed Contract)', desc: 'เซ็นสัญญากระดาษฉบับจริง ถ่ายรูป/สแกนแนบเข้าระบบ ผูกสิทธิ์ลูกหอ และต่ออายุสัญญา' },
-      { code: 'UC13', name: 'จดมิเตอร์น้ำ-ไฟประจำงวด (Record Utility Meters)', desc: 'บันทึกเลขมิเตอร์น้ำ/ไฟประจำเดือน คำนวณยอดหน่วยและค่าใช้จ่ายอัตโนมัติ' },
-      { code: 'UC14', name: 'ออกบิลและตรวจสลิปค่าเช่า (Issue Bills & Verify Payments)', desc: 'ออกใบแจ้งหนี้ประจำเดือน ตรวจสอบสลิปโอนเงิน และกดยืนยันยอดออกใบเสร็จ' },
-      { code: 'UC15', name: 'จัดการบัญชีรายรับ-รายจ่าย (Manage Accounting)', desc: 'บันทึกค่าใช้จ่าย ซ่อมบำรุง และดูสรุปงบกำไรขาดทุนภาพรวมหอพัก' },
-      { code: 'UC16', name: 'มอบหมายงานซ่อม/แม่บ้าน (Assign Maintenance Tasks)', desc: 'รับเรื่องแจ้งซ่อมและมอบหมายงานให้ช่างซ่อมบำรุงหรือแม่บ้านประจำหอ' },
-      { code: 'UC17', name: 'ศูนย์ตอบแชทลูกหอ (Manage Chat Messenger)', desc: 'ตอบคำถามและสนทนากับลูกหอแต่ละห้องผ่านช่องทางแชทกลาง' },
-      { code: 'UC18', name: 'จัดการทีมงานผู้ดูแล (Manage Keepers)', desc: 'เพิ่มและกำหนดสิทธิ์การเข้าถึงหอพักของแม่บ้านและช่างซ่อมบำรุง' }
-    ]
-  },
-  {
-    actor: 'ผู้ดูแลหอพัก: ช่าง & แม่บ้าน (Keeper: Maid & Technician)',
-    roleDescription: 'ทีมงานฝ่ายปฏิบัติการประจำหอพัก (สามารถดูแลได้หลายหอพัก)',
-    icon: '🔧',
-    badgeColor: 'bg-amber-100 text-amber-800 border-amber-200',
-    useCases: [
-      { code: 'UC19', name: 'สลับหอพักที่ดูแล (Switch Assigned Dormitory)', desc: 'เลือกสลับดูงานตามหอพักที่ได้รับมอบหมาย (Multi-Dormitory Switcher)' },
-      { code: 'UC20', name: 'จัดการงานทำความสะอาด (Handle Housekeeping Tasks)', desc: 'ดูรายการห้องที่ต้องทำความสะอาด อัปเดตสถานะการทำงาน และแนบรูปความเรียบร้อย' },
-      { code: 'UC21', name: 'รับงานและปิดใบแจ้งซ่อม (Handle Maintenance Tickets)', desc: 'ตรวจสอบอาการ ติดต่อผู้เช่า ดำเนินการซ่อม บันทึกค่าอะไหล่ และอัปเดตงานเสร็จสิ้น' }
-    ]
-  },
-  {
-    actor: 'ผู้ดูแลระบบส่วนกลาง (Platform Admin)',
-    roleDescription: 'ผู้ดูแลภาพรวมระบบ แพลตฟอร์มหอพักหน้ามหาวิทยาลัยพะเยา',
-    icon: '🛡️',
-    badgeColor: 'bg-rose-100 text-rose-800 border-rose-200',
-    useCases: [
-      { code: 'UC22', name: 'ดูสถิติภาพรวมระบบ (View Platform Dashboard)', desc: 'ตรวจสอบจำนวนหอพัก ห้องพัก ยอดผู้ใช้งานรวม และสถานะ Server' },
-      { code: 'UC23', name: 'จัดการผู้ใช้งานและสิทธิ์ (Manage Users & Roles)', desc: 'ตรวจสอบรายชื่อผู้ใช้งาน ระงับการใช้งาน หรือปรับเปลี่ยนบทบาท' },
-      { code: 'UC24', name: 'ตรวจสอบหอพักส่วนกลาง (Audit Dormitories & Rooms)', desc: 'ตรวจสอบมาตรฐานหอพักและห้องพักที่เปิดให้บริการในแพลตฟอร์ม' },
-      { code: 'UC25', name: 'ประกาศข่าวสารส่วนกลาง (Publish Platform Announcements)', desc: 'สร้างและส่งประกาศข่าวสารระดับมหาวิทยาลัยถึงผู้ใช้ทุกกลุ่ม' },
-      { code: 'UC26', name: 'ดูแผนภาพสถาปัตยกรรมระบบ (View System Architecture & Diagrams)', desc: 'ตรวจสอบ Use Case และ Sequence Diagrams สำหรับการพัฒนาและวิจัย' }
-    ]
-  }
-];
-
-const useCaseMermaidCode = `graph LR
-    %% Actors
-    Guest["👤 ผู้เยี่ยมชม (Guest)"]
-    Tenant["🏠 ผู้เช่า (Tenant)"]
-    Owner["🏢 เจ้าของหอ (Owner)"]
-    Keeper["🔧 ช่าง / 🧹 แม่บ้าน (Keeper)"]
-    Admin["🛡️ แอดมินระบบ (Admin)"]
-
-    %% Use cases - Public / Explore
-    subgraph Explore_Booking ["ระบบสำรวจและจองห้องพัก"]
-        UC01((ค้นหาและสำรวจหอพัก))
-        UC02((จองห้องพักและจ่ายมัดจำ))
-        UC03((เข้าสู่ระบบ / ลงทะเบียน))
-    end
-
-    %% Use cases - Tenant
-    subgraph Tenant_Portal ["ระบบสำหรับผู้เช่า"]
-        UC04((ตรวจสอบห้องพักและสัญญา))
-        UC05((ตรวจสอบและชำระค่าเช่า))
-        UC06((ส่งเรื่องแจ้งซ่อม))
-        UC07((แชทสนทนากับหอพัก))
-        UC08((ดูประกาศข่าวสาร))
-        UC09((แจ้งย้ายออก))
-    end
-
-    %% Use cases - Owner
-    subgraph Owner_Portal ["ระบบบริหารจัดการหอพัก"]
-        UC10((จัดการหอพักและห้องพัก))
-        UC11((อนุมัติการจองห้องพัก))
-        UC12((บันทึกสัญญากระดาษและสแกนแนบ))
-        UC13((จดมิเตอร์น้ำ-ไฟ))
-        UC14((ออกบิลและตรวจสลิปค่าเช่า))
-        UC15((จัดการบัญชีรายรับ-จ่าย))
-        UC16((มอบหมายงานซ่อม/แม่บ้าน))
-        UC17((ศูนย์ตอบแชทลูกหอ))
-        UC18((จัดการสิทธิ์แม่บ้าน/ช่าง))
-    end
-
-    %% Use cases - Keeper
-    subgraph Keeper_Portal ["ระบบปฏิบัติงานผู้ดูแล"]
-        UC19((สลับหอพักที่ดูแล))
-        UC20((จัดการงานทำความสะอาด))
-        UC21((รับงานและปิดใบแจ้งซ่อม))
-    end
-
-    %% Use cases - Admin
-    subgraph Admin_Portal ["ระบบแอดมินส่วนกลาง"]
-        UC22((ดูสถิติภาพรวมระบบ))
-        UC23((จัดการผู้ใช้งานและสิทธิ์))
-        UC24((ตรวจสอบหอพักส่วนกลาง))
-        UC25((ประกาศข่าวสารส่วนกลาง))
-        UC26((ดูแผนภาพระบบ Diagrams))
-    end
-
-    %% Relationships - Guest
-    Guest --> UC01
-    Guest --> UC02
-    Guest --> UC03
-
-    %% Relationships - Tenant
-    Tenant --> UC04
-    Tenant --> UC05
-    Tenant --> UC06
-    Tenant --> UC07
-    Tenant --> UC08
-    Tenant --> UC09
-
-    %% Relationships - Owner
-    Owner --> UC10
-    Owner --> UC11
-    Owner --> UC12
-    Owner --> UC13
-    Owner --> UC14
-    Owner --> UC15
-    Owner --> UC16
-    Owner --> UC17
-    Owner --> UC18
-
-    %% Relationships - Keeper
-    Keeper --> UC19
-    Keeper --> UC20
-    Keeper --> UC21
-
-    %% Relationships - Admin
-    Admin --> UC22
-    Admin --> UC23
-    Admin --> UC24
-    Admin --> UC25
-    Admin --> UC26`;
-
-const diagrams: DiagramItem[] = [
-  {
-    id: 'contract',
-    title: '1. การทำสัญญาเช่า (Physical Sign & Digital Upload)',
-    badge: 'Owner / Tenant',
-    category: 'การจัดการสัญญา',
-    description: 'กระบวนการทำสัญญากระดาษฉบับจริงระหว่างเจ้าของหอพักและผู้เช่า จากนั้นนำเข้าสู่ระบบโดยการถ่ายภาพ/สแกนเพื่อเปิดสิทธิ์และผูกห้องพักในระบบ SmartDom',
-    actors: ['ผู้เช่า (Tenant)', 'เจ้าของหอพัก (Owner)', 'ระบบ SmartDom Frontend', 'ระบบ Backend & DB'],
-    steps: [
-      { step: 1, actor: 'Tenant & Owner', action: 'เซ็นเอกสารสัญญากระดาษฉบับจริง (Physical Contract) ร่วมกัน', target: 'Physical Document', note: 'ข้อตกลง ค่าเช่า เงินประกัน และกฎระเบียบ' },
-      { step: 2, actor: 'Owner', action: 'ถ่ายรูปหรือสแกนเอกสารสัญญาฉบับลงลายมือชื่อ', target: 'Image / PDF File' },
-      { step: 3, actor: 'Owner', action: 'เข้าเมนู /owner/contracts แล้วกรอกข้อมูลห้องพัก, ข้อมูลผู้เช่า, วันที่สัญญา', target: 'Web Frontend' },
-      { step: 4, actor: 'Owner', action: 'แนบไฟล์รูปถ่ายสัญญาฉบับจริงเข้าสู่ฟอร์มและกดยืนยัน', target: 'Web Frontend' },
-      { step: 5, actor: 'Frontend', action: 'ส่งคำขอ POST /api/owner/contracts พร้อมข้อมูลและไฟล์', target: 'Backend Server' },
-      { step: 6, actor: 'Backend', action: 'บันทึกสัญญา (contracts), อัปเดตสถานะห้อง (Occupied), ผูกสิทธิ์ผู้เช่า (tenants)', target: 'Database' },
-      { step: 7, actor: 'Backend', action: 'ส่งผลการสร้างสัญญาสำเร็จ', target: 'Frontend' },
-      { step: 8, actor: 'Tenant', action: 'ล็อกอินเข้าสู่ระบบ ดูข้อมูลห้องพักและประวัติสัญญาของตนเองได้ทันที', target: 'Tenant Portal' },
-    ],
-    mermaidCode: `sequenceDiagram
-    autonumber
-    actor Tenant as 👤 ผู้เช่า (Tenant)
-    actor Owner as 🏢 เจ้าของหอ (Owner)
-    participant Front as 💻 SmartDom Web
-    participant Back as ⚙️ Backend API
-    participant DB as 🗄️ Database
-
-    Note over Tenant, Owner: ขั้นตอนที่ 1: เซ็นสัญญาฉบับจริง
-    Tenant->>Owner: พบปะและเซ็นสัญญากระดาษฉบับจริง
-    Owner->>Owner: ถ่ายภาพ / สแกนสัญญาเป็นไฟล์รูป/PDF
-
-    Note over Owner, DB: ขั้นตอนที่ 2: บันทึกเข้าระบบ
-    Owner->>Front: เปิดหน้า /owner/contracts กด "สร้างสัญญาใหม่"
-    Owner->>Front: ระบุห้องพัก, วันที่, เงินประกัน และแนบไฟล์สัญญา
-    Owner->>Front: กดบันทึกสัญญา
-    Front->>Back: POST /api/owner/contracts
-    Back->>DB: บันทึกข้อมูลสัญญา (contracts table)
-    Back->>DB: อัปเดตสถานะห้องเป็น Occupied (rooms table)
-    Back->>DB: อัปเดต/สร้างข้อมูลผู้เช่าและผูกห้องพัก (tenants table)
-    DB-->>Back: สำเร็จ
-    Back-->>Front: { success: true, contractId }
-    Front-->>Owner: แสดงข้อความ "บันทึกสัญญาและตั้งสิทธิ์เรียบร้อย"
-    
-    Note over Tenant, DB: ขั้นตอนที่ 3: ผู้เช่าเข้าใช้งาน
-    Tenant->>Front: เข้าใช้งาน /tenant ด้วยบัญชีตนเอง
-    Front->>Back: GET /api/tenant/info
-    Back->>DB: ดึงข้อมูลห้องพักและสัญญา
-    DB-->>Back: คืนข้อมูลห้องพัก
-    Back-->>Front: ข้อมูลห้องพักและสถานะสัญญา
-    Front-->>Tenant: แสดงห้องพักพร้อมใช้งานและบิลค่าเช่า`
-  },
-  {
-    id: 'booking',
-    title: '2. การจองห้องพัก & ชำระเงินมัดจำ (Room Booking & Approval)',
-    badge: 'Public / Tenant / Owner',
-    category: 'การจองห้องพัก',
-    description: 'ขั้นตอนตั้งแต่ผู้เช่าสำรวจหอพัก เลือกห้อง ส่งคำขอจอง ชำระเงินมัดจำผ่าน QR Code จนถึงเจ้าของหอพักตรวจสอบและอนุมัติการจอง',
-    actors: ['ผู้สนใจเช่า (Guest/Tenant)', 'ระบบ SmartDom Frontend', 'ระบบชำระเงิน PromptPay QR', 'เจ้าของหอพัก (Owner)'],
-    steps: [
-      { step: 1, actor: 'Guest/Tenant', action: 'ค้นหาหอพักในหน้า /explore และเลือกดูรายละเอียดห้อง', target: 'Web Frontend' },
-      { step: 2, actor: 'Guest/Tenant', action: 'กด "จองห้องพัก" พร้อมกรอกข้อมูลติดต่อและระยะเวลาเข้าพัก', target: 'Web Frontend' },
-      { step: 3, actor: 'Frontend', action: 'สร้างคำขอจอง POST /api/booking', target: 'Backend Server' },
-      { step: 4, actor: 'Backend', action: 'สร้างรายการจองสถานะ Pending Deposit และสร้าง QR Code PromptPay', target: 'Database' },
-      { step: 5, actor: 'Guest/Tenant', action: 'สแกน QR Code ชำระเงินมัดจำและแนบหลักฐานสลิป', target: 'Payment Gateway' },
-      { step: 6, actor: 'Owner', action: 'ได้รับการแจ้งเตือนและเข้าดูรายการจองที่ /owner/bookings', target: 'Owner Portal' },
-      { step: 7, actor: 'Owner', action: 'ตรวจสอบสลิปและกดยืนยันอนุมัติการจอง (Approve)', target: 'Backend Server' },
-      { step: 8, actor: 'Backend', action: 'ปรับสถานะห้องเป็น Booked และส่งข้อความยืนยันให้ผู้เช่า', target: 'Database' }
-    ],
-    mermaidCode: `sequenceDiagram
-    autonumber
-    actor User as 👤 ผู้เช่า / ผู้ใช้งาน
-    participant Front as 💻 SmartDom Web
-    participant Back as ⚙️ Backend API
-    participant DB as 🗄️ Database
-    actor Owner as 🏢 เจ้าของหอ (Owner)
-
-    User->>Front: เลือกห้องพักที่สนใจ (/explore/room/[id])
-    User->>Front: กรอกข้อมูลและกดยืนยันการจอง
-    Front->>Back: POST /api/booking/create
-    Back->>DB: บันทึกการจอง (bookings, status: pending)
-    Back-->>Front: รายละเอียดการจอง + PromptPay QR
-    User->>Front: สแกนจ่ายเงินมัดจำ + แนบสลิปโอนเงิน
-    Front->>Back: POST /api/booking/upload-slip
-    Back->>DB: บันทึกสลิป (status: waiting_approval)
-    Back-->>Owner: ส่ง Notification แจ้งมีรายการจองใหม่
-    Owner->>Front: เปิดหน้า /owner/bookings ตรวจสอบสลิป
-    Owner->>Front: กด "อนุมัติการจอง" (Approve)
-    Front->>Back: POST /api/owner/bookings/approve
-    Back->>DB: อัปเดตสถานะการจอง = Confirmed & ห้อง = Booked
-    DB-->>Back: สำเร็จ
-    Back-->>Front: แจ้งผลอนุมัติ
-    Front-->>User: แสดงสถานะการจองสำเร็จ พร้อมนัดหมายวันทำสัญญา`
-  },
-  {
-    id: 'meter_billing',
-    title: '3. จดมิเตอร์น้ำ-ไฟ & ออกบิลค่าเช่า (Meter Reading & Invoice)',
-    badge: 'Owner / Keeper / Tenant',
-    category: 'มิเตอร์และการเงิน',
-    description: 'การบันทึกตัวเลขมิเตอร์น้ำ-ไฟประจำงวด คำนวณยอดการใช้พลังงาน และรวมยอดเป็นใบแจ้งหนี้ส่งให้ผู้เช่าแต่ละห้อง',
-    actors: ['เจ้าของ/ผู้ดูแล (Owner/Keeper)', 'ระบบ SmartDom Frontend', 'ระบบคำนวณบิล Backend', 'ผู้เช่า (Tenant)'],
-    steps: [
-      { step: 1, actor: 'Owner/Keeper', action: 'เดินจดเลขมิเตอร์น้ำ-ไฟ หรือบันทึกผ่าน /owner/meters', target: 'Mobile / Web' },
-      { step: 2, actor: 'Owner/Keeper', action: 'กรอกเลขมิเตอร์น้ำ/ไฟปัจจุบันของแต่ละห้อง', target: 'Frontend' },
-      { step: 3, actor: 'Frontend', action: 'ส่งข้อมูล POST /api/owner/meters/record', target: 'Backend Server' },
-      { step: 4, actor: 'Backend', action: 'คำนวณจำนวนหน่วยที่ใช้ (Current - Previous) x อัตราค่าน้ำค่าไฟ', target: 'Backend Engine' },
-      { step: 5, actor: 'Owner', action: 'ตรวจสอบยอดรวมค่าเช่า + ค่าน้ำ + ค่าไฟ แล้วกด "ออกบิลประจำเดือน"', target: 'Owner Portal' },
-      { step: 6, actor: 'Backend', action: 'สร้างใบแจ้งหนี้ (invoices / bills) สถานะ Unpaid', target: 'Database' },
-      { step: 7, actor: 'Tenant', action: 'ได้รับการแจ้งเตือนบิลใหม่ และเปิดดูรายละเอียดบิลใน /tenant/billing', target: 'Tenant Portal' }
-    ],
-    mermaidCode: `sequenceDiagram
-    autonumber
-    actor Staff as 🏢 เจ้าของหอ / ผู้ดูแล
-    participant Front as 💻 SmartDom Web
-    participant Back as ⚙️ Backend API
-    participant DB as 🗄️ Database
-    actor Tenant as 👤 ผู้เช่า (Tenant)
-
-    Staff->>Front: เข้าหน้า /owner/meters (จดมิเตอร์)
-    Front->>Back: GET /api/owner/meters?month=YYYY-MM
-    Back->>DB: ดึงเลขมิเตอร์เดือนก่อนหน้า
-    DB-->>Back: คืนเลขมิเตอร์เดิม
-    Back-->>Front: แสดงแบบฟอร์มจดมิเตอร์
-    Staff->>Front: กรอกเลขมิเตอร์น้ำและไฟงวดปัจจุบัน
-    Front->>Back: POST /api/owner/meters/save
-    Back->>DB: บันทึกประวัติมิเตอร์ (meter_readings)
-    Staff->>Front: ไปที่หน้า /owner/billing กด "สร้างบิลประจำงวด"
-    Front->>Back: POST /api/owner/billing/batch
-    Back->>DB: รวม (ค่าเช่าห้อง + ค่าน้ำ + ค่าไฟ + ค่าบริการ)
-    Back->>DB: บันทึกใบแจ้งหนี้ (invoices, status: unpaid)
-    DB-->>Back: สำเร็จ
-    Back-->>Tenant: ส่ง Notification แจ้งเตือนบิลค่าเช่าใหม่
-    Tenant->>Front: เปิดหน้า /tenant/billing ตรวจสอบรายการบิล`
-  },
-  {
-    id: 'payment',
-    title: '4. การชำระค่าเช่า & ตรวจสอบสลิป (Payment & Slip Verification)',
-    badge: 'Tenant / Owner',
-    category: 'การชำระเงิน',
-    description: 'ผู้เช่าเปิดบิล สแกน QR Code PromptPay ชำระเงิน แนบสลิปโอนเงิน เจ้าของหอพักตรวจสอบสลิปและปรับสถานะเป็นชำระเงินแล้ว',
-    actors: ['ผู้เช่า (Tenant)', 'ระบบ SmartDom Frontend', 'ระบบ PromptPay', 'เจ้าของหอพัก (Owner)'],
-    steps: [
-      { step: 1, actor: 'Tenant', action: 'เปิดดูบิลค่าเช่าที่ยังไม่ได้ชำระในหน้า /tenant/billing', target: 'Tenant Portal' },
-      { step: 2, actor: 'Tenant', action: 'กดปุ่ม "ชำระเงิน" ระบบสร้าง QR Code พร้อมยอดเงินที่ถูกต้อง', target: 'Frontend' },
-      { step: 3, actor: 'Tenant', action: 'เปิดแอปธนาคารสแกนจ่ายและบันทึกสลิป', target: 'Mobile Banking' },
-      { step: 4, actor: 'Tenant', action: 'อัปโหลดสลิปหลักฐานโอนเงินเข้าสู่ระบบ', target: 'Frontend' },
-      { step: 5, actor: 'Frontend', action: 'ส่งคำขอ POST /api/tenant/billing/payment พร้อมแนบสลิป', target: 'Backend Server' },
-      { step: 6, actor: 'Backend', action: 'ปรับสถานะบิลเป็น Pending Verification (รอตรวจสอบ)', target: 'Database' },
-      { step: 7, actor: 'Owner', action: 'ตรวจสอบรายการชำระเงินใน /owner/billing และตรวจความถูกต้องของสลิป', target: 'Owner Portal' },
-      { step: 8, actor: 'Owner', action: 'กดยืนยันชำระเงิน (Confirm Payment) ระบบออกใบเสร็จรับเงิน', target: 'Database' }
-    ],
-    mermaidCode: `sequenceDiagram
-    autonumber
-    actor Tenant as 👤 ผู้เช่า (Tenant)
-    participant Front as 💻 SmartDom Web
-    participant Back as ⚙️ Backend API
-    participant DB as 🗄️ Database
-    actor Owner as 🏢 เจ้าของหอ (Owner)
-
-    Tenant->>Front: เข้าสู่ /tenant/billing เลือกบิลที่ยังไม่จ่าย
-    Front->>Back: GET /api/tenant/billing/qr?invoiceId=...
-    Back-->>Front: ส่ง QR Code PromptPay ตามยอดจริง
-    Tenant->>Tenant: สแกนจ่ายเงินผ่าน Mobile Banking
-    Tenant->>Front: อัปโหลดรูปสลิปหลักฐานการโอนเงิน
-    Front->>Back: POST /api/tenant/billing/payment
-    Back->>DB: อัปเดตสถานะบิล = Pending Review + แนบรูปสลิป
-    DB-->>Back: สำเร็จ
-    Back-->>Owner: ส่งแจ้งเตือนมีสลิปใหม่รอตรวจสอบ
-    Owner->>Front: เข้าหน้า /owner/billing กดดูสลิป
-    Owner->>Front: กดยืนยัน "รับยอดเงินเรียบร้อย"
-    Front->>Back: POST /api/owner/billing/[id]/verify
-    Back->>DB: อัปเดตสถานะบิล = Paid + ออก Receipt No.
-    DB-->>Back: สำเร็จ
-    Back-->>Tenant: ส่งแจ้งเตือน "ชำระเงินสำเร็จแล้ว"`
-  },
-  {
-    id: 'maintenance',
-    title: '5. แจ้งซ่อมและจ่ายงานช่าง/แม่บ้าน (Maintenance & Dispatch)',
-    badge: 'Tenant / Owner / Keeper',
-    category: 'การบริการ & ซ่อมบำรุง',
-    description: 'ผู้เช่าแจ้งปัญหาในห้องพัก เจ้าของหอพักรับเรื่องและมอบหมายงานให้ช่างหรือแม่บ้าน จากนั้นทีมผู้ดูแลอัปเดตสถานะการแก้ไขจนเสร็จสิ้น',
-    actors: ['ผู้เช่า (Tenant)', 'เจ้าของหอพัก (Owner)', 'ช่างซ่อม/แม่บ้าน (Keeper)', 'ระบบฐานข้อมูล SmartDom'],
-    steps: [
-      { step: 1, actor: 'Tenant', action: 'เข้าเมนู /tenant/maintenance กรอกหัวข้อปัญหา ระบุห้อง และแนบรูปถ่าย', target: 'Tenant Portal' },
-      { step: 2, actor: 'Frontend', action: 'ส่งคำขอแจ้งซ่อม POST /api/tenant/maintenance', target: 'Backend Server' },
-      { step: 3, actor: 'Backend', action: 'บันทึกคำขอแจ้งซ่อมสถานะ Pending', target: 'Database' },
-      { step: 4, actor: 'Owner', action: 'เปิดดูคำขอที่ /owner/maintenance แล้วเลือกมอบหมายงาน (ช่าง หรือ แม่บ้าน)', target: 'Owner Portal' },
-      { step: 5, actor: 'Backend', action: 'อัปเดตสถานะ Assigned และแจ้งเตือนไปยัง Keeper Portal', target: 'Database' },
-      { step: 6, actor: 'Keeper', action: 'เปิดดูรายการงานใน /keeper/technician หรือ /keeper/maid', target: 'Keeper Portal' },
-      { step: 7, actor: 'Keeper', action: 'เข้าดำเนินการแก้ไข และอัปเดตสถานะเป็น "เสร็จสิ้น" พร้อมแนบรูปหลังซ่อม', target: 'Keeper Portal' },
-      { step: 8, actor: 'Tenant', action: 'ได้รับการแจ้งเตือนงานเสร็จสิ้น และสามารถให้คะแนนความพึงพอใจได้', target: 'Tenant Portal' }
-    ],
-    mermaidCode: `sequenceDiagram
-    autonumber
-    actor Tenant as 👤 ผู้เช่า (Tenant)
-    participant Front as 💻 SmartDom Web
-    participant Back as ⚙️ Backend API
-    participant DB as 🗄️ Database
-    actor Owner as 🏢 เจ้าของหอ (Owner)
-    actor Keeper as 🔧 ช่าง / 🧹 แม่บ้าน
-
-    Tenant->>Front: เข้าหน้าแจ้งซ่อม /tenant/maintenance
-    Tenant->>Front: ระบุอาการ + แนบภาพถ่ายจุดชำรุด
-    Front->>Back: POST /api/maintenance/create
-    Back->>DB: บันทึกใบแจ้งซ่อม (status: pending)
-    Back-->>Owner: ส่งแจ้งเตือนคำขอแจ้งซ่อมใหม่
-    Owner->>Front: เข้าหน้า /owner/maintenance ตรวจสอบเรื่อง
-    Owner->>Front: เลือกมอบหมายให้ช่าง/แม่บ้านประจำหอ
-    Front->>Back: POST /api/owner/maintenance/assign
-    Back->>DB: อัปเดตสถานะ = Assigned + keeper_id
-    Back-->>Keeper: ส่งงานเข้า Keeper Portal
-    Keeper->>Front: ล็อกอินเข้า /keeper (ดูงานที่ได้รับมอบหมาย)
-    Keeper->>Keeper: เข้าดำเนินการซ่อมแซมหน้างาน
-    Keeper->>Front: กดบันทึก "ดำเนินการเสร็จสิ้น" + แนบภาพหลังซ่อม
-    Front->>Back: POST /api/keeper/maintenance/complete
-    Back->>DB: อัปเดตสถานะ = Completed
-    Back-->>Tenant: ส่งแจ้งเตือนงานซ่อมเสร็จสิ้น
-    Tenant-->>Front: ตรวจสอบห้องพักและรับทราบผล`
-  },
-  {
-    id: 'chat',
-    title: '6. ระบบสนทนาสื่อสาร (Live Chat Messaging)',
-    badge: 'Tenant / Owner',
-    category: 'การสื่อสาร',
-    description: 'การรับส่งข้อความ Real-time ระหว่างผู้เช่าแต่ละห้องกับเจ้าของหอพัก เพื่อสอบถามข้อมูล ร้องเรียน หรือประสานงานด่วน',
-    actors: ['ผู้เช่า (Tenant)', 'ระบบ Chat Frontend', 'Message API & Socket/Polling', 'เจ้าของหอพัก (Owner)'],
-    steps: [
-      { step: 1, actor: 'Tenant', action: 'เปิดหน้าต่างแชทใน /tenant/chat หรือ Chat Widget', target: 'Tenant Portal' },
-      { step: 2, actor: 'Tenant', action: 'พิมพ์ข้อความหรือส่งรูปภาพสอบถาม', target: 'Frontend' },
-      { step: 3, actor: 'Frontend', action: 'ส่งข้อความ POST /api/chat/messages', target: 'Backend Server' },
-      { step: 4, actor: 'Backend', action: 'บันทึกข้อความ (chat_messages table) พร้อมห้องและเวลา', target: 'Database' },
-      { step: 5, actor: 'Owner', action: 'หน้า /owner/chat ได้รับข้อความใหม่และขึ้น Badge แจ้งเตือน', target: 'Owner Portal' },
-      { step: 6, actor: 'Owner', action: 'พิมพ์ข้อความตอบกลับผู้เช่า', target: 'Owner Portal' },
-      { step: 7, actor: 'Tenant', action: 'ได้รับข้อความตอบกลับในหน้าต่างแชททันที', target: 'Tenant Portal' }
-    ],
-    mermaidCode: `sequenceDiagram
-    autonumber
-    actor Tenant as 👤 ผู้เช่า (Tenant)
-    participant TFront as 💻 Tenant Chat
-    participant API as ⚙️ Chat API
-    participant DB as 🗄️ Database
-    participant OFront as 💻 Owner Chat
-    actor Owner as 🏢 เจ้าของหอ (Owner)
-
-    Tenant->>TFront: เปิดห้องสนทนา พิมพ์ข้อความ "สอบถามค่าน้ำครับ"
-    TFront->>API: POST /api/chat/messages { sender: tenant, message }
-    API->>DB: บันทึกข้อความลง chat_messages
-    DB-->>API: บันทึกสำเร็จ
-    API-->>TFront: อัปเดตข้อความในฝั่งผู้เช่า
-    API-->>OFront: ส่งสัญญาณข้อความใหม่ (Notification / Polling)
-    OFront-->>Owner: แสดง Badge แจ้งเตือนข้อความเข้า
-    Owner->>OFront: เปิดหน้า /owner/chat และพิมพ์ข้อความตอบกลับ
-    OFront->>API: POST /api/chat/messages { sender: owner, message }
-    API->>DB: บันทึกข้อความตอบกลับ
-    API-->>TFront: แสดงข้อความตอบกลับของเจ้าของหอพัก`
-  },
-  {
-    id: 'dorm_mgmt',
-    title: '7. จัดการหอพักและห้องพัก (Dorm & Room Management)',
-    badge: 'Owner / Admin',
-    category: 'การบริหารจัดการ',
-    description: 'การลงทะเบียนหอพัก การเพิ่มห้องพัก กำหนดราคา อุปกรณ์สิ่งอำนวยความสะดวก และการตั้งค่าอัตราค่าน้ำค่าไฟ',
-    actors: ['เจ้าของหอพัก (Owner)', 'ระบบ SmartDom Frontend', 'Backend API', 'Admin ผู้ดูแลระบบ'],
-    steps: [
-      { step: 1, actor: 'Owner', action: 'เข้าสู่หน้า /owner/settings เพื่อกรอกข้อมูลหอพักและค่าน้ำค่าไฟ', target: 'Owner Portal' },
-      { step: 2, actor: 'Owner', action: 'ไปที่หน้า /owner/rooms เพื่อเพิ่มห้องพัก ระบุชั้น ประเภทห้อง ราคา', target: 'Owner Portal' },
-      { step: 3, actor: 'Frontend', action: 'ส่งข้อมูล POST /api/rooms บันทึกห้องพัก', target: 'Backend Server' },
-      { step: 4, actor: 'Backend', action: 'บันทึกข้อมูลห้องพักลงฐานข้อมูล (rooms)', target: 'Database' },
-      { step: 5, actor: 'Admin', action: 'ตรวจสอบความถูกต้องของข้อมูลหอพักในหน้า /admin/rooms', target: 'Admin Portal' },
-      { step: 6, actor: 'Public User', action: 'ห้องพักที่เปิดให้เช่าจะไปปรากฏในหน้าสำรวจหอพัก /explore ทันที', target: 'Public Explore' }
-    ],
-    mermaidCode: `sequenceDiagram
-    autonumber
-    actor Owner as 🏢 เจ้าของหอพัก (Owner)
-    participant Front as 💻 SmartDom Web
-    participant Back as ⚙️ Backend API
-    participant DB as 🗄️ Database
-    actor Admin as 🛡️ ผู้ดูแลระบบ (Admin)
-    actor Public as 🌐 ผู้ใช้งานทั่วไป (Public)
-
-    Owner->>Front: เปิดหน้า /owner/rooms แล้วกด "เพิ่มห้องพัก"
-    Owner->>Front: กรอกหมายเลขห้อง, ชั้น, ขนาด, ค่าเช่า, เครื่องอำนวยความสะดวก
-    Front->>Back: POST /api/rooms
-    Back->>DB: บันทึกห้องพักใหม่ (rooms table, status: Available)
-    DB-->>Back: สำเร็จ
-    Back-->>Front: คืนผลลัพธ์สำเร็จ
-    Admin->>Front: เข้าตรวจสอบที่ /admin/rooms ดูสถิติห้องพักภาพรวม
-    Public->>Front: เข้าหน้า /explore ค้นหาหอพัก
-    Front->>Back: GET /api/explore/rooms
-    Back->>DB: ดึงรายการห้องที่มีสถานะ Available
-    DB-->>Back: ส่งรายการห้องว่าง
-    Back-->>Front: แสดงห้องพักใหม่ให้นิสิต/ผู้เช่าเข้าชมและจองได้ทันที`
-  }
-];
+import {
+  DiagramItem,
+  UseCaseActorGroup,
+  useCaseGroups,
+  useCaseDiagramMermaid as useCaseMermaidCode,
+  diagrams,
+  erDiagramMermaid,
+  dbTablesData
+} from '@/lib/diagramsData';
+import MermaidRenderer from '@/app/components/MermaidRenderer';
 
 export default function AdminDiagramsPage() {
-  const [mainTab, setMainTab] = useState<'usecase' | 'sequence'>('usecase');
+  const [mainTab, setMainTab] = useState<'usecase' | 'sequence' | 'erdiagram'>('usecase');
   const [selectedId, setSelectedId] = useState<string>('contract');
   const [viewMode, setViewMode] = useState<'both' | 'diagram' | 'steps'>('both');
 
@@ -528,6 +68,17 @@ export default function AdminDiagramsPage() {
             >
               <span>⚡</span>
               <span>Sequence Diagrams</span>
+            </button>
+            <button
+              onClick={() => setMainTab('erdiagram')}
+              className={`px-4 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                mainTab === 'erdiagram'
+                  ? 'bg-primary text-white shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              <span>🗄️</span>
+              <span>ER Diagram</span>
             </button>
           </div>
         </header>
@@ -755,6 +306,11 @@ export default function AdminDiagramsPage() {
                         </button>
                       </div>
 
+                      <MermaidRenderer
+                        id={currentDiagram.id}
+                        chart={currentDiagram.mermaidCode}
+                      />
+
                       <div className="flex-1 bg-[#0F172A] rounded-2xl p-5 text-emerald-400 font-mono text-xs overflow-x-auto border border-white/10 shadow-inner">
                         <pre className="whitespace-pre">{currentDiagram.mermaidCode}</pre>
                       </div>
@@ -772,6 +328,116 @@ export default function AdminDiagramsPage() {
 
                 </div>
 
+              </div>
+            </div>
+          )}
+
+          {/* ══════════════════════ TAB 3: ER DIAGRAM ══════════════════════ */}
+          {mainTab === 'erdiagram' && (
+            <div className="space-y-6">
+              {/* Header Banner */}
+              <div className="bg-gradient-to-r from-slate-900 to-indigo-950 rounded-3xl p-6 md:p-8 text-white shadow-md border border-white/10">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/20 text-cyan-300 text-xs font-bold mb-3 border border-cyan-400/20">
+                  <span>🗄️ สถาปัตยกรรมฐานข้อมูล (Database Schema & ERD)</span>
+                </div>
+                <h2 className="text-2xl font-bold font-display">แผนภาพความสัมพันธ์ข้อมูล (Entity-Relationship Diagram)</h2>
+                <p className="text-xs md:text-sm text-white/70 mt-2 max-w-3xl leading-relaxed">
+                  โครงสร้างข้อมูลระบบ SmartDom ครอบคลุม 24 ตาราง จัดกลุ่มตาม 7 โดเมนหลัก พร้อมความสัมพันธ์แบบ 1:N และ 1:1 เชื่อมโยงระดับ Row-Level ด้วย <code className="text-cyan-300 bg-cyan-950/60 px-1.5 py-0.5 rounded font-mono">dorm_id</code> และ <code className="text-cyan-300 bg-cyan-950/60 px-1.5 py-0.5 rounded font-mono">user_id</code>
+                </p>
+                <div className="mt-5 flex gap-3 flex-wrap">
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(erDiagramMermaid);
+                      alert('คัดลอกโค้ด Mermaid ER Diagram เรียบร้อยแล้ว!');
+                    }}
+                    className="px-4 py-2 bg-white text-slate-900 font-bold text-xs rounded-xl shadow hover:bg-slate-100 transition-all flex items-center gap-2 cursor-pointer"
+                  >
+                    <span>📋 คัดลอกโค้ด Mermaid ERD</span>
+                  </button>
+                  <Link
+                    href="/researcher/er-diagram"
+                    className="px-4 py-2 bg-cyan-500 text-slate-950 font-bold text-xs rounded-xl shadow hover:bg-cyan-400 transition-all flex items-center gap-2"
+                  >
+                    <span>🔬 เปิดใน Researcher Hub พร้อม Data Dictionary</span>
+                  </Link>
+                </div>
+              </div>
+
+              {/* Interactive Mermaid Renderer */}
+              <div className="bg-white rounded-3xl p-6 border border-border shadow-sm space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
+                    <span>📊</span> แผนภาพ ER Diagram ฉบับเต็ม (24 ตาราง)
+                  </h3>
+                  <span className="text-xs text-muted-foreground">
+                    สามารถกดปุ่ม ⛶ ขยายเต็มจอ หรือ 💾 เซฟเป็น SVG ได้
+                  </span>
+                </div>
+
+                <MermaidRenderer id="admin-er-diagram" chart={erDiagramMermaid} />
+              </div>
+
+              {/* Data Dictionary Summary Table */}
+              <div className="bg-white rounded-3xl p-6 border border-border shadow-sm space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-base font-bold text-foreground">
+                      ตารางฐานข้อมูลทั้งหมดในระบบ (24 Tables Data Dictionary)
+                    </h3>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      รายชื่อตาราง หน้าที่ คีย์หลัก และความสัมพันธ์เชื่อมโยง
+                    </p>
+                  </div>
+                  <span className="text-xs font-bold text-primary px-3 py-1 bg-primary/10 rounded-xl">
+                    Total: {dbTablesData.length} Tables
+                  </span>
+                </div>
+
+                <div className="overflow-x-auto rounded-2xl border border-border">
+                  <table className="w-full text-left border-collapse text-xs">
+                    <thead>
+                      <tr className="border-b border-border bg-slate-50 text-muted-foreground font-bold">
+                        <th className="py-3 px-4 w-44">ชื่อตาราง</th>
+                        <th className="py-3 px-4 w-36">หมวดหมู่</th>
+                        <th className="py-3 px-4">หน้าที่และคำอธิบาย</th>
+                        <th className="py-3 px-4 w-24 text-center">PK</th>
+                        <th className="py-3 px-4 w-60">ตารางที่เชื่อมโยง</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-border">
+                      {dbTablesData.map((t) => (
+                        <tr key={t.name} className="hover:bg-slate-50 transition-colors">
+                          <td className="py-3 px-4 font-mono font-bold text-primary">
+                            {t.name}
+                          </td>
+                          <td className="py-3 px-4">
+                            <span className="px-2 py-0.5 rounded bg-slate-100 text-slate-700 text-[11px] font-semibold">
+                              {t.category}
+                            </span>
+                          </td>
+                          <td className="py-3 px-4 text-foreground/80 leading-relaxed">
+                            {t.description}
+                          </td>
+                          <td className="py-3 px-4 font-mono font-bold text-amber-600 text-center">
+                            {t.primaryKey}
+                          </td>
+                          <td className="py-3 px-4">
+                            <div className="flex flex-wrap gap-1">
+                              {t.relationships.map((rel, rIdx) => (
+                                <span
+                                  key={rIdx}
+                                  className="px-1.5 py-0.5 rounded bg-blue-50 border border-blue-100 text-blue-700 font-mono text-[10px]"
+                                >
+                                  {rel}
+                                </span>
+                              ))}
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
           )}

@@ -1,5 +1,7 @@
 'use client';
 
+import { useState } from 'react';
+import OwnerNavbar from './components/OwnerNavbar';
 import OwnerSidebar from './components/OwnerSidebar';
 import OwnerChatMessenger from './components/OwnerChatMessenger';
 
@@ -8,12 +10,23 @@ export default function OwnerLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
   return (
-    <div className="flex flex-col h-screen bg-background text-foreground">
-      <OwnerSidebar />
-      <div className="flex-1 flex flex-col overflow-hidden relative">
-        {children}
-        <OwnerChatMessenger />
+    <div className="flex flex-col h-screen w-screen bg-[#080F1E] text-slate-100 font-sans overflow-hidden">
+      {/* 1. Full-width Top Navbar */}
+      <OwnerNavbar onToggleMobileMenu={() => setMobileMenuOpen((prev) => !prev)} />
+
+      {/* 2. Below Navbar: Persistent Desktop Sidebar (w-64) + Drawer (Mobile) + Main Content Area */}
+      <div className="flex flex-1 overflow-hidden relative">
+        <OwnerSidebar
+          isOpen={mobileMenuOpen}
+          onClose={() => setMobileMenuOpen(false)}
+        />
+        <div className="flex-1 flex flex-col overflow-hidden relative bg-[#080F1E]">
+          {children}
+          <OwnerChatMessenger />
+        </div>
       </div>
     </div>
   );

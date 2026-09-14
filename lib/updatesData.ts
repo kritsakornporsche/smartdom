@@ -15,10 +15,58 @@ export interface DailyUpdate {
 
 export const SYSTEM_UPDATES: DailyUpdate[] = [
   {
+    date: '14 กันยายน 2026',
+    version: 'v2.6.0',
+    tagline: 'ระบบจดมิเตอร์อัจฉริยะด้วยกล้อง AI (Hybrid OCR), ชำระเงิน Dynamic PromptPay พร้อม Bank Deeplink (0% Fee) และเปิดใช้งาน SSL HTTPS Server',
+    isLatest: true,
+    tasks: [
+      {
+        id: '2026-09-14-1',
+        title: 'ระบบจดมิเตอร์น้ำ-ไฟอัจฉริยะด้วยกล้อง AI (Hybrid OCR)',
+        category: 'Feature',
+        details: [
+          'พัฒนาคอมโพเนนต์ CameraMeterModal รองรับการเปิดกล้องถ่ายภาพมิเตอร์น้ำและไฟฟ้า ทั้งแบบรายห้องเดี่ยวและตารางบันทึกด่วน (Batch Entry)',
+          'เชื่อมต่อระบบสแกนตัวเลขอัจฉริยะ Hybrid OCR ผสาน Gemini 1.5 Flash Vision และ Tesseract.js (ออฟไลน์ fallback)',
+          'ระบบตรวจสอบความสมเหตุสมผลของตัวเลข (Validation) แจ้งเตือนสีส้มทันทีหากเลขมิเตอร์น้อยกว่าเลขเดือนก่อนหน้า พร้อมบันทึกภาพถ่ายหลักฐาน (photo_url) ลงฐานข้อมูล'
+        ]
+      },
+      {
+        id: '2026-09-14-2',
+        title: 'ระบบชำระเงินอัจฉริยะ 0% Fee + Direct Bank App Launcher (Deeplink)',
+        category: 'Feature',
+        details: [
+          'ตัดระบบ SlipOK / ภาระค่าบริการรายสลิปออกอย่างสมบูรณ์ เพื่อความเหมาะสมสูงสุดสำหรับงานวิจัยและใช้งานจริง',
+          'สร้าง PromptPay Dynamic QR Code มาตรฐานสากล EMVCo ผูกตรงกับบัญชีเจ้าของหอพัก 100%',
+          'เพิ่มปุ่มลัดเปิดแอปธนาคารตรง (Deeplink) รองรับ K PLUS, SCB EASY, Krungthai NEXT, KMA, Bualuang mBanking และ ttb touch',
+          'รองรับการตรวจสอบและอนุมัติสลิป (Human-in-the-loop) แบบ 1-Click พร้อมระบบปฏิเสธและระบุเหตุผล'
+        ]
+      },
+      {
+        id: '2026-09-14-3',
+        title: 'ติดตั้งและตั้งค่าระบบความปลอดภัย SSL HTTPS สำหรับเซิร์ฟเวอร์ (Cloudflare Tunnel)',
+        category: 'Security',
+        details: [
+          'ติดตั้ง cloudflared บน Windows Server รันบริการผ่าน Windows Scheduled Task (SmartDomTunnel) ตลอด 24/7',
+          'ปลดล็อกข้อจำกัดของเบราว์เซอร์มือถือ (iOS Safari & Android Chrome) ให้สามารถเปิดกล้องสด (Live Viewfinder Stream) ได้อย่างปลอดภัย',
+          'เพิ่มประสิทธิภาพการรับส่งข้อมูลผ่านโปรโตคอล TLS 1.3 และ HTTP/2 - QUIC / HTTP/3 โดยไม่มีปัญหา Latency'
+        ]
+      },
+      {
+        id: '2026-09-14-4',
+        title: 'ปรับปรุงประสบการณ์การใช้งาน (UX) ฝั่งเจ้าของหอพัก และเพิ่มหน้าระบบสำหรับผู้วิจัย (Researcher)',
+        category: 'Design',
+        details: [
+          'ลดความซับซ้อนของเมนูและกล่องข้อมูลฝั่งเจ้าของหอพักให้กระชับ ชัดเจน และใช้งานง่ายขึ้น',
+          'เพิ่มหน้าแสดงโครงสร้างฐานข้อมูล ER Diagram และ Use Case Diagrams สถาปัตยกรรม 21 ตาราง สำหรับผู้วิจัยและผู้ดูแลระบบ (/researcher และ /admin/diagrams)'
+        ]
+      }
+    ]
+  },
+  {
     date: '12 กันยายน 2026',
     version: 'v2.5.0',
     tagline: 'ระบบแจ้งเตือนสลิปชำระเงินสำหรับเจ้าของหอพัก และปรับปรุงโครงสร้าง Single Database สู่ 21 ตาราง',
-    isLatest: true,
+    isLatest: false,
     tasks: [
       {
         id: '2026-09-12-1',

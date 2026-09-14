@@ -40,34 +40,48 @@ export default function SignInContent() {
     setError('');
 
     try {
-      const res = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+      // 1. Authenticate with NextAuth to create HTTP-only session cookie
+      const result = await signIn('credentials', {
+        redirect: false,
+        email: email.trim(),
+        password: password,
       });
-      const data = await res.json();
-      
-      if (!data.success) {
-        setError(data.message || 'อีเมลหรือรหัสผ่านไม่ถูกต้อง');
+
+      if (result?.error) {
+        setError('อีเมลหรือรหัสผ่านไม่ถูกต้อง');
         setLoading(false);
         return;
       }
 
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('userEmail', email.toLowerCase().trim());
-        if (data.user) {
-          localStorage.setItem('userRole', data.user.role || 'guest');
-          localStorage.setItem('userSubRole', data.user.sub_role || '');
-          localStorage.setItem('userName', data.user.name || '');
-          localStorage.setItem('userId', String(data.user.id || ''));
+      // 2. Also query /api/auth/login to get proper user metadata & redirect destination
+      let redirectUrl = '/explore';
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password }),
+        });
+        const data = await res.json();
+        if (data.success) {
+          redirectUrl = data.redirectUrl || '/explore';
+          if (typeof window !== 'undefined' && data.user) {
+            localStorage.setItem('userEmail', email.toLowerCase().trim());
+            localStorage.setItem('userRole', data.user.role || 'guest');
+            localStorage.setItem('userSubRole', data.user.sub_role || '');
+            localStorage.setItem('userName', data.user.name || '');
+            localStorage.setItem('userId', String(data.user.id || ''));
+          }
         }
+      } catch (err) {
+        console.warn('Fallback metadata fetch error:', err);
       }
 
-      const targetPath = callbackUrl || data.redirectUrl || '/explore';
+      const targetPath = callbackUrl || redirectUrl;
       if (typeof window !== 'undefined') {
         window.location.href = targetPath;
       }
     } catch (err: any) {
+      console.error(err);
       setError('เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์');
       setLoading(false);
     }

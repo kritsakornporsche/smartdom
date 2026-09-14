@@ -28,6 +28,7 @@ const filesToUpload = [
   'app/admin/components/AdminSidebar.tsx',
   'app/platform/page.tsx',
   'app/platform/components/PlatformSidebar.tsx',
+  'app/signin/SigninContent.tsx',
   'scripts/generate-version.js',
   'lib/version.json',
   'PROGRESS.md',

@@ -26,7 +26,8 @@ const filesToUpload = [
   'app/tenant/components/CancelBookingButton.tsx',
   'app/admin/diagrams/page.tsx',
   'app/admin/components/AdminSidebar.tsx',
-  'app/admin/page.tsx',
+  'app/platform/page.tsx',
+  'app/platform/components/PlatformSidebar.tsx',
   'scripts/generate-version.js',
   'lib/version.json',
   'PROGRESS.md',
@@ -91,23 +92,19 @@ conn.on('ready', () => {
       npm run build
       
       Write-Host ""
-      Write-Host "2. RESTARTING PM2 SERVICE..."
+      Write-Host "2. STARTING BACKGROUND 24/7 SERVICE (SmartDomServer)..."
       Write-Host "=========================================="
-      & $pm2 delete smartdom 2>&1 | Out-Null
-      & $pm2 start "node_modules\\next\\dist\\bin\\next" --name smartdom --cwd "C:\\kritsakorn\\smartdom" -- start -p 3000
-      & $pm2 save
+      Stop-ScheduledTask -TaskName "SmartDomServer" -ErrorAction SilentlyContinue | Out-Null
+      Start-Sleep -Seconds 1
+      Start-ScheduledTask -TaskName "SmartDomServer" -ErrorAction SilentlyContinue | Out-Null
       
       Write-Host ""
       Write-Host "3. WAITING 3 SECONDS FOR PROCESS TO BOOT..."
       Start-Sleep -Seconds 3
       
       Write-Host ""
-      Write-Host "4. PM2 PROCESS STATUS:"
-      & $pm2 list
-      
-      Write-Host ""
-      Write-Host "5. TCP PORT 3000 STATUS:"
-      Get-NetTCPConnection -LocalPort 3000 -ErrorAction SilentlyContinue | Format-Table LocalAddress, LocalPort, State, OwningProcess
+      Write-Host "4. TCP PORT 3000 STATUS:"
+      Get-NetTCPConnection -LocalPort 3000 -ErrorAction SilentlyContinue | Format-Table LocalAddress, LocalPort, State, OwningProcess -AutoSize
       
       Write-Host ""
       Write-Host "6. HEALTH CHECK (HTTP GET http://localhost:3000):"

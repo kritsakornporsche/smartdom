@@ -214,15 +214,15 @@ export default function PlatformDashboard() {
               </div>
               <span className="text-white/20 group-hover:text-violet-400 group-hover:translate-x-1 transition-all">→</span>
             </a>
-            <a href="/platform/accounting" className="bg-white/5 border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition-all group flex items-center justify-between">
+            <a href="/admin/diagrams" className="bg-white/5 border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition-all group flex items-center justify-between">
               <div className="flex items-center gap-4">
-                 <div className="w-10 h-10 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center text-xl">💰</div>
+                 <div className="w-10 h-10 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center text-xl">📊</div>
                  <div>
-                   <h3 className="text-white font-bold group-hover:text-amber-400 transition-colors">ระบบบัญชี</h3>
-                   <p className="text-white/50 text-xs mt-0.5">ตรวจสอบรายได้รวม</p>
+                   <h3 className="text-white font-bold group-hover:text-blue-400 transition-colors">แผนภาพระบบ</h3>
+                   <p className="text-white/50 text-xs mt-0.5">Use Case & Sequence Diagrams</p>
                  </div>
               </div>
-              <span className="text-white/20 group-hover:text-amber-400 group-hover:translate-x-1 transition-all">→</span>
+              <span className="text-white/20 group-hover:text-blue-400 group-hover:translate-x-1 transition-all">→</span>
             </a>
           </div>
 

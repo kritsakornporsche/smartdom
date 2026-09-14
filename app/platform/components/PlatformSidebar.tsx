@@ -20,13 +20,6 @@ const navItems = [
     ],
   },
   {
-    group: 'การเงิน',
-    items: [
-      { href: '/platform/accounting', label: 'บัญชีรายรับ', icon: '💰' },
-      { href: '/platform/accounting/reports', label: 'รายงานรายรับ', icon: '📈' },
-    ],
-  },
-  {
     group: 'ระบบ',
     items: [
       { href: '/platform/status', label: 'สถานะระบบ', icon: '🔌' },

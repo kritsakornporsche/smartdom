@@ -46,6 +46,7 @@ export default function OwnerSidebar({ isOpen, onClose }: OwnerSidebarProps) {
   const [dorms, setDorms] = useState<any[]>([]);
   const [selectedDb, setSelectedDb] = useState<string | null>(null);
   const [canAddDorm, setCanAddDorm] = useState(false);
+  const [loadingDorms, setLoadingDorms] = useState(true);
 
   useEffect(() => {
     const email = session?.user?.email || (typeof window !== 'undefined' ? localStorage.getItem('userEmail') : null);
@@ -61,7 +62,10 @@ export default function OwnerSidebar({ isOpen, onClose }: OwnerSidebarProps) {
             setSelectedDb(activeDb);
           }
         })
-        .catch(console.error);
+        .catch(console.error)
+        .finally(() => setLoadingDorms(false));
+    } else {
+      setLoadingDorms(false);
     }
   }, [session]);
 
@@ -94,7 +98,12 @@ export default function OwnerSidebar({ isOpen, onClose }: OwnerSidebarProps) {
           )}
         </div>
 
-        {dorms.length > 0 ? (
+        {loadingDorms ? (
+          <div className="text-xs text-white/40 py-1 flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping inline-block" />
+            <span>กำลังโหลด...</span>
+          </div>
+        ) : dorms.length > 0 ? (
           <select
             value={selectedDb || ''}
             onChange={(e) => handleDormChange(e.target.value)}
@@ -107,7 +116,10 @@ export default function OwnerSidebar({ isOpen, onClose }: OwnerSidebarProps) {
             ))}
           </select>
         ) : (
-          <div className="text-xs text-white/40 py-1">กำลังโหลด...</div>
+          <div className="text-[11px] text-amber-400/90 py-1 font-medium flex items-center gap-1">
+            <span>⚠️</span>
+            <span>ยังไม่มีหอพักในระบบ</span>
+          </div>
         )}
       </div>
 

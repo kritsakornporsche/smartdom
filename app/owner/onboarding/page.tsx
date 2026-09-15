@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 
 // ── Amenities Config Categorized into 4 Detailed Groups ─────────────────────
 const AMENITY_CATEGORIES = [
@@ -111,6 +112,7 @@ const AMENITY_CATEGORIES = [
 
 export default function OwnerOnboarding() {
   const router = useRouter();
+  const { data: session } = useSession();
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [loading, setLoading] = useState(false);
   const [ownerEmail, setOwnerEmail] = useState('');
@@ -153,7 +155,7 @@ export default function OwnerOnboarding() {
   ]);
 
   useEffect(() => {
-    const email = localStorage.getItem('userEmail') || 'owner@smartdom.com';
+    const email = session?.user?.email || (typeof window !== 'undefined' ? localStorage.getItem('userEmail') : null) || 'owner@smartdom.com';
     setOwnerEmail(email);
 
     const searchParams = new URLSearchParams(window.location.search);
@@ -161,7 +163,7 @@ export default function OwnerOnboarding() {
 
     const checkOnboarding = async () => {
       try {
-        const res = await fetch(`/api/owner/onboarding?email=${email}`);
+        const res = await fetch(`/api/owner/onboarding?email=${encodeURIComponent(email)}`);
         const data = await res.json();
         if (data.success && data.hasDorm && !force) {
           router.push('/owner');
@@ -175,7 +177,7 @@ export default function OwnerOnboarding() {
     };
 
     checkOnboarding();
-  }, [router]);
+  }, [router, session]);
 
   // ── Quick Test Auto-Fill Helpers ──────────────────────────────────────────
   const handleAutoFillStep1 = () => {

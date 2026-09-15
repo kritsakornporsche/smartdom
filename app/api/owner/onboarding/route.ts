@@ -125,7 +125,8 @@ export async function POST(req: Request) {
       INSERT INTO dormitory_profile (
         dorm_id, name, address, phone, tax_id, owner_id, water_rate, electricity_rate,
         has_wifi, has_parking, pet_friendly, has_lan,
-        has_air_con, facilities, map_url, description, cover_image
+        has_air_con, facilities, map_url, description, cover_image,
+        promptpay_number, promptpay_name
       )
       VALUES (
         ${dormRegistryId}, ${dormData.name}, ${dormData.address || ''}, ${dormData.phone || personalData?.mobilePhone || ''},
@@ -133,7 +134,9 @@ export async function POST(req: Request) {
         ${dormData.has_wifi ? 1 : 0}, ${dormData.has_parking ? 1 : 0}, ${dormData.pet_friendly ? 1 : 0}, ${dormData.has_lan ? 1 : 0},
         ${dormData.has_air_con ? 1 : 0}, ${facilitiesList}, ${mapUrlStr},
         ${dormData.description || 'หอพักคุณภาพ ใกล้สิ่งอำนวยความสะดวก ปลอดภัย สะอาด'},
-        ${dormData.coverImage || dormData.cover_image || '/up-logo.png'}
+        ${dormData.coverImage || dormData.cover_image || '/up-logo.png'},
+        ${dormData.promptpay_number || dormData.promptpayNumber || ''},
+        ${dormData.promptpay_name || dormData.promptpayName || ''}
       )
     `;
 

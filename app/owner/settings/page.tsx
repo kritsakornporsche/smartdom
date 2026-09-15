@@ -16,6 +16,8 @@ export default function OwnerSettings() {
     tax_id: '',
     water_rate: 18,
     electricity_rate: 8,
+    promptpay_number: '',
+    promptpay_name: '',
     has_wifi: false,
     has_parking: false,
     pet_friendly: false,
@@ -65,6 +67,8 @@ export default function OwnerSettings() {
           tax_id: d.tax_id || '',
           water_rate: Number(d.water_rate) || 18,
           electricity_rate: Number(d.electricity_rate) || 8,
+          promptpay_number: d.promptpay_number || '',
+          promptpay_name: d.promptpay_name || '',
           has_wifi: Boolean(d.has_wifi),
           has_parking: Boolean(d.has_parking),
           pet_friendly: Boolean(d.pet_friendly),
@@ -246,6 +250,86 @@ export default function OwnerSettings() {
                     placeholder="เลข 13 หลัก"
                   />
                 </div>
+              </div>
+            </div>
+
+            {/* PromptPay Payment Settings */}
+            <div className="bg-[#0F172A] border border-indigo-500/30 rounded-3xl p-8 space-y-6 shadow-xl relative overflow-hidden">
+              <div className="flex items-center justify-between border-b border-white/10 pb-4 flex-wrap gap-2">
+                <div>
+                  <h2 className="text-lg font-black text-white flex items-center gap-2">
+                    <span>💳</span> บัญชีพร้อมเพย์สำหรับรับเงิน (PromptPay Settings)
+                  </h2>
+                  <p className="text-xs text-white/50 mt-1">
+                    ระบบจะนำหมายเลขนี้ไปสร้าง Dynamic PromptPay QR Code ในใบแจ้งหนี้ เพื่อให้ผู้เช่าสแกนจ่ายเงินตรงเข้าบัญชีท่านทันที
+                  </p>
+                </div>
+                <span className="text-[10px] font-black uppercase tracking-wider px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 shrink-0">
+                  รับเงินตรง 100%
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-white/60 block pl-1">
+                      หมายเลขพร้อมเพย์ (PromptPay ID) <span className="text-destructive">*</span>
+                    </label>
+                    {formData.phone && (
+                      <button
+                        type="button"
+                        onClick={() => setFormData({ ...formData, promptpay_number: formData.phone.replace(/[^0-9]/g, '') })}
+                        className="text-[10px] text-cyan-400 hover:text-cyan-300 underline font-bold cursor-pointer"
+                      >
+                        ใช้เบอร์ติดต่อหอพัก
+                      </button>
+                    )}
+                  </div>
+                  <input
+                    type="text"
+                    value={formData.promptpay_number}
+                    onChange={e => setFormData({ ...formData, promptpay_number: e.target.value })}
+                    className="w-full bg-[#080F1E] border border-white/20 rounded-xl px-4 py-3 text-white font-bold text-sm focus:outline-none focus:border-indigo-400"
+                    placeholder="เบอร์มือถือ 10 หลัก หรือ เลข ปชช. 13 หลัก"
+                  />
+                  <p className="text-[11px] text-white/40 pl-1">
+                    * ไม่ต้องใส่ขีด เช่น 0812345678 หรือ 1509900XXXXXX
+                  </p>
+                </div>
+
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-white/60 block pl-1">
+                      ชื่อบัญชีพร้อมเพย์ (Account Name) <span className="text-destructive">*</span>
+                    </label>
+                    {formData.name && (
+                      <button
+                        type="button"
+                        onClick={() => setFormData({ ...formData, promptpay_name: formData.name })}
+                        className="text-[10px] text-cyan-400 hover:text-cyan-300 underline font-bold cursor-pointer"
+                      >
+                        ใช้ชื่อหอพัก
+                      </button>
+                    )}
+                  </div>
+                  <input
+                    type="text"
+                    value={formData.promptpay_name}
+                    onChange={e => setFormData({ ...formData, promptpay_name: e.target.value })}
+                    className="w-full bg-[#080F1E] border border-white/20 rounded-xl px-4 py-3 text-white font-bold text-sm focus:outline-none focus:border-indigo-400"
+                    placeholder="เช่น นายกฤษณัย สมบูรณ์ หรือ หอพักเกษตร 2"
+                  />
+                  <p className="text-[11px] text-white/40 pl-1">
+                    * ชื่อนี้จะปรากฏให้ผู้เช่าเห็นเมื่อสแกน QR Code เพื่อยืนยันความถูกต้อง
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-2.5 bg-[#080F1E]/60 p-3.5 rounded-xl border border-white/5 text-xs text-white/60">
+                <span className="text-indigo-400 text-sm">💡</span>
+                <span>
+                  <strong>ระบบ Dynamic PromptPay QR Code:</strong> ผู้เช่าจะเห็น QR Code ที่ระบุยอดเงินถูกต้องตรงเป๊ะ สแกนจ่ายได้ทุกแอปธนาคาร เงินโอนเข้าบัญชีเจ้าของหอโดยตรงแบบเรียลไทม์ ไม่มีหักเปอร์เซ็นต์
+                </span>
               </div>
             </div>
 

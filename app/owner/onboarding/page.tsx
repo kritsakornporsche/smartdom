@@ -143,6 +143,9 @@ export default function OwnerOnboarding() {
   const [mapUrl, setMapUrl] = useState('');
   const [waterRate, setWaterRate] = useState(18);
   const [electricityRate, setElectricityRate] = useState(8);
+  // PromptPay Settings
+  const [promptpayNumber, setPromptpayNumber] = useState('');
+  const [promptpayName, setPromptpayName] = useState('');
   const [selectedAmenities, setSelectedAmenities] = useState<string[]>([
     '🛏️ เตียงนอน',
     '🚪 ตู้เสื้อผ้า',
@@ -269,6 +272,10 @@ export default function OwnerOnboarding() {
       mapUrl: mapUrl || `https://maps.google.com/?q=${latitude},${longitude}`,
       water_rate: waterRate,
       electricity_rate: electricityRate,
+      promptpay_number: promptpayNumber.trim(),
+      promptpay_name: promptpayName.trim(),
+      promptpayNumber: promptpayNumber.trim(),
+      promptpayName: promptpayName.trim(),
       has_wifi: selectedAmenities.some(a => a.includes('Wi-Fi')),
       has_parking: selectedAmenities.some(a => a.includes('ที่จอดรถ')),
       pet_friendly: selectedAmenities.some(a => a.includes('Pet-Friendly') || a.includes('สัตว์')),
@@ -689,6 +696,82 @@ export default function OwnerOnboarding() {
                       <label className="text-[10px] font-black uppercase tracking-widest text-white/50 block pl-1">ค่าไฟ (บาท/ยูนิต)</label>
                       <input type="number" value={electricityRate} onChange={e => setElectricityRate(Number(e.target.value))} className="w-full bg-[#080F1E] border border-white/10 rounded-xl px-4 py-2.5 text-white font-bold text-sm focus:outline-none focus:border-primary" />
                     </div>
+                  </div>
+                </div>
+
+                {/* 💳 PromptPay Account Configuration */}
+                <div className="p-6 rounded-2xl bg-gradient-to-br from-indigo-500/10 via-purple-500/5 to-transparent border border-indigo-500/20 space-y-4">
+                  <div className="flex items-center justify-between flex-wrap gap-2">
+                    <div>
+                      <h3 className="text-xs font-black text-white uppercase tracking-widest flex items-center gap-2">
+                        <span>💳</span> บัญชีพร้อมเพย์สำหรับรับเงิน (PromptPay Settings) <span className="text-destructive">*</span>
+                      </h3>
+                      <p className="text-[11px] text-white/50 mt-0.5">
+                        ระบบจะใช้ข้อมูลนี้สร้าง Dynamic PromptPay QR Code ให้ผู้เช่าสแกนจ่ายค่าเช่าและเงินมัดจำ เงินเข้าบัญชีท่านโดยตรง
+                      </p>
+                    </div>
+                    <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                      ระบบรับเงินตรง
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
+                    <div className="space-y-1.5">
+                      <div className="flex items-center justify-between">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-white/60 block pl-1">
+                          หมายเลขพร้อมเพย์ (PromptPay ID) <span className="text-destructive">*</span>
+                        </label>
+                        {mobilePhone && (
+                          <button
+                            type="button"
+                            onClick={() => setPromptpayNumber(mobilePhone.replace(/[^0-9]/g, ''))}
+                            className="text-[10px] text-cyan-400 hover:text-cyan-300 underline font-bold cursor-pointer"
+                          >
+                            ใช้เบอร์มือถือ
+                          </button>
+                        )}
+                      </div>
+                      <input
+                        type="text"
+                        required
+                        value={promptpayNumber}
+                        onChange={e => setPromptpayNumber(e.target.value)}
+                        placeholder="เบอร์มือถือ 10 หลัก หรือ เลข ปชช. 13 หลัก"
+                        className="w-full bg-[#080F1E] border border-white/10 rounded-xl px-4 py-3 text-white font-bold text-sm focus:outline-none focus:border-indigo-400"
+                      />
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <div className="flex items-center justify-between">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-white/60 block pl-1">
+                          ชื่อบัญชีพร้อมเพย์ <span className="text-destructive">*</span>
+                        </label>
+                        {(firstName || dormName) && (
+                          <button
+                            type="button"
+                            onClick={() => setPromptpayName(dormName ? dormName : `${firstName} ${lastName}`.trim())}
+                            className="text-[10px] text-cyan-400 hover:text-cyan-300 underline font-bold cursor-pointer"
+                          >
+                            {dormName ? 'ใช้ชื่อหอพัก' : 'ใช้ชื่อเจ้าของ'}
+                          </button>
+                        )}
+                      </div>
+                      <input
+                        type="text"
+                        required
+                        value={promptpayName}
+                        onChange={e => setPromptpayName(e.target.value)}
+                        placeholder="เช่น นายกฤษณัย สมบูรณ์ หรือ บจก. สมาร์ทหอ"
+                        className="w-full bg-[#080F1E] border border-white/10 rounded-xl px-4 py-3 text-white font-bold text-sm focus:outline-none focus:border-indigo-400"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-2 bg-[#080F1E]/60 p-3 rounded-xl border border-white/5 text-[11px] text-white/60">
+                    <span className="text-indigo-400 mt-0.5">💡</span>
+                    <span>
+                      เงินโอนจะเข้าบัญชีเจ้าของหอโดยตรง 100% ปราศจากค่าธรรมเนียมตัวกลาง และสามารถแก้ไขได้ตลอดเวลาในหน้าตั้งค่าหอพัก
+                    </span>
                   </div>
                 </div>
 

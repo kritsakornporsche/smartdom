@@ -21,6 +21,11 @@ const filesToUpload = [
   'app/owner/settings/page.tsx',
   'app/api/owner/onboarding/route.ts',
   'app/api/owner/settings/route.ts',
+  'app/api/rooms/[id]/route.ts',
+  'app/api/dorms/route.ts',
+  'app/api/dorms/[id]/route.ts',
+  'app/explore/room/[id]/page.tsx',
+  'app/explore/[dormId]/page.tsx',
   'app/signup/SignupContent.tsx',
   'app/signin/SigninContent.tsx'
 ];

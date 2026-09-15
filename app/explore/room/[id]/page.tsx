@@ -43,6 +43,19 @@ export default function RoomBookingPage({ params }: { params: Promise<{ id: stri
     }
   };
 
+  const handleOpenChat = () => {
+    if (!session) {
+      router.push(`/signin?callbackUrl=${encodeURIComponent(window.location.pathname)}`);
+      return;
+    }
+    const btn = document.getElementById('open-chat-widget-btn');
+    if (btn) {
+      btn.click();
+    } else {
+      window.dispatchEvent(new CustomEvent('open-chat', { detail: { dormId: room?.dorm_id } }));
+    }
+  };
+
   useEffect(() => {
     async function fetchRoom() {
       try {
@@ -332,6 +345,172 @@ export default function RoomBookingPage({ params }: { params: Promise<{ id: stri
               </div>
             </div>
 
+            {/* 🏢 Dormitory Overview, Utility Rates, and Rules */}
+            <div className="bg-card border border-border rounded-[2.5rem] p-8 space-y-6 shadow-sm">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-4 border-b border-border">
+                <div>
+                  <span className="text-[10px] font-black uppercase tracking-widest text-primary">ข้อมูลหอพัก & เงื่อนไขสัญญา</span>
+                  <h2 className="text-2xl font-black tracking-tight">{room.dorm_name || 'ข้อมูลหอพัก'}</h2>
+                  {room.dorm_address && (
+                    <p className="text-xs text-muted-foreground mt-0.5">📍 {room.dorm_address}</p>
+                  )}
+                </div>
+
+                {/* Quick inquiry buttons */}
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={handleOpenChat}
+                    className="px-4 py-2.5 bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 rounded-xl text-xs font-black flex items-center gap-1.5 transition-all hover:scale-105 active:scale-95 cursor-pointer"
+                  >
+                    <span>💬</span>
+                    <span>สอบถามหอพัก</span>
+                  </button>
+                  {room.dorm_phone && (
+                    <a
+                      href={`tel:${room.dorm_phone}`}
+                      className="px-4 py-2.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-500 border border-emerald-500/20 rounded-xl text-xs font-black flex items-center gap-1.5 transition-all hover:scale-105 active:scale-95"
+                    >
+                      <span>📞</span>
+                      <span>โทรติดต่อ</span>
+                    </a>
+                  )}
+                </div>
+              </div>
+
+              {/* Utility Rates (ค่าน้ำ-ค่าไฟ) */}
+              <div className="space-y-3">
+                <h3 className="text-xs font-bold uppercase tracking-widest text-muted-foreground">⚡ อัตราค่าน้ำ / ค่าไฟ</h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="p-4 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-cyan-500/20 flex items-center justify-center text-xl shrink-0">
+                      💧
+                    </div>
+                    <div>
+                      <span className="text-[10px] uppercase font-bold text-muted-foreground block">ค่าน้ำ</span>
+                      <span className="text-lg font-black text-cyan-500">฿{Number(room.water_rate) || 18} <span className="text-xs font-bold text-muted-foreground">/ ยูนิต</span></span>
+                    </div>
+                  </div>
+
+                  <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-amber-500/20 flex items-center justify-center text-xl shrink-0">
+                      ⚡
+                    </div>
+                    <div>
+                      <span className="text-[10px] uppercase font-bold text-muted-foreground block">ค่าไฟ</span>
+                      <span className="text-lg font-black text-amber-500">฿{Number(room.electricity_rate) || 8} <span className="text-xs font-bold text-muted-foreground">/ ยูนิต</span></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Rules & Policies (กฎระเบียบและเงื่อนไข) */}
+              <div className="space-y-3 pt-2">
+                <h3 className="text-xs font-bold uppercase tracking-widest text-muted-foreground">📋 กฎระเบียบและเงื่อนไขของหอพัก</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="p-3.5 rounded-xl bg-muted/40 border border-border flex items-center gap-3">
+                    <span className="text-lg">{room.pet_friendly ? '🐾' : '🚫'}</span>
+                    <div className="text-xs">
+                      <span className="font-bold block">นโยบายสัตว์เลี้ยง</span>
+                      <span className="text-muted-foreground text-[11px]">
+                        {room.pet_friendly ? 'อนุญาตให้เลี้ยงสัตว์ได้ (Pet-Friendly)' : 'ห้ามเลี้ยงสัตว์เลี้ยงทุกชนิด'}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="p-3.5 rounded-xl bg-muted/40 border border-border flex items-center gap-3">
+                    <span className="text-lg">{room.has_parking ? '🚗' : '🛵'}</span>
+                    <div className="text-xs">
+                      <span className="font-bold block">ที่จอดรถ</span>
+                      <span className="text-muted-foreground text-[11px]">
+                        {room.has_parking ? 'มีที่จอดรถยนต์ และรถจักรยานยนต์' : 'มีเฉพาะที่จอดรถจักรยานยนต์'}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="p-3.5 rounded-xl bg-muted/40 border border-border flex items-center gap-3">
+                    <span className="text-lg">🚭</span>
+                    <div className="text-xs">
+                      <span className="font-bold block">การสูบบุหรี่</span>
+                      <span className="text-muted-foreground text-[11px]">ห้ามสูบบุหรี่ภายในห้องพักและพื้นที่ส่วนกลาง</span>
+                    </div>
+                  </div>
+
+                  <div className="p-3.5 rounded-xl bg-muted/40 border border-border flex items-center gap-3">
+                    <span className="text-lg">🕒</span>
+                    <div className="text-xs">
+                      <span className="font-bold block">เวลาเข้า-ออก</span>
+                      <span className="text-muted-foreground text-[11px]">เข้า-ออกได้ตลอด 24 ชม. (ระบบคีย์การ์ด/สแกน)</span>
+                    </div>
+                  </div>
+
+                  <div className="p-3.5 rounded-xl bg-muted/40 border border-border flex items-center gap-3">
+                    <span className="text-lg">📶</span>
+                    <div className="text-xs">
+                      <span className="font-bold block">อินเทอร์เน็ต</span>
+                      <span className="text-muted-foreground text-[11px]">
+                        {room.has_wifi ? 'Wi-Fi ฟรีส่วนกลาง' : 'ไม่มี Wi-Fi'} {room.has_lan ? '• มีช่องสาย LAN' : ''}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="p-3.5 rounded-xl bg-muted/40 border border-border flex items-center gap-3">
+                    <span className="text-lg">📝</span>
+                    <div className="text-xs">
+                      <span className="font-bold block">ระยะเวลาสัญญา</span>
+                      <span className="text-muted-foreground text-[11px]">สัญญา 1 ปี (เงินประกัน 1 เดือน คืนเมื่อครบสัญญา)</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Description from Dorm Profile */}
+              {room.dorm_description && (
+                <div className="space-y-2 pt-2">
+                  <h3 className="text-xs font-bold uppercase tracking-widest text-muted-foreground">ℹ️ รายละเอียดเพิ่มเติมจากหอพัก</h3>
+                  <p className="text-xs text-foreground/80 leading-relaxed bg-muted/30 p-4 rounded-2xl border border-border whitespace-pre-line">
+                    {room.dorm_description}
+                  </p>
+                </div>
+              )}
+
+              {/* Dorm Facilities */}
+              {room.dorm_facilities && (
+                <div className="space-y-2 pt-2">
+                  <h3 className="text-xs font-bold uppercase tracking-widest text-muted-foreground">✨ สิ่งอำนวยความสะดวกส่วนกลาง</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {room.dorm_facilities.split(',').map((fac: string, idx: number) => {
+                      const trimmed = fac.trim();
+                      if (!trimmed) return null;
+                      return (
+                        <span key={idx} className="px-3 py-1 bg-secondary text-xs font-semibold rounded-lg border border-border">
+                          {trimmed}
+                        </span>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* Location & Map Link */}
+              {room.dorm_map_url && (
+                <div className="pt-2">
+                  <a
+                    href={room.dorm_map_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full py-3.5 px-4 bg-muted/40 hover:bg-muted text-xs font-bold rounded-xl border border-border flex items-center justify-between transition-colors group"
+                  >
+                    <span className="flex items-center gap-2">
+                      <span>🗺️</span>
+                      <span>ดูพิกัดตำแหน่งหอพักบน Google Maps</span>
+                    </span>
+                    <span className="text-primary group-hover:translate-x-1 transition-transform">เปิดดูแผนที่ ↗</span>
+                  </a>
+                </div>
+              )}
+            </div>
+
           </div>
 
           {/* Right Column: Step-by-Step Booking Workflow */}
@@ -403,6 +582,32 @@ export default function RoomBookingPage({ params }: { params: Promise<{ id: stri
                       ห้องพักนี้ไม่เปิดรับจองในขณะนี้
                     </div>
                   )}
+
+                  {/* 💬 Inquire Dormitory & Call Action */}
+                  <div className="pt-3 border-t border-border/60 space-y-2">
+                    <p className="text-[11px] font-bold text-muted-foreground text-center">มีคำถามหรือต้องการดูห้องจริง?</p>
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={handleOpenChat}
+                        className="flex-1 py-3.5 px-4 bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 rounded-2xl font-black text-xs flex items-center justify-center gap-2 transition-all hover:scale-[1.01] active:scale-95 cursor-pointer shadow-sm"
+                      >
+                        <span>💬</span>
+                        <span>สอบถามหอพัก / แชท</span>
+                      </button>
+                      {room.dorm_phone && (
+                        <a
+                          href={`tel:${room.dorm_phone}`}
+                          className="py-3.5 px-4 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-500 border border-emerald-500/20 rounded-2xl font-black text-xs flex items-center justify-center gap-1.5 transition-all hover:scale-[1.01] active:scale-95 shrink-0"
+                          title={`โทรสอบถาม: ${room.dorm_phone}`}
+                        >
+                          <span>📞</span>
+                          <span className="hidden sm:inline">โทร {room.dorm_phone}</span>
+                          <span className="sm:hidden">โทร</span>
+                        </a>
+                      )}
+                    </div>
+                  </div>
                 </div>
               </div>
             )}
@@ -454,6 +659,19 @@ export default function RoomBookingPage({ params }: { params: Promise<{ id: stri
                   >
                     ย้อนกลับ
                   </button>
+
+                  {/* 💬 Quick contact in Step 2 */}
+                  <div className="pt-2 border-t border-border/50 flex items-center justify-between text-xs text-muted-foreground">
+                    <span>มีข้อสงสัยก่อนทำสัญญา?</span>
+                    <button
+                      type="button"
+                      onClick={handleOpenChat}
+                      className="text-primary font-bold hover:underline flex items-center gap-1 cursor-pointer"
+                    >
+                      <span>💬</span>
+                      <span>แชทสอบถามหอพัก</span>
+                    </button>
+                  </div>
                 </div>
               </div>
             )}

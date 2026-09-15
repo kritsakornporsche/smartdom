@@ -3,6 +3,9 @@
 import { useState, useEffect, use } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
+import ChatWidget from '@/app/components/ChatWidget';
 
 interface Room {
   id: number;
@@ -20,20 +23,51 @@ interface Room {
 export default function GuestDormRoomsPage({ params }: { params: Promise<{ dormId: string }> }) {
   const resolvedParams = use(params);
   const dormId = resolvedParams.dormId;
+  const router = useRouter();
+  const { data: session } = useSession();
+
   const [rooms, setRooms] = useState<Room[]>([]);
   const [dormName, setDormName] = useState('...');
+  const [dormInfo, setDormInfo] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [filterTab, setFilterTab] = useState<'all' | 'available' | 'moving_out'>('all');
+
+  const handleOpenChat = () => {
+    if (!session) {
+      router.push(`/signin?callbackUrl=${encodeURIComponent(window.location.pathname)}`);
+      return;
+    }
+    const btn = document.getElementById('open-chat-widget-btn');
+    if (btn) {
+      btn.click();
+    } else {
+      window.dispatchEvent(new CustomEvent('open-chat', { detail: { dormId: Number(dormId) } }));
+    }
+  };
 
   useEffect(() => {
     async function fetchData() {
       try {
         // Fetch dorm info
-        const dRes = await fetch('/api/dorms');
-        const dData = await dRes.json();
-        if (dData.success) {
-           const d = dData.data.find((item: any) => item.id.toString() === dormId);
-           if (d) setDormName(d.name);
+        try {
+          const dSingleRes = await fetch(`/api/dorms/${dormId}`);
+          const dSingleData = await dSingleRes.json();
+          if (dSingleData.success && dSingleData.data) {
+            setDormInfo(dSingleData.data);
+            setDormName(dSingleData.data.name);
+          } else {
+            const dRes = await fetch('/api/dorms');
+            const dData = await dRes.json();
+            if (dData.success) {
+              const d = dData.data.find((item: any) => item.id.toString() === dormId);
+              if (d) {
+                setDormInfo(d);
+                setDormName(d.name);
+              }
+            }
+          }
+        } catch (err) {
+          console.error('Error fetching dorm info:', err);
         }
 
         // Fetch rooms for this dorm with explore filter enabled
@@ -102,21 +136,182 @@ export default function GuestDormRoomsPage({ params }: { params: Promise<{ dormI
   };
 
   return (
-    <div className="min-h-screen bg-background px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16 max-w-7xl mx-auto">
-      <Link href="/explore" className="inline-flex items-center gap-3 text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors mb-12 group">
-        <svg className="w-4 h-4 transition-transform group-hover:-translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M10 19l-7-7m0 0l-7 7m7-7H3" /></svg>
+    <div className="min-h-screen bg-background px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16 max-w-7xl mx-auto space-y-10">
+      <Link href="/explore" className="inline-flex items-center gap-3 text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors group">
+        <svg className="w-4 h-4 transition-transform group-hover:-translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M10 19l-7-7m0 0l-7 7m7-7H3" />
+        </svg>
         ย้อนกลับไปเลือกหอพัก
       </Link>
 
-      <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-10 mb-12 animate-reveal">
-        <div className="space-y-4">
-           <h1 className="text-4xl sm:text-5xl lg:text-7xl font-display font-black tracking-tighter italic text-foreground ornament break-words">{dormName}</h1>
-           <p className="text-muted-foreground font-black text-lg flex items-center gap-3">
-             <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
-             รายการห้องว่างและห้องที่กำลังจะย้ายออก (เปิดรับจอง)
-           </p>
+      {/* 🏢 Dormitory Details & Overview Hero Card */}
+      <div className="bg-card border border-border rounded-[2.5rem] sm:rounded-[3rem] p-6 sm:p-10 shadow-xl space-y-8 animate-reveal relative overflow-hidden">
+        {dormInfo?.cover_image && dormInfo.cover_image !== '/up-logo.png' && (
+          <div className="absolute top-0 right-0 w-1/3 h-full opacity-10 pointer-events-none hidden md:block">
+            <Image src={dormInfo.cover_image} alt={dormName} fill className="object-cover" />
+          </div>
+        )}
+
+        <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-6 relative z-10">
+          <div className="space-y-3 max-w-2xl">
+            <span className="px-3.5 py-1.5 rounded-full bg-primary/10 text-primary border border-primary/20 text-[10px] font-black uppercase tracking-widest inline-flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+              หอพักเครือข่าย SmartDom มหาวิทยาลัยพะเยา
+            </span>
+            <h1 className="text-3xl sm:text-5xl font-display font-black tracking-tighter text-foreground italic break-words">
+              {dormName}
+            </h1>
+            {dormInfo?.address && (
+              <p className="text-muted-foreground text-sm font-medium flex items-center gap-2">
+                <span>📍</span>
+                <span>{dormInfo.address}</span>
+              </p>
+            )}
+          </div>
+
+          {/* Action Buttons: Inquire & Call */}
+          <div className="flex flex-wrap items-center gap-3 relative z-10 shrink-0">
+            <button
+              type="button"
+              onClick={handleOpenChat}
+              className="px-6 py-3.5 bg-primary hover:bg-primary/90 text-primary-foreground font-black text-xs uppercase tracking-wider rounded-2xl flex items-center gap-2 transition-all shadow-lg shadow-primary/25 hover:scale-105 active:scale-95 cursor-pointer"
+            >
+              <span>💬</span>
+              <span>สอบถามหอพัก / แชท</span>
+            </button>
+
+            {dormInfo?.phone && (
+              <a
+                href={`tel:${dormInfo.phone}`}
+                className="px-5 py-3.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-500 border border-emerald-500/30 font-black text-xs uppercase tracking-wider rounded-2xl flex items-center gap-2 transition-all hover:scale-105 active:scale-95"
+              >
+                <span>📞</span>
+                <span>โทร {dormInfo.phone}</span>
+              </a>
+            )}
+
+            {dormInfo?.map_url && (
+              <a
+                href={dormInfo.map_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-5 py-3.5 bg-secondary hover:bg-secondary/80 text-foreground border border-border font-bold text-xs uppercase tracking-wider rounded-2xl flex items-center gap-2 transition-all"
+              >
+                <span>🗺️</span>
+                <span>แผนที่ Google Maps</span>
+              </a>
+            )}
+          </div>
         </div>
-        
+
+        {/* 💧 Utility Rates & Rules Bar */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 border-t border-border">
+          <div className="p-4 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 flex items-center gap-3">
+            <span className="text-2xl">💧</span>
+            <div>
+              <span className="text-[10px] font-bold text-muted-foreground uppercase block">ค่าน้ำประปา</span>
+              <span className="text-base font-black text-cyan-500">
+                ฿{dormInfo?.water_rate || 18} <span className="text-xs font-medium text-muted-foreground">/ ยูนิต</span>
+              </span>
+            </div>
+          </div>
+
+          <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center gap-3">
+            <span className="text-2xl">⚡</span>
+            <div>
+              <span className="text-[10px] font-bold text-muted-foreground uppercase block">ค่าไฟฟ้า</span>
+              <span className="text-base font-black text-amber-500">
+                ฿{dormInfo?.electricity_rate || 8} <span className="text-xs font-medium text-muted-foreground">/ ยูนิต</span>
+              </span>
+            </div>
+          </div>
+
+          <div className="p-4 rounded-2xl bg-muted/40 border border-border flex items-center gap-3">
+            <span className="text-2xl">{dormInfo?.pet_friendly ? '🐾' : '🚫'}</span>
+            <div>
+              <span className="text-[10px] font-bold text-muted-foreground uppercase block">สัตว์เลี้ยง</span>
+              <span className="text-xs font-black text-foreground">
+                {dormInfo?.pet_friendly ? 'อนุญาตให้เลี้ยง' : 'ห้ามเลี้ยงสัตว์'}
+              </span>
+            </div>
+          </div>
+
+          <div className="p-4 rounded-2xl bg-muted/40 border border-border flex items-center gap-3">
+            <span className="text-2xl">{dormInfo?.has_parking ? '🚗' : '🛵'}</span>
+            <div>
+              <span className="text-[10px] font-bold text-muted-foreground uppercase block">ที่จอดรถ</span>
+              <span className="text-xs font-black text-foreground">
+                {dormInfo?.has_parking ? 'มีที่จอดรถยนต์' : 'เฉพาะมอเตอร์ไซค์'}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Rules & Facilities Highlights */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+          {/* Rules / Policies */}
+          <div className="p-5 rounded-2xl bg-muted/20 border border-border/80 space-y-3">
+            <h3 className="text-xs font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+              <span>📋</span> กฎระเบียบและเงื่อนไขการพักอาศัย
+            </h3>
+            <ul className="text-xs space-y-2 text-foreground/80 font-medium">
+              <li className="flex items-center gap-2">
+                <span className="text-emerald-500">✓</span>
+                <span>สัญญาเช่าขั้นต่ำ 1 ปี (เงินประกันสัญญา 1 เดือน ได้รับคืนเมื่อครบสัญญา)</span>
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="text-emerald-500">✓</span>
+                <span>ระบบรักษาความปลอดภัย เข้า-ออกประตูหลักด้วยคีย์การ์ดตลอด 24 ชั่วโมง</span>
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="text-emerald-500">✓</span>
+                <span>{dormInfo?.has_wifi ? 'มีสัญญาณอินเทอร์เน็ต Wi-Fi ฟรีครอบคลุม' : 'ผู้เช่าสามารถติดตั้งอินเทอร์เน็ตส่วนตัวได้'}</span>
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="text-rose-500">✕</span>
+                <span>ห้ามสูบบุหรี่และสิ่งเสพติดภายในห้องพักและพื้นที่ส่วนกลางเด็ดขาด</span>
+              </li>
+            </ul>
+          </div>
+
+          {/* Description & Facilities */}
+          <div className="p-5 rounded-2xl bg-muted/20 border border-border/80 space-y-3">
+            <h3 className="text-xs font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+              <span>✨</span> สิ่งอำนวยความสะดวกและรายละเอียดหอพัก
+            </h3>
+            {dormInfo?.description && (
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                {dormInfo.description}
+              </p>
+            )}
+            {dormInfo?.facilities && (
+              <div className="flex flex-wrap gap-1.5 pt-1">
+                {dormInfo.facilities.split(',').map((item: string, idx: number) => {
+                  const trimmed = item.trim();
+                  if (!trimmed) return null;
+                  return (
+                    <span key={idx} className="px-2.5 py-1 bg-secondary text-[11px] font-bold rounded-lg border border-border">
+                      {trimmed}
+                    </span>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Filter Tabs & Rooms Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 pt-4">
+        <div>
+          <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-foreground">
+            รายการห้องพักเปิดรับจอง
+          </h2>
+          <p className="text-muted-foreground text-xs font-bold mt-1">
+            เลือกห้องพักเพื่อดูภาพถ่าย 360°, สัญญาเช่า และชำระเงินมัดจำออนไลน์
+          </p>
+        </div>
+
         {/* Status Filter Tabs */}
         <div className="flex flex-wrap items-center gap-2 p-1.5 bg-muted/60 dark:bg-card border border-border rounded-full shadow-inner">
           <button
@@ -154,8 +349,9 @@ export default function GuestDormRoomsPage({ params }: { params: Promise<{ dormI
         </div>
       </div>
 
-      <div className="h-px w-full bg-border mb-12" />
+      <div className="h-px w-full bg-border" />
 
+      {/* Rooms Grid */}
       {loading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
           {[1, 2, 3].map(i => (
@@ -239,7 +435,9 @@ export default function GuestDormRoomsPage({ params }: { params: Promise<{ dormI
                      </p>
                      {!roomIsAvailable && moveOutFormatted && (
                        <p className="text-amber-300 font-bold text-xs flex items-center gap-1.5">
-                         <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                         <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                         </svg>
                          พร้อมเข้าอยู่หลัง {moveOutFormatted}
                        </p>
                      )}
@@ -262,6 +460,9 @@ export default function GuestDormRoomsPage({ params }: { params: Promise<{ dormI
           })}
         </div>
       )}
+
+      {/* Floating Chat Widget for this Dormitory */}
+      <ChatWidget dormId={Number(dormId)} ownerName={dormInfo?.owner_name || dormName} />
     </div>
   );
 }

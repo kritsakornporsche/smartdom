@@ -15,15 +15,16 @@ export async function GET(req: Request) {
     // 1. Fetch all dorm profiles joined with registry and room aggregation in ONE query
     const dorms = await sql`
       SELECT 
-        r.id as dorm_id, r.dorm_name as name, r.address, r.phone,
+        r.id as dorm_id, r.dorm_name as name, r.address, COALESCE(p.phone, r.phone) as phone,
         p.cover_image, p.description, p.pet_friendly, p.has_parking, p.has_air_con, p.has_wifi, p.has_lan,
+        p.water_rate, p.electricity_rate, p.facilities, p.map_url,
         COALESCE(MIN(rm.price), 0) as min_price,
         COUNT(CASE WHEN rm.status IN ('Available', 'ว่าง', 'available') THEN 1 END) as available_rooms_count
       FROM dormitory_registry r
       LEFT JOIN dormitory_profile p ON r.id = p.dorm_id
       LEFT JOIN rooms rm ON r.id = rm.dorm_id
       WHERE r.status = 'Active'
-      GROUP BY r.id, r.dorm_name, r.address, r.phone, p.cover_image, p.description, p.pet_friendly, p.has_parking, p.has_air_con, p.has_wifi, p.has_lan
+      GROUP BY r.id, r.dorm_name, r.address, r.phone, p.phone, p.cover_image, p.description, p.pet_friendly, p.has_parking, p.has_air_con, p.has_wifi, p.has_lan, p.water_rate, p.electricity_rate, p.facilities, p.map_url
     `;
 
     const matchedDorms = [];
@@ -48,6 +49,10 @@ export async function GET(req: Request) {
         has_air_con: Boolean(dorm.has_air_con),
         has_wifi: Boolean(dorm.has_wifi),
         has_lan: Boolean(dorm.has_lan),
+        water_rate: Number(dorm.water_rate) || 18,
+        electricity_rate: Number(dorm.electricity_rate) || 8,
+        facilities: dorm.facilities || '',
+        map_url: dorm.map_url || '',
         min_price: Number(dorm.min_price),
         available_rooms_count: Number(dorm.available_rooms_count),
         available_rooms_summary: Number(dorm.available_rooms_count) > 0 ? `${dorm.available_rooms_count} ห้องว่าง` : null,

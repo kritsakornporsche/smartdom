@@ -82,14 +82,15 @@ export async function POST(req: Request) {
       ownerId = (res as any).insertId;
     } else {
       ownerId = users[0].id;
-      // Update owner personal name and phone in users table
-      if (personalData?.fullName || personalData?.mobilePhone) {
-        await sql`
-          UPDATE users 
-          SET name = ${ownerDisplayName}, phone = ${personalData?.mobilePhone || null}
-          WHERE id = ${ownerId}
-        `;
-      }
+      // Update owner personal name, phone and role in users table
+      await sql`
+        UPDATE users 
+        SET name = ${ownerDisplayName}, 
+            phone = ${personalData?.mobilePhone || null},
+            role = 'owner',
+            primary_role = 'owner'
+        WHERE id = ${ownerId}
+      `;
     }
 
     // Register in dormitory_registry

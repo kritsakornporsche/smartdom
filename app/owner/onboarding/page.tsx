@@ -179,39 +179,6 @@ export default function OwnerOnboarding() {
     checkOnboarding();
   }, [router, session]);
 
-  // ── Quick Test Auto-Fill Helpers ──────────────────────────────────────────
-  const handleAutoFillStep1 = () => {
-    setTitle('นาย');
-    setFirstName('กฤษกร');
-    setLastName('บัว');
-    setIdCardNumber('1100200345678');
-    setIdCardFileName('สำเนาบัตรประชาชน_กฤษกร_บัว.pdf (ผ่านการรับรองแล้ว)');
-    setRegisteredAddress('99/1 หมู่ 5 ต.แม่กา อ.เมือง จ.พะเยา 56000');
-    setMobilePhone('081-234-5678');
-    setLineId('@kritsakorn');
-    setEmergencyName('นางสมศรี บัว');
-    setEmergencyRelation('มารดา');
-    setEmergencyPhone('089-876-5432');
-    setTaxId('1100200345678');
-  };
-
-  const handleAutoFillStep2 = () => {
-    setDormName('SmartDom Grand Residence');
-    setDormPhone('054-123-4567');
-    setDormAddress('123/4 หมู่ 2 ถนนพหลโยธิน ต.แม่กา อ.เมือง จ.พะเยา 56000');
-    setLatitude('19.0286');
-    setLongitude('99.8967');
-    setMapUrl('https://maps.google.com/?q=19.0286,99.8967');
-    setWaterRate(18);
-    setElectricityRate(8);
-  };
-
-  const handleAutoFillAllDemo = () => {
-    handleAutoFillStep1();
-    handleAutoFillStep2();
-    alert('⚡ เติมข้อมูลตัวอย่างสำหรับการทดสอบเรียบร้อยแล้ว!');
-  };
-
   // ── File Upload Handler ───────────────────────────────────────────────────
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -251,7 +218,7 @@ export default function OwnerOnboarding() {
       return;
     }
     if (!idCardFileName.trim()) {
-      alert('กรุณาแนบไฟล์สำเนาบัตรประชาชน/พาสปอร์ต หรือกดปุ่ม "⚡ ทดสอบ: ข้ามการแนบไฟล์"');
+      alert('กรุณาแนบไฟล์สำเนาบัตรประชาชน หรือเอกสารยืนยันตัวตน');
       return;
     }
     setStep(2);
@@ -347,23 +314,6 @@ export default function OwnerOnboarding() {
     <div className="flex-1 min-h-0 overflow-y-auto bg-[#080F1E] text-white font-sans py-10 sm:py-16 px-4 sm:px-6">
       <div className="max-w-4xl w-full mx-auto">
 
-        {/* Global Demo Auto-fill Bar */}
-        <div className="mb-6 flex flex-wrap items-center justify-between gap-3 bg-[#0F172A]/80 border border-primary/30 p-4 rounded-2xl backdrop-blur-md shadow-lg">
-          <div className="flex items-center gap-2">
-            <span className="flex h-3 w-3 relative">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-3 w-3 bg-primary"></span>
-            </span>
-            <p className="text-xs font-bold text-white">ระบบ Onboarding ลงทะเบียนหอพักสมบูรณ์แบบ</p>
-          </div>
-          <button
-            type="button"
-            onClick={handleAutoFillAllDemo}
-            className="px-4 py-2 bg-gradient-to-r from-primary to-purple-600 text-white rounded-xl text-xs font-black uppercase tracking-wider shadow-lg hover:scale-105 active:scale-95 transition-all cursor-pointer"
-          >
-            ⚡ เติมข้อมูลทดสอบทั้งหมดอัตโนมัติ (Auto-fill Demo)
-          </button>
-        </div>
 
         {/* Step Progress Bar */}
         <div className="flex items-center justify-between mb-8 sm:mb-10 max-w-xl mx-auto">
@@ -569,19 +519,12 @@ export default function OwnerOnboarding() {
                   </div>
                 </div>
 
-                {/* 3. ID Card / Passport Attachment with Quick Bypass Button */}
+                {/* 3. ID Card / Passport Attachment */}
                 <div className="p-5 rounded-2xl bg-white/5 border border-white/10 space-y-4">
                   <div className="flex items-center justify-between flex-wrap gap-2">
                     <label className="text-xs font-black uppercase tracking-widest text-white flex items-center gap-2">
                       <span>📄</span> สำเนาบัตรประชาชน / พาสปอร์ต <span className="text-destructive">*</span>
                     </label>
-                    <button
-                      type="button"
-                      onClick={() => setIdCardFileName('สำเนาบัตรประชาชน_ผ่านการรับรองแล้ว.pdf')}
-                      className="px-3 py-1.5 bg-primary/20 text-primary border border-primary/30 rounded-xl text-[11px] font-black hover:bg-primary hover:text-white transition-all cursor-pointer"
-                    >
-                      ⚡ ทดสอบ: ข้ามการแนบไฟล์ (Mock Bypass)
-                    </button>
                   </div>
 
                   <div className="border-2 border-dashed border-white/20 rounded-2xl p-6 text-center hover:border-primary/50 transition-all bg-[#080F1E]/60">
@@ -609,17 +552,10 @@ export default function OwnerOnboarding() {
                   </p>
                 </div>
 
-                <div className="flex items-center gap-3 pt-2">
-                  <button
-                    type="button"
-                    onClick={handleAutoFillStep1}
-                    className="w-1/3 py-4 bg-white/10 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-white/20 transition-all cursor-pointer"
-                  >
-                    ⚡ เติมตัวอย่าง Step 1
-                  </button>
+                <div className="pt-2">
                   <button 
                     type="submit"
-                    className="w-2/3 py-4 bg-primary text-primary-foreground rounded-2xl font-black text-xs uppercase tracking-[0.2em] shadow-xl hover:-translate-y-0.5 active:scale-95 transition-all cursor-pointer"
+                    className="w-full py-4 bg-primary text-primary-foreground rounded-2xl font-black text-xs uppercase tracking-[0.2em] shadow-xl hover:-translate-y-0.5 active:scale-95 transition-all cursor-pointer"
                   >
                     ถัดไป: ตั้งค่าข้อมูลหอพัก & สิ่งอำนวยความสะดวก →
                   </button>
@@ -688,17 +624,6 @@ export default function OwnerOnboarding() {
                     <h3 className="text-xs font-black text-white uppercase tracking-widest flex items-center gap-2">
                       <span>📍</span> การปักหมุดตำแหน่งหอพักบนแผนที่ (Map Location Pinning)
                     </h3>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setLatitude('19.0286');
-                        setLongitude('99.8967');
-                        setMapUrl('https://maps.google.com/?q=19.0286,99.8967');
-                      }}
-                      className="px-3 py-1.5 bg-primary/20 text-primary border border-primary/30 rounded-xl text-[11px] font-black hover:bg-primary hover:text-white transition-all cursor-pointer"
-                    >
-                      📍 ปักหมุดพิกัด ม.พะเยา (ตัวอย่าง)
-                    </button>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -747,7 +672,7 @@ export default function OwnerOnboarding() {
                       rel="noopener noreferrer"
                       className="text-[11px] font-black text-primary hover:underline"
                     >
-                      🗺️ คลิกเพื่อทดสอบเปิดบน Google Maps ↗
+                      🗺️ เปิดดูตำแหน่งบน Google Maps ↗
                     </a>
                   </div>
                 </div>

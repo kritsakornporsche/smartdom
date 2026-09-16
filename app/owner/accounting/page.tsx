@@ -76,17 +76,17 @@ export default function OwnerAccounting() {
   const fmt = (n: number) => Number(n).toLocaleString('th-TH');
 
   if (loading) return (
-    <div className="flex-1 flex items-center justify-center bg-[#080F1E]">
+    <div className="flex-1 flex items-center justify-center bg-secondary/40">
       <div className="w-10 h-10 rounded-full border-4 border-primary border-t-transparent animate-spin" />
     </div>
   );
 
   return (
-    <div className="flex-1 flex flex-col overflow-hidden bg-[#080F1E]">
-      <header className="h-20 bg-[#0F172A]/60 backdrop-blur-md border-b border-white/20/10 flex items-center justify-between px-10 shrink-0 sticky top-0 z-10">
+    <div className="flex-1 flex flex-col overflow-hidden bg-secondary/40">
+      <header className="h-20 bg-card/60 backdrop-blur-md border-b border-white/20/10 flex items-center justify-between px-10 shrink-0 sticky top-0 z-10">
         <div>
           <h1 className="text-xl font-black tracking-tight text-white">บัญชีหอพัก</h1>
-          <p className="text-[10px] font-bold text-white/50 uppercase tracking-widest mt-0.5">Dormitory Accounting</p>
+          <p className="text-[10px] font-bold text-foreground/50 uppercase tracking-widest mt-0.5">Dormitory Accounting</p>
         </div>
         <button
           onClick={() => setShowForm(true)}
@@ -101,16 +101,16 @@ export default function OwnerAccounting() {
 
           {/* KPI Row */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-            <div className="bg-[#0F172A] border border-white/20/10 shadow-sm rounded-2xl p-6">
-              <p className="text-white/50 text-xs font-bold uppercase tracking-wider mb-1">รายรับรวม</p>
+            <div className="bg-card border border-white/20/10 shadow-sm rounded-2xl p-6">
+              <p className="text-muted-foreground text-xs font-bold uppercase tracking-wider mb-1">รายรับรวม</p>
               <p className="text-3xl font-black text-[#10B981]">฿{fmt(totals.income)}</p>
             </div>
-            <div className="bg-[#0F172A] border border-white/20/10 shadow-sm rounded-2xl p-6">
-              <p className="text-white/50 text-xs font-bold uppercase tracking-wider mb-1">รายจ่ายรวม</p>
+            <div className="bg-card border border-white/20/10 shadow-sm rounded-2xl p-6">
+              <p className="text-muted-foreground text-xs font-bold uppercase tracking-wider mb-1">รายจ่ายรวม</p>
               <p className="text-3xl font-black text-[#EF4444]">฿{fmt(totals.expense)}</p>
             </div>
-            <div className="bg-[#0F172A] border border-white/20/10 shadow-sm rounded-2xl p-6">
-              <p className="text-white/50 text-xs font-bold uppercase tracking-wider mb-1">กำไรสุทธิ</p>
+            <div className="bg-card border border-white/20/10 shadow-sm rounded-2xl p-6">
+              <p className="text-muted-foreground text-xs font-bold uppercase tracking-wider mb-1">กำไรสุทธิ</p>
               <p className={`text-3xl font-black ${totals.profit >= 0 ? 'text-white' : 'text-[#EF4444]'}`}>
                 ฿{fmt(totals.profit)}
               </p>
@@ -118,25 +118,25 @@ export default function OwnerAccounting() {
           </div>
 
           {/* Transaction Table */}
-          <div className="bg-[#0F172A] border border-white/20/10 shadow-sm rounded-2xl overflow-hidden">
-            <div className="px-6 py-4 border-b border-white/20/10 bg-[#0F172A]">
+          <div className="bg-card border border-white/20/10 shadow-sm rounded-2xl overflow-hidden">
+            <div className="px-6 py-4 border-b border-white/20/10 bg-card">
               <h3 className="text-white font-bold">รายการทั้งหมด</h3>
             </div>
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-white/20/10">
-                  <th className="text-left px-6 py-3 text-white/50 text-xs uppercase tracking-widest font-bold">วันที่</th>
-                  <th className="text-left px-6 py-3 text-white/50 text-xs uppercase tracking-widest font-bold">ประเภท</th>
-                  <th className="text-left px-6 py-3 text-white/50 text-xs uppercase tracking-widest font-bold">หมวด</th>
-                  <th className="text-left px-6 py-3 text-white/50 text-xs uppercase tracking-widest font-bold">รายละเอียด</th>
-                  <th className="text-right px-6 py-3 text-white/50 text-xs uppercase tracking-widest font-bold">จำนวน</th>
+                  <th className="text-left px-6 py-3 text-muted-foreground text-xs uppercase tracking-widest font-bold">วันที่</th>
+                  <th className="text-left px-6 py-3 text-muted-foreground text-xs uppercase tracking-widest font-bold">ประเภท</th>
+                  <th className="text-left px-6 py-3 text-muted-foreground text-xs uppercase tracking-widest font-bold">หมวด</th>
+                  <th className="text-left px-6 py-3 text-muted-foreground text-xs uppercase tracking-widest font-bold">รายละเอียด</th>
+                  <th className="text-right px-6 py-3 text-muted-foreground text-xs uppercase tracking-widest font-bold">จำนวน</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#E5DFD3]">
                 {transactions.length === 0 ? (
-                  <tr><td colSpan={5} className="px-6 py-12 text-center text-white/50 text-sm">ยังไม่มีรายการ</td></tr>
+                  <tr><td colSpan={5} className="px-6 py-12 text-center text-muted-foreground text-sm">ยังไม่มีรายการ</td></tr>
                 ) : transactions.map(t => (
-                  <tr key={t.id} className="hover:bg-[#0F172A] transition-colors">
+                  <tr key={t.id} className="hover:bg-card transition-colors">
                     <td className="px-6 py-4 text-white/80">{t.transaction_date ? new Date(t.transaction_date).toLocaleDateString('th-TH') : '-'}</td>
                     <td className="px-6 py-4">
                       <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${
@@ -159,60 +159,60 @@ export default function OwnerAccounting() {
       {/* Add Transaction Modal */}
       {showForm && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50" onClick={() => setShowForm(false)}>
-          <div className="bg-[#0F172A] border border-white/20/10 rounded-2xl p-8 w-full max-w-md shadow-2xl" onClick={e => e.stopPropagation()}>
+          <div className="bg-card border border-white/20/10 rounded-2xl p-8 w-full max-w-md shadow-2xl" onClick={e => e.stopPropagation()}>
             <h2 className="text-white font-black text-lg mb-6">บันทึกรายการใหม่</h2>
             <div className="space-y-4">
               <div>
-                <label className="text-white/50 text-xs font-bold uppercase tracking-wider block mb-1.5">ประเภท</label>
+                <label className="text-muted-foreground text-xs font-bold uppercase tracking-wider block mb-1.5">ประเภท</label>
                 <select
                   value={form.type}
                   onChange={e => setForm(f => ({ ...f, type: e.target.value }))}
-                  className="w-full bg-[#0F172A] border border-white/20/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-primary"
+                  className="w-full bg-card border border-white/20/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-primary"
                 >
                   <option value="Income">รายรับ (Income)</option>
                   <option value="Expense">รายจ่าย (Expense)</option>
                 </select>
               </div>
               <div>
-                <label className="text-white/50 text-xs font-bold uppercase tracking-wider block mb-1.5">หมวดหมู่</label>
+                <label className="text-muted-foreground text-xs font-bold uppercase tracking-wider block mb-1.5">หมวดหมู่</label>
                 <input
                   value={form.category}
                   onChange={e => setForm(f => ({ ...f, category: e.target.value }))}
-                  className="w-full bg-[#0F172A] border border-white/20/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-primary"
+                  className="w-full bg-card border border-white/20/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-primary"
                   placeholder="เช่น ค่าเช่า, ค่าซ่อมบำรุง"
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-white/50 text-xs font-bold uppercase tracking-wider block mb-1.5">จำนวน (บาท)</label>
+                  <label className="text-muted-foreground text-xs font-bold uppercase tracking-wider block mb-1.5">จำนวน (บาท)</label>
                   <input
                     type="number"
                     value={form.amount}
                     onChange={e => setForm(f => ({ ...f, amount: Number(e.target.value) }))}
-                    className="w-full bg-[#0F172A] border border-white/20/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-primary"
+                    className="w-full bg-card border border-white/20/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-primary"
                   />
                 </div>
                 <div>
-                  <label className="text-white/50 text-xs font-bold uppercase tracking-wider block mb-1.5">วันที่</label>
+                  <label className="text-muted-foreground text-xs font-bold uppercase tracking-wider block mb-1.5">วันที่</label>
                   <input
                     type="date"
                     value={form.transaction_date}
                     onChange={e => setForm(f => ({ ...f, transaction_date: e.target.value }))}
-                    className="w-full bg-[#0F172A] border border-white/20/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-primary"
+                    className="w-full bg-card border border-white/20/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-primary"
                   />
                 </div>
               </div>
               <div>
-                <label className="text-white/50 text-xs font-bold uppercase tracking-wider block mb-1.5">รายละเอียด</label>
+                <label className="text-muted-foreground text-xs font-bold uppercase tracking-wider block mb-1.5">รายละเอียด</label>
                 <input
                   value={form.description}
                   onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
-                  className="w-full bg-[#0F172A] border border-white/20/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-primary"
+                  className="w-full bg-card border border-white/20/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-primary"
                   placeholder="รายละเอียดเพิ่มเติม (ถ้ามี)"
                 />
               </div>
               <div className="flex gap-3 pt-2">
-                <button onClick={() => setShowForm(false)} className="flex-1 py-3 bg-[#0F172A] text-white/50 rounded-xl font-bold text-sm hover:bg-white/10 transition-colors border border-white/20/10">ยกเลิก</button>
+                <button onClick={() => setShowForm(false)} className="flex-1 py-3 bg-card text-muted-foreground rounded-xl font-bold text-sm hover:bg-white/10 transition-colors border border-white/20/10">ยกเลิก</button>
                 <button onClick={handleSubmit} className="flex-1 py-3 bg-primary text-white rounded-xl font-bold text-sm hover:bg-primary/90 transition-colors shadow-lg shadow-primary/20">บันทึก</button>
               </div>
             </div>

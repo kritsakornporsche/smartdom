@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   /* UP Purple & Gold Light Theme - University of Phayao */
   --background: #FAF5FF; /* Subtle purple lavender tint */

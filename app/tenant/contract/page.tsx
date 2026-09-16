@@ -109,70 +109,70 @@ export default function TenantContractPage() {
         <div>
           <div className="flex items-center gap-3">
             <div className="w-1.5 h-8 bg-primary rounded-full" />
-            <h1 className="text-3xl font-black text-white tracking-tight">สัญญาเช่าห้องพัก (Lease Contract)</h1>
+            <h1 className="text-3xl font-black text-foreground tracking-tight">สัญญาเช่าห้องพัก (Lease Contract)</h1>
           </div>
-          <p className="text-white/50 text-sm font-medium ml-4 mt-1">
+          <p className="text-muted-foreground text-sm font-medium ml-4 mt-1">
             รายละเอียดสัญญาเช่าปัจจุบัน และไฟล์เอกสารสัญญาฉบับจริงที่เซ็นรับรองแล้ว
           </p>
         </div>
       </div>
 
       {loading ? (
-        <div className="bg-[#0F172A] border border-white/10 rounded-3xl p-16 text-center text-white/40 font-bold animate-pulse">
+        <div className="bg-card border border-border rounded-3xl p-16 text-center text-muted-foreground font-bold animate-pulse">
           กำลังโหลดข้อมูลสัญญาเช่าของคุณ...
         </div>
       ) : !activeContract ? (
-        <div className="bg-[#0F172A] border border-white/10 rounded-3xl p-16 text-center shadow-xl space-y-4">
+        <div className="bg-card border border-border rounded-3xl p-16 text-center shadow-xl space-y-4">
           <div className="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center text-4xl mx-auto mb-2">📄</div>
-          <h3 className="text-2xl font-black text-white">ไม่พบข้อมูลสัญญาเช่า</h3>
-          <p className="text-white/50 max-w-md mx-auto">
+          <h3 className="text-2xl font-black text-foreground">ไม่พบข้อมูลสัญญาเช่า</h3>
+          <p className="text-muted-foreground max-w-md mx-auto">
             ยังไม่มีการบันทึกสัญญาเช่าของคุณในระบบ หรือสัญญาเช่ากำลังอยู่ระหว่างการบันทึกโดยเจ้าของหอพัก กรุณาติดต่อผู้ดูแลหอพัก
           </p>
         </div>
       ) : (
         <div className="space-y-10">
           {/* Active Contract Card */}
-          <div className="bg-[#0F172A] rounded-3xl border border-white/10 shadow-2xl overflow-hidden">
+          <div className="bg-card rounded-3xl border border-border shadow-2xl overflow-hidden">
             {/* Status Header */}
             <div className={`p-4 text-center font-black tracking-widest uppercase text-xs border-b ${
-              activeContract.status === 'Active' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-white/5 text-white/50 border-white/10'
+              activeContract.status === 'Active' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-white/5 text-muted-foreground border-border'
             }`}>
               สถานะสัญญา: {activeContract.status === 'Active' ? '🟢 มีผลบังคับใช้ (Active)' : activeContract.status}
               {activeContract.renewal_requested === 1 && ' — 🔔 แจ้งส่งคำขอต่อสัญญาแล้ว (รอเจ้าของหอพักดำเนินการ)'}
             </div>
 
             <div className="p-8 lg:p-12 space-y-8">
-              <div className="flex flex-col md:flex-row justify-between items-start gap-6 pb-6 border-b border-white/10">
+              <div className="flex flex-col md:flex-row justify-between items-start gap-6 pb-6 border-b border-border">
                 <div>
-                  <h2 className="text-3xl font-black text-white">สัญญาเช่าที่พักอาศัย</h2>
-                  <p className="text-white/50 text-sm font-medium mt-1">
+                  <h2 className="text-3xl font-black text-foreground">สัญญาเช่าที่พักอาศัย</h2>
+                  <p className="text-muted-foreground text-sm font-medium mt-1">
                     ห้องพักหมายเลข <span className="text-white font-bold text-lg">ห้อง {activeContract.room_number || '-'}</span>
                   </p>
                 </div>
-                <div className="bg-white/5 px-6 py-3 rounded-2xl border border-white/10 text-right">
-                  <p className="text-[10px] font-black text-white/50 uppercase tracking-widest">รหัสสัญญา</p>
+                <div className="bg-white/5 px-6 py-3 rounded-2xl border border-border text-right">
+                  <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">รหัสสัญญา</p>
                   <p className="text-lg font-mono font-bold text-white">SD-CONTRACT-{activeContract.id.toString().padStart(4, '0')}</p>
                 </div>
               </div>
 
               {/* Specs Grid */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                <div className="bg-white/5 p-6 rounded-2xl border border-white/10">
-                  <p className="text-[10px] font-black text-white/50 uppercase tracking-widest mb-1">ระยะเวลาเช่า</p>
+                <div className="bg-white/5 p-6 rounded-2xl border border-border">
+                  <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-1">ระยะเวลาเช่า</p>
                   <p className="text-white font-bold text-sm">
                     {new Date(activeContract.start_date).toLocaleDateString('th-TH')} - {new Date(activeContract.end_date).toLocaleDateString('th-TH')}
                   </p>
                 </div>
 
-                <div className="bg-white/5 p-6 rounded-2xl border border-white/10">
-                  <p className="text-[10px] font-black text-white/50 uppercase tracking-widest mb-1">เงินประกันการเช่า (Deposit)</p>
+                <div className="bg-white/5 p-6 rounded-2xl border border-border">
+                  <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-1">เงินประกันการเช่า (Deposit)</p>
                   <p className="text-emerald-400 font-black text-xl">
                     ฿{Number(activeContract.deposit_amount || 0).toLocaleString()}
                   </p>
                 </div>
 
-                <div className="bg-white/5 p-6 rounded-2xl border border-white/10">
-                  <p className="text-[10px] font-black text-white/50 uppercase tracking-widest mb-1">วันที่ทำสัญญา/บันทึก</p>
+                <div className="bg-white/5 p-6 rounded-2xl border border-border">
+                  <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-1">วันที่ทำสัญญา/บันทึก</p>
                   <p className="text-white font-bold text-sm">
                     {new Date(activeContract.created_at).toLocaleDateString('th-TH')}
                   </p>
@@ -180,13 +180,13 @@ export default function TenantContractPage() {
               </div>
 
               {/* Uploaded Contract Document Attachment */}
-              <div className="p-8 bg-white/5 rounded-3xl border border-white/10 space-y-6">
+              <div className="p-8 bg-white/5 rounded-3xl border border-border space-y-6">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div>
                     <h3 className="text-lg font-black text-white flex items-center gap-2">
                       <span>📄 เอกสารสัญญาเช่าฉบับจริง (Signed Document)</span>
                     </h3>
-                    <p className="text-xs text-white/50 mt-1">สำเนาภาพถ่าย/ไฟล์สัญญาที่เซ็นรับรองร่วมกับเจ้าของหอพัก</p>
+                    <p className="text-xs text-muted-foreground mt-1">สำเนาภาพถ่าย/ไฟล์สัญญาที่เซ็นรับรองร่วมกับเจ้าของหอพัก</p>
                   </div>
 
                   {activeContract.contract_file_url && (
@@ -203,7 +203,7 @@ export default function TenantContractPage() {
                 </div>
 
                 {activeContract.contract_file_url ? (
-                  <div className="relative rounded-2xl overflow-hidden border border-white/10 bg-black/40 flex items-center justify-center min-h-[350px]">
+                  <div className="relative rounded-2xl overflow-hidden border border-border bg-black/40 flex items-center justify-center min-h-[350px]">
                     {activeContract.contract_file_url.startsWith('data:image') || activeContract.contract_file_url.startsWith('http') ? (
                       <Image
                         src={activeContract.contract_file_url}
@@ -223,14 +223,14 @@ export default function TenantContractPage() {
                     )}
                   </div>
                 ) : (
-                  <div className="p-12 text-center text-white/40 italic bg-black/20 rounded-2xl border border-white/5">
+                  <div className="p-12 text-center text-muted-foreground italic bg-black/20 rounded-2xl border border-white/5">
                     ยังไม่มีการแนบไฟล์ภาพสัญญาเช่าฉบับจริงในระบบ
                   </div>
                 )}
               </div>
 
               {/* Action Buttons */}
-              <div className="flex flex-col sm:flex-row gap-4 pt-4 border-t border-white/10">
+              <div className="flex flex-col sm:flex-row gap-4 pt-4 border-t border-border">
                 <button
                   onClick={() => setIsRenewModalOpen(true)}
                   disabled={activeContract.renewal_requested === 1}
@@ -245,17 +245,17 @@ export default function TenantContractPage() {
           {/* History Contracts Section */}
           {historyContracts.length > 0 && (
             <div className="space-y-6 pt-6">
-              <h3 className="text-xl font-black text-white flex items-center gap-2">
+              <h3 className="text-xl font-black text-foreground flex items-center gap-2">
                 <span>📜 ประวัติสัญญาเช่าที่ผ่านมา ({historyContracts.length})</span>
               </h3>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {historyContracts.map(hc => (
-                  <div key={hc.id} className="bg-[#0F172A] p-6 rounded-3xl border border-white/10 space-y-4">
+                  <div key={hc.id} className="bg-card p-6 rounded-3xl border border-border space-y-4">
                     <div className="flex justify-between items-start">
                       <div>
                         <p className="font-black text-white text-base">สัญญา #{hc.id}</p>
-                        <p className="text-xs text-white/50">
+                        <p className="text-xs text-muted-foreground">
                           {new Date(hc.start_date).toLocaleDateString('th-TH')} - {new Date(hc.end_date).toLocaleDateString('th-TH')}
                         </p>
                       </div>
@@ -267,7 +267,7 @@ export default function TenantContractPage() {
                     {hc.contract_file_url && (
                       <button
                         onClick={() => setPreviewingFileUrl(hc.contract_file_url || null)}
-                        className="w-full py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-xs font-bold text-white transition-all cursor-pointer"
+                        className="w-full py-2.5 bg-white/5 hover:bg-white/10 border border-border rounded-xl text-xs font-bold text-white transition-all cursor-pointer"
                       >
                         📄 ดูไฟล์สัญญาย้อนหลัง
                       </button>
@@ -283,12 +283,12 @@ export default function TenantContractPage() {
       {/* Renewal Modal */}
       {isRenewModalOpen && activeContract && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-6">
-          <div className="bg-[#0F172A] rounded-[32px] w-full max-w-lg border border-white/10 shadow-2xl overflow-hidden">
-            <div className="bg-[#0B0F19] border-b border-white/10 p-6 flex items-center justify-between">
-              <h3 className="text-xl font-black text-white">🔄 แจ้งขอต่อสัญญาเช่า</h3>
+          <div className="bg-card rounded-[32px] w-full max-w-lg border border-border shadow-2xl overflow-hidden">
+            <div className="bg-secondary/60 border-b border-border p-6 flex items-center justify-between">
+              <h3 className="text-xl font-black text-foreground">🔄 แจ้งขอต่อสัญญาเช่า</h3>
               <button
                 onClick={() => setIsRenewModalOpen(false)}
-                className="w-10 h-10 bg-white/5 hover:bg-white/10 rounded-xl text-white/50 hover:text-white flex items-center justify-center transition-all cursor-pointer"
+                className="w-10 h-10 bg-white/5 hover:bg-white/10 rounded-xl text-muted-foreground hover:text-white flex items-center justify-center transition-all cursor-pointer"
               >
                 ✕
               </button>
@@ -301,7 +301,7 @@ export default function TenantContractPage() {
               </div>
 
               <div className="space-y-2">
-                <label className="block text-[10px] font-black text-white/50 uppercase tracking-widest">หมายเหตุ / ความประสงค์ขอต่อสัญญา</label>
+                <label className="block text-[10px] font-black text-muted-foreground uppercase tracking-widest">หมายเหตุ / ความประสงค์ขอต่อสัญญา</label>
                 <textarea
                   rows={3}
                   placeholder="เช่น ประสงค์ขอต่อสัญญาเช่าเพิ่มอีก 1 ปีครับ..."
@@ -315,7 +315,7 @@ export default function TenantContractPage() {
                 <button
                   type="button"
                   onClick={() => setIsRenewModalOpen(false)}
-                  className="flex-1 py-4 text-white/50 font-bold hover:bg-white/5 rounded-2xl transition-all"
+                  className="flex-1 py-4 text-muted-foreground font-bold hover:bg-white/5 rounded-2xl transition-all"
                 >
                   ยกเลิก
                 </button>
@@ -335,8 +335,8 @@ export default function TenantContractPage() {
       {/* File Preview Modal */}
       {previewingFileUrl && (
         <div className="fixed inset-0 bg-black/90 backdrop-blur-md z-50 flex items-center justify-center p-6">
-          <div className="bg-[#0F172A] rounded-[36px] w-full max-w-4xl max-h-[90vh] border border-white/10 shadow-2xl flex flex-col overflow-hidden">
-            <div className="bg-[#0B0F19] border-b border-white/10 p-6 flex items-center justify-between shrink-0">
+          <div className="bg-card rounded-[36px] w-full max-w-4xl max-h-[90vh] border border-border shadow-2xl flex flex-col overflow-hidden">
+            <div className="bg-secondary/60 border-b border-border p-6 flex items-center justify-between shrink-0">
               <h3 className="text-lg font-black text-white">เอกสารสัญญาเช่า</h3>
               <div className="flex items-center gap-3">
                 <a
@@ -350,7 +350,7 @@ export default function TenantContractPage() {
                 </a>
                 <button
                   onClick={() => setPreviewingFileUrl(null)}
-                  className="w-10 h-10 bg-white/5 hover:bg-white/10 rounded-xl text-white/50 hover:text-white flex items-center justify-center transition-all cursor-pointer"
+                  className="w-10 h-10 bg-white/5 hover:bg-white/10 rounded-xl text-muted-foreground hover:text-white flex items-center justify-center transition-all cursor-pointer"
                 >
                   ✕
                 </button>
@@ -372,7 +372,7 @@ export default function TenantContractPage() {
               ) : (
                 <iframe
                   src={previewingFileUrl}
-                  className="w-full h-[600px] rounded-2xl border border-white/10"
+                  className="w-full h-[600px] rounded-2xl border border-border"
                   title="Document Preview"
                 />
               )}

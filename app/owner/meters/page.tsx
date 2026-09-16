@@ -427,7 +427,7 @@ export default function MetersPage() {
   const isFiltering = searchRoom !== '' || searchDate !== '' || selectedCycle !== 'all' || selectedType !== 'all';
 
   return (
-    <div className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 relative z-10 text-white min-h-screen bg-[#0E071D]">
+    <div className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 relative z-10 text-foreground min-h-screen bg-background">
        {/* Top Header */}
        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
          <div>
@@ -437,7 +437,7 @@ export default function MetersPage() {
                รอบล่าสุด: {latestCycle}
              </span>
            </div>
-           <p className="text-xs text-white/50 font-medium mt-1">บันทึกและตรวจสอบหน่วยการใช้น้ำประปาและไฟฟ้าประจำเดือน</p>
+           <p className="text-xs text-muted-foreground font-medium mt-1">บันทึกและตรวจสอบหน่วยการใช้น้ำประปาและไฟฟ้าประจำเดือน</p>
          </div>
          <div className="flex flex-wrap gap-3">
            <button 
@@ -473,21 +473,21 @@ export default function MetersPage() {
 
        {/* Stats Grid */}
        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
-         <div className="bg-[#180D2F] border border-purple-500/20 p-6 rounded-3xl shadow-sm relative overflow-hidden group">
+         <div className="bg-card border border-border p-6 rounded-3xl shadow-sm relative overflow-hidden group">
            <div className="text-xs font-bold text-white/50 uppercase tracking-wider">ห้องที่บันทึกแล้ว</div>
            <div className="mt-3 flex items-baseline gap-2">
              <span className="text-3xl font-display font-black text-white">{stats.recordedRooms}</span>
              <span className="text-xs text-white/40 font-medium">/ {rooms.length} ห้อง</span>
            </div>
          </div>
-         <div className="bg-[#180D2F] border border-purple-500/20 p-6 rounded-3xl shadow-sm relative overflow-hidden group">
+         <div className="bg-card border border-border p-6 rounded-3xl shadow-sm relative overflow-hidden group">
            <div className="text-xs font-bold text-blue-400 uppercase tracking-wider">หน่วยน้ำประปารวม</div>
            <div className="mt-3 flex items-baseline gap-2">
              <span className="text-3xl font-display font-black text-blue-400">{stats.waterUnits.toLocaleString()}</span>
              <span className="text-xs text-blue-400/60 font-medium">หน่วย (ยูนิต)</span>
            </div>
          </div>
-         <div className="bg-[#180D2F] border border-purple-500/20 p-6 rounded-3xl shadow-sm relative overflow-hidden group">
+         <div className="bg-card border border-border p-6 rounded-3xl shadow-sm relative overflow-hidden group">
            <div className="text-xs font-bold text-orange-400 uppercase tracking-wider">หน่วยไฟฟ้ารวม</div>
            <div className="mt-3 flex items-baseline gap-2">
              <span className="text-3xl font-display font-black text-orange-400">{stats.elecUnits.toLocaleString()}</span>
@@ -497,7 +497,7 @@ export default function MetersPage() {
        </div>
 
        {/* Advanced Search & Multi-filter Suite */}
-       <div className="bg-[#180D2F] border border-purple-500/20 rounded-3xl p-6 mb-6 shadow-sm">
+       <div className="bg-card border border-border rounded-3xl p-6 mb-6 shadow-sm">
          <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
            
            {/* Room Search */}
@@ -511,7 +511,7 @@ export default function MetersPage() {
                  placeholder="พิมพ์เลขห้อง เช่น 101, 202..."
                  value={searchRoom}
                  onChange={e => setSearchRoom(e.target.value)}
-                 className="w-full bg-[#0E071D] border border-purple-500/20 rounded-2xl pl-10 pr-10 py-2.5 text-xs text-white placeholder-white/40 font-bold outline-none focus:ring-2 focus:ring-blue-500/30"
+                 className="w-full bg-background border border-border text-foreground rounded-2xl pl-10 pr-10 py-2.5 text-xs text-white placeholder-white/40 font-bold outline-none focus:ring-2 focus:ring-blue-500/30"
                />
                <svg className="w-4 h-4 text-white/40 absolute left-3.5 top-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -537,7 +537,7 @@ export default function MetersPage() {
                  type="month"
                  value={searchDate}
                  onChange={e => setSearchDate(e.target.value)}
-                 className="w-full bg-[#0E071D] border border-purple-500/20 rounded-2xl px-4 py-2 text-xs text-white font-bold outline-none focus:ring-2 focus:ring-blue-500/30"
+                 className="w-full bg-background border border-border text-foreground rounded-2xl px-4 py-2 text-xs text-white font-bold outline-none focus:ring-2 focus:ring-blue-500/30"
                />
                {searchDate && (
                  <button
@@ -559,7 +559,7 @@ export default function MetersPage() {
              <select
                value={selectedCycle}
                onChange={e => setSelectedCycle(e.target.value)}
-               className="w-full bg-[#0E071D] border border-purple-500/20 rounded-2xl px-4 py-2.5 text-xs text-white font-bold outline-none focus:ring-2 focus:ring-blue-500/30 cursor-pointer"
+               className="w-full bg-background border border-border text-foreground rounded-2xl px-4 py-2.5 text-xs text-white font-bold outline-none focus:ring-2 focus:ring-blue-500/30 cursor-pointer"
              >
                <option value="all">ทุกรอบบิลทั้งหมด ({readings.length} รายการ)</option>
                {billingCycles.map(c => (
@@ -576,7 +576,7 @@ export default function MetersPage() {
              <select
                value={pageSize}
                onChange={e => setPageSize(Number(e.target.value))}
-               className="w-full bg-[#0E071D] border border-purple-500/20 rounded-2xl px-3 py-2.5 text-xs text-white font-bold outline-none focus:ring-2 focus:ring-blue-500/30 cursor-pointer"
+               className="w-full bg-background border border-border text-foreground rounded-2xl px-3 py-2.5 text-xs text-white font-bold outline-none focus:ring-2 focus:ring-blue-500/30 cursor-pointer"
              >
                <option value={10}>10 รายการ</option>
                <option value={20}>20 รายการ</option>
@@ -671,7 +671,7 @@ export default function MetersPage() {
        )}
 
        {/* Main Table Container */}
-       <div className="bg-[#180D2F] rounded-3xl border border-purple-500/20 shadow-xl overflow-hidden backdrop-blur-xl mb-6">
+       <div className="bg-card rounded-3xl border border-border shadow-xl overflow-hidden backdrop-blur-xl mb-6">
          {loading ? (
             <div className="p-20 text-center flex flex-col items-center gap-4">
               <div className="w-10 h-10 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
@@ -760,7 +760,7 @@ export default function MetersPage() {
                             {r.type === 'Water' ? '💧 น้ำประปา' : '⚡ ไฟฟ้า'}
                           </span>
                         </td>
-                        <td className="py-4 px-6 text-white/70 font-medium">{r.billing_cycle}</td>
+                        <td className="py-4 px-6 text-muted-foreground font-medium">{r.billing_cycle}</td>
                         <td className="py-4 px-6 text-right font-mono text-white/60">{Number(r.previous_reading).toFixed(2)}</td>
                         <td className="py-4 px-6 text-right font-mono text-emerald-400 font-black text-base">{Number(r.current_reading).toFixed(2)}</td>
                         <td className="py-4 px-6 text-right font-mono font-black text-white">
@@ -817,7 +817,7 @@ export default function MetersPage() {
 
          {/* Pagination Controls Section */}
          {pageSize > 0 && totalPages > 1 && (
-           <div className="px-6 py-4 bg-[#180D2F] border-t border-purple-500/20 flex flex-col sm:flex-row items-center justify-between gap-4">
+           <div className="px-6 py-4 bg-card border-t border-purple-500/20 flex flex-col sm:flex-row items-center justify-between gap-4">
              <div className="text-xs text-white/50 font-medium">
                แสดงรายการที่ <strong className="text-white font-bold">{(currentPage - 1) * pageSize + 1}</strong> ถึง{' '}
                <strong className="text-white font-bold">{Math.min(currentPage * pageSize, filteredReadings.length)}</strong> จากทั้งหมด{' '}
@@ -868,7 +868,7 @@ export default function MetersPage() {
          )}
 
          {/* Prominent Bottom Action Bar Under Table */}
-         <div className="p-6 bg-[#130924] border-t border-purple-500/20 flex flex-col sm:flex-row items-center justify-between gap-4">
+         <div className="p-6 bg-secondary/30 border-t border-purple-500/20 flex flex-col sm:flex-row items-center justify-between gap-4">
            <div className="flex items-center gap-3 text-xs text-white/60">
              <span className="h-3 w-3 rounded-full bg-emerald-500 animate-ping"></span>
              <span>สิ้นสุดตารางข้อมูลมิเตอร์ • พร้อมบันทึกรอบเดือนใหม่ถัดไป: <strong>{getNextMonthCycle(latestCycle)}</strong></span>
@@ -894,7 +894,7 @@ export default function MetersPage() {
         {showModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4">
             <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setShowModal(false)}></div>
-            <div className="bg-[#180D2F] rounded-3xl p-5 sm:p-7 max-w-md w-full shadow-2xl border border-purple-500/25 relative z-10 animate-in fade-in zoom-in duration-200 max-h-[92vh] overflow-y-auto">
+            <div className="bg-card rounded-3xl p-5 sm:p-7 max-w-md w-full shadow-2xl border border-purple-500/25 relative z-10 animate-in fade-in zoom-in duration-200 max-h-[92vh] overflow-y-auto">
               <div className="flex justify-between items-center mb-5 pb-3 border-b border-purple-500/20">
                 <div>
                   <h2 className="text-lg font-display font-black text-white">บันทึกมิเตอร์รอบเดือนใหม่</h2>
@@ -913,7 +913,7 @@ export default function MetersPage() {
                     required 
                     value={form.billing_cycle} 
                     onChange={e => setForm({...form, billing_cycle: e.target.value})} 
-                    className="w-full bg-[#0E071D] border border-purple-500/30 rounded-xl px-4 py-2.5 text-sm text-white font-bold outline-none focus:ring-2 focus:ring-purple-500" 
+                    className="w-full bg-background border border-border text-foreground rounded-xl px-4 py-2.5 text-sm text-white font-bold outline-none focus:ring-2 focus:ring-purple-500" 
                   />
                 </div>
 
@@ -923,7 +923,7 @@ export default function MetersPage() {
                     required 
                     value={form.room_id} 
                     onChange={e => handleRoomSelectChange(e.target.value)} 
-                    className="w-full bg-[#0E071D] border border-purple-500/30 rounded-xl px-4 py-2.5 text-sm text-white font-bold outline-none focus:ring-2 focus:ring-purple-500"
+                    className="w-full bg-background border border-border text-foreground rounded-xl px-4 py-2.5 text-sm text-white font-bold outline-none focus:ring-2 focus:ring-purple-500"
                   >
                     <option value="">-- เลือกห้องพัก --</option>
                     {rooms.map((room: any) => (
@@ -968,7 +968,7 @@ export default function MetersPage() {
                       step="any" 
                       value={form.previous_reading} 
                       onChange={e => setForm({...form, previous_reading: e.target.value})} 
-                      className="w-full bg-[#0E071D] border border-purple-500/30 rounded-xl px-3 py-2 text-sm text-white font-mono outline-none" 
+                      className="w-full bg-background border border-border text-foreground rounded-xl px-3 py-2 text-sm text-foreground font-mono outline-none" 
                       placeholder="0" 
                     />
                   </div>
@@ -980,14 +980,14 @@ export default function MetersPage() {
                       required 
                       value={form.current_reading} 
                       onChange={e => setForm({...form, current_reading: e.target.value})} 
-                      className="w-full bg-[#0E071D] border-2 border-amber-400/50 rounded-xl px-3 py-2 text-sm text-amber-300 font-mono font-black outline-none focus:border-amber-400" 
+                      className="w-full bg-secondary/40 border-2 border-amber-400/50 rounded-xl px-3 py-2 text-sm text-amber-300 font-mono font-black outline-none focus:border-amber-400" 
                       placeholder="0.00"
                     />
                   </div>
                 </div>
 
                 {form.current_reading && form.previous_reading && (
-                  <div className="bg-[#0E071D] p-3 rounded-xl flex items-center justify-between text-xs border border-purple-500/20">
+                  <div className="bg-secondary/40 p-3 rounded-xl flex items-center justify-between text-xs border border-purple-500/20">
                     <span className="text-purple-300/80">ใช้ไปในรอบนี้:</span>
                     <span className="font-mono font-black text-emerald-400 text-sm">
                       {Math.max(0, Number(form.current_reading) - Number(form.previous_reading)).toFixed(2)} ยูนิต
@@ -1023,7 +1023,7 @@ export default function MetersPage() {
                   </div>
 
                   {form.photo_url ? (
-                    <div className="mt-2 p-2 rounded-xl bg-[#0E071D] border border-purple-500/20 flex items-center justify-between gap-2">
+                    <div className="mt-2 p-2 rounded-xl bg-background border border-border text-foreground flex items-center justify-between gap-2">
                       <div 
                         className="flex items-center gap-2 cursor-pointer group"
                         onClick={() => {
@@ -1087,7 +1087,7 @@ export default function MetersPage() {
         {showBatchModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-0 sm:p-4">
             <div className="absolute inset-0 bg-black/75 backdrop-blur-sm" onClick={() => setShowBatchModal(false)}></div>
-            <div className="bg-[#180D2F] sm:rounded-3xl p-4 sm:p-6 w-full max-w-4xl h-[100dvh] sm:h-auto sm:max-h-[90vh] flex flex-col shadow-2xl border border-purple-500/25 relative z-10 animate-in fade-in zoom-in duration-200">
+            <div className="bg-card sm:rounded-3xl p-4 sm:p-6 w-full max-w-4xl h-[100dvh] sm:h-auto sm:max-h-[90vh] flex flex-col shadow-2xl border border-purple-500/25 relative z-10 animate-in fade-in zoom-in duration-200">
               
               {/* Header */}
               <div className="flex justify-between items-center mb-4 pb-3 border-b border-purple-500/20 shrink-0">
@@ -1114,7 +1114,7 @@ export default function MetersPage() {
                   type="month" 
                   value={batchCycle} 
                   onChange={e => setBatchCycle(e.target.value)} 
-                  className="bg-[#0E071D] border border-purple-500/30 rounded-xl px-3 py-1.5 text-xs text-white font-bold outline-none focus:border-amber-400"
+                  className="bg-background border border-border text-foreground rounded-xl px-3 py-1.5 text-xs text-white font-bold outline-none focus:border-amber-400"
                 />
               </div>
 
@@ -1124,7 +1124,7 @@ export default function MetersPage() {
                 {/* Mobile Responsive Cards (md:hidden) */}
                 <div className="md:hidden divide-y divide-purple-500/15 p-2 space-y-2.5">
                   {batchItems.map((item, idx) => (
-                    <div key={item.room_id} className="p-3 rounded-2xl bg-[#0E071D] border border-purple-500/20 space-y-2">
+                    <div key={item.room_id} className="p-3 rounded-2xl bg-background border border-border text-foreground space-y-2">
                       <div className="flex items-center justify-between">
                         <span className="font-black text-white text-sm sm:text-base">ห้อง {item.room_number}</span>
                         <span className="text-[10px] text-purple-300/60 font-mono">ห้องพัก</span>
@@ -1132,7 +1132,7 @@ export default function MetersPage() {
 
                       <div className="grid grid-cols-2 gap-2">
                         {/* Water Input Box */}
-                        <div className="p-2 rounded-xl bg-[#180D2F] border border-purple-500/20 space-y-1">
+                        <div className="p-2 rounded-xl bg-card border border-border space-y-1">
                           <div className="flex items-center justify-between text-[10px]">
                             <span className="font-bold text-purple-300">💧 น้ำ</span>
                             <span className="text-purple-300/60 font-mono">เดิม {item.water_prev.toFixed(1)}</span>
@@ -1151,7 +1151,7 @@ export default function MetersPage() {
                                   return copy;
                                 });
                               }}
-                              className="w-full bg-[#0E071D] border border-purple-400/40 rounded-lg px-2 py-1 text-center font-mono font-bold text-amber-300 text-xs outline-none focus:border-amber-400"
+                              className="w-full bg-secondary/40 border border-purple-400/40 rounded-lg px-2 py-1 text-center font-mono font-bold text-amber-300 text-xs outline-none focus:border-amber-400"
                             />
                             {item.water_photo && (
                               <button
@@ -1193,7 +1193,7 @@ export default function MetersPage() {
                         </div>
 
                         {/* Electricity Input Box */}
-                        <div className="p-2 rounded-xl bg-[#180D2F] border border-purple-500/20 space-y-1">
+                        <div className="p-2 rounded-xl bg-card border border-border space-y-1">
                           <div className="flex items-center justify-between text-[10px]">
                             <span className="font-bold text-amber-400">⚡ ไฟ</span>
                             <span className="text-amber-300/60 font-mono">เดิม {item.elec_prev.toFixed(1)}</span>
@@ -1212,7 +1212,7 @@ export default function MetersPage() {
                                   return copy;
                                 });
                               }}
-                              className="w-full bg-[#0E071D] border border-amber-500/40 rounded-lg px-2 py-1 text-center font-mono font-bold text-amber-300 text-xs outline-none focus:border-amber-400"
+                              className="w-full bg-secondary/40 border border-amber-500/40 rounded-lg px-2 py-1 text-center font-mono font-bold text-amber-300 text-xs outline-none focus:border-amber-400"
                             />
                             {item.elec_photo && (
                               <button
@@ -1259,7 +1259,7 @@ export default function MetersPage() {
 
                 {/* Desktop Table (hidden md:table) */}
                 <table className="hidden md:table w-full text-left border-collapse text-xs">
-                  <thead className="bg-[#0E071D] sticky top-0 z-10 text-purple-300/80">
+                  <thead className="bg-secondary/40 sticky top-0 z-10 text-purple-300/80">
                     <tr className="border-b border-purple-500/20">
                       <th className="py-2.5 px-4 font-bold">ห้อง</th>
                       <th className="py-2.5 px-4 text-center font-bold">💧 เลขน้ำก่อนหน้า</th>
@@ -1268,7 +1268,7 @@ export default function MetersPage() {
                       <th className="py-2.5 px-4 text-center font-bold">⚡ เลขไฟครั้งนี้ (ใหม่)</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-purple-500/10 bg-[#180D2F]">
+                  <tbody className="divide-y divide-purple-500/10 bg-card">
                     {batchItems.map((item, idx) => (
                       <tr key={item.room_id} className="hover:bg-purple-500/5">
                         <td className="py-2.5 px-4 font-black text-white text-sm">
@@ -1292,7 +1292,7 @@ export default function MetersPage() {
                                   return copy;
                                 });
                               }}
-                              className="w-24 bg-[#0E071D] border border-purple-400/40 rounded-lg px-2 py-1 text-center font-mono font-bold text-amber-300 text-xs outline-none focus:border-amber-400"
+                              className="w-24 bg-secondary/40 border border-purple-400/40 rounded-lg px-2 py-1 text-center font-mono font-bold text-amber-300 text-xs outline-none focus:border-amber-400"
                             />
                             {item.water_photo && (
                               <button
@@ -1350,7 +1350,7 @@ export default function MetersPage() {
                                   return copy;
                                 });
                               }}
-                              className="w-24 bg-[#0E071D] border border-amber-500/40 rounded-lg px-2 py-1 text-center font-mono font-bold text-amber-300 text-xs outline-none focus:border-amber-400"
+                              className="w-24 bg-secondary/40 border border-amber-500/40 rounded-lg px-2 py-1 text-center font-mono font-bold text-amber-300 text-xs outline-none focus:border-amber-400"
                             />
                             {item.elec_photo && (
                               <button
@@ -1436,7 +1436,7 @@ export default function MetersPage() {
             onClick={() => setViewingPhoto(null)}
           >
             <div 
-              className="bg-[#180D2F] border border-purple-500/30 rounded-3xl p-5 sm:p-6 max-w-lg w-full shadow-2xl flex flex-col gap-4 relative animate-in zoom-in-95 max-h-[92vh] overflow-hidden"
+              className="bg-card border border-purple-500/30 rounded-3xl p-5 sm:p-6 max-w-lg w-full shadow-2xl flex flex-col gap-4 relative animate-in zoom-in-95 max-h-[92vh] overflow-hidden"
               onClick={e => e.stopPropagation()}
             >
               {/* Header */}
@@ -1469,7 +1469,7 @@ export default function MetersPage() {
               </div>
 
               {/* Stats Bar */}
-              <div className="grid grid-cols-3 gap-2 bg-[#0E071D] p-3 rounded-2xl border border-purple-500/20 text-center shrink-0">
+              <div className="grid grid-cols-3 gap-2 bg-secondary/40 p-3 rounded-2xl border border-purple-500/20 text-center shrink-0">
                 <div>
                   <span className="text-[9px] text-purple-300/70 block uppercase font-bold">เลขครั้งก่อน</span>
                   <span className="font-mono text-xs sm:text-sm font-bold text-white/80">

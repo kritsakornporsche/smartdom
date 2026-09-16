@@ -296,15 +296,15 @@ export default function RoomsManagement() {
   };
 
   return (
-    <div className="flex-1 flex flex-col bg-[#080F1E] overflow-hidden">
+    <div className="flex-1 flex flex-col bg-background text-foreground overflow-hidden">
       {/* Header */}
-      <header className="h-24 bg-[#0F172A]/70 backdrop-blur-xl border-b border-white/20/10 flex items-center justify-between px-10 shrink-0 z-10 shadow-sm transition-all duration-300">
+      <header className="h-24 bg-card/80 backdrop-blur-xl border-b border-border flex items-center justify-between px-10 shrink-0 z-10 shadow-sm transition-all duration-300">
         <div className="flex flex-col">
           <div className="flex items-center gap-2">
             <div className="w-1.5 h-6 bg-primary rounded-full" />
-            <h1 className="text-2xl font-black text-white tracking-tight">จัดการห้องพัก</h1>
+            <h1 className="text-2xl font-black text-foreground tracking-tight">จัดการห้องพัก</h1>
           </div>
-          <p className="text-[10px] font-bold text-white/50 uppercase tracking-[0.2em] ml-3.5 mt-0.5 opacity-80">
+          <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em] ml-3.5 mt-0.5 opacity-80">
             SmartDom Asset & Unit Management
           </p>
         </div>
@@ -339,7 +339,7 @@ export default function RoomsManagement() {
             onClick={() => { setEditingRoom(null); setFormData({ room_number: '', room_type: 'Standard', price: 4500, floor: 1, status: 'Available', images: [] }); setIsModalOpen(true); }}
             className="px-6 py-3.5 rounded-2xl font-black text-sm shadow-xl flex items-center gap-2.5 transition-all duration-300 group bg-primary text-white shadow-lg hover:brightness-110 active:scale-95 cursor-pointer"
           >
-            <div className="p-1 bg-[#0F172A]/20 rounded-lg group-hover:rotate-90 transition-transform duration-500">
+            <div className="p-1 bg-card/20 rounded-lg group-hover:rotate-90 transition-transform duration-500">
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" /></svg>
             </div>
             เพิ่มห้องพัก
@@ -355,13 +355,13 @@ export default function RoomsManagement() {
           { label: 'มีผู้เช่าแล้ว', val: stats.occupied, color: 'bg-blue-500', icon: '🔑' },
           { label: 'รอตรวจสภาพ', val: stats.maintenance, color: 'bg-amber-500', icon: '🛠️' },
         ].map((s, i) => (
-          <div key={i} className="bg-[#0F172A] p-5 rounded-3xl border border-white/20/10 shadow-sm flex items-center gap-5 hover:border-primary transition-colors group">
+          <div key={i} className="bg-card p-5 rounded-3xl border border-border shadow-sm shadow-sm flex items-center gap-5 hover:border-primary transition-colors group">
             <div className={`w-14 h-14 ${s.color} rounded-2xl flex items-center justify-center text-3xl shadow-lg shadow-black/5 group-hover:scale-110 transition-transform duration-500`}>
               {s.icon}
             </div>
             <div>
-              <p className="text-[10px] font-bold text-white/50 uppercase tracking-widest">{s.label}</p>
-              <h3 className="text-2xl font-black text-white">{s.val}</h3>
+              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">{s.label}</p>
+              <h3 className="text-2xl font-black text-foreground">{s.val}</h3>
             </div>
           </div>
         ))}
@@ -369,14 +369,14 @@ export default function RoomsManagement() {
 
       {/* Filter Section */}
       <div className="px-10 mb-2 flex items-center gap-6 shrink-0">
-        <div className="flex bg-white/5 p-1 rounded-2xl border border-white/20/10">
+        <div className="flex bg-white/5 p-1 rounded-2xl border border-border">
           {['All', 'Available', 'Occupied', 'Maintenance'].map((s) => (
             <button
               key={s}
               onClick={() => setFilterStatus(s)}
               className={`px-6 py-2 rounded-xl text-xs font-black transition-all ${
                 filterStatus === s 
-                ? 'bg-[#0F172A] text-white shadow-sm ring-1 ring-[#DCD3C6]' 
+                ? 'bg-card text-white shadow-sm ring-1 ring-[#DCD3C6]' 
                 : 'text-white/50 hover:text-white/80'
               }`}
             >
@@ -395,7 +395,7 @@ export default function RoomsManagement() {
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
             {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
-              <div key={i} className="bg-[#0F172A] h-[380px] rounded-[40px] border border-white/20/10 animate-pulse flex flex-col p-6">
+              <div key={i} className="bg-card h-[380px] rounded-[40px] border border-border animate-pulse flex flex-col p-6">
                 <div className="bg-white/5 h-48 rounded-3xl mb-6" />
                 <div className="h-6 bg-white/5 w-2/3 rounded-lg mb-4" />
                 <div className="h-4 bg-white/5 w-1/2 rounded-lg" />
@@ -417,10 +417,10 @@ export default function RoomsManagement() {
               return (
               <div 
                 key={room.id} 
-                className="bg-[#0F172A] rounded-[40px] border border-white/20/10 shadow-md shadow-[#DCD3C6]/10 overflow-hidden group hover:shadow-2xl hover:border-primary hover:-translate-y-2 transition-all duration-500 flex flex-col"
+                className="bg-card rounded-[40px] border border-border shadow-md shadow-[#DCD3C6]/10 overflow-hidden group hover:shadow-2xl hover:border-primary hover:-translate-y-2 transition-all duration-500 flex flex-col"
               >
                 {/* Image Placeholder / Real Image */}
-                <div className="relative h-56 w-full bg-[#0F172A] overflow-hidden">
+                <div className="relative h-56 w-full bg-card overflow-hidden">
                    {firstImage ? (
                      <>
                        <Image src={firstImage} alt={room.room_number} fill unoptimized className="object-cover group-hover:scale-110 transition-transform duration-700" />
@@ -438,7 +438,7 @@ export default function RoomsManagement() {
                         <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">SMARTDOM UNIT</span>
                      </div>
                    )}
-                   <div className="absolute top-4 left-4 bg-[#0F172A]/90 border border-white/20 backdrop-blur-md text-white px-4 py-2 rounded-2xl text-sm font-black shadow-lg z-10">
+                   <div className="absolute top-4 left-4 bg-card/90 border border-white/20 backdrop-blur-md text-white px-4 py-2 rounded-2xl text-sm font-black shadow-lg z-10">
                       ห้อง {room.room_number}
                    </div>
                    <div className={`absolute top-4 right-4 px-4 py-2 rounded-2xl text-[10px] font-black uppercase tracking-widest border backdrop-blur-md shadow-xl z-10 ${
@@ -462,7 +462,7 @@ export default function RoomsManagement() {
                    <div className="mt-auto flex items-center gap-3 pt-6 border-t border-[#F3EFE9]">
                       <button 
                         onClick={() => handleEdit(room)}
-                        className="flex-1 bg-[#0F172A] text-muted-foreground py-3.5 rounded-2xl text-xs font-bold border border-white/20/10 hover:bg-primary/90 hover:text-white hover:border-primary hover:shadow-lg hover:shadow-primary/20 transition-all active:scale-95"
+                        className="flex-1 bg-card text-muted-foreground py-3.5 rounded-2xl text-xs font-bold border border-border hover:bg-primary/90 hover:text-white hover:border-primary hover:shadow-lg hover:shadow-primary/20 transition-all active:scale-95"
                       >
                          แก้ไขข้อมูล
                       </button>
@@ -483,8 +483,8 @@ export default function RoomsManagement() {
       {/* CRUD Modal - Premium Redesign */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/75 backdrop-blur-md z-50 flex items-center justify-center p-6 animate-in fade-in duration-300">
-          <div className="bg-[#0F172A] rounded-[48px] w-full max-w-2xl overflow-hidden shadow-2xl animate-in zoom-in slide-in-from-bottom duration-500 border border-white/10 max-h-[90vh] flex flex-col">
-             <div className="bg-[#0F172A] border-b border-white/10 px-10 py-8 text-white relative overflow-hidden shrink-0">
+          <div className="bg-card rounded-[48px] w-full max-w-2xl overflow-hidden shadow-2xl animate-in zoom-in slide-in-from-bottom duration-500 border border-border max-h-[90vh] flex flex-col">
+             <div className="bg-card border-b border-border px-10 py-8 text-white relative overflow-hidden shrink-0">
                 <div className="relative z-10 text-center">
                   <h2 className="text-3xl font-black mb-1 tracking-tight">{editingRoom ? 'แก้ไขข้อมูลยูนิต' : 'เพิ่มยูนิตใหม่'}</h2>
                   <p className="text-white/40 text-[9px] font-black uppercase tracking-[0.3em] font-display font-medium">SMARTDOM PREMIUM REAL ESTATE</p>
@@ -501,7 +501,7 @@ export default function RoomsManagement() {
                           required
                           value={formData.room_number}
                           onChange={(e) => setFormData({...formData, room_number: e.target.value})}
-                          className="w-full px-6 py-4 bg-white/5 border border-white/20/10 rounded-[24px] focus:ring-4 focus:ring-primary/10 focus:border-primary focus:bg-[#0F172A] outline-none font-black text-white text-lg transition-all"
+                          className="w-full px-6 py-4 bg-white/5 border border-border rounded-[24px] focus:ring-4 focus:ring-primary/10 focus:border-primary focus:bg-card outline-none font-black text-white text-lg transition-all"
                           placeholder="101"
                         />
                     </div>
@@ -510,7 +510,7 @@ export default function RoomsManagement() {
                         <select 
                             value={formData.room_type}
                             onChange={(e) => setFormData({...formData, room_type: e.target.value})}
-                            className="w-full px-6 py-4 bg-white/5 border border-white/20/10 rounded-[24px] font-black outline-none text-white transition-all focus:bg-[#0F172A] cursor-pointer"
+                            className="w-full px-6 py-4 bg-white/5 border border-border rounded-[24px] font-black outline-none text-white transition-all focus:bg-card cursor-pointer"
                         >
                             <option>Standard</option>
                             <option>Deluxe</option>
@@ -527,7 +527,7 @@ export default function RoomsManagement() {
                             type="number" 
                             value={formData.floor}
                             onChange={(e) => setFormData({...formData, floor: parseInt(e.target.value)})}
-                            className="w-full px-6 py-4 bg-white/5 border border-white/20/10 rounded-[24px] font-black outline-none text-white focus:bg-[#0F172A] transition-all"
+                            className="w-full px-6 py-4 bg-white/5 border border-border rounded-[24px] font-black outline-none text-white focus:bg-card transition-all"
                         />
                     </div>
                     <div className="space-y-2">
@@ -535,7 +535,7 @@ export default function RoomsManagement() {
                         <select 
                             value={formData.status}
                             onChange={(e) => setFormData({...formData, status: e.target.value})}
-                            className="w-full px-6 py-4 bg-white/5 border border-white/20/10 rounded-[24px] font-black outline-none text-white focus:bg-[#0F172A] cursor-pointer"
+                            className="w-full px-6 py-4 bg-white/5 border border-border rounded-[24px] font-black outline-none text-white focus:bg-card cursor-pointer"
                         >
                             <option value="Available">ว่าง (Available)</option>
                             <option value="Occupied">มีผู้เช่า (Occupied)</option>
@@ -553,7 +553,7 @@ export default function RoomsManagement() {
                           required
                           value={formData.price}
                           onChange={(e) => setFormData({...formData, price: parseFloat(e.target.value)})}
-                          className="w-full pl-14 pr-6 py-5 bg-white/5 border border-primary/30 rounded-[30px] font-black outline-none text-white text-3xl text-center focus:ring-8 focus:ring-primary/5 focus:bg-[#0F172A] transition-all"
+                          className="w-full pl-14 pr-6 py-5 bg-white/5 border border-primary/30 rounded-[30px] font-black outline-none text-white text-3xl text-center focus:ring-8 focus:ring-primary/5 focus:bg-card transition-all"
                         />
                     </div>
                   </div>
@@ -563,7 +563,7 @@ export default function RoomsManagement() {
                     
                     <div className="grid grid-cols-3 gap-4">
                         {formData.images.map((img, idx) => (
-                          <div key={idx} className="relative aspect-square rounded-2xl overflow-hidden border-2 border-white/20/10 group/img shadow-sm hover:border-primary transition-all">
+                          <div key={idx} className="relative aspect-square rounded-2xl overflow-hidden border-2 border-border group/img shadow-sm hover:border-primary transition-all">
                               <Image src={img} alt={`Preview ${idx}`} fill unoptimized className="object-cover" />
                               <button 
                                 type="button"
@@ -575,8 +575,8 @@ export default function RoomsManagement() {
                           </div>
                         ))}
                         
-                        <label className="aspect-square rounded-2xl border-2 border-dashed border-white/20/10 bg-[#0F172A] flex flex-col items-center justify-center cursor-pointer hover:border-primary hover:bg-[#0F172A] transition-all group">
-                            <div className="w-10 h-10 bg-[#0F172A] rounded-xl shadow-sm mb-2 flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <label className="aspect-square rounded-2xl border-2 border-dashed border-border bg-card flex flex-col items-center justify-center cursor-pointer hover:border-primary hover:bg-card transition-all group">
+                            <div className="w-10 h-10 bg-card rounded-xl shadow-sm mb-2 flex items-center justify-center group-hover:scale-110 transition-transform">
                               <svg className="w-6 h-6 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
                               </svg>
@@ -597,7 +597,7 @@ export default function RoomsManagement() {
                     <button 
                       type="button" 
                       onClick={() => setIsModalOpen(false)} 
-                      className="flex-1 py-5 text-white/50 font-black hover:bg-[#0F172A] rounded-[28px] transition-all"
+                      className="flex-1 py-5 text-white/50 font-black hover:bg-card rounded-[28px] transition-all"
                     >
                       ยกเลิก
                     </button>
@@ -617,8 +617,8 @@ export default function RoomsManagement() {
       {/* Batch Create Modal */}
       {isBatchModalOpen && (
         <div className="fixed inset-0 bg-black/75 backdrop-blur-md z-50 flex items-center justify-center p-6 animate-in fade-in duration-300">
-          <div className="bg-[#0F172A] rounded-[48px] w-full max-w-2xl overflow-hidden shadow-2xl animate-in zoom-in slide-in-from-bottom duration-500 border border-white/10 max-h-[90vh] flex flex-col">
-             <div className="bg-gradient-to-r from-emerald-600 to-teal-700 border-b border-white/10 px-10 py-8 text-white relative overflow-hidden shrink-0">
+          <div className="bg-card rounded-[48px] w-full max-w-2xl overflow-hidden shadow-2xl animate-in zoom-in slide-in-from-bottom duration-500 border border-border max-h-[90vh] flex flex-col">
+             <div className="bg-gradient-to-r from-emerald-600 to-teal-700 border-b border-border px-10 py-8 text-white relative overflow-hidden shrink-0">
                 <div className="relative z-10 text-center">
                   <h2 className="text-3xl font-black mb-1 tracking-tight">เพิ่มข้อมูลหลายห้อง (Batch)</h2>
                   <p className="text-white/80 text-[10px] font-black uppercase tracking-[0.25em]">สร้างยูนิตหลายห้องพร้อมกัน เช่น ตึก A ชั้น 1 ห้อง 1-10</p>
@@ -634,7 +634,7 @@ export default function RoomsManagement() {
                           type="text" 
                           value={batchForm.prefix}
                           onChange={(e) => setBatchForm({...batchForm, prefix: e.target.value})}
-                          className="w-full px-6 py-4 bg-white/5 border border-white/20/10 rounded-[24px] focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 focus:bg-[#0F172A] outline-none font-black text-white text-lg transition-all"
+                          className="w-full px-6 py-4 bg-white/5 border border-border rounded-[24px] focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 focus:bg-card outline-none font-black text-white text-lg transition-all"
                           placeholder="เช่น A หรือ ตึก A-"
                         />
                     </div>
@@ -646,7 +646,7 @@ export default function RoomsManagement() {
                           min={1}
                           value={batchForm.floor}
                           onChange={(e) => setBatchForm({...batchForm, floor: parseInt(e.target.value) || 1})}
-                          className="w-full px-6 py-4 bg-white/5 border border-white/20/10 rounded-[24px] focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 focus:bg-[#0F172A] outline-none font-black text-white text-lg transition-all"
+                          className="w-full px-6 py-4 bg-white/5 border border-border rounded-[24px] focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 focus:bg-card outline-none font-black text-white text-lg transition-all"
                         />
                     </div>
                   </div>
@@ -660,7 +660,7 @@ export default function RoomsManagement() {
                           min={1}
                           value={batchForm.startRoom}
                           onChange={(e) => setBatchForm({...batchForm, startRoom: parseInt(e.target.value) || 1})}
-                          className="w-full px-6 py-4 bg-white/5 border border-white/20/10 rounded-[24px] focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 focus:bg-[#0F172A] outline-none font-black text-white text-lg transition-all"
+                          className="w-full px-6 py-4 bg-white/5 border border-border rounded-[24px] focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 focus:bg-card outline-none font-black text-white text-lg transition-all"
                           placeholder="1"
                         />
                     </div>
@@ -672,7 +672,7 @@ export default function RoomsManagement() {
                           min={1}
                           value={batchForm.endRoom}
                           onChange={(e) => setBatchForm({...batchForm, endRoom: parseInt(e.target.value) || 1})}
-                          className="w-full px-6 py-4 bg-white/5 border border-white/20/10 rounded-[24px] focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 focus:bg-[#0F172A] outline-none font-black text-white text-lg transition-all"
+                          className="w-full px-6 py-4 bg-white/5 border border-border rounded-[24px] focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 focus:bg-card outline-none font-black text-white text-lg transition-all"
                           placeholder="10"
                         />
                     </div>
@@ -693,7 +693,7 @@ export default function RoomsManagement() {
                           className={`p-4 rounded-2xl border text-left flex flex-col gap-1 transition-all ${
                             batchForm.pattern === p.id 
                             ? 'bg-emerald-500/10 border-emerald-500 text-white' 
-                            : 'bg-white/5 border-white/10 text-white/60 hover:text-white hover:bg-white/10'
+                            : 'bg-white/5 border-border text-white/60 hover:text-white hover:bg-white/10'
                           }`}
                         >
                           <span className="text-xs font-bold">{p.label}</span>
@@ -709,7 +709,7 @@ export default function RoomsManagement() {
                         <select 
                             value={batchForm.room_type}
                             onChange={(e) => setBatchForm({...batchForm, room_type: e.target.value})}
-                            className="w-full px-6 py-4 bg-white/5 border border-white/20/10 rounded-[24px] font-black outline-none text-white transition-all focus:bg-[#0F172A] cursor-pointer"
+                            className="w-full px-6 py-4 bg-white/5 border border-border rounded-[24px] font-black outline-none text-white transition-all focus:bg-card cursor-pointer"
                         >
                             <option>Standard</option>
                             <option>Deluxe</option>
@@ -722,7 +722,7 @@ export default function RoomsManagement() {
                         <select 
                             value={batchForm.status}
                             onChange={(e) => setBatchForm({...batchForm, status: e.target.value})}
-                            className="w-full px-6 py-4 bg-white/5 border border-white/20/10 rounded-[24px] font-black outline-none text-white focus:bg-[#0F172A] cursor-pointer"
+                            className="w-full px-6 py-4 bg-white/5 border border-border rounded-[24px] font-black outline-none text-white focus:bg-card cursor-pointer"
                         >
                             <option value="Available">ว่าง (Available)</option>
                             <option value="Occupied">มีผู้เช่า (Occupied)</option>
@@ -740,13 +740,13 @@ export default function RoomsManagement() {
                           required
                           value={batchForm.price}
                           onChange={(e) => setBatchForm({...batchForm, price: parseFloat(e.target.value) || 0})}
-                          className="w-full pl-14 pr-6 py-5 bg-white/5 border border-emerald-500/40 rounded-[30px] font-black outline-none text-white text-3xl text-center focus:ring-8 focus:ring-emerald-500/10 focus:bg-[#0F172A] transition-all"
+                          className="w-full pl-14 pr-6 py-5 bg-white/5 border border-emerald-500/40 rounded-[30px] font-black outline-none text-white text-3xl text-center focus:ring-8 focus:ring-emerald-500/10 focus:bg-card transition-all"
                         />
                     </div>
                   </div>
 
                   {/* Live Preview Box */}
-                  <div className="bg-white/5 p-6 rounded-3xl border border-white/10 space-y-3">
+                  <div className="bg-white/5 p-6 rounded-3xl border border-border space-y-3">
                     <div className="flex items-center justify-between">
                       <span className="text-[10px] font-black uppercase tracking-widest text-emerald-400">
                         ตัวอย่างห้องที่จะถูกเพิ่ม (Preview)
@@ -757,7 +757,7 @@ export default function RoomsManagement() {
                     </div>
                     <div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto custom-scrollbar pt-1">
                       {getGeneratedRoomNumbers().map((num, idx) => (
-                        <span key={idx} className="px-3 py-1.5 bg-[#0F172A] border border-emerald-500/30 text-emerald-300 font-mono text-xs font-bold rounded-xl shadow-sm">
+                        <span key={idx} className="px-3 py-1.5 bg-card border border-emerald-500/30 text-emerald-300 font-mono text-xs font-bold rounded-xl shadow-sm">
                           {num}
                         </span>
                       ))}

@@ -74,10 +74,10 @@ export default function OwnerDashboard() {
 
   if (loading) {
     return (
-      <div className="h-screen flex items-center justify-center bg-[#080F1E]">
+      <div className="h-screen flex items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-3">
-          <div className="w-8 h-8 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin" />
-          <p className="text-xs font-semibold text-white/50">กำลังเปิดหอพัก...</p>
+          <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+          <p className="text-xs font-semibold text-muted-foreground">กำลังเปิดหอพัก...</p>
         </div>
       </div>
     );
@@ -89,16 +89,16 @@ export default function OwnerDashboard() {
   const hasPendingBookings = (stats.pendingBookings || 0) > 0;
 
   return (
-    <div className="flex-1 overflow-y-auto bg-[#080F1E] text-slate-100 p-6 sm:p-10">
+    <div className="flex-1 overflow-y-auto bg-background text-foreground p-6 sm:p-10">
       <div className="max-w-5xl mx-auto space-y-8">
 
         {/* 1. Header: Clean & Personal */}
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-2 border-b border-white/5">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-2 border-b border-border">
           <div>
-            <p className="text-xs text-cyan-400 font-bold tracking-wide">
+            <p className="text-xs text-primary font-bold tracking-wide">
               สวัสดี, {session?.user?.name || 'คุณเจ้าของหอ'} 👋
             </p>
-            <h1 className="text-2xl sm:text-3xl font-black text-white mt-1 tracking-tight">
+            <h1 className="text-2xl sm:text-3xl font-black text-foreground mt-1 tracking-tight">
               {dormInfo?.name || 'SmartDom Dormitory'}
             </h1>
           </div>
@@ -106,13 +106,13 @@ export default function OwnerDashboard() {
           <div className="flex items-center gap-2 text-xs">
             <Link
               href="/owner/settings"
-              className="px-2.5 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-white/90 hover:text-white font-bold transition-all flex items-center gap-1 border border-white/10 shadow-sm"
+              className="px-2.5 py-1 rounded-lg bg-card hover:bg-secondary text-foreground font-bold transition-all flex items-center gap-1 border border-border shadow-sm"
             >
               ⚙️ ตั้งค่า
             </Link>
             <Link
               href="/explore"
-              className="px-2.5 py-1 rounded-lg bg-cyan-500/15 hover:bg-cyan-500/25 text-cyan-300 hover:text-cyan-200 font-bold transition-all flex items-center gap-1 border border-cyan-500/30 shadow-sm"
+              className="px-2.5 py-1 rounded-lg bg-primary/10 hover:bg-primary/20 text-primary font-bold transition-all flex items-center gap-1 border border-primary/25 shadow-sm"
             >
               🌐 ดูหน้าเว็บหอ
             </Link>
@@ -125,13 +125,13 @@ export default function OwnerDashboard() {
             {hasPendingSlips && (
               <Link
                 href="/owner/billing"
-                className="flex items-center justify-between p-3.5 px-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 hover:bg-amber-500/15 transition-all text-amber-200 text-xs font-semibold group cursor-pointer"
+                className="flex items-center justify-between p-3.5 px-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 hover:bg-amber-500/15 transition-all text-amber-600 dark:text-amber-200 text-xs font-semibold group cursor-pointer"
               >
                 <div className="flex items-center gap-2.5">
                   <span className="text-base">💰</span>
                   <span>มีสลิปโอนเงินรอตรวจสอบ <strong>{stats.pendingSlips} รายการ</strong></span>
                 </div>
-                <span className="font-bold text-amber-400 group-hover:translate-x-1 transition-transform">
+                <span className="font-bold text-amber-600 dark:text-amber-400 group-hover:translate-x-1 transition-transform">
                   ตรวจสลิป →
                 </span>
               </Link>
@@ -140,7 +140,7 @@ export default function OwnerDashboard() {
             {hasPendingMaint && (
               <Link
                 href="/owner/maintenance"
-                className="flex items-center justify-between p-3.5 px-4 rounded-2xl bg-rose-500/10 border border-rose-500/30 hover:bg-rose-500/15 transition-all text-rose-200 text-xs font-semibold group cursor-pointer"
+                className="flex items-center justify-between p-3.5 px-4 rounded-2xl bg-rose-500/10 border border-rose-500/30 hover:bg-rose-500/15 transition-all text-rose-600 dark:text-rose-200 text-xs font-semibold group cursor-pointer"
               >
                 <div className="flex items-center gap-2.5">
                   <span className="text-base">🔧</span>
@@ -149,7 +149,7 @@ export default function OwnerDashboard() {
                     {stats.latestMaintenance?.roomNumber && ` (ห้อง ${stats.latestMaintenance.roomNumber})`}
                   </span>
                 </div>
-                <span className="font-bold text-rose-400 group-hover:translate-x-1 transition-transform">
+                <span className="font-bold text-rose-600 dark:text-rose-400 group-hover:translate-x-1 transition-transform">
                   ดูงานซ่อม →
                 </span>
               </Link>
@@ -158,21 +158,21 @@ export default function OwnerDashboard() {
             {hasPendingBookings && (
               <Link
                 href="/owner/bookings"
-                className="flex items-center justify-between p-3.5 px-4 rounded-2xl bg-blue-500/10 border border-blue-500/30 hover:bg-blue-500/15 transition-all text-blue-200 text-xs font-semibold group cursor-pointer"
+                className="flex items-center justify-between p-3.5 px-4 rounded-2xl bg-blue-500/10 border border-blue-500/30 hover:bg-blue-500/15 transition-all text-blue-600 dark:text-blue-200 text-xs font-semibold group cursor-pointer"
               >
                 <div className="flex items-center gap-2.5">
                   <span className="text-base">🛎️</span>
                   <span>มีรายการจองห้องพักใหม่รอตรวจสอบ <strong>{stats.pendingBookings} รายการ</strong></span>
                 </div>
-                <span className="font-bold text-blue-400 group-hover:translate-x-1 transition-transform">
+                <span className="font-bold text-blue-600 dark:text-blue-400 group-hover:translate-x-1 transition-transform">
                   ดูการจอง →
                 </span>
               </Link>
             )}
           </div>
         ) : (
-          <div className="p-3 px-4 rounded-2xl bg-white/[0.02] border border-white/5 flex items-center gap-2 text-xs text-white/50">
-            <span className="text-emerald-400">✓</span>
+          <div className="p-3 px-4 rounded-2xl bg-card border border-border flex items-center gap-2 text-xs text-muted-foreground">
+            <span className="text-emerald-500">✓</span>
             <span>สถานะปกติ ไม่มีสลิปหรือคำร้องค้างรอดำเนินการ</span>
           </div>
         )}
@@ -181,40 +181,40 @@ export default function OwnerDashboard() {
         <div className="grid grid-cols-3 gap-4 sm:gap-6">
           <Link
             href="/owner/rooms"
-            className="p-5 rounded-2xl bg-white/[0.03] hover:bg-white/[0.06] border border-white/5 hover:border-cyan-500/30 transition-all group cursor-pointer"
+            className="p-5 rounded-2xl bg-card hover:bg-secondary/40 border border-border hover:border-primary/40 transition-all group cursor-pointer shadow-sm"
           >
-            <p className="text-[11px] font-bold text-white/40 uppercase tracking-wider">ห้องว่าง</p>
+            <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">ห้องว่าง</p>
             <div className="mt-1 flex items-baseline gap-1.5">
-              <span className="text-3xl font-black text-white group-hover:text-cyan-300 transition-colors">
+              <span className="text-3xl font-black text-foreground group-hover:text-primary transition-colors">
                 {availableCount}
               </span>
-              <span className="text-xs text-white/40">/ {stats.totalRooms} ห้อง</span>
+              <span className="text-xs text-muted-foreground">/ {stats.totalRooms} ห้อง</span>
             </div>
           </Link>
 
           <Link
             href="/owner/tenants"
-            className="p-5 rounded-2xl bg-white/[0.03] hover:bg-white/[0.06] border border-white/5 hover:border-cyan-500/30 transition-all group cursor-pointer"
+            className="p-5 rounded-2xl bg-card hover:bg-secondary/40 border border-border hover:border-primary/40 transition-all group cursor-pointer shadow-sm"
           >
-            <p className="text-[11px] font-bold text-white/40 uppercase tracking-wider">ผู้เช่าปัจจุบัน</p>
+            <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">ผู้เช่าปัจจุบัน</p>
             <div className="mt-1 flex items-baseline gap-1.5">
-              <span className="text-3xl font-black text-white group-hover:text-cyan-300 transition-colors">
+              <span className="text-3xl font-black text-foreground group-hover:text-primary transition-colors">
                 {stats.totalTenants}
               </span>
-              <span className="text-xs text-white/40">คน</span>
+              <span className="text-xs text-muted-foreground">คน</span>
             </div>
           </Link>
 
           <Link
             href="/owner/billing"
-            className="p-5 rounded-2xl bg-white/[0.03] hover:bg-white/[0.06] border border-white/5 hover:border-cyan-500/30 transition-all group cursor-pointer"
+            className="p-5 rounded-2xl bg-card hover:bg-secondary/40 border border-border hover:border-amber-500/40 transition-all group cursor-pointer shadow-sm"
           >
-            <p className="text-[11px] font-bold text-white/40 uppercase tracking-wider">บิลรอชำระ</p>
+            <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">บิลรอชำระ</p>
             <div className="mt-1 flex items-baseline gap-1.5">
-              <span className="text-3xl font-black text-white group-hover:text-amber-300 transition-colors">
+              <span className="text-3xl font-black text-foreground group-hover:text-amber-500 transition-colors">
                 {stats.unpaidBills || 0}
               </span>
-              <span className="text-xs text-white/40">บิล</span>
+              <span className="text-xs text-muted-foreground">บิล</span>
             </div>
           </Link>
         </div>
@@ -224,18 +224,18 @@ export default function OwnerDashboard() {
           {/* Task 1: Billing & Meters */}
           <Link
             href="/owner/meters"
-            className="p-6 rounded-3xl bg-gradient-to-b from-white/[0.04] to-transparent border border-white/10 hover:border-cyan-400/50 hover:from-cyan-950/20 transition-all flex flex-col justify-between h-48 shadow-lg group cursor-pointer"
+            className="p-6 rounded-3xl bg-card hover:bg-secondary/30 border border-border hover:border-primary/40 transition-all flex flex-col justify-between h-48 shadow-sm group cursor-pointer"
           >
             <div>
               <span className="text-2xl">⚡</span>
-              <h3 className="text-base font-bold text-white mt-3 group-hover:text-cyan-300 transition-colors">
+              <h3 className="text-base font-bold text-foreground mt-3 group-hover:text-primary transition-colors">
                 รอบบิล & มิเตอร์
               </h3>
-              <p className="text-xs text-white/50 mt-1">
+              <p className="text-xs text-muted-foreground mt-1">
                 จดเลขมิเตอร์น้ำ-ไฟ และออกใบแจ้งหนี้ประจำเดือน
               </p>
             </div>
-            <div className="flex items-center gap-1 text-xs font-bold text-cyan-400 group-hover:translate-x-1 transition-transform">
+            <div className="flex items-center gap-1 text-xs font-bold text-primary group-hover:translate-x-1 transition-transform">
               <span>เริ่มจดมิเตอร์</span>
               <span>→</span>
             </div>
@@ -244,18 +244,18 @@ export default function OwnerDashboard() {
           {/* Task 2: Rooms & Tenants */}
           <Link
             href="/owner/rooms"
-            className="p-6 rounded-3xl bg-gradient-to-b from-white/[0.04] to-transparent border border-white/10 hover:border-blue-400/50 hover:from-blue-950/20 transition-all flex flex-col justify-between h-48 shadow-lg group cursor-pointer"
+            className="p-6 rounded-3xl bg-card hover:bg-secondary/30 border border-border hover:border-blue-500/40 transition-all flex flex-col justify-between h-48 shadow-sm group cursor-pointer"
           >
             <div>
               <span className="text-2xl">🚪</span>
-              <h3 className="text-base font-bold text-white mt-3 group-hover:text-blue-300 transition-colors">
+              <h3 className="text-base font-bold text-foreground mt-3 group-hover:text-blue-500 transition-colors">
                 ผังห้อง & ผู้เช่า
               </h3>
-              <p className="text-xs text-white/50 mt-1">
+              <p className="text-xs text-muted-foreground mt-1">
                 ตรวจเช็คห้องว่าง สัญญาเช่า และประวัติลูกหอ
               </p>
             </div>
-            <div className="flex items-center gap-1 text-xs font-bold text-blue-400 group-hover:translate-x-1 transition-transform">
+            <div className="flex items-center gap-1 text-xs font-bold text-blue-500 group-hover:translate-x-1 transition-transform">
               <span>ดูผังห้องพัก</span>
               <span>→</span>
             </div>
@@ -264,18 +264,18 @@ export default function OwnerDashboard() {
           {/* Task 3: Maintenance & Care */}
           <Link
             href="/owner/maintenance"
-            className="p-6 rounded-3xl bg-gradient-to-b from-white/[0.04] to-transparent border border-white/10 hover:border-rose-400/50 hover:from-rose-950/20 transition-all flex flex-col justify-between h-48 shadow-lg group cursor-pointer"
+            className="p-6 rounded-3xl bg-card hover:bg-secondary/30 border border-border hover:border-rose-500/40 transition-all flex flex-col justify-between h-48 shadow-sm group cursor-pointer"
           >
             <div>
               <span className="text-2xl">🔧</span>
-              <h3 className="text-base font-bold text-white mt-3 group-hover:text-rose-300 transition-colors">
+              <h3 className="text-base font-bold text-foreground mt-3 group-hover:text-rose-500 transition-colors">
                 งานแจ้งซ่อม
               </h3>
-              <p className="text-xs text-white/50 mt-1">
+              <p className="text-xs text-muted-foreground mt-1">
                 รับเรื่องแจ้งซ่อม และมอบหมายงานให้ช่าง
               </p>
             </div>
-            <div className="flex items-center gap-1 text-xs font-bold text-rose-400 group-hover:translate-x-1 transition-transform">
+            <div className="flex items-center gap-1 text-xs font-bold text-rose-500 group-hover:translate-x-1 transition-transform">
               <span>ดูรายการซ่อม</span>
               <span>→</span>
             </div>
@@ -283,19 +283,19 @@ export default function OwnerDashboard() {
         </div>
 
         {/* 5. Minimal Bottom Shortcuts */}
-        <div className="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-white/5 text-xs text-white/40">
+        <div className="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-border text-xs text-muted-foreground">
           <div className="flex items-center gap-4">
-            <Link href="/owner/accounting" className="hover:text-white transition-colors">
+            <Link href="/owner/accounting" className="hover:text-foreground transition-colors">
               📈 บัญชีรายรับ-จ่าย
             </Link>
-            <Link href="/owner/contracts" className="hover:text-white transition-colors">
+            <Link href="/owner/contracts" className="hover:text-foreground transition-colors">
               📝 สัญญาเช่ากระดาษ
             </Link>
-            <Link href="/owner/chat" className="hover:text-white transition-colors">
+            <Link href="/owner/chat" className="hover:text-foreground transition-colors">
               💬 แชทลูกหอ
             </Link>
           </div>
-          <span className="font-mono text-[11px] text-white/30">SmartDom Owner v2.5.0</span>
+          <span className="font-mono text-[11px] text-muted-foreground/60">SmartDom Owner v2.6.1</span>
         </div>
 
       </div>

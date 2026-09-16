@@ -407,7 +407,7 @@ export default function OwnerBillingPage() {
   }, [bills]);
 
   return (
-    <div className="flex-1 overflow-y-auto bg-[#080F1E] text-slate-100 min-h-screen p-4 sm:p-6 lg:p-10 font-sans">
+    <div className="flex-1 overflow-y-auto bg-background text-foreground min-h-screen p-4 sm:p-6 lg:p-10 font-sans">
       
       {/* Floating Toast Notification */}
       {toast && (
@@ -427,7 +427,7 @@ export default function OwnerBillingPage() {
       <div className="max-w-7xl mx-auto space-y-8 pb-16">
         
         {/* Header Bar */}
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 bg-[#0F172A]/80 backdrop-blur-xl p-6 sm:p-8 rounded-[2.5rem] border border-white/10 shadow-2xl relative overflow-hidden">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 bg-card/80 backdrop-blur-xl p-6 sm:p-8 rounded-[2.5rem] border border-border shadow-2xl relative overflow-hidden">
           <div className="absolute top-0 right-0 w-96 h-96 bg-primary/10 rounded-full blur-3xl pointer-events-none" />
           <div className="relative z-10">
             <div className="flex items-center gap-3 mb-2">
@@ -440,7 +440,7 @@ export default function OwnerBillingPage() {
                 </span>
               )}
             </div>
-            <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
+            <h1 className="text-3xl sm:text-4xl font-black text-foreground tracking-tight">
               การตรวจสอบและบิลค่าเช่า
             </h1>
             <p className="text-slate-400 mt-1 text-sm font-medium">
@@ -451,7 +451,7 @@ export default function OwnerBillingPage() {
           <div className="flex flex-wrap items-center gap-3 relative z-10">
             <button
               onClick={handleExportCSV}
-              className="px-5 py-3.5 bg-white/5 hover:bg-white/10 text-slate-200 border border-white/10 rounded-2xl font-bold text-xs sm:text-sm transition-all flex items-center gap-2 cursor-pointer shadow-lg active:scale-95"
+              className="px-5 py-3.5 bg-white/5 hover:bg-white/10 text-slate-200 border border-border rounded-2xl font-bold text-xs sm:text-sm transition-all flex items-center gap-2 cursor-pointer shadow-lg active:scale-95"
               title="ส่งออกไฟล์ CSV สำหรับบัญชี"
             >
               <svg className="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -492,7 +492,7 @@ export default function OwnerBillingPage() {
               "p-6 rounded-[2rem] border transition-all cursor-pointer relative overflow-hidden group shadow-lg",
               filterStatus === 'Pending' 
                 ? "bg-amber-500/15 border-amber-500/50 ring-2 ring-amber-400/30" 
-                : "bg-[#0F172A]/70 border-amber-500/20 hover:border-amber-500/40 hover:bg-[#0F172A]"
+                : "bg-card/70 border-amber-500/20 hover:border-amber-500/40 hover:bg-card"
             )}
           >
             <div className="flex items-center justify-between mb-3">
@@ -504,7 +504,7 @@ export default function OwnerBillingPage() {
                 {stats.pendingCount} รายการ
               </span>
             </div>
-            <h3 className="text-2xl sm:text-3xl font-black text-white group-hover:text-amber-300 transition-colors">
+            <h3 className="text-2xl sm:text-3xl font-black text-foreground group-hover:text-amber-300 transition-colors">
               ฿{stats.pendingAmount.toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </h3>
             <p className="text-xs text-amber-300/80 mt-2 font-medium flex items-center justify-between">
@@ -520,7 +520,7 @@ export default function OwnerBillingPage() {
               "p-6 rounded-[2rem] border transition-all cursor-pointer relative overflow-hidden group shadow-lg",
               filterStatus === 'Unpaid' 
                 ? "bg-rose-500/15 border-rose-500/50 ring-2 ring-rose-400/30" 
-                : "bg-[#0F172A]/70 border-rose-500/20 hover:border-rose-500/40 hover:bg-[#0F172A]"
+                : "bg-card/70 border-rose-500/20 hover:border-rose-500/40 hover:bg-card"
             )}
           >
             <div className="flex items-center justify-between mb-3">
@@ -548,7 +548,7 @@ export default function OwnerBillingPage() {
               "p-6 rounded-[2rem] border transition-all cursor-pointer relative overflow-hidden group shadow-lg",
               filterStatus === 'Paid' 
                 ? "bg-emerald-500/15 border-emerald-500/50 ring-2 ring-emerald-400/30" 
-                : "bg-[#0F172A]/70 border-emerald-500/20 hover:border-emerald-500/40 hover:bg-[#0F172A]"
+                : "bg-card/70 border-emerald-500/20 hover:border-emerald-500/40 hover:bg-card"
             )}
           >
             <div className="flex items-center justify-between mb-3">
@@ -576,7 +576,7 @@ export default function OwnerBillingPage() {
               "p-6 rounded-[2rem] border transition-all cursor-pointer relative overflow-hidden group shadow-lg",
               filterStatus === 'All' 
                 ? "bg-violet-500/15 border-violet-500/50 ring-2 ring-violet-400/30" 
-                : "bg-[#0F172A]/70 border-white/10 hover:border-white/20 hover:bg-[#0F172A]"
+                : "bg-card/70 border-border hover:border-white/20 hover:bg-card"
             )}
           >
             <div className="flex items-center justify-between mb-3">
@@ -587,7 +587,7 @@ export default function OwnerBillingPage() {
                 {stats.totalCount} ฉบับ
               </span>
             </div>
-            <h3 className="text-2xl sm:text-3xl font-black text-white group-hover:text-violet-300 transition-colors">
+            <h3 className="text-2xl sm:text-3xl font-black text-foreground group-hover:text-violet-300 transition-colors">
               ฿{stats.totalAmount.toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </h3>
             <p className="text-xs text-slate-400 mt-2 font-medium flex items-center justify-between">
@@ -599,12 +599,12 @@ export default function OwnerBillingPage() {
         </div>
 
         {/* Filter and Search Bar Section */}
-        <div className="bg-[#0F172A]/90 backdrop-blur-md rounded-[2.5rem] border border-white/10 p-6 space-y-6 shadow-xl">
+        <div className="bg-card/90 backdrop-blur-md rounded-[2.5rem] border border-border p-6 space-y-6 shadow-xl">
           
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             
             {/* Status Pills */}
-            <div className="flex flex-wrap items-center gap-2 bg-[#080F1E] p-1.5 rounded-2xl border border-white/10">
+            <div className="flex flex-wrap items-center gap-2 bg-secondary/40 p-1.5 rounded-2xl border border-border">
               {[
                 { id: 'All', label: 'ทั้งหมด', count: stats.totalCount },
                 { id: 'Pending', label: '🔔 รอตรวจสลิป', count: stats.pendingCount, highlight: true },
@@ -644,10 +644,10 @@ export default function OwnerBillingPage() {
               <select
                 value={selectedCycle}
                 onChange={(e) => setSelectedCycle(e.target.value)}
-                className="bg-[#080F1E] text-slate-200 border border-white/10 px-4 py-2.5 rounded-xl text-xs font-bold outline-none focus:border-primary cursor-pointer transition-colors"
+                className="bg-secondary/40 text-slate-200 border border-border px-4 py-2.5 rounded-xl text-xs font-bold outline-none focus:border-primary cursor-pointer transition-colors"
               >
                 {billingCycles.map((c) => (
-                  <option key={c} value={c} className="bg-[#0F172A] text-white">
+                  <option key={c} value={c} className="bg-card text-white">
                     {c === 'All' ? '📅 ทุกรอบบิล' : c}
                   </option>
                 ))}
@@ -670,7 +670,7 @@ export default function OwnerBillingPage() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="ค้นหาตามหมายเลขห้อง, ชื่อผู้เช่า, เบอร์โทรศัพท์ หรือรายการบิล..."
-              className="w-full pl-12 pr-4 py-3.5 bg-[#080F1E] border border-white/10 rounded-2xl text-sm font-bold text-white placeholder:text-slate-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+              className="w-full pl-12 pr-4 py-3.5 bg-secondary/40 border border-border rounded-2xl text-sm font-bold text-foreground placeholder:text-slate-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
             />
             {searchQuery && (
               <button
@@ -684,11 +684,11 @@ export default function OwnerBillingPage() {
         </div>
 
         {/* Bills Table Card */}
-        <div className="bg-[#0F172A]/90 backdrop-blur-md rounded-[2.5rem] border border-white/10 shadow-2xl overflow-hidden">
+        <div className="bg-card/90 backdrop-blur-md rounded-[2.5rem] border border-border shadow-2xl overflow-hidden">
           
-          <div className="p-6 sm:p-8 border-b border-white/10 flex items-center justify-between">
+          <div className="p-6 sm:p-8 border-b border-border flex items-center justify-between">
             <div>
-              <h2 className="text-xl font-black text-white">รายการใบแจ้งหนี้และสลิปชำระเงิน</h2>
+              <h2 className="text-xl font-black text-foreground">รายการใบแจ้งหนี้และสลิปชำระเงิน</h2>
               <p className="text-slate-400 text-xs font-medium mt-0.5">
                 แสดงผล {filteredBills.length} จากทั้งหมด {bills.length} รายการ
               </p>
@@ -703,7 +703,7 @@ export default function OwnerBillingPage() {
 
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse min-w-[900px]">
-              <thead className="bg-[#080F1E]/80 border-b border-white/10">
+              <thead className="bg-secondary/40/80 border-b border-border">
                 <tr>
                   <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">ห้อง</th>
                   <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">ผู้เช่า / ติดต่อ</th>
@@ -731,7 +731,7 @@ export default function OwnerBillingPage() {
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                         </svg>
                       </div>
-                      <h4 className="text-base font-black text-white">ไม่พบรายการบิล</h4>
+                      <h4 className="text-base font-black text-foreground">ไม่พบรายการบิล</h4>
                       <p className="text-slate-400 text-xs mt-1">ลองเปลี่ยนคำค้นหาหรือเปลี่ยนตัวกรองสถานะ</p>
                     </td>
                   </tr>
@@ -852,10 +852,10 @@ export default function OwnerBillingPage() {
                               isOverdue && 'bg-red-500/20 text-red-400 border-red-500/40'
                             )}
                           >
-                            <option value="Unpaid" className="bg-[#0F172A] text-rose-400">ค้างชำระ (Unpaid)</option>
-                            <option value="Pending" className="bg-[#0F172A] text-amber-400">รอตรวจสลิป (Pending)</option>
-                            <option value="Paid" className="bg-[#0F172A] text-emerald-400">ชำระแล้ว (Paid)</option>
-                            <option value="Overdue" className="bg-[#0F172A] text-red-400">เกินกำหนด (Overdue)</option>
+                            <option value="Unpaid" className="bg-card text-rose-400">ค้างชำระ (Unpaid)</option>
+                            <option value="Pending" className="bg-card text-amber-400">รอตรวจสลิป (Pending)</option>
+                            <option value="Paid" className="bg-card text-emerald-400">ชำระแล้ว (Paid)</option>
+                            <option value="Overdue" className="bg-card text-red-400">เกินกำหนด (Overdue)</option>
                           </select>
                         </td>
 
@@ -914,10 +914,10 @@ export default function OwnerBillingPage() {
       {/* ========================================================================= */}
       {inspectingBill && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
-          <div className="bg-[#0F172A] border border-white/10 rounded-[2.5rem] w-full max-w-4xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+          <div className="bg-card border border-border rounded-[2.5rem] w-full max-w-4xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
             
             {/* Modal Header */}
-            <div className="p-6 bg-gradient-to-r from-amber-500/20 via-amber-500/10 to-transparent border-b border-white/10 flex items-center justify-between">
+            <div className="p-6 bg-gradient-to-r from-amber-500/20 via-amber-500/10 to-transparent border-b border-border flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-2xl bg-amber-500/20 text-amber-400 flex items-center justify-center border border-amber-500/30">
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -925,7 +925,7 @@ export default function OwnerBillingPage() {
                   </svg>
                 </div>
                 <div>
-                  <h3 className="text-xl font-black text-white">ตรวจสอบสลิปและยืนยันการชำระเงิน</h3>
+                  <h3 className="text-xl font-black text-foreground">ตรวจสอบสลิปและยืนยันการชำระเงิน</h3>
                   <p className="text-xs text-amber-300 font-medium">ห้อง {inspectingBill.room_number} • ผู้เช่า: {inspectingBill.tenant_name}</p>
                 </div>
               </div>
@@ -954,7 +954,7 @@ export default function OwnerBillingPage() {
                   </button>
                 </div>
 
-                <div className="relative rounded-2xl overflow-hidden border border-white/10 bg-black/40 flex items-center justify-center min-h-[320px] max-h-[440px] group">
+                <div className="relative rounded-2xl overflow-hidden border border-border bg-black/40 flex items-center justify-center min-h-[320px] max-h-[440px] group">
                   {inspectingBill.slip_url ? (
                     <img
                       src={inspectingBill.slip_url}
@@ -977,7 +977,7 @@ export default function OwnerBillingPage() {
               <div className="space-y-6">
                 
                 {/* Amount Compare Card */}
-                <div className="bg-[#080F1E] p-6 rounded-2xl border border-white/10 space-y-4">
+                <div className="bg-secondary/40 p-6 rounded-2xl border border-border space-y-4">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold text-slate-400">ยอดที่ต้องชำระตามบิล:</span>
                     <span className="text-2xl font-black text-emerald-400">
@@ -985,7 +985,7 @@ export default function OwnerBillingPage() {
                     </span>
                   </div>
 
-                  <div className="border-t border-white/10 pt-3 space-y-2 text-xs">
+                  <div className="border-t border-border pt-3 space-y-2 text-xs">
                     <div className="flex justify-between text-slate-300">
                       <span>ค่าเช่าห้องพัก:</span>
                       <span className="font-bold">฿{Number(inspectingBill.room_amount || 0).toLocaleString()}</span>
@@ -1002,7 +1002,7 @@ export default function OwnerBillingPage() {
                         <span className="font-bold">฿{Number(inspectingBill.electric_amount).toLocaleString()}</span>
                       </div>
                     )}
-                    <div className="flex justify-between text-slate-400 pt-1 border-t border-white/5">
+                    <div className="flex justify-between text-slate-400 pt-1 border-t border-border">
                       <span>รอบบิล:</span>
                       <span className="font-semibold text-slate-200">{inspectingBill.billing_cycle}</span>
                     </div>
@@ -1026,7 +1026,7 @@ export default function OwnerBillingPage() {
                       value={rejectReason}
                       onChange={(e) => setRejectReason(e.target.value)}
                       placeholder="เช่น ยอดเงินโอนไม่ตรง, สลิปไม่ชัดเจน, โอนผิดบัญชี..."
-                      className="w-full px-4 py-2.5 bg-[#080F1E] border border-rose-500/40 rounded-xl text-xs font-bold text-white outline-none focus:ring-1 focus:ring-rose-400"
+                      className="w-full px-4 py-2.5 bg-secondary/40 border border-rose-500/40 rounded-xl text-xs font-bold text-foreground outline-none focus:ring-1 focus:ring-rose-400"
                     />
                     <div className="flex gap-2">
                       <button
@@ -1103,10 +1103,10 @@ export default function OwnerBillingPage() {
       {/* ========================================================================= */}
       {receiptBill && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
-          <div className="bg-[#0F172A] border border-white/10 rounded-[2.5rem] w-full max-w-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+          <div className="bg-card border border-border rounded-[2.5rem] w-full max-w-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
             
             {/* Modal Top Bar */}
-            <div className="p-6 bg-[#080F1E] border-b border-white/10 flex items-center justify-between">
+            <div className="p-6 bg-secondary/40 border-b border-border flex items-center justify-between">
               <span className="text-xs font-black text-slate-400 uppercase tracking-widest">
                 📄 ใบเสร็จรับเงิน / ใบแจ้งหนี้ (Official Receipt)
               </span>
@@ -1133,9 +1133,9 @@ export default function OwnerBillingPage() {
             <div className="p-8 sm:p-10 space-y-6 text-slate-200 bg-white/[0.02]">
               
               {/* Document Header */}
-              <div className="flex justify-between items-start border-b border-white/10 pb-6">
+              <div className="flex justify-between items-start border-b border-border pb-6">
                 <div>
-                  <h2 className="text-2xl font-black text-white">
+                  <h2 className="text-2xl font-black text-foreground">
                     {receiptBill.dorm_name || dormProfile?.name || 'หอพัก SmartDom'}
                   </h2>
                   <p className="text-xs text-slate-400 mt-1 max-w-sm">
@@ -1158,16 +1158,16 @@ export default function OwnerBillingPage() {
               </div>
 
               {/* Tenant & Bill Details */}
-              <div className="grid grid-cols-2 gap-4 bg-[#080F1E] p-4 rounded-2xl border border-white/10 text-xs">
+              <div className="grid grid-cols-2 gap-4 bg-secondary/40 p-4 rounded-2xl border border-border text-xs">
                 <div>
                   <span className="text-slate-500 font-bold block mb-1">ข้อมูลผู้เช่า:</span>
-                  <p className="font-black text-white text-sm">{receiptBill.tenant_name || '-'}</p>
+                  <p className="font-black text-foreground text-sm">{receiptBill.tenant_name || '-'}</p>
                   <p className="text-slate-400 mt-0.5">ห้องพัก: <span className="font-bold text-primary">{receiptBill.room_number || '-'}</span></p>
                   {receiptBill.tenant_phone && <p className="text-slate-400">โทร: {receiptBill.tenant_phone}</p>}
                 </div>
                 <div className="text-right">
                   <span className="text-slate-500 font-bold block mb-1">รายละเอียดรอบบิล:</span>
-                  <p className="font-bold text-white text-sm">{receiptBill.billing_cycle}</p>
+                  <p className="font-bold text-foreground text-sm">{receiptBill.billing_cycle}</p>
                   <p className="text-slate-400 mt-0.5">
                     กำหนดชำระ: {receiptBill.due_date ? new Date(receiptBill.due_date).toLocaleDateString('th-TH') : '-'}
                   </p>
@@ -1175,9 +1175,9 @@ export default function OwnerBillingPage() {
               </div>
 
               {/* Line Items Table */}
-              <div className="rounded-2xl border border-white/10 overflow-hidden">
+              <div className="rounded-2xl border border-border overflow-hidden">
                 <table className="w-full text-left text-xs border-collapse">
-                  <thead className="bg-[#080F1E] text-slate-400 border-b border-white/10">
+                  <thead className="bg-secondary/40 text-slate-400 border-b border-border">
                     <tr>
                       <th className="px-4 py-3 font-bold">ลำดับ</th>
                       <th className="px-4 py-3 font-bold">รายการ</th>
@@ -1188,9 +1188,9 @@ export default function OwnerBillingPage() {
                   <tbody className="divide-y divide-white/5">
                     <tr>
                       <td className="px-4 py-3 text-slate-500 font-mono">1</td>
-                      <td className="px-4 py-3 font-bold text-white">ค่าเช่าห้องพัก (Room Rent)</td>
+                      <td className="px-4 py-3 font-bold text-foreground">ค่าเช่าห้องพัก (Room Rent)</td>
                       <td className="px-4 py-3 text-center text-slate-400">1 เดือน</td>
-                      <td className="px-4 py-3 text-right font-bold text-white">
+                      <td className="px-4 py-3 text-right font-bold text-foreground">
                         {Number(receiptBill.room_amount || receiptBill.amount).toLocaleString('th-TH', { minimumFractionDigits: 2 })}
                       </td>
                     </tr>
@@ -1215,7 +1215,7 @@ export default function OwnerBillingPage() {
                       </tr>
                     )}
                   </tbody>
-                  <tfoot className="bg-[#080F1E] border-t border-white/10 font-bold">
+                  <tfoot className="bg-secondary/40 border-t border-border font-bold">
                     <tr>
                       <td colSpan={3} className="px-4 py-4 text-right text-slate-300 font-black text-sm">
                         ยอดรวมสุทธิ (Total Amount):
@@ -1229,9 +1229,9 @@ export default function OwnerBillingPage() {
               </div>
 
               {/* Payment Instructions / PromptPay Info */}
-              <div className="bg-[#080F1E] p-4 rounded-2xl border border-white/10 flex items-center justify-between text-xs">
+              <div className="bg-secondary/40 p-4 rounded-2xl border border-border flex items-center justify-between text-xs">
                 <div>
-                  <p className="font-bold text-white">ช่องทางชำระเงิน PromptPay:</p>
+                  <p className="font-bold text-foreground">ช่องทางชำระเงิน PromptPay:</p>
                   <p className="text-slate-400 mt-0.5">
                     หมายเลขพร้อมเพย์: <span className="font-mono font-bold text-primary">{receiptBill.promptpay_number || dormProfile?.promptpay_number || '0812345678'}</span>
                   </p>
@@ -1256,9 +1256,9 @@ export default function OwnerBillingPage() {
       {/* ========================================================================= */}
       {isBatchModalOpen && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
-          <div className="bg-[#0F172A] border border-white/10 rounded-[2.5rem] w-full max-w-lg shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+          <div className="bg-card border border-border rounded-[2.5rem] w-full max-w-lg shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
             
-            <div className="bg-gradient-to-r from-amber-500/20 to-transparent p-6 sm:p-8 border-b border-white/10 flex items-center justify-between">
+            <div className="bg-gradient-to-r from-amber-500/20 to-transparent p-6 sm:p-8 border-b border-border flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-2xl bg-amber-500/20 text-amber-400 flex items-center justify-center border border-amber-500/30">
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -1266,7 +1266,7 @@ export default function OwnerBillingPage() {
                   </svg>
                 </div>
                 <div>
-                  <h3 className="text-xl font-black text-white">ออกบิลอัตโนมัติทั้งหอพัก</h3>
+                  <h3 className="text-xl font-black text-foreground">ออกบิลอัตโนมัติทั้งหอพัก</h3>
                   <p className="text-xs text-amber-300 font-bold uppercase tracking-widest">Smart Batch Invoicing</p>
                 </div>
               </div>
@@ -1295,7 +1295,7 @@ export default function OwnerBillingPage() {
                   required
                   value={batchData.title}
                   onChange={(e) => setBatchData({ ...batchData, title: e.target.value })}
-                  className="w-full px-4 py-3.5 bg-[#080F1E] border border-white/10 rounded-2xl text-sm font-bold text-white outline-none focus:border-primary"
+                  className="w-full px-4 py-3.5 bg-secondary/40 border border-border rounded-2xl text-sm font-bold text-foreground outline-none focus:border-primary"
                 />
               </div>
 
@@ -1309,7 +1309,7 @@ export default function OwnerBillingPage() {
                     required
                     value={batchData.billing_cycle}
                     onChange={(e) => setBatchData({ ...batchData, billing_cycle: e.target.value })}
-                    className="w-full px-4 py-3.5 bg-[#080F1E] border border-white/10 rounded-2xl text-sm font-bold text-white outline-none focus:border-primary"
+                    className="w-full px-4 py-3.5 bg-secondary/40 border border-border rounded-2xl text-sm font-bold text-foreground outline-none focus:border-primary"
                     placeholder="เช่น สิงหาคม 2569"
                   />
                 </div>
@@ -1349,9 +1349,9 @@ export default function OwnerBillingPage() {
       {/* ========================================================================= */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
-          <div className="bg-[#0F172A] border border-white/10 rounded-[2.5rem] w-full max-w-lg shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+          <div className="bg-card border border-border rounded-[2.5rem] w-full max-w-lg shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
             
-            <div className="bg-gradient-to-r from-primary/20 to-transparent p-6 sm:p-8 border-b border-white/10 flex items-center justify-between">
+            <div className="bg-gradient-to-r from-primary/20 to-transparent p-6 sm:p-8 border-b border-border flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-2xl bg-primary/20 text-primary flex items-center justify-center border border-primary/30">
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -1359,7 +1359,7 @@ export default function OwnerBillingPage() {
                   </svg>
                 </div>
                 <div>
-                  <h3 className="text-xl font-black text-white">ออกใบแจ้งหนี้รายห้อง</h3>
+                  <h3 className="text-xl font-black text-foreground">ออกใบแจ้งหนี้รายห้อง</h3>
                   <p className="text-xs text-primary font-bold uppercase tracking-widest">Single Invoicing</p>
                 </div>
               </div>
@@ -1382,11 +1382,11 @@ export default function OwnerBillingPage() {
                   required
                   value={formData.tenant_id}
                   onChange={(e) => handleTenantChange(e.target.value)}
-                  className="w-full px-4 py-3.5 bg-[#080F1E] border border-white/10 rounded-2xl text-sm font-bold text-white outline-none focus:border-primary cursor-pointer"
+                  className="w-full px-4 py-3.5 bg-secondary/40 border border-border rounded-2xl text-sm font-bold text-foreground outline-none focus:border-primary cursor-pointer"
                 >
                   <option value="">-- กรุณาเลือกห้องพัก --</option>
                   {tenants.map((t) => (
-                    <option key={t.id} value={t.id} className="bg-[#0F172A] text-white">
+                    <option key={t.id} value={t.id} className="bg-card text-white">
                       ห้อง {t.room_number} - {t.name}
                     </option>
                   ))}
@@ -1403,12 +1403,12 @@ export default function OwnerBillingPage() {
                   required
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  className="w-full px-4 py-3 bg-[#080F1E] border border-white/10 rounded-2xl text-sm font-bold text-white outline-none focus:border-primary"
+                  className="w-full px-4 py-3 bg-secondary/40 border border-border rounded-2xl text-sm font-bold text-foreground outline-none focus:border-primary"
                 />
               </div>
 
               {/* Utility and Room breakdown */}
-              <div className="grid grid-cols-3 gap-3 bg-[#080F1E] p-4 rounded-2xl border border-white/10 text-xs">
+              <div className="grid grid-cols-3 gap-3 bg-secondary/40 p-4 rounded-2xl border border-border text-xs">
                 <div>
                   <label className="block text-[10px] font-bold text-slate-400 mb-1">ค่าเช่าห้อง (฿)</label>
                   <input
@@ -1418,7 +1418,7 @@ export default function OwnerBillingPage() {
                       const val = parseFloat(e.target.value) || 0;
                       updateUtilityAmounts(parseFloat(formData.water_amount) || 0, parseFloat(formData.electric_amount) || 0, val);
                     }}
-                    className="w-full px-3 py-2 bg-[#0F172A] border border-white/10 rounded-xl text-white font-bold"
+                    className="w-full px-3 py-2 bg-card border border-border rounded-xl text-white font-bold"
                   />
                 </div>
                 <div>
@@ -1430,7 +1430,7 @@ export default function OwnerBillingPage() {
                       const val = parseFloat(e.target.value) || 0;
                       updateUtilityAmounts(val, parseFloat(formData.electric_amount) || 0, parseFloat(formData.room_amount) || 0);
                     }}
-                    className="w-full px-3 py-2 bg-[#0F172A] border border-white/10 rounded-xl text-white font-bold"
+                    className="w-full px-3 py-2 bg-card border border-border rounded-xl text-white font-bold"
                   />
                 </div>
                 <div>
@@ -1442,7 +1442,7 @@ export default function OwnerBillingPage() {
                       const val = parseFloat(e.target.value) || 0;
                       updateUtilityAmounts(parseFloat(formData.water_amount) || 0, val, parseFloat(formData.room_amount) || 0);
                     }}
-                    className="w-full px-3 py-2 bg-[#0F172A] border border-white/10 rounded-xl text-white font-bold"
+                    className="w-full px-3 py-2 bg-card border border-border rounded-xl text-white font-bold"
                   />
                 </div>
               </div>
@@ -1457,7 +1457,7 @@ export default function OwnerBillingPage() {
                   required
                   value={formData.amount}
                   onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
-                  className="w-full px-5 py-3.5 bg-[#080F1E] border border-white/10 rounded-2xl text-2xl font-black text-emerald-400 outline-none focus:border-primary"
+                  className="w-full px-5 py-3.5 bg-secondary/40 border border-border rounded-2xl text-2xl font-black text-emerald-400 outline-none focus:border-primary"
                   placeholder="0.00"
                 />
               </div>
@@ -1473,7 +1473,7 @@ export default function OwnerBillingPage() {
                     required
                     value={formData.billing_cycle}
                     onChange={(e) => setFormData({ ...formData, billing_cycle: e.target.value })}
-                    className="w-full px-4 py-3 bg-[#080F1E] border border-white/10 rounded-2xl text-sm font-bold text-white outline-none focus:border-primary"
+                    className="w-full px-4 py-3 bg-secondary/40 border border-border rounded-2xl text-sm font-bold text-foreground outline-none focus:border-primary"
                   />
                 </div>
                 <div>

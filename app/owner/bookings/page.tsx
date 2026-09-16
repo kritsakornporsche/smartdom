@@ -342,8 +342,8 @@ export default function OwnerBookingsPage() {
               <span>🛎️</span>
               <span>Guest Bookings Hub</span>
             </div>
-            <h1 className="text-2xl sm:text-4xl font-black text-white tracking-tight">ศูนย์จัดการการจองห้องพัก</h1>
-            <p className="text-xs sm:text-sm text-white/50 mt-1">
+            <h1 className="text-2xl sm:text-4xl font-black text-foreground tracking-tight">ศูนย์จัดการการจองห้องพัก</h1>
+            <p className="text-xs sm:text-sm text-muted-foreground mt-1">
               ตรวจสอบสลิปเงินประกัน อนุมัติสัญญาเช่า ปรับเปลี่ยนห้องพัก และสร้างการจอง
             </p>
           </div>
@@ -373,7 +373,7 @@ export default function OwnerBookingsPage() {
             </button>
             <button
               onClick={() => fetchBookings()}
-              className="min-h-[44px] px-3.5 py-2.5 bg-white/5 hover:bg-white/10 text-white font-bold rounded-2xl text-xs border border-white/10 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+              className="min-h-[44px] px-3.5 py-2.5 bg-white/5 hover:bg-white/10 text-white font-bold rounded-2xl text-xs border border-border transition-all flex items-center justify-center gap-1.5 cursor-pointer"
               title="รีเฟรชข้อมูล"
             >
               <span>🔄</span>
@@ -388,60 +388,60 @@ export default function OwnerBookingsPage() {
             onClick={() => setActiveTab('Pending')}
             className={cn(
               "p-4 sm:p-6 rounded-[1.75rem] sm:rounded-[2rem] border shadow-lg relative overflow-hidden cursor-pointer transition-all active:scale-98 group",
-              activeTab === 'Pending' ? "bg-amber-950/40 border-amber-500 ring-2 ring-amber-500/20" : "bg-[#0F172A] border-amber-500/30 hover:border-amber-500"
+              activeTab === 'Pending' ? "bg-amber-950/40 border-amber-500 ring-2 ring-amber-500/20" : "bg-card border-amber-500/30 hover:border-amber-500"
             )}
           >
             <div className="absolute top-0 right-0 w-20 h-20 bg-amber-500/10 rounded-full blur-2xl group-hover:bg-amber-500/20 transition-all" />
             <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-amber-400 block mb-1">รอดำเนินการ</span>
             <div className="flex items-baseline gap-1.5 sm:gap-2">
               <span className="text-2xl sm:text-4xl font-black text-amber-300">{pendingCount}</span>
-              <span className="text-[10px] sm:text-xs text-white/50">รายการ</span>
+              <span className="text-[10px] sm:text-xs text-muted-foreground">รายการ</span>
             </div>
             <p className="text-[9px] sm:text-[10px] text-amber-400/80 mt-1 sm:mt-2 font-medium truncate">คลิกเพื่อตรวจสลิป →</p>
           </div>
 
-          <div className="bg-[#0F172A] p-4 sm:p-6 rounded-[1.75rem] sm:rounded-[2rem] border border-emerald-500/30 shadow-lg relative overflow-hidden">
+          <div className="bg-card p-4 sm:p-6 rounded-[1.75rem] sm:rounded-[2rem] border border-emerald-500/30 shadow-lg relative overflow-hidden">
             <div className="absolute top-0 right-0 w-20 h-20 bg-emerald-500/10 rounded-full blur-2xl" />
             <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-emerald-400 block mb-1">เงินประกันรอตรวจ</span>
             <div className="flex items-baseline gap-1">
               <span className="text-lg sm:text-3xl font-black text-emerald-400 truncate">฿{pendingDepositTotal.toLocaleString()}</span>
             </div>
-            <p className="text-[9px] sm:text-[10px] text-white/40 mt-1 sm:mt-2 font-medium truncate">1 เดือน (PromptPay)</p>
+            <p className="text-[9px] sm:text-[10px] text-muted-foreground mt-1 sm:mt-2 font-medium truncate">1 เดือน (PromptPay)</p>
           </div>
 
           <div 
             onClick={() => setActiveTab('Active')}
             className={cn(
               "p-4 sm:p-6 rounded-[1.75rem] sm:rounded-[2rem] border shadow-lg cursor-pointer transition-all active:scale-98",
-              activeTab === 'Active' ? "bg-emerald-950/30 border-emerald-500 ring-2 ring-emerald-500/20" : "bg-[#0F172A] border-white/10 hover:border-emerald-500/40"
+              activeTab === 'Active' ? "bg-emerald-950/30 border-emerald-500 ring-2 ring-emerald-500/20" : "bg-card border-border hover:border-emerald-500/40"
             )}
           >
-            <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-white/50 block mb-1">อนุมัติแล้ว</span>
+            <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-muted-foreground block mb-1">อนุมัติแล้ว</span>
             <div className="flex items-baseline gap-1.5 sm:gap-2">
-              <span className="text-2xl sm:text-4xl font-black text-white">{approvedCount}</span>
-              <span className="text-[10px] sm:text-xs text-white/50">สัญญา</span>
+              <span className="text-2xl sm:text-4xl font-black text-foreground">{approvedCount}</span>
+              <span className="text-[10px] sm:text-xs text-muted-foreground">สัญญา</span>
             </div>
-            <p className="text-[9px] sm:text-[10px] text-white/40 mt-1 sm:mt-2 font-medium truncate">สัญญาใช้งานอยู่</p>
+            <p className="text-[9px] sm:text-[10px] text-muted-foreground mt-1 sm:mt-2 font-medium truncate">สัญญาใช้งานอยู่</p>
           </div>
 
           <div 
             onClick={() => setActiveTab('All')}
             className={cn(
               "p-4 sm:p-6 rounded-[1.75rem] sm:rounded-[2rem] border shadow-lg cursor-pointer transition-all active:scale-98",
-              activeTab === 'All' ? "bg-slate-800/80 border-white/40 ring-2 ring-white/10" : "bg-[#0F172A] border-white/10 hover:border-white/30"
+              activeTab === 'All' ? "bg-slate-800/80 border-white/40 ring-2 ring-white/10" : "bg-card border-border hover:border-white/30"
             )}
           >
-            <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-white/50 block mb-1">ทั้งหมด</span>
+            <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-muted-foreground block mb-1">ทั้งหมด</span>
             <div className="flex items-baseline gap-1.5 sm:gap-2">
-              <span className="text-2xl sm:text-4xl font-black text-white">{totalBookingsCount}</span>
-              <span className="text-[10px] sm:text-xs text-white/50">รายการ</span>
+              <span className="text-2xl sm:text-4xl font-black text-foreground">{totalBookingsCount}</span>
+              <span className="text-[10px] sm:text-xs text-muted-foreground">รายการ</span>
             </div>
-            <p className="text-[9px] sm:text-[10px] text-white/40 mt-1 sm:mt-2 font-medium truncate">ประวัติทั้งหมด</p>
+            <p className="text-[9px] sm:text-[10px] text-muted-foreground mt-1 sm:mt-2 font-medium truncate">ประวัติทั้งหมด</p>
           </div>
         </div>
 
         {/* Segmented Control & Filter Bar (iOS Style) */}
-        <div className="flex flex-col lg:flex-row justify-between items-stretch lg:items-center gap-3 bg-[#0F172A] p-2.5 sm:p-4 rounded-2xl sm:rounded-3xl border border-white/10">
+        <div className="flex flex-col lg:flex-row justify-between items-stretch lg:items-center gap-3 bg-card p-2.5 sm:p-4 rounded-2xl sm:rounded-3xl border border-border">
           
           {/* iOS Segmented Tabs with horizontal scrolling */}
           <div className="flex items-center gap-1.5 overflow-x-auto pb-1 lg:pb-0 scrollbar-none">
@@ -451,7 +451,7 @@ export default function OwnerBookingsPage() {
                 "min-h-[40px] px-3.5 sm:px-5 py-2 rounded-xl sm:rounded-2xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer",
                 activeTab === 'Pending'
                   ? "bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20"
-                  : "text-white/60 hover:text-white hover:bg-white/5"
+                  : "text-muted-foreground hover:text-white hover:bg-white/5"
               )}
             >
               ⏳ รอดำเนินการ ({pendingCount})
@@ -462,7 +462,7 @@ export default function OwnerBookingsPage() {
                 "min-h-[40px] px-3.5 sm:px-5 py-2 rounded-xl sm:rounded-2xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer",
                 activeTab === 'Active'
                   ? "bg-emerald-500 text-slate-950 shadow-md shadow-emerald-500/20"
-                  : "text-white/60 hover:text-white hover:bg-white/5"
+                  : "text-muted-foreground hover:text-white hover:bg-white/5"
               )}
             >
               ✓ อนุมัติแล้ว ({approvedCount})
@@ -473,7 +473,7 @@ export default function OwnerBookingsPage() {
                 "min-h-[40px] px-3.5 sm:px-5 py-2 rounded-xl sm:rounded-2xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer",
                 activeTab === 'Cancelled'
                   ? "bg-rose-500 text-white shadow-md shadow-rose-500/20"
-                  : "text-white/60 hover:text-white hover:bg-white/5"
+                  : "text-muted-foreground hover:text-white hover:bg-white/5"
               )}
             >
               ✕ ยกเลิก
@@ -484,7 +484,7 @@ export default function OwnerBookingsPage() {
                 "min-h-[40px] px-3.5 sm:px-5 py-2 rounded-xl sm:rounded-2xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer",
                 activeTab === 'All'
                   ? "bg-white/20 text-white"
-                  : "text-white/60 hover:text-white hover:bg-white/5"
+                  : "text-muted-foreground hover:text-white hover:bg-white/5"
               )}
             >
               ทั้งหมด ({totalBookingsCount})
@@ -497,7 +497,7 @@ export default function OwnerBookingsPage() {
               <select
                 value={selectedFloor}
                 onChange={(e) => setSelectedFloor(e.target.value)}
-                className="min-h-[42px] px-3 py-2 bg-slate-900 border border-white/10 rounded-xl sm:rounded-2xl text-xs text-white focus:outline-none focus:border-primary cursor-pointer"
+                className="min-h-[42px] px-3 py-2 bg-slate-900 border border-border rounded-xl sm:rounded-2xl text-xs text-white focus:outline-none focus:border-primary cursor-pointer"
               >
                 <option value="ALL">ทุกชั้น</option>
                 {floors.map(f => (
@@ -512,9 +512,9 @@ export default function OwnerBookingsPage() {
                 placeholder="ค้นหาชื่อ, ห้อง, เบอร์โทร..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full min-h-[42px] pl-8 pr-3 py-2 bg-slate-900 border border-white/10 rounded-xl sm:rounded-2xl text-xs text-white placeholder-white/40 focus:outline-none focus:border-primary"
+                className="w-full min-h-[42px] pl-8 pr-3 py-2 bg-slate-900 border border-border rounded-xl sm:rounded-2xl text-xs text-white placeholder-white/40 focus:outline-none focus:border-primary"
               />
-              <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-white/40 text-xs">🔍</span>
+              <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground text-xs">🔍</span>
             </div>
           </div>
 
@@ -526,12 +526,12 @@ export default function OwnerBookingsPage() {
             <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary" />
           </div>
         ) : filteredBookings.length === 0 ? (
-          <div className="bg-[#0F172A] border-2 border-dashed border-white/10 rounded-[2rem] sm:rounded-[3rem] p-10 sm:p-16 text-center space-y-3">
-            <div className="w-14 h-14 rounded-full bg-white/5 flex items-center justify-center text-2xl mx-auto text-white/40">
+          <div className="bg-card border-2 border-dashed border-border rounded-[2rem] sm:rounded-[3rem] p-10 sm:p-16 text-center space-y-3">
+            <div className="w-14 h-14 rounded-full bg-white/5 flex items-center justify-center text-2xl mx-auto text-muted-foreground">
               🛎️
             </div>
-            <h3 className="text-base sm:text-lg font-bold text-white">ไม่พบรายการจองห้องพักในหมวดนี้</h3>
-            <p className="text-xs text-white/40 max-w-sm mx-auto">
+            <h3 className="text-base sm:text-lg font-bold text-foreground">ไม่พบรายการจองห้องพักในหมวดนี้</h3>
+            <p className="text-xs text-muted-foreground max-w-sm mx-auto">
               {activeTab === 'Pending' 
                 ? 'ขณะนี้ไม่มีคำขอจองห้องพักที่รอดำเนินการ (ลองเลือกแท็บ "ทั้งหมด" เพื่อดูประวัติการจอง)' 
                 : 'ลองเปลี่ยนตัวกรองเพื่อตรวจสอบประวัติการจองอื่นๆ'}
@@ -548,24 +548,24 @@ export default function OwnerBookingsPage() {
                 <div 
                   key={booking.contract_id}
                   className={cn(
-                    "bg-[#0F172A] rounded-[2rem] border p-5 sm:p-8 transition-all space-y-5 shadow-xl",
+                    "bg-card rounded-[2rem] border p-5 sm:p-8 transition-all space-y-5 shadow-xl",
                     isPending ? "border-amber-500/40 bg-gradient-to-br from-[#0F172A] via-slate-900 to-amber-950/20" :
                     isActive ? "border-emerald-500/20" :
-                    "border-white/10 opacity-75"
+                    "border-border opacity-75"
                   )}
                 >
                   {/* Header Row */}
-                  <div className="flex justify-between items-start sm:items-center gap-3 pb-3 sm:pb-4 border-b border-white/10">
+                  <div className="flex justify-between items-start sm:items-center gap-3 pb-3 sm:pb-4 border-b border-border">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-primary/10 border border-primary/20 text-primary flex items-center justify-center text-lg sm:text-xl font-bold shrink-0">
                         🚪
                       </div>
                       <div>
                         <div className="flex items-baseline gap-2 flex-wrap">
-                          <h3 className="text-xl sm:text-2xl font-black text-white">ห้อง {booking.room_number}</h3>
-                          <span className="text-[11px] sm:text-xs text-white/50 font-normal">({booking.room_type || 'Standard'} • ชั้น {booking.floor || 1})</span>
+                          <h3 className="text-xl sm:text-2xl font-black text-foreground">ห้อง {booking.room_number}</h3>
+                          <span className="text-[11px] sm:text-xs text-muted-foreground font-normal">({booking.room_type || 'Standard'} • ชั้น {booking.floor || 1})</span>
                         </div>
-                        <p className="text-[11px] sm:text-xs text-white/40">
+                        <p className="text-[11px] sm:text-xs text-muted-foreground">
                           {booking.dorm_name ? `${booking.dorm_name} • ` : ''}จองเมื่อ: {booking.booking_created_at ? new Date(booking.booking_created_at).toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '-'}
                         </p>
                       </div>
@@ -595,17 +595,17 @@ export default function OwnerBookingsPage() {
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
                     
                     {/* Guest Info */}
-                    <div className="space-y-1.5 bg-slate-900/60 p-4 sm:p-5 rounded-2xl border border-white/5">
+                    <div className="space-y-1.5 bg-slate-900/60 p-4 sm:p-5 rounded-2xl border border-border">
                       <div className="flex justify-between items-center">
                         <span className="text-[10px] font-black uppercase tracking-widest text-primary">ข้อมูลผู้จอง</span>
                         <button
                           onClick={() => openEditModal(booking)}
-                          className="text-[10px] text-white/40 hover:text-white underline cursor-pointer p-1"
+                          className="text-[10px] text-muted-foreground hover:text-white underline cursor-pointer p-1"
                         >
                           ✏️ แก้ไข
                         </button>
                       </div>
-                      <p className="text-base sm:text-lg font-bold text-white">คุณ{booking.guest_name}</p>
+                      <p className="text-base sm:text-lg font-bold text-foreground">คุณ{booking.guest_name}</p>
                       <div className="flex items-center gap-2">
                         <p className="text-xs text-white/70 font-mono">📱 {booking.guest_phone || '-'}</p>
                         {booking.guest_phone && (
@@ -617,41 +617,41 @@ export default function OwnerBookingsPage() {
                           </a>
                         )}
                       </div>
-                      <p className="text-xs text-white/40 font-mono truncate">✉️ {booking.guest_email || '-'}</p>
+                      <p className="text-xs text-muted-foreground font-mono truncate">✉️ {booking.guest_email || '-'}</p>
                       {booking.booking_notes && (
-                        <p className="text-[11px] text-amber-300/80 italic pt-1 border-t border-white/5">
+                        <p className="text-[11px] text-amber-300/80 italic pt-1 border-t border-border">
                           📝 {booking.booking_notes}
                         </p>
                       )}
                     </div>
 
                     {/* Financial & Contract Info */}
-                    <div className="space-y-1 bg-slate-900/60 p-4 sm:p-5 rounded-2xl border border-white/5">
+                    <div className="space-y-1 bg-slate-900/60 p-4 sm:p-5 rounded-2xl border border-border">
                       <span className="text-[10px] font-black uppercase tracking-widest text-primary">ยอดเงินและสัญญา</span>
                       <div className="flex justify-between items-baseline pt-1">
-                        <span className="text-xs text-white/60">เงินประกัน (1 เดือน):</span>
+                        <span className="text-xs text-muted-foreground">เงินประกัน (1 เดือน):</span>
                         <span className="text-lg sm:text-xl font-black text-emerald-400">฿{Number(booking.deposit_amount || 0).toLocaleString()}</span>
                       </div>
-                      <div className="flex justify-between items-baseline text-xs text-white/60">
+                      <div className="flex justify-between items-baseline text-xs text-muted-foreground">
                         <span>ค่าเช่ารายเดือน:</span>
                         <span className="text-white font-bold">฿{Number(booking.monthly_rent || 0).toLocaleString()} /ด.</span>
                       </div>
-                      <p className="text-[10px] sm:text-[11px] text-white/40 pt-1">
+                      <p className="text-[10px] sm:text-[11px] text-muted-foreground pt-1">
                         เริ่ม: {new Date(booking.start_date).toLocaleDateString('th-TH')} — {new Date(booking.end_date).toLocaleDateString('th-TH')}
                       </p>
                     </div>
 
                     {/* Slip Preview Box */}
-                    <div className="bg-slate-900/60 p-4 sm:p-5 rounded-2xl border border-white/5 flex items-center justify-between gap-3">
+                    <div className="bg-slate-900/60 p-4 sm:p-5 rounded-2xl border border-border flex items-center justify-between gap-3">
                       <div className="space-y-1">
                         <span className="text-[10px] font-black uppercase tracking-widest text-primary">สลิปโอนเงิน PromptPay</span>
                         {booking.slip_url ? (
                           <div>
                             <p className="text-xs font-bold text-emerald-400">✓ แนบสลิปแล้ว</p>
-                            <p className="text-[10px] text-white/40">แตะรูปเพื่อขยายตรวจสอบ</p>
+                            <p className="text-[10px] text-muted-foreground">แตะรูปเพื่อขยายตรวจสอบ</p>
                           </div>
                         ) : (
-                          <p className="text-xs text-white/40">ไม่มีสลิปแนบ</p>
+                          <p className="text-xs text-muted-foreground">ไม่มีสลิปแนบ</p>
                         )}
                       </div>
 
@@ -674,7 +674,7 @@ export default function OwnerBookingsPage() {
                   </div>
 
                   {/* Management Action Bar */}
-                  <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3 pt-3 border-t border-white/10">
+                  <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3 pt-3 border-t border-border">
                     
                     {/* Quick Links */}
                     <div className="flex items-center gap-3 flex-wrap">
@@ -688,7 +688,7 @@ export default function OwnerBookingsPage() {
 
                       <button
                         onClick={() => setPrintingBooking(booking)}
-                        className="text-xs font-bold text-white/70 hover:text-white flex items-center gap-1 cursor-pointer py-1"
+                        className="text-xs font-bold text-foreground/70 hover:text-white flex items-center gap-1 cursor-pointer py-1"
                       >
                         <span>🖨️</span>
                         <span>พิมพ์ใบรับเงิน</span>
@@ -696,14 +696,14 @@ export default function OwnerBookingsPage() {
 
                       <Link
                         href="/owner/chat"
-                        className="text-xs font-bold text-white/70 hover:text-white flex items-center gap-1 py-1"
+                        className="text-xs font-bold text-foreground/70 hover:text-white flex items-center gap-1 py-1"
                       >
                         <span>💬 แชท</span>
                       </Link>
 
                       <button
                         onClick={() => openEditModal(booking)}
-                        className="text-xs font-bold text-white/50 hover:text-white flex items-center gap-1 cursor-pointer py-1"
+                        className="text-xs font-bold text-foreground/50 hover:text-white flex items-center gap-1 cursor-pointer py-1"
                       >
                         <span>⚙️ จัดการ</span>
                       </button>
@@ -760,20 +760,20 @@ export default function OwnerBookingsPage() {
           <div className="fixed inset-0 z-[200] bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-y-auto animate-in fade-in duration-200">
             <div className="max-w-xl w-full bg-slate-900 rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 border border-emerald-500/40 space-y-5 shadow-2xl my-auto max-h-[92dvh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
               
-              <div className="flex justify-between items-start border-b border-white/10 pb-3">
+              <div className="flex justify-between items-start border-b border-border pb-3">
                 <div>
                   <span className="text-[10px] font-black uppercase tracking-widest text-emerald-400">อนุมัติการจองห้องพัก</span>
-                  <h3 className="text-xl sm:text-2xl font-black text-white">ห้อง {approvingBooking.room_number}</h3>
-                  <p className="text-xs text-white/50">ผู้จอง: คุณ{approvingBooking.guest_name}</p>
+                  <h3 className="text-xl sm:text-2xl font-black text-foreground">ห้อง {approvingBooking.room_number}</h3>
+                  <p className="text-xs text-muted-foreground">ผู้จอง: คุณ{approvingBooking.guest_name}</p>
                 </div>
-                <button onClick={() => setApprovingBooking(null)} className="text-white/50 hover:text-white text-2xl p-2 -mr-2">✕</button>
+                <button onClick={() => setApprovingBooking(null)} className="text-muted-foreground hover:text-white text-2xl p-2 -mr-2">✕</button>
               </div>
 
               {/* Slip Quick Preview in Approval */}
               {approvingBooking.slip_url && (
-                <div className="p-3.5 bg-slate-950 rounded-2xl border border-white/10 flex items-center justify-between gap-3">
+                <div className="p-3.5 bg-slate-950 rounded-2xl border border-border flex items-center justify-between gap-3">
                   <div className="space-y-0.5">
-                    <span className="text-[10px] font-bold text-white/50 uppercase">สลิปเงินประกัน</span>
+                    <span className="text-[10px] font-bold text-foreground/50 uppercase">สลิปเงินประกัน</span>
                     <p className="text-sm font-bold text-emerald-400">฿{Number(approvingBooking.deposit_amount).toLocaleString()} (1 เดือน)</p>
                   </div>
                   <button
@@ -798,7 +798,7 @@ export default function OwnerBookingsPage() {
                   <select
                     value={approveForm.customRoomId}
                     onChange={(e) => setApproveForm({ ...approveForm, customRoomId: Number(e.target.value) })}
-                    className="w-full min-h-[46px] px-4 py-2.5 bg-slate-950 border border-white/10 rounded-xl text-white font-bold text-sm"
+                    className="w-full min-h-[46px] px-4 py-2.5 bg-slate-950 border border-border rounded-xl text-white font-bold text-sm"
                   >
                     <option value={approvingBooking.room_id}>ห้อง {approvingBooking.room_number} (ห้องเดิมที่จอง)</option>
                     {availableRooms
@@ -816,12 +816,12 @@ export default function OwnerBookingsPage() {
                     type="date"
                     value={approveForm.customStartDate}
                     onChange={(e) => setApproveForm({ ...approveForm, customStartDate: e.target.value })}
-                    className="w-full min-h-[46px] px-4 py-2.5 bg-slate-950 border border-white/10 rounded-xl text-white font-bold text-sm"
+                    className="w-full min-h-[46px] px-4 py-2.5 bg-slate-950 border border-border rounded-xl text-white font-bold text-sm"
                   />
                 </div>
 
                 {/* Initial Invoice Option */}
-                <div className="p-3.5 bg-slate-950/80 rounded-2xl border border-white/10 space-y-2">
+                <div className="p-3.5 bg-slate-950/80 rounded-2xl border border-border space-y-2">
                   <label className="flex items-center gap-3 cursor-pointer select-none">
                     <input
                       type="checkbox"
@@ -829,11 +829,11 @@ export default function OwnerBookingsPage() {
                       onChange={(e) => setApproveForm({ ...approveForm, createInitialBill: e.target.checked })}
                       className="w-5 h-5 rounded accent-primary cursor-pointer shrink-0"
                     />
-                    <span className="font-bold text-white text-xs">
+                    <span className="font-bold text-foreground text-xs">
                       ออกใบแจ้งหนี้ค่าเช่าเดือนแรกทันที (฿{Number(approvingBooking.monthly_rent).toLocaleString()})
                     </span>
                   </label>
-                  <p className="text-[11px] text-white/40 pl-8 leading-relaxed">
+                  <p className="text-[11px] text-muted-foreground pl-8 leading-relaxed">
                     ระบบจะสร้างบิลค่าเช่าเดือนแรกให้ผู้เช่าอัตโนมัติ โดยผู้เช่าสามารถชำระเมื่อเข้าพักจริง
                   </p>
                 </div>
@@ -870,12 +870,12 @@ export default function OwnerBookingsPage() {
           <div className="fixed inset-0 z-[200] bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-y-auto animate-in fade-in duration-200">
             <div className="max-w-md w-full bg-slate-900 rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 border border-rose-500/40 space-y-5 shadow-2xl my-auto max-h-[92dvh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
               
-              <div className="flex justify-between items-start border-b border-white/10 pb-3">
+              <div className="flex justify-between items-start border-b border-border pb-3">
                 <div>
                   <span className="text-[10px] font-black uppercase tracking-widest text-rose-400">ปฏิเสธคำขอจองห้องพัก</span>
-                  <h3 className="text-xl sm:text-2xl font-black text-white">ห้อง {rejectingBooking.room_number}</h3>
+                  <h3 className="text-xl sm:text-2xl font-black text-foreground">ห้อง {rejectingBooking.room_number}</h3>
                 </div>
-                <button onClick={() => setRejectingBooking(null)} className="text-white/50 hover:text-white text-2xl p-2 -mr-2">✕</button>
+                <button onClick={() => setRejectingBooking(null)} className="text-muted-foreground hover:text-white text-2xl p-2 -mr-2">✕</button>
               </div>
 
               <div className="space-y-4 text-xs">
@@ -884,7 +884,7 @@ export default function OwnerBookingsPage() {
                   <select
                     value={rejectReason}
                     onChange={(e) => setRejectReason(e.target.value)}
-                    className="w-full min-h-[46px] px-4 py-2.5 bg-slate-950 border border-white/10 rounded-xl text-white font-bold text-sm"
+                    className="w-full min-h-[46px] px-4 py-2.5 bg-slate-950 border border-border rounded-xl text-white font-bold text-sm"
                   >
                     <option value="สลิปไม่ถูกต้อง / ยอดเงินไม่ตรงตามที่กำหนด">สลิปไม่ถูกต้อง / ยอดเงินไม่ตรงตามที่กำหนด</option>
                     <option value="ห้องพักปิดปรับปรุง / จองซ้อน">ห้องพักปิดปรับปรุง / จองซ้อน</option>
@@ -901,7 +901,7 @@ export default function OwnerBookingsPage() {
                     value={customRejectNote}
                     onChange={(e) => setCustomRejectNote(e.target.value)}
                     placeholder="เช่น กรุณาติดต่อ 08X-XXX-XXXX เพื่อรับเงินคืน..."
-                    className="w-full px-4 py-2.5 bg-slate-950 border border-white/10 rounded-xl text-white text-sm resize-none"
+                    className="w-full px-4 py-2.5 bg-slate-950 border border-border rounded-xl text-white text-sm resize-none"
                   />
                 </div>
 
@@ -939,44 +939,44 @@ export default function OwnerBookingsPage() {
           <div className="fixed inset-0 z-[200] bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-y-auto animate-in fade-in duration-200">
             <div className="max-w-lg w-full bg-slate-900 rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 border border-white/20 space-y-5 shadow-2xl my-auto max-h-[92dvh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
               
-              <div className="flex justify-between items-start border-b border-white/10 pb-3">
+              <div className="flex justify-between items-start border-b border-border pb-3">
                 <div>
                   <span className="text-[10px] font-black uppercase tracking-widest text-primary">แก้ไขข้อมูลการจอง</span>
-                  <h3 className="text-xl sm:text-2xl font-black text-white">ห้อง {editingBooking.room_number}</h3>
+                  <h3 className="text-xl sm:text-2xl font-black text-foreground">ห้อง {editingBooking.room_number}</h3>
                 </div>
-                <button onClick={() => setEditingBooking(null)} className="text-white/50 hover:text-white text-2xl p-2 -mr-2">✕</button>
+                <button onClick={() => setEditingBooking(null)} className="text-muted-foreground hover:text-white text-2xl p-2 -mr-2">✕</button>
               </div>
 
               <div className="space-y-3.5 text-xs">
                 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="space-y-1">
-                    <label className="text-white/60 font-bold block">ชื่อผู้จอง</label>
+                    <label className="text-muted-foreground font-bold block">ชื่อผู้จอง</label>
                     <input
                       type="text"
                       value={editForm.guestName}
                       onChange={(e) => setEditForm({ ...editForm, guestName: e.target.value })}
-                      className="w-full min-h-[44px] px-4 py-2 bg-slate-950 border border-white/10 rounded-xl text-white font-bold text-sm"
+                      className="w-full min-h-[44px] px-4 py-2 bg-slate-950 border border-border rounded-xl text-white font-bold text-sm"
                     />
                   </div>
                   <div className="space-y-1">
-                    <label className="text-white/60 font-bold block">เบอร์โทรศัพท์</label>
+                    <label className="text-muted-foreground font-bold block">เบอร์โทรศัพท์</label>
                     <input
                       type="text"
                       value={editForm.guestPhone}
                       onChange={(e) => setEditForm({ ...editForm, guestPhone: e.target.value })}
-                      className="w-full min-h-[44px] px-4 py-2 bg-slate-950 border border-white/10 rounded-xl text-white font-bold text-sm"
+                      className="w-full min-h-[44px] px-4 py-2 bg-slate-950 border border-border rounded-xl text-white font-bold text-sm"
                     />
                   </div>
                 </div>
 
                 {/* Room Assignment */}
                 <div className="space-y-1">
-                  <label className="text-white/60 font-bold block">ย้ายห้องพัก</label>
+                  <label className="text-muted-foreground font-bold block">ย้ายห้องพัก</label>
                   <select
                     value={editForm.roomId}
                     onChange={(e) => setEditForm({ ...editForm, roomId: Number(e.target.value) })}
-                    className="w-full min-h-[44px] px-4 py-2 bg-slate-950 border border-white/10 rounded-xl text-white font-bold text-sm"
+                    className="w-full min-h-[44px] px-4 py-2 bg-slate-950 border border-border rounded-xl text-white font-bold text-sm"
                   >
                     <option value={editingBooking.room_id}>ห้อง {editingBooking.room_number} (ห้องเดิม)</option>
                     {availableRooms
@@ -990,45 +990,45 @@ export default function OwnerBookingsPage() {
                 {/* Contract Dates */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="space-y-1">
-                    <label className="text-white/60 font-bold block">วันเริ่มสัญญา</label>
+                    <label className="text-muted-foreground font-bold block">วันเริ่มสัญญา</label>
                     <input
                       type="date"
                       value={editForm.startDate}
                       onChange={(e) => setEditForm({ ...editForm, startDate: e.target.value })}
-                      className="w-full min-h-[44px] px-4 py-2 bg-slate-950 border border-white/10 rounded-xl text-white text-sm"
+                      className="w-full min-h-[44px] px-4 py-2 bg-slate-950 border border-border rounded-xl text-white text-sm"
                     />
                   </div>
                   <div className="space-y-1">
-                    <label className="text-white/60 font-bold block">วันสิ้นสุดสัญญา</label>
+                    <label className="text-muted-foreground font-bold block">วันสิ้นสุดสัญญา</label>
                     <input
                       type="date"
                       value={editForm.endDate}
                       onChange={(e) => setEditForm({ ...editForm, endDate: e.target.value })}
-                      className="w-full min-h-[44px] px-4 py-2 bg-slate-950 border border-white/10 rounded-xl text-white text-sm"
+                      className="w-full min-h-[44px] px-4 py-2 bg-slate-950 border border-border rounded-xl text-white text-sm"
                     />
                   </div>
                 </div>
 
                 {/* Deposit */}
                 <div className="space-y-1">
-                  <label className="text-white/60 font-bold block">ยอดเงินประกัน (฿)</label>
+                  <label className="text-muted-foreground font-bold block">ยอดเงินประกัน (฿)</label>
                   <input
                     type="number"
                     value={editForm.depositAmount}
                     onChange={(e) => setEditForm({ ...editForm, depositAmount: Number(e.target.value) })}
-                    className="w-full min-h-[44px] px-4 py-2 bg-slate-950 border border-white/10 rounded-xl text-white font-bold text-sm"
+                    className="w-full min-h-[44px] px-4 py-2 bg-slate-950 border border-border rounded-xl text-white font-bold text-sm"
                   />
                 </div>
 
                 {/* Notes */}
                 <div className="space-y-1">
-                  <label className="text-white/60 font-bold block">บันทึกช่วยจำ (Owner Note)</label>
+                  <label className="text-muted-foreground font-bold block">บันทึกช่วยจำ (Owner Note)</label>
                   <textarea
                     rows={2}
                     value={editForm.note}
                     onChange={(e) => setEditForm({ ...editForm, note: e.target.value })}
                     placeholder="บันทึกข้อความพิเศษ..."
-                    className="w-full px-4 py-2 bg-slate-950 border border-white/10 rounded-xl text-white text-sm resize-none"
+                    className="w-full px-4 py-2 bg-slate-950 border border-border rounded-xl text-white text-sm resize-none"
                   />
                 </div>
 
@@ -1063,12 +1063,12 @@ export default function OwnerBookingsPage() {
           <div className="fixed inset-0 z-[200] bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-y-auto animate-in fade-in duration-200">
             <div className="max-w-lg w-full bg-slate-900 rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 border border-primary/40 space-y-5 shadow-2xl my-auto max-h-[92dvh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
               
-              <div className="flex justify-between items-start border-b border-white/10 pb-3">
+              <div className="flex justify-between items-start border-b border-border pb-3">
                 <div>
                   <span className="text-[10px] font-black uppercase tracking-widest text-primary">เพิ่มการจองใหม่</span>
-                  <h3 className="text-xl sm:text-2xl font-black text-white">บันทึกการจอง Walk-in</h3>
+                  <h3 className="text-xl sm:text-2xl font-black text-foreground">บันทึกการจอง Walk-in</h3>
                 </div>
-                <button onClick={() => setIsCreateModalOpen(false)} className="text-white/50 hover:text-white text-2xl p-2 -mr-2">✕</button>
+                <button onClick={() => setIsCreateModalOpen(false)} className="text-muted-foreground hover:text-white text-2xl p-2 -mr-2">✕</button>
               </div>
 
               <div className="space-y-3.5 text-xs">
@@ -1087,7 +1087,7 @@ export default function OwnerBookingsPage() {
                         depositAmount: found ? Number(found.price) : 0
                       });
                     }}
-                    className="w-full min-h-[46px] px-4 py-2 bg-slate-950 border border-white/10 rounded-xl text-white font-bold text-sm"
+                    className="w-full min-h-[46px] px-4 py-2 bg-slate-950 border border-border rounded-xl text-white font-bold text-sm"
                   >
                     <option value="">-- เลือกห้องพักที่ว่าง --</option>
                     {availableRooms
@@ -1109,7 +1109,7 @@ export default function OwnerBookingsPage() {
                       placeholder="เช่น สมชาย ใจดี"
                       value={createForm.guestName}
                       onChange={(e) => setCreateForm({ ...createForm, guestName: e.target.value })}
-                      className="w-full min-h-[44px] px-4 py-2 bg-slate-950 border border-white/10 rounded-xl text-white font-bold text-sm"
+                      className="w-full min-h-[44px] px-4 py-2 bg-slate-950 border border-border rounded-xl text-white font-bold text-sm"
                     />
                   </div>
                   <div className="space-y-1">
@@ -1119,7 +1119,7 @@ export default function OwnerBookingsPage() {
                       placeholder="08X-XXX-XXXX"
                       value={createForm.guestPhone}
                       onChange={(e) => setCreateForm({ ...createForm, guestPhone: e.target.value })}
-                      className="w-full min-h-[44px] px-4 py-2 bg-slate-950 border border-white/10 rounded-xl text-white font-bold text-sm"
+                      className="w-full min-h-[44px] px-4 py-2 bg-slate-950 border border-border rounded-xl text-white font-bold text-sm"
                     />
                   </div>
                 </div>
@@ -1131,7 +1131,7 @@ export default function OwnerBookingsPage() {
                     placeholder="student@example.com"
                     value={createForm.guestEmail}
                     onChange={(e) => setCreateForm({ ...createForm, guestEmail: e.target.value })}
-                    className="w-full min-h-[44px] px-4 py-2 bg-slate-950 border border-white/10 rounded-xl text-white font-mono text-sm"
+                    className="w-full min-h-[44px] px-4 py-2 bg-slate-950 border border-border rounded-xl text-white font-mono text-sm"
                   />
                 </div>
 
@@ -1143,7 +1143,7 @@ export default function OwnerBookingsPage() {
                       type="date"
                       value={createForm.startDate}
                       onChange={(e) => setCreateForm({ ...createForm, startDate: e.target.value })}
-                      className="w-full min-h-[44px] px-4 py-2 bg-slate-950 border border-white/10 rounded-xl text-white text-sm"
+                      className="w-full min-h-[44px] px-4 py-2 bg-slate-950 border border-border rounded-xl text-white text-sm"
                     />
                   </div>
                   <div className="space-y-1">
@@ -1152,13 +1152,13 @@ export default function OwnerBookingsPage() {
                       type="number"
                       value={createForm.depositAmount}
                       onChange={(e) => setCreateForm({ ...createForm, depositAmount: Number(e.target.value) })}
-                      className="w-full min-h-[44px] px-4 py-2 bg-slate-950 border border-white/10 rounded-xl text-white font-bold text-sm"
+                      className="w-full min-h-[44px] px-4 py-2 bg-slate-950 border border-border rounded-xl text-white font-bold text-sm"
                     />
                   </div>
                 </div>
 
                 {/* Auto Approve Option */}
-                <div className="p-3.5 bg-slate-950 rounded-2xl border border-white/10 space-y-2">
+                <div className="p-3.5 bg-slate-950 rounded-2xl border border-border space-y-2">
                   <label className="flex items-center gap-3 cursor-pointer select-none">
                     <input
                       type="checkbox"
@@ -1166,11 +1166,11 @@ export default function OwnerBookingsPage() {
                       onChange={(e) => setCreateForm({ ...createForm, autoApprove: e.target.checked })}
                       className="w-5 h-5 rounded accent-primary cursor-pointer shrink-0"
                     />
-                    <span className="font-bold text-white text-xs">
+                    <span className="font-bold text-foreground text-xs">
                       อนุมัติสัญญาและเปิดให้เข้าพักทันที (Active)
                     </span>
                   </label>
-                  <p className="text-[11px] text-white/40 pl-8">
+                  <p className="text-[11px] text-muted-foreground pl-8">
                     {createForm.autoApprove 
                       ? 'ห้องพักจะเปลี่ยนเป็น "ไม่ว่าง (Occupied)" ทันที' 
                       : 'ห้องพักจะถูกล็อกเป็น "จองแล้ว (Reserved)" รอการอนุมัติ'}
@@ -1318,9 +1318,9 @@ export default function OwnerBookingsPage() {
             className="fixed inset-0 z-[200] bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 cursor-pointer animate-in fade-in duration-200"
           >
             <div className="max-w-md w-full bg-slate-900 rounded-3xl p-5 sm:p-6 border border-white/20 space-y-4 my-auto max-h-[92dvh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
-              <div className="flex justify-between items-center pb-2 border-b border-white/10">
-                <span className="font-bold text-white text-sm truncate">{previewSlipTitle || 'สลิปการโอนเงิน'}</span>
-                <button onClick={() => setPreviewSlipUrl(null)} className="text-white/50 hover:text-white text-xl font-bold p-1">✕</button>
+              <div className="flex justify-between items-center pb-2 border-b border-border">
+                <span className="font-bold text-foreground text-sm truncate">{previewSlipTitle || 'สลิปการโอนเงิน'}</span>
+                <button onClick={() => setPreviewSlipUrl(null)} className="text-muted-foreground hover:text-white text-xl font-bold p-1">✕</button>
               </div>
               <div className="rounded-2xl overflow-hidden max-h-[60vh] flex items-center justify-center bg-black">
                 <img src={previewSlipUrl} alt="Full Slip" className="max-h-[58vh] w-auto object-contain rounded-xl" />

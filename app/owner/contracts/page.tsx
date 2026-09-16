@@ -272,7 +272,7 @@ export default function OwnerContractsPage() {
   const displayedContracts = activeTab === 'Active' ? activeContracts : historyContracts;
 
   return (
-    <div className="flex-1 overflow-y-auto bg-[#080F1E] p-8 lg:p-12">
+    <div className="flex-1 overflow-y-auto bg-secondary/40 p-8 lg:p-12">
       <div className="max-w-7xl mx-auto space-y-10">
         
         {/* Header */}
@@ -280,9 +280,9 @@ export default function OwnerContractsPage() {
           <div>
             <div className="flex items-center gap-3">
               <div className="w-1.5 h-8 bg-primary rounded-full" />
-              <h1 className="text-3xl font-black text-white tracking-tight">บันทึกสัญญาเช่าและต่อสัญญา</h1>
+              <h1 className="text-3xl font-black text-foreground tracking-tight">บันทึกสัญญาเช่าและต่อสัญญา</h1>
             </div>
-            <p className="text-white/50 text-sm font-medium ml-4 mt-1">
+            <p className="text-muted-foreground text-sm font-medium ml-4 mt-1">
               แนบไฟล์/รูปถ่ายเอกสารสัญญาฉบับจริง อัปเดตสิทธิ์ลูกหออัตโนมัติ และจัดการการต่ออายุสัญญา
             </p>
           </div>
@@ -305,14 +305,14 @@ export default function OwnerContractsPage() {
             className={`p-6 rounded-3xl cursor-pointer transition-all border ${
               activeTab === 'Active' 
                 ? 'bg-emerald-500/10 border-emerald-500/40 shadow-lg shadow-emerald-950/20' 
-                : 'bg-[#0F172A] border-white/10 hover:border-white/20'
+                : 'bg-card border-border hover:border-white/20'
             }`}
           >
             <div className="flex justify-between items-start mb-2">
               <h3 className="text-xs font-black text-emerald-400 uppercase tracking-widest">สัญญาที่มีผลบังคับใช้ (Active)</h3>
               <span className="text-xl">🟢</span>
             </div>
-            <p className="text-4xl font-black text-white">{activeContracts.length} <span className="text-xs text-white/50 font-medium">สัญญา</span></p>
+            <p className="text-4xl font-black text-foreground">{activeContracts.length} <span className="text-xs text-muted-foreground font-medium">สัญญา</span></p>
           </div>
 
           <div 
@@ -320,7 +320,7 @@ export default function OwnerContractsPage() {
             className={`p-6 rounded-3xl cursor-pointer transition-all border ${
               renewalRequestedCount > 0 
                 ? 'bg-amber-500/15 border-amber-500/50 animate-pulse' 
-                : 'bg-[#0F172A] border-white/10'
+                : 'bg-card border-border'
             }`}
           >
             <div className="flex justify-between items-start mb-2">
@@ -335,25 +335,25 @@ export default function OwnerContractsPage() {
             className={`p-6 rounded-3xl cursor-pointer transition-all border ${
               activeTab === 'History' 
                 ? 'bg-purple-500/10 border-purple-500/40 shadow-lg shadow-purple-950/20' 
-                : 'bg-[#0F172A] border-white/10 hover:border-white/20'
+                : 'bg-card border-border hover:border-white/20'
             }`}
           >
             <div className="flex justify-between items-start mb-2">
               <h3 className="text-xs font-black text-purple-400 uppercase tracking-widest">ประวัติสัญญาเดิม (History)</h3>
               <span className="text-xl">📜</span>
             </div>
-            <p className="text-4xl font-black text-white">{historyContracts.length} <span className="text-xs text-white/50 font-medium">รายการ</span></p>
+            <p className="text-4xl font-black text-foreground">{historyContracts.length} <span className="text-xs text-muted-foreground font-medium">รายการ</span></p>
           </div>
         </div>
 
         {/* Tab Switcher */}
-        <div className="flex border-b border-white/10 gap-8">
+        <div className="flex border-b border-border gap-8">
           <button
             onClick={() => setActiveTab('Active')}
             className={`pb-4 font-black text-sm transition-all border-b-2 ${
               activeTab === 'Active' 
                 ? 'border-primary text-primary' 
-                : 'border-transparent text-white/50 hover:text-white'
+                : 'border-transparent text-muted-foreground hover:text-white'
             }`}
           >
             🟢 รายการสัญญาปัจจุบัน ({activeContracts.length})
@@ -363,7 +363,7 @@ export default function OwnerContractsPage() {
             className={`pb-4 font-black text-sm transition-all border-b-2 ${
               activeTab === 'History' 
                 ? 'border-primary text-primary' 
-                : 'border-transparent text-white/50 hover:text-white'
+                : 'border-transparent text-muted-foreground hover:text-white'
             }`}
           >
             📜 ประวัติสัญญาย้อนหลัง / หมดอายุ ({historyContracts.length})
@@ -371,29 +371,29 @@ export default function OwnerContractsPage() {
         </div>
 
         {/* Contracts Table */}
-        <div className="bg-[#0F172A] rounded-3xl border border-white/10 shadow-xl overflow-hidden">
+        <div className="bg-card rounded-3xl border border-border shadow-xl overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
-              <thead className="bg-[#0B0F19] border-b border-white/10">
+              <thead className="bg-[#0B0F19] border-b border-border">
                 <tr>
-                  <th className="px-8 py-5 text-[10px] font-black text-white/50 uppercase tracking-widest">ห้อง / ลูกหอ</th>
-                  <th className="px-8 py-5 text-[10px] font-black text-white/50 uppercase tracking-widest">ระยะเวลาสัญญา</th>
-                  <th className="px-8 py-5 text-[10px] font-black text-white/50 uppercase tracking-widest">เงินประกัน</th>
-                  <th className="px-8 py-5 text-[10px] font-black text-white/50 uppercase tracking-widest">เอกสารสัญญาจริง</th>
-                  <th className="px-8 py-5 text-[10px] font-black text-white/50 uppercase tracking-widest">สถานะ</th>
-                  <th className="px-8 py-5 text-[10px] font-black text-white/50 uppercase tracking-widest text-center">จัดการ</th>
+                  <th className="px-8 py-5 text-[10px] font-black text-foreground/50 uppercase tracking-widest">ห้อง / ลูกหอ</th>
+                  <th className="px-8 py-5 text-[10px] font-black text-foreground/50 uppercase tracking-widest">ระยะเวลาสัญญา</th>
+                  <th className="px-8 py-5 text-[10px] font-black text-foreground/50 uppercase tracking-widest">เงินประกัน</th>
+                  <th className="px-8 py-5 text-[10px] font-black text-foreground/50 uppercase tracking-widest">เอกสารสัญญาจริง</th>
+                  <th className="px-8 py-5 text-[10px] font-black text-foreground/50 uppercase tracking-widest">สถานะ</th>
+                  <th className="px-8 py-5 text-[10px] font-black text-foreground/50 uppercase tracking-widest text-center">จัดการ</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/5 text-sm font-medium">
                 {loading ? (
                   <tr>
-                    <td colSpan={6} className="py-20 text-center text-white/40 font-bold animate-pulse">
+                    <td colSpan={6} className="py-20 text-center text-muted-foreground font-bold animate-pulse">
                       กำลังโหลดข้อมูลสัญญาเช่า...
                     </td>
                   </tr>
                 ) : displayedContracts.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="py-20 text-center text-white/40 font-bold">
+                    <td colSpan={6} className="py-20 text-center text-muted-foreground font-bold">
                       ไม่พบรายการสัญญาในหมวดหมู่นี้
                     </td>
                   </tr>
@@ -406,14 +406,14 @@ export default function OwnerContractsPage() {
                             {c.room_number}
                           </div>
                           <div>
-                            <p className="font-black text-white">{c.tenant_name}</p>
-                            <p className="text-xs text-white/50">{c.tenant_email || 'ไม่ระบุอีเมล'}</p>
+                            <p className="font-black text-foreground">{c.tenant_name}</p>
+                            <p className="text-xs text-muted-foreground">{c.tenant_email || 'ไม่ระบุอีเมล'}</p>
                           </div>
                         </div>
                       </td>
 
                       <td className="px-8 py-6">
-                        <p className="font-bold text-white">
+                        <p className="font-bold text-foreground">
                           {new Date(c.start_date).toLocaleDateString('th-TH')} - {new Date(c.end_date).toLocaleDateString('th-TH')}
                         </p>
                         {c.parent_contract_id && (
@@ -434,12 +434,12 @@ export default function OwnerContractsPage() {
                               setPreviewingFileUrl(c.contract_file_url || null);
                               setPreviewingTitle(`สัญญาเช่าห้อง ${c.room_number} (${c.tenant_name})`);
                             }}
-                            className="px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/20 rounded-xl text-xs font-bold text-white flex items-center gap-2 transition-all cursor-pointer"
+                            className="px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/20 rounded-xl text-xs font-bold text-foreground flex items-center gap-2 transition-all cursor-pointer"
                           >
                             <span>📄 ดูไฟล์สัญญา</span>
                           </button>
                         ) : (
-                          <span className="text-xs text-white/40 italic">ไม่มีไฟล์แนบ</span>
+                          <span className="text-xs text-muted-foreground italic">ไม่มีไฟล์แนบ</span>
                         )}
                       </td>
 
@@ -448,7 +448,7 @@ export default function OwnerContractsPage() {
                           <span className={`px-3 py-1 text-[10px] font-black uppercase tracking-widest rounded-lg border inline-block ${
                             c.status === 'Active' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' :
                             c.status === 'Renewed' ? 'bg-purple-500/10 text-purple-400 border-purple-500/20' :
-                            'bg-white/10 text-white/50 border-white/20'
+                            'bg-white/10 text-muted-foreground border-white/20'
                           }`}>
                             {c.status === 'Active' ? 'มีผลบังคับใช้' :
                              c.status === 'Renewed' ? 'ต่ออายุแล้ว' : c.status}
@@ -486,15 +486,15 @@ export default function OwnerContractsPage() {
       {/* Modal 1: Create New Contract */}
       {isCreateModalOpen && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-6 overflow-y-auto">
-          <div className="bg-[#0F172A] rounded-[36px] w-full max-w-2xl border border-white/10 shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
-            <div className="bg-[#0B0F19] border-b border-white/10 p-8 flex items-center justify-between shrink-0">
+          <div className="bg-card rounded-[36px] w-full max-w-2xl border border-border shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
+            <div className="bg-[#0B0F19] border-b border-border p-8 flex items-center justify-between shrink-0">
               <div>
-                <h2 className="text-2xl font-black text-white">📝 บันทึกสัญญาเช่าใหม่</h2>
-                <p className="text-xs text-white/50 font-medium mt-1">แนบไฟล์สัญญาเช่าจริงที่เซ็นแล้ว เพื่อยกระดับสิทธิ์ผู้เช่าเป็นลูกหออัตโนมัติ</p>
+                <h2 className="text-2xl font-black text-foreground">📝 บันทึกสัญญาเช่าใหม่</h2>
+                <p className="text-xs text-muted-foreground font-medium mt-1">แนบไฟล์สัญญาเช่าจริงที่เซ็นแล้ว เพื่อยกระดับสิทธิ์ผู้เช่าเป็นลูกหออัตโนมัติ</p>
               </div>
               <button 
                 onClick={() => setIsCreateModalOpen(false)}
-                className="w-10 h-10 bg-white/5 hover:bg-white/10 rounded-xl text-white/50 hover:text-white flex items-center justify-center transition-all cursor-pointer"
+                className="w-10 h-10 bg-white/5 hover:bg-white/10 rounded-xl text-muted-foreground hover:text-white flex items-center justify-center transition-all cursor-pointer"
               >
                 ✕
               </button>
@@ -513,16 +513,16 @@ export default function OwnerContractsPage() {
 
               <form onSubmit={handleCreateSubmit} className="space-y-6">
                 <div className="space-y-2">
-                  <label className="block text-[10px] font-black text-white/50 uppercase tracking-widest">เลือกห้องพัก (เฉพาะห้องว่าง)</label>
+                  <label className="block text-[10px] font-black text-foreground/50 uppercase tracking-widest">เลือกห้องพัก (เฉพาะห้องว่าง)</label>
                   <select
                     required
                     value={formData.room_id}
                     onChange={(e) => setFormData({ ...formData, room_id: e.target.value })}
                     className="w-full px-6 py-4 bg-white/5 border border-white/20 rounded-2xl text-white font-bold outline-none focus:border-primary transition-all cursor-pointer"
                   >
-                    <option value="" className="bg-[#0F172A]">-- เลือกห้องพัก --</option>
+                    <option value="" className="bg-card">-- เลือกห้องพัก --</option>
                     {rooms.map(r => (
-                      <option key={r.id} value={r.id} className="bg-[#0F172A]">
+                      <option key={r.id} value={r.id} className="bg-card">
                         ห้อง {r.room_number} (ราคา ฿{r.price.toLocaleString()}/เดือน)
                       </option>
                     ))}
@@ -531,7 +531,7 @@ export default function OwnerContractsPage() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <label className="block text-[10px] font-black text-white/50 uppercase tracking-widest">ชื่อ-นามสกุล ผู้เช่า</label>
+                    <label className="block text-[10px] font-black text-foreground/50 uppercase tracking-widest">ชื่อ-นามสกุล ผู้เช่า</label>
                     <input
                       type="text"
                       required
@@ -543,7 +543,7 @@ export default function OwnerContractsPage() {
                   </div>
 
                   <div className="space-y-2">
-                    <label className="block text-[10px] font-black text-white/50 uppercase tracking-widest">อีเมลผู้เช่า (สำหรับสร้างบัญชีเข้าใช้งาน)</label>
+                    <label className="block text-[10px] font-black text-foreground/50 uppercase tracking-widest">อีเมลผู้เช่า (สำหรับสร้างบัญชีเข้าใช้งาน)</label>
                     <input
                       type="email"
                       required
@@ -557,7 +557,7 @@ export default function OwnerContractsPage() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <label className="block text-[10px] font-black text-white/50 uppercase tracking-widest">เบอร์โทรศัพท์ผู้เช่า</label>
+                    <label className="block text-[10px] font-black text-foreground/50 uppercase tracking-widest">เบอร์โทรศัพท์ผู้เช่า</label>
                     <input
                       type="text"
                       placeholder="089-123-4567"
@@ -568,7 +568,7 @@ export default function OwnerContractsPage() {
                   </div>
 
                   <div className="space-y-2">
-                    <label className="block text-[10px] font-black text-white/50 uppercase tracking-widest">เงินประกัน (Deposit)</label>
+                    <label className="block text-[10px] font-black text-foreground/50 uppercase tracking-widest">เงินประกัน (Deposit)</label>
                     <input
                       type="number"
                       required
@@ -593,8 +593,8 @@ export default function OwnerContractsPage() {
                 </div>
 
                 {/* Upload Signed Contract File */}
-                <div className="space-y-3 p-6 bg-white/5 rounded-2xl border border-white/10">
-                  <label className="block text-[10px] font-black text-white/70 uppercase tracking-widest">
+                <div className="space-y-3 p-6 bg-white/5 rounded-2xl border border-border">
+                  <label className="block text-[10px] font-black text-foreground/70 uppercase tracking-widest">
                     📄 แนบไฟล์/รูปถ่ายเอกสารสัญญาฉบับจริง (Signed Contract File / Photo)
                   </label>
                   
@@ -615,7 +615,7 @@ export default function OwnerContractsPage() {
                   <button
                     type="button"
                     onClick={() => setIsCreateModalOpen(false)}
-                    className="flex-1 py-4 text-white/50 font-bold hover:bg-white/5 rounded-2xl transition-all"
+                    className="flex-1 py-4 text-muted-foreground font-bold hover:bg-white/5 rounded-2xl transition-all"
                   >
                     ยกเลิก
                   </button>
@@ -636,15 +636,15 @@ export default function OwnerContractsPage() {
       {/* Modal 2: Contract Renewal */}
       {renewingContract && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-6 overflow-y-auto">
-          <div className="bg-[#0F172A] rounded-[36px] w-full max-w-xl border border-white/10 shadow-2xl overflow-hidden">
-            <div className="bg-[#0B0F19] border-b border-white/10 p-8 flex items-center justify-between">
+          <div className="bg-card rounded-[36px] w-full max-w-xl border border-border shadow-2xl overflow-hidden">
+            <div className="bg-[#0B0F19] border-b border-border p-8 flex items-center justify-between">
               <div>
-                <h2 className="text-2xl font-black text-white">🔄 ต่ออายุสัญญาเช่า</h2>
-                <p className="text-xs text-white/50 font-medium mt-1">ห้อง {renewingContract.room_number} - {renewingContract.tenant_name}</p>
+                <h2 className="text-2xl font-black text-foreground">🔄 ต่ออายุสัญญาเช่า</h2>
+                <p className="text-xs text-muted-foreground font-medium mt-1">ห้อง {renewingContract.room_number} - {renewingContract.tenant_name}</p>
               </div>
               <button 
                 onClick={() => setRenewingContract(null)}
-                className="w-10 h-10 bg-white/5 hover:bg-white/10 rounded-xl text-white/50 hover:text-white flex items-center justify-center transition-all cursor-pointer"
+                className="w-10 h-10 bg-white/5 hover:bg-white/10 rounded-xl text-muted-foreground hover:text-white flex items-center justify-center transition-all cursor-pointer"
               >
                 ✕
               </button>
@@ -663,7 +663,7 @@ export default function OwnerContractsPage() {
               />
 
               <div className="space-y-2">
-                <label className="block text-[10px] font-black text-white/50 uppercase tracking-widest">เงินประกันใหม่ (ถ้ามี)</label>
+                <label className="block text-[10px] font-black text-foreground/50 uppercase tracking-widest">เงินประกันใหม่ (ถ้ามี)</label>
                 <input
                   type="number"
                   value={renewData.deposit_amount}
@@ -673,8 +673,8 @@ export default function OwnerContractsPage() {
               </div>
 
               {/* Upload Renewal Signed Contract File */}
-              <div className="space-y-3 p-6 bg-white/5 rounded-2xl border border-white/10">
-                <label className="block text-[10px] font-black text-white/70 uppercase tracking-widest">
+              <div className="space-y-3 p-6 bg-white/5 rounded-2xl border border-border">
+                <label className="block text-[10px] font-black text-foreground/70 uppercase tracking-widest">
                   📄 แนบไฟล์/รูปถ่ายเอกสารสัญญาฉบับต่ออายุใหม่
                 </label>
                 <input
@@ -694,7 +694,7 @@ export default function OwnerContractsPage() {
                 <button
                   type="button"
                   onClick={() => setRenewingContract(null)}
-                  className="flex-1 py-4 text-white/50 font-bold hover:bg-white/5 rounded-2xl transition-all"
+                  className="flex-1 py-4 text-muted-foreground font-bold hover:bg-white/5 rounded-2xl transition-all"
                 >
                   ยกเลิก
                 </button>
@@ -714,9 +714,9 @@ export default function OwnerContractsPage() {
       {/* Modal 3: Preview Contract Document */}
       {previewingFileUrl && (
         <div className="fixed inset-0 bg-black/90 backdrop-blur-md z-50 flex items-center justify-center p-6">
-          <div className="bg-[#0F172A] rounded-[36px] w-full max-w-4xl max-h-[90vh] border border-white/10 shadow-2xl flex flex-col overflow-hidden">
-            <div className="bg-[#0B0F19] border-b border-white/10 p-6 flex items-center justify-between shrink-0">
-              <h3 className="text-lg font-black text-white">{previewingTitle}</h3>
+          <div className="bg-card rounded-[36px] w-full max-w-4xl max-h-[90vh] border border-border shadow-2xl flex flex-col overflow-hidden">
+            <div className="bg-[#0B0F19] border-b border-border p-6 flex items-center justify-between shrink-0">
+              <h3 className="text-lg font-black text-foreground">{previewingTitle}</h3>
               <div className="flex items-center gap-3">
                 <a
                   href={previewingFileUrl}
@@ -729,7 +729,7 @@ export default function OwnerContractsPage() {
                 </a>
                 <button
                   onClick={() => setPreviewingFileUrl(null)}
-                  className="w-10 h-10 bg-white/5 hover:bg-white/10 rounded-xl text-white/50 hover:text-white flex items-center justify-center transition-all cursor-pointer"
+                  className="w-10 h-10 bg-white/5 hover:bg-white/10 rounded-xl text-muted-foreground hover:text-white flex items-center justify-center transition-all cursor-pointer"
                 >
                   ✕
                 </button>
@@ -751,7 +751,7 @@ export default function OwnerContractsPage() {
               ) : (
                 <iframe
                   src={previewingFileUrl}
-                  className="w-full h-[600px] rounded-2xl border border-white/10"
+                  className="w-full h-[600px] rounded-2xl border border-border"
                   title="Document Preview"
                 />
               )}

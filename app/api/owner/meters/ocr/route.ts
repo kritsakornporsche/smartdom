@@ -15,9 +15,9 @@ async function getSharedOcrWorker() {
     globalForOcr._ocrWorkerPromise = (async () => {
       const { createWorker } = await import('tesseract.js');
       const worker = await createWorker('eng');
+      // PSM 6 (single uniform block) handles multi-element dials, labels, and text reliably
       await worker.setParameters({
-        tessedit_pageseg_mode: '7' as any, // PSM 7: Single text line (most accurate for odometer/meter wheels)
-        tessedit_char_whitelist: '0123456789.', // Strictly numbers and decimal dot
+        tessedit_pageseg_mode: '6' as any,
       });
       globalForOcr._ocrWorker = worker;
       return worker;
@@ -26,15 +26,18 @@ async function getSharedOcrWorker() {
   return globalForOcr._ocrWorkerPromise;
 }
 
-// Known constant metadata on Thai meters to ignore (voltage, frequency, amp ratings, meter constants)
-const METER_NOISE_CONSTANTS = new Set([220, 230, 240, 50, 60, 1200, 1600, 2400, 4064]);
+// Known constant metadata on Thai meters to ignore (voltage, frequency, amp ratings, meter constants, years)
+const METER_NOISE_CONSTANTS = new Set([
+  220, 230, 240, 380, 50, 60, 100, 1200, 1600, 2400, 3200, 4064, 
+  2020, 2021, 2022, 2023, 2024, 2025, 2026, 2027
+]);
 
 /**
  * Robust parser for utility meters:
- * 1. Handles mechanical rotating wheels with physical gaps e.g. "0 1 5 2 4" -> "01524"
- * 2. Handles decimal dots e.g. "00142 . 8" -> "142.8"
- * 3. Resolves common OCR letter misclassifications (O->0, l/I->1, S->5, B->8)
- * 4. Filters out noise (e.g. 220V, 50Hz, 1200r/kWh) by prioritizing numbers close to previous reading
+ * 1. Handles mechanical rotating wheels with single-digit gaps e.g. "0 0 1 8 4" -> "00184"
+ * 2. Does NOT corrupt brand words (Sanwa, Mitsubishi) into numbers
+ * 3. Filters out electrical ratings (220V, 50Hz, 1200r/kWh) and dates
+ * 4. Scores candidates based on closeness to previous reading
  */
 function parseMeterDigits(rawText: string, previousReading?: number | string | null): {
   reading: number | null;
@@ -44,72 +47,65 @@ function parseMeterDigits(rawText: string, previousReading?: number | string | n
     return { reading: null, candidates: [] };
   }
 
-  // 1. Replace common visual character confusions in mechanical odometer meters
-  let text = rawText
-    .replace(/[Oo]/g, '0')
-    .replace(/[Il|]/g, '1')
-    .replace(/[Ss]/g, '5')
-    .replace(/[Bb]/g, '8');
+  const prev = (previousReading !== undefined && previousReading !== null && previousReading !== '') 
+    ? Number(previousReading) 
+    : 0;
 
-  // 2. Collapse spaced digits: mechanical meter wheels have gaps e.g. "0 1 5 2 4" -> "01524"
-  let collapsed = text;
-  while (/(\d)\s+(\d)/.test(collapsed)) {
-    collapsed = collapsed.replace(/(\d)\s+(\d)/g, '$1$2');
+  // 1. Find sequences of spaced odometer digits: e.g. "0 0 1 8 4" or "0 1 2 4 5 . 8"
+  let processed = rawText.replace(/\b([0-9])\s+([0-9])(?:\s+([0-9]))*(?:\s*\.\s*([0-9]))?\b/g, (match) => {
+    return match.replace(/\s+/g, '');
+  });
+
+  // Handle letter O / I / l when inside or adjacent to digit sequences
+  processed = processed.replace(/(?<=\d)[Oo](?=\d)/g, '0')
+                       .replace(/(?<=\d)[Il|](?=\d)/g, '1')
+                       .replace(/\b[Oo]\b/g, '0');
+
+  // Extract all numeric tokens (integers and decimals)
+  const tokens = processed.match(/\d+(?:\.\d+)?/g) || [];
+  
+  // Convert to numbers and remove noise
+  const candidates: number[] = [];
+  for (const t of tokens) {
+    const num = parseFloat(t);
+    if (isNaN(num)) continue;
+    if (METER_NOISE_CONSTANTS.has(num)) continue;
+    candidates.push(num);
   }
-  // Decimal spaces e.g. "142 . 5" -> "142.5"
-  collapsed = collapsed.replace(/(\d)\s*\.\s*(\d)/g, '$1.$2');
 
-  const matches = collapsed.match(/\d+(\.\d+)?/g) || [];
-  if (matches.length === 0) {
+  const unique = Array.from(new Set(candidates));
+
+  if (unique.length === 0) {
     return { reading: null, candidates: [] };
   }
 
-  let candidates = matches
-    .map(m => parseFloat(m))
-    .filter(n => !isNaN(n) && n >= 0);
-
-  // If there are other options, filter out known meter noise constants
-  if (candidates.length > 1) {
-    const filtered = candidates.filter(n => !METER_NOISE_CONSTANTS.has(n));
-    if (filtered.length > 0) {
-      candidates = filtered;
-    }
-  }
-
-  if (candidates.length === 0) {
-    return { reading: null, candidates: [] };
-  }
-
-  let chosen: number | null = null;
-
-  if (previousReading !== undefined && previousReading !== null && previousReading !== '') {
-    const prev = Number(previousReading);
-    // 1. Look for a candidate >= prev and within reasonable monthly consumption (+2500 units)
-    const valid = candidates.filter(n => n >= prev && n <= prev + 2500);
-    if (valid.length > 0) {
-      chosen = valid[0];
+  // Score candidates based on closeness to previous reading
+  const scored = unique.map(c => {
+    let score = 0;
+    const diff = c - prev;
+    if (diff >= 0 && diff <= 500) {
+      score += 100 - (diff / 10); // close positive delta is top priority
+    } else if (diff > 500 && diff <= 2500) {
+      score += 50 - (diff / 100);
+    } else if (diff < 0 && Math.abs(diff) < 50) {
+      score += 20; // slight OCR under-read
     } else {
-      // 2. Look for any candidate >= prev
-      const validLeeway = candidates.filter(n => n >= prev);
-      if (validLeeway.length > 0) {
-        chosen = validLeeway[0];
-      } else {
-        // 3. Fallback to reasonable positive candidates
-        const reasonable = candidates.filter(n => n > 0 && n <= prev + 5000);
-        if (reasonable.length > 0) {
-          chosen = reasonable[0];
-        }
-      }
+      score += 5;
     }
-  }
+    // Boost 3-6 digit numbers which are standard meter odometer lengths
+    const digitCount = Math.floor(c).toString().length;
+    if (digitCount >= 3 && digitCount <= 6) {
+      score += 15;
+    }
+    return { candidate: c, score, diff };
+  });
 
-  if (chosen === null) {
-    // Filter out standalone 0 if other non-zero numbers exist
-    const nonZeros = candidates.filter(n => n > 0);
-    chosen = nonZeros.length > 0 ? nonZeros[0] : candidates[0];
-  }
+  scored.sort((a, b) => b.score - a.score);
 
-  return { reading: chosen, candidates };
+  return {
+    reading: scored[0].candidate,
+    candidates: scored.map(s => s.candidate),
+  };
 }
 
 export async function POST(req: Request) {

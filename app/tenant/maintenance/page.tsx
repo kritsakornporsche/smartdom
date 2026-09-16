@@ -79,7 +79,7 @@ export default function TenantMaintenancePage() {
       <div className="max-w-4xl mx-auto pb-16 space-y-12">
         <header className="flex justify-between items-end">
           <div>
-            <h1 className="text-3xl font-black text-white mb-2">การดูแลรักษา (Maintenance)</h1>
+            <h1 className="text-3xl font-black text-foreground mb-2">การดูแลรักษา (Maintenance)</h1>
             <p className="text-muted-foreground font-medium">แจ้งปัญหาและติดตามกระบวนการซ่อมแซมภายในห้องพัก</p>
           </div>
           {!showForm && (
@@ -93,15 +93,15 @@ export default function TenantMaintenancePage() {
         </header>
 
         {showForm && (
-          <div className="bg-[#0F172A] rounded-[2.5rem] border border-white/20/10 p-10 shadow-2xl animate-in zoom-in-95 duration-300">
-            <h2 className="text-xl font-black text-white mb-8">แบบฟอร์มแจ้งซ่อม</h2>
+          <div className="bg-card rounded-[2.5rem] border border-border p-10 shadow-2xl animate-in zoom-in-95 duration-300">
+            <h2 className="text-xl font-black text-foreground mb-8">แบบฟอร์มแจ้งซ่อม</h2>
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-2">
-                <label className="text-[10px] font-black uppercase tracking-widest text-white/50 px-1">ประเภทปัญหา</label>
+                <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">ประเภทปัญหา</label>
                 <select 
                     value={issueType}
                     onChange={(e) => setIssueType(e.target.value)}
-                    className="w-full bg-[#0F172A] border border-white/20/10 rounded-2xl px-6 py-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+                    className="w-full bg-card border border-border rounded-2xl px-6 py-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
                 >
                     <option>ทั่วไป</option>
                     <option>ระบบไฟฟ้า</option>
@@ -112,12 +112,12 @@ export default function TenantMaintenancePage() {
                 </select>
               </div>
               <div className="space-y-2">
-                <label className="text-[10px] font-black uppercase tracking-widest text-white/50 px-1">รายละเอียดปัญหา</label>
+                <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">รายละเอียดปัญหา</label>
                 <textarea 
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     placeholder="กรุณาระบุปัญหาที่พบ เช่น ไฟเพดานดวงกลางดับ, น้ำหยดใต้ซิงค์..."
-                    className="w-full bg-[#0F172A] border border-white/20/10 rounded-2xl px-6 py-5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 min-h-[150px]"
+                    className="w-full bg-card border border-border rounded-2xl px-6 py-5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 min-h-[150px]"
                     required
                 />
               </div>
@@ -125,7 +125,7 @@ export default function TenantMaintenancePage() {
                 <button 
                   type="button" 
                   onClick={() => setShowForm(false)}
-                  className="flex-1 py-4 border border-white/20/10 text-white/50 rounded-2xl font-bold text-sm hover:bg-[#0F172A]"
+                  className="flex-1 py-4 border border-border text-muted-foreground rounded-2xl font-bold text-sm hover:bg-card"
                 >
                   ยกเลิก
                 </button>
@@ -142,21 +142,21 @@ export default function TenantMaintenancePage() {
         )}
 
         <div className="space-y-6">
-          <h2 className="text-xl font-black text-white flex items-center gap-3">
+          <h2 className="text-xl font-black text-foreground flex items-center gap-3">
              ประวัติการแจ้งซ่อมล่วงหน้า
              <span className="text-xs bg-white/5 text-muted-foreground px-2 py-0.5 rounded-lg">{requests.length}</span>
           </h2>
           
           <div className="grid gap-6">
             {loading ? (
-              <div className="text-center py-20 animate-pulse text-white/50">กำลังโหลดข้อมูล...</div>
+              <div className="text-center py-20 animate-pulse text-muted-foreground">กำลังโหลดข้อมูล...</div>
             ) : requests.length === 0 ? (
-              <div className="bg-[#0F172A] border-2 border-dashed border-white/20/10 rounded-[2.5rem] p-20 text-center">
-                <p className="text-white/50 font-bold">ยังไม่มีประวัติการแจ้งซ่อม</p>
+              <div className="bg-card border-2 border-dashed border-border rounded-[2.5rem] p-20 text-center">
+                <p className="text-muted-foreground font-bold">ยังไม่มีประวัติการแจ้งซ่อม</p>
               </div>
             ) : (
               requests.map((req) => (
-                <div key={req.id} className="bg-[#0F172A] rounded-[2.5rem] border border-white/20/10 shadow-sm overflow-hidden flex items-stretch hover:shadow-xl transition-all group">
+                <div key={req.id} className="bg-card rounded-[2.5rem] border border-border shadow-sm overflow-hidden flex items-stretch hover:shadow-xl transition-all group">
                    <div className={`w-4 shrink-0 ${
                       req.status === 'Pending' ? 'bg-[#E9C46A]' :
                       req.status === 'In Progress' ? 'bg-[#2196F3]' :
@@ -169,7 +169,7 @@ export default function TenantMaintenancePage() {
                             <span className="text-[10px] font-bold text-[#C2B7A8] uppercase tracking-widest">#{req.id.toString().padStart(4, '0')}</span>
                        </div>
                        <p className="text-muted-foreground text-sm mb-4 leading-relaxed font-medium">"{req.description}"</p>
-                       <div className="text-[10px] text-white/50 font-bold tracking-widest uppercase flex items-center gap-2">
+                       <div className="text-[10px] text-muted-foreground font-bold tracking-widest uppercase flex items-center gap-2">
                          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                          {new Date(req.created_at).toLocaleDateString('th-TH', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
                        </div>

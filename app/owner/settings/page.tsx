@@ -128,17 +128,17 @@ export default function OwnerSettings() {
   };
 
   if (loading) return (
-    <div className="flex-1 flex items-center justify-center bg-[#080F1E]">
+    <div className="flex-1 flex items-center justify-center bg-secondary/40">
       <div className="w-10 h-10 rounded-full border-4 border-primary border-t-transparent animate-spin" />
     </div>
   );
 
   return (
-    <div className="flex-1 flex flex-col overflow-hidden bg-[#080F1E]">
-      <header className="h-20 bg-[#0F172A]/60 backdrop-blur-md border-b border-white/20 flex items-center justify-between px-10 shrink-0 sticky top-0 z-10">
+    <div className="flex-1 flex flex-col overflow-hidden bg-secondary/40">
+      <header className="h-20 bg-card/60 backdrop-blur-md border-b border-white/20 flex items-center justify-between px-10 shrink-0 sticky top-0 z-10">
         <div>
           <h1 className="text-xl font-black tracking-tight text-white">ตั้งค่าหอพัก</h1>
-          <p className="text-[10px] font-bold text-white/50 uppercase tracking-widest mt-0.5">Dormitory Profile & Search Settings</p>
+          <p className="text-[10px] font-bold text-foreground/50 uppercase tracking-widest mt-0.5">Dormitory Profile & Search Settings</p>
         </div>
       </header>
 
@@ -154,71 +154,71 @@ export default function OwnerSettings() {
 
           <form onSubmit={handleSubmit} className="space-y-8">
             {/* General Info */}
-            <div className="bg-[#0F172A] border border-white/20 rounded-3xl p-8 space-y-6">
-              <h2 className="text-lg font-black text-white border-b border-white/10 pb-4">ข้อมูลทั่วไป (แสดงในหน้าค้นหา)</h2>
+            <div className="bg-card border border-white/20 rounded-3xl p-8 space-y-6">
+              <h2 className="text-lg font-black text-foreground border-b border-border pb-4">ข้อมูลทั่วไป (แสดงในหน้าค้นหา)</h2>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-white/50 block pl-1">ชื่อหอพัก / กิจการ</label>
+                  <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground block pl-1">ชื่อหอพัก / กิจการ</label>
                   <input
                     type="text"
                     required
                     value={formData.name}
                     onChange={e => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full bg-[#0F172A] border border-white/20 rounded-xl px-4 py-3 text-white font-bold text-sm focus:outline-none focus:border-primary"
+                    className="w-full bg-card border border-white/20 rounded-xl px-4 py-3 text-white font-bold text-sm focus:outline-none focus:border-primary"
                     placeholder="เช่น SmartDom Mansion"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-white/50 block pl-1">เบอร์โทรศัพท์ติดต่อ</label>
+                  <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground block pl-1">เบอร์โทรศัพท์ติดต่อ</label>
                   <input
                     type="text"
                     required
                     value={formData.phone}
                     onChange={e => setFormData({ ...formData, phone: e.target.value })}
-                    className="w-full bg-[#0F172A] border border-white/20 rounded-xl px-4 py-3 text-white font-bold text-sm focus:outline-none focus:border-primary"
+                    className="w-full bg-card border border-white/20 rounded-xl px-4 py-3 text-white font-bold text-sm focus:outline-none focus:border-primary"
                     placeholder="เช่น 02-XXX-XXXX"
                   />
                 </div>
 
                 <div className="space-y-2 md:col-span-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-white/50 block pl-1">ลิงก์รูปภาพหน้าปกหอพัก</label>
+                  <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground block pl-1">ลิงก์รูปภาพหน้าปกหอพัก</label>
                   <input
                     type="text"
                     value={formData.cover_image}
                     onChange={e => setFormData({ ...formData, cover_image: e.target.value })}
-                    className="w-full bg-[#0F172A] border border-white/20 rounded-xl px-4 py-3 text-white font-bold text-sm focus:outline-none focus:border-primary"
+                    className="w-full bg-card border border-white/20 rounded-xl px-4 py-3 text-white font-bold text-sm focus:outline-none focus:border-primary"
                     placeholder="เช่น https://images.unsplash.com/... (เว้นว่างไว้สำหรับค่าเริ่มต้น)"
                   />
                 </div>
 
                 <div className="space-y-2 md:col-span-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-white/50 block pl-1">คำอธิบายรายละเอียดหอพัก (สั้นๆ)</label>
+                  <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground block pl-1">คำอธิบายรายละเอียดหอพัก (สั้นๆ)</label>
                   <textarea
                     rows={3}
                     value={formData.description}
                     onChange={e => setFormData({ ...formData, description: e.target.value })}
-                    className="w-full bg-[#0F172A] border border-white/20 rounded-xl px-4 py-3 text-white font-bold text-sm focus:outline-none focus:border-primary resize-none"
+                    className="w-full bg-card border border-white/20 rounded-xl px-4 py-3 text-white font-bold text-sm focus:outline-none focus:border-primary resize-none"
                     placeholder="เช่น หอพักระดับพรีเมียม ใกล้มหาวิทยาลัย เดินทางสะดวก สงบ สะอาด..."
                   />
                 </div>
 
                 <div className="space-y-2 md:col-span-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-white/50 block pl-1">ที่อยู่หอพัก</label>
+                  <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground block pl-1">ที่อยู่หอพัก</label>
                   <textarea
                     rows={2}
                     required
                     value={formData.address}
                     onChange={e => setFormData({ ...formData, address: e.target.value })}
-                    className="w-full bg-[#0F172A] border border-white/20 rounded-xl px-4 py-3 text-white font-bold text-sm focus:outline-none focus:border-primary resize-none"
+                    className="w-full bg-card border border-white/20 rounded-xl px-4 py-3 text-white font-bold text-sm focus:outline-none focus:border-primary resize-none"
                     placeholder="ระบุเลขที่ ถนน แขวง เขต..."
                   />
                 </div>
 
                 <div className="space-y-2 md:col-span-2">
                   <div className="flex items-center justify-between">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-white/50 block pl-1">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground block pl-1">
                       📍 ลิงก์ Google Maps / พิกัดปักหมุดแผนที่ (Map Location URL)
                     </label>
                     {formData.map_url && (
@@ -236,10 +236,10 @@ export default function OwnerSettings() {
                     type="text"
                     value={formData.map_url}
                     onChange={e => setFormData({ ...formData, map_url: e.target.value })}
-                    className="w-full bg-[#0F172A] border border-white/20 rounded-xl px-4 py-3 text-white font-bold text-sm focus:outline-none focus:border-primary"
+                    className="w-full bg-card border border-white/20 rounded-xl px-4 py-3 text-white font-bold text-sm focus:outline-none focus:border-primary"
                     placeholder="เช่น https://maps.google.com/?q=19.0286,99.8967 หรือ ลิงก์แชร์จาก Google Maps"
                   />
-                  <p className="text-[11px] text-white/40 pl-1">
+                  <p className="text-[11px] text-muted-foreground pl-1">
                     * พิกัดนี้จะนำไปแสดงเป็นแผนที่แบบโต้ตอบ (Interactive Map) บนหน้ารายละเอียดหอพักใน Explore เพื่อให้นักศึกษาค้นหาและนำทางมายังหอพักได้ง่าย
                   </p>
                 </div>
@@ -247,34 +247,34 @@ export default function OwnerSettings() {
             </div>
 
             {/* Rates & Rules */}
-            <div className="bg-[#0F172A] border border-white/20 rounded-3xl p-8 space-y-6">
-              <h2 className="text-lg font-black text-white border-b border-white/10 pb-4">ค่าน้ำ/ค่าไฟ และข้อมูลกฎหมาย</h2>
+            <div className="bg-card border border-white/20 rounded-3xl p-8 space-y-6">
+              <h2 className="text-lg font-black text-foreground border-b border-border pb-4">ค่าน้ำ/ค่าไฟ และข้อมูลกฎหมาย</h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-white/50 block pl-1">ค่าน้ำ (บาท / ยูนิต)</label>
+                  <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground block pl-1">ค่าน้ำ (บาท / ยูนิต)</label>
                   <input
                     type="number"
                     value={formData.water_rate}
                     onChange={e => setFormData({ ...formData, water_rate: Number(e.target.value) })}
-                    className="w-full bg-[#0F172A] border border-white/20 rounded-xl px-4 py-3 text-white font-bold text-sm focus:outline-none focus:border-primary"
+                    className="w-full bg-card border border-white/20 rounded-xl px-4 py-3 text-white font-bold text-sm focus:outline-none focus:border-primary"
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-white/50 block pl-1">ค่าไฟ (บาท / ยูนิต)</label>
+                  <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground block pl-1">ค่าไฟ (บาท / ยูนิต)</label>
                   <input
                     type="number"
                     value={formData.electricity_rate}
                     onChange={e => setFormData({ ...formData, electricity_rate: Number(e.target.value) })}
-                    className="w-full bg-[#0F172A] border border-white/20 rounded-xl px-4 py-3 text-white font-bold text-sm focus:outline-none focus:border-primary"
+                    className="w-full bg-card border border-white/20 rounded-xl px-4 py-3 text-white font-bold text-sm focus:outline-none focus:border-primary"
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-white/50 block pl-1">เลขประจำตัวผู้เสียภาษี</label>
+                  <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground block pl-1">เลขประจำตัวผู้เสียภาษี</label>
                   <input
                     type="text"
                     value={formData.tax_id}
                     onChange={e => setFormData({ ...formData, tax_id: e.target.value })}
-                    className="w-full bg-[#0F172A] border border-white/20 rounded-xl px-4 py-3 text-white font-bold text-sm focus:outline-none focus:border-primary"
+                    className="w-full bg-card border border-white/20 rounded-xl px-4 py-3 text-white font-bold text-sm focus:outline-none focus:border-primary"
                     placeholder="เลข 13 หลัก"
                   />
                 </div>
@@ -282,13 +282,13 @@ export default function OwnerSettings() {
             </div>
 
             {/* PromptPay Payment Settings */}
-            <div className="bg-[#0F172A] border border-indigo-500/30 rounded-3xl p-8 space-y-6 shadow-xl relative overflow-hidden">
-              <div className="flex items-center justify-between border-b border-white/10 pb-4 flex-wrap gap-2">
+            <div className="bg-card border border-indigo-500/30 rounded-3xl p-8 space-y-6 shadow-xl relative overflow-hidden">
+              <div className="flex items-center justify-between border-b border-border pb-4 flex-wrap gap-2">
                 <div>
-                  <h2 className="text-lg font-black text-white flex items-center gap-2">
+                  <h2 className="text-lg font-black text-foreground flex items-center gap-2">
                     <span>💳</span> บัญชีพร้อมเพย์สำหรับรับเงิน (PromptPay Settings)
                   </h2>
-                  <p className="text-xs text-white/50 mt-1">
+                  <p className="text-xs text-muted-foreground mt-1">
                     ระบบจะนำหมายเลขนี้ไปสร้าง Dynamic PromptPay QR Code ในใบแจ้งหนี้ เพื่อให้ผู้เช่าสแกนจ่ายเงินตรงเข้าบัญชีท่านทันที
                   </p>
                 </div>
@@ -300,7 +300,7 @@ export default function OwnerSettings() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-white/60 block pl-1">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground block pl-1">
                       หมายเลขพร้อมเพย์ (PromptPay ID) <span className="text-destructive">*</span>
                     </label>
                     {formData.phone && (
@@ -317,17 +317,17 @@ export default function OwnerSettings() {
                     type="text"
                     value={formData.promptpay_number}
                     onChange={e => setFormData({ ...formData, promptpay_number: e.target.value })}
-                    className="w-full bg-[#080F1E] border border-white/20 rounded-xl px-4 py-3 text-white font-bold text-sm focus:outline-none focus:border-indigo-400"
+                    className="w-full bg-secondary/40 border border-white/20 rounded-xl px-4 py-3 text-white font-bold text-sm focus:outline-none focus:border-indigo-400"
                     placeholder="เบอร์มือถือ 10 หลัก หรือ เลข ปชช. 13 หลัก"
                   />
-                  <p className="text-[11px] text-white/40 pl-1">
+                  <p className="text-[11px] text-muted-foreground pl-1">
                     * ไม่ต้องใส่ขีด เช่น 0812345678 หรือ 1509900XXXXXX
                   </p>
                 </div>
 
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-white/60 block pl-1">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground block pl-1">
                       ชื่อบัญชีพร้อมเพย์ (Account Name) <span className="text-destructive">*</span>
                     </label>
                     {formData.name && (
@@ -344,16 +344,16 @@ export default function OwnerSettings() {
                     type="text"
                     value={formData.promptpay_name}
                     onChange={e => setFormData({ ...formData, promptpay_name: e.target.value })}
-                    className="w-full bg-[#080F1E] border border-white/20 rounded-xl px-4 py-3 text-white font-bold text-sm focus:outline-none focus:border-indigo-400"
+                    className="w-full bg-secondary/40 border border-white/20 rounded-xl px-4 py-3 text-white font-bold text-sm focus:outline-none focus:border-indigo-400"
                     placeholder="เช่น นายกฤษณัย สมบูรณ์ หรือ หอพักเกษตร 2"
                   />
-                  <p className="text-[11px] text-white/40 pl-1">
+                  <p className="text-[11px] text-muted-foreground pl-1">
                     * ชื่อนี้จะปรากฏให้ผู้เช่าเห็นเมื่อสแกน QR Code เพื่อยืนยันความถูกต้อง
                   </p>
                 </div>
               </div>
 
-              <div className="flex items-start gap-2.5 bg-[#080F1E]/60 p-3.5 rounded-xl border border-white/5 text-xs text-white/60">
+              <div className="flex items-start gap-2.5 bg-secondary/40/60 p-3.5 rounded-xl border border-border text-xs text-muted-foreground">
                 <span className="text-indigo-400 text-sm">💡</span>
                 <span>
                   <strong>ระบบ Dynamic PromptPay QR Code:</strong> ผู้เช่าจะเห็น QR Code ที่ระบุยอดเงินถูกต้องตรงเป๊ะ สแกนจ่ายได้ทุกแอปธนาคาร เงินโอนเข้าบัญชีเจ้าของหอโดยตรงแบบเรียลไทม์ ไม่มีหักเปอร์เซ็นต์
@@ -362,8 +362,8 @@ export default function OwnerSettings() {
             </div>
 
             {/* Features (Checkboxes) */}
-            <div className="bg-[#0F172A] border border-white/20 rounded-3xl p-8 space-y-6">
-              <h2 className="text-lg font-black text-white border-b border-white/10 pb-4">สิ่งอำนวยความสะดวกและเงื่อนไข (เพื่อการค้นหา)</h2>
+            <div className="bg-card border border-white/20 rounded-3xl p-8 space-y-6">
+              <h2 className="text-lg font-black text-foreground border-b border-border pb-4">สิ่งอำนวยความสะดวกและเงื่อนไข (เพื่อการค้นหา)</h2>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 {[
                   { key: 'has_wifi', label: 'มีอินเทอร์เน็ต WiFi 📶' },
@@ -377,7 +377,7 @@ export default function OwnerSettings() {
                     className={`flex items-center gap-3 p-4 rounded-2xl border cursor-pointer select-none transition-all ${
                       (formData as any)[item.key]
                         ? 'border-primary bg-primary/10 text-white'
-                        : 'border-white/10 bg-[#080F1E]/50 text-white/50 hover:border-white/20'
+                        : 'border-border bg-secondary/40/50 text-muted-foreground hover:border-white/20'
                     }`}
                   >
                     <input
@@ -392,12 +392,12 @@ export default function OwnerSettings() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-[10px] font-black uppercase tracking-widest text-white/50 block pl-1">สิ่งอำนวยความสะดวกอื่นๆ (คั่นด้วยเครื่องหมายจุลภาค ,)</label>
+                <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground block pl-1">สิ่งอำนวยความสะดวกอื่นๆ (คั่นด้วยเครื่องหมายจุลภาค ,)</label>
                 <input
                   type="text"
                   value={formData.facilities}
                   onChange={e => setFormData({ ...formData, facilities: e.target.value })}
-                  className="w-full bg-[#0F172A] border border-white/20 rounded-xl px-4 py-3 text-white font-bold text-sm focus:outline-none focus:border-primary"
+                  className="w-full bg-card border border-white/20 rounded-xl px-4 py-3 text-white font-bold text-sm focus:outline-none focus:border-primary"
                   placeholder="เช่น ฟิตเนส, สระว่ายน้ำ, ระบบความปลอดภัย 24 ชม., กล้องวงจรปิด"
                 />
               </div>

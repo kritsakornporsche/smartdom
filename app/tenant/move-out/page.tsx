@@ -31,7 +31,7 @@ export default async function TenantMoveOut() {
         <div className="relative">
           <div className="absolute -left-4 top-1/2 -translate-y-1/2 w-1 h-12 bg-primary rounded-full opacity-20"></div>
           <h1 className="text-3xl font-bold text-white tracking-tight flex items-center gap-3">
-             <span className="p-2 bg-[#0F172A] rounded-xl border border-white/20/10 text-muted-foreground">
+             <span className="p-2 bg-card rounded-xl border border-border text-muted-foreground">
                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
              </span>
              แจ้งย้ายออก (Move Out)
@@ -43,9 +43,9 @@ export default async function TenantMoveOut() {
         </div>
 
         {request ? (
-          <div className="bg-[#0F172A] rounded-3xl border border-white/20/10 shadow-sm overflow-hidden">
+          <div className="bg-card rounded-3xl border border-border shadow-sm overflow-hidden">
             <div className={`p-4 border-b text-center font-bold tracking-widest uppercase text-[10px] ${
-              request.status === 'Pending' ? 'bg-[#0F172A] text-primary border-white/20/10' : 
+              request.status === 'Pending' ? 'bg-card text-primary border-border' : 
               request.status === 'Approved' ? 'bg-[#F0F4F0] text-[#4CAF50] border-[#E0E0E0]' :
               'bg-rose-50 text-rose-700 border-rose-100'
             }`}>
@@ -54,8 +54,8 @@ export default async function TenantMoveOut() {
 
             <div className="p-8 md:p-12">
               <div className="grid sm:grid-cols-2 gap-8 mb-12">
-                <div className="bg-[#0F172A] p-6 rounded-2xl border border-[#F2EFE9]">
-                  <p className="text-[11px] text-white/50 font-bold uppercase tracking-widest mb-1 font-mono text-center">วันที่ต้องการย้ายออก</p>
+                <div className="bg-card p-6 rounded-2xl border border-[#F2EFE9]">
+                  <p className="text-[11px] text-muted-foreground font-bold uppercase tracking-widest mb-1 font-mono text-center">วันที่ต้องการย้ายออก</p>
                   <div className="text-2xl font-serif text-white text-center mt-2">
                     {new Date(request.desired_date).toLocaleDateString('th-TH', { 
                       year: 'numeric', 
@@ -64,8 +64,8 @@ export default async function TenantMoveOut() {
                     })}
                   </div>
                 </div>
-                <div className="bg-[#0F172A] p-6 rounded-2xl border border-[#F2EFE9]">
-                  <p className="text-[11px] text-white/50 font-bold uppercase tracking-widest mb-1 font-mono text-center">วันที่ส่งคำร้อง</p>
+                <div className="bg-card p-6 rounded-2xl border border-[#F2EFE9]">
+                  <p className="text-[11px] text-muted-foreground font-bold uppercase tracking-widest mb-1 font-mono text-center">วันที่ส่งคำร้อง</p>
                   <div className="text-2xl font-serif text-white text-center mt-2">
                     {new Date(request.created_at).toLocaleDateString('th-TH', { 
                       year: 'numeric', 
@@ -77,13 +77,13 @@ export default async function TenantMoveOut() {
               </div>
 
               <div className="mb-12">
-                <p className="text-[11px] text-white/50 font-bold uppercase tracking-widest mb-4 font-mono">เหตุผลการย้ายออก</p>
-                <div className="bg-[#080F1E] border border-white/20/10 rounded-2xl p-6 text-white/80 italic">
+                <p className="text-[11px] text-muted-foreground font-bold uppercase tracking-widest mb-4 font-mono">เหตุผลการย้ายออก</p>
+                <div className="bg-secondary/40 border border-border rounded-2xl p-6 text-white/80 italic">
                   "{request.reason || 'ไม่ได้ระบุเหตุผล'}"
                 </div>
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-4 border-t border-white/20/10 pt-8">
+              <div className="flex flex-col sm:flex-row gap-4 border-t border-border pt-8">
                 {request.status === 'Pending' && <CancelRequestButton requestId={request.id} />}
                 <button className="flex-1 bg-white/5 text-white/80 font-bold py-3.5 px-4 rounded-xl cursor-default opacity-50">
                   รอการติดต่อกลับจากผู้ดูแล

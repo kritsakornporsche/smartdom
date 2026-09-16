@@ -145,7 +145,7 @@ export default function CameraMeterModal({
   useEffect(() => {
     if (isOpen) {
       setCapturedImage(null);
-      setDetectedReading('');
+      setDetectedReading(previousReading !== undefined && previousReading !== null ? String(previousReading) : '');
       setWarning(null);
       setAnalyzing(false);
       setZoomLevel(1);
@@ -218,32 +218,9 @@ export default function CameraMeterModal({
       }
     }
 
-    const fullDataUrl = evidenceCanvas.toDataURL('image/jpeg', 0.80);
+    const fullDataUrl = evidenceCanvas.toDataURL('image/jpeg', 0.85);
     stopLiveStream();
     setCapturedImage(fullDataUrl);
-
-    // 2. High-speed, High-Contrast Center Dial Crop for OCR (matches reticle: ~40% height & 80% width)
-    try {
-      const ocrCanvas = document.createElement('canvas');
-      const roiW = Math.round(width * 0.80);
-      const roiH = Math.round(height * 0.40);
-      const roiX = Math.round((width - roiW) / 2);
-      const roiY = Math.round((height - roiH) / 2);
-
-      ocrCanvas.width = 640;
-      ocrCanvas.height = Math.round((roiH / roiW) * 640);
-      const ocrCtx = ocrCanvas.getContext('2d');
-      if (ocrCtx) {
-        ocrCtx.drawImage(video, roiX, roiY, roiW, roiH, 0, 0, ocrCanvas.width, ocrCanvas.height);
-        enhanceDialCanvas(ocrCanvas);
-        const ocrDataUrl = ocrCanvas.toDataURL('image/jpeg', 0.85);
-        analyzeMeterImage(ocrDataUrl);
-        return;
-      }
-    } catch (err) {
-      console.warn('ROI crop error:', err);
-    }
-
     analyzeMeterImage(fullDataUrl);
   };
 
@@ -259,7 +236,7 @@ export default function CameraMeterModal({
       const img = new Image();
       img.onload = () => {
         try {
-          // 1. Compress evidence photo to max 1280px
+          // Compress evidence photo to max 1280px
           const maxDim = 1280;
           let w = img.width;
           let h = img.height;
@@ -278,24 +255,8 @@ export default function CameraMeterModal({
           const cx = c.getContext('2d');
           if (cx) {
             cx.drawImage(img, 0, 0, w, h);
-            const compressed = c.toDataURL('image/jpeg', 0.80);
+            const compressed = c.toDataURL('image/jpeg', 0.85);
             setCapturedImage(compressed);
-
-            // 2. Center crop for OCR
-            const ocrCanvas = document.createElement('canvas');
-            const roiW = Math.round(w * 0.80);
-            const roiH = Math.round(h * 0.40);
-            const roiX = Math.round((w - roiW) / 2);
-            const roiY = Math.round((h - roiH) / 2);
-            ocrCanvas.width = 640;
-            ocrCanvas.height = Math.round((roiH / roiW) * 640);
-            const ocrCtx = ocrCanvas.getContext('2d');
-            if (ocrCtx) {
-              ocrCtx.drawImage(c, roiX, roiY, roiW, roiH, 0, 0, ocrCanvas.width, ocrCanvas.height);
-              enhanceDialCanvas(ocrCanvas);
-              analyzeMeterImage(ocrCanvas.toDataURL('image/jpeg', 0.85));
-              return;
-            }
             analyzeMeterImage(compressed);
             return;
           }
@@ -314,8 +275,11 @@ export default function CameraMeterModal({
   const analyzeMeterImage = async (dataUrl: string) => {
     setAnalyzing(true);
     setWarning(null);
-    setDetectedReading('');
     setCandidates([]);
+    // Ensure baseline is never blank while analyzing
+    if (!detectedReading && previousReading) {
+      setDetectedReading(String(previousReading));
+    }
 
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 25000);
@@ -340,22 +304,27 @@ export default function CameraMeterModal({
         setCandidates(data.data.candidates || []);
         setWarning(data.data.warning || null);
         setEngineUsed(data.data.engine);
+      } else if (data.data?.candidates && data.data.candidates.length > 0) {
+        setCandidates(data.data.candidates);
+        setDetectedReading(String(data.data.candidates[0]));
+        setWarning('AI เลือกตัวเลขที่ใกล้เคียงที่สุด กรุณายืนยันความถูกต้อง');
       } else {
-        if (data.data?.candidates && data.data.candidates.length > 0) {
-          setCandidates(data.data.candidates);
-          setDetectedReading(String(data.data.candidates[0]));
-          setWarning('AI เลือกตัวเลขที่ใกล้เคียงที่สุด กรุณายืนยันความถูกต้อง');
-        } else {
-          setWarning('AI ตรวจจับตัวเลขยังไม่ชัดเจน กรุณากรอกตัวเลขหน้าปัด หรือแตะปุ่มเลือกเลขงวดก่อน');
+        // Fallback: If OCR didn't catch, keep previous reading as baseline
+        if (previousReading !== undefined && previousReading !== null) {
+          setDetectedReading(String(previousReading));
         }
+        setWarning('AI อ่านตัวเลขยังไม่ชัดเจน ระบบตั้งต้นด้วยเลขงวดก่อนไว้ให้ สามารถแตะปุ่ม +1, +5 หรือแก้ไขได้ทันที');
       }
     } catch (err: any) {
       clearTimeout(timeoutId);
       if (err?.name === 'AbortError') {
-        setWarning('การประมวลผลใช้เวลานาน กรุณากรอกตัวเลขหน้าปัดด้วยตนเอง');
+        setWarning('การประมวลผลใช้เวลานาน ระบบตั้งต้นด้วยเลขงวดก่อนไว้ให้');
       } else {
         console.error('OCR analyze error:', err);
-        setWarning('ไม่สามารถเชื่อมต่อระบบอ่านตัวเลขได้ กรุณากรอกตัวเลขด้วยตนเอง');
+        setWarning('ไม่สามารถเชื่อมต่อระบบอ่านตัวเลขได้ ระบบตั้งต้นด้วยเลขงวดก่อนไว้ให้');
+      }
+      if (previousReading !== undefined && previousReading !== null) {
+        setDetectedReading(String(previousReading));
       }
     } finally {
       setAnalyzing(false);

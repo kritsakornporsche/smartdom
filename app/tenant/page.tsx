@@ -106,7 +106,7 @@ export default async function TenantDashboard() {
             {/* Background Glow */}
             <div className="absolute top-0 right-0 w-96 h-96 bg-amber-500/10 rounded-full -mr-32 -mt-32 blur-3xl pointer-events-none" />
 
-            <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b border-white/10 pb-8">
+            <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b border-border pb-8">
               <div className="space-y-2">
                 <div className="inline-flex items-center gap-2 px-3 py-1 bg-amber-500/20 text-amber-300 border border-amber-500/40 rounded-full text-xs font-bold">
                   <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
@@ -148,7 +148,7 @@ export default async function TenantDashboard() {
                 </div>
               </div>
 
-              <div className="p-4 bg-white/5 border border-white/10 rounded-2xl flex items-center gap-3.5 opacity-60">
+              <div className="p-4 bg-white/5 border border-border rounded-2xl flex items-center gap-3.5 opacity-60">
                 <div className="w-9 h-9 rounded-xl bg-white/10 text-white/60 flex items-center justify-center font-bold text-sm shrink-0">
                   3
                 </div>
@@ -160,7 +160,7 @@ export default async function TenantDashboard() {
             </div>
 
             {/* Booked Room Details Card */}
-            <div className="bg-slate-950/60 rounded-[2.5rem] border border-white/10 p-6 sm:p-8 grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div className="bg-slate-950/60 rounded-[2.5rem] border border-border p-6 sm:p-8 grid grid-cols-1 md:grid-cols-4 gap-6">
               <div className="space-y-1">
                 <span className="text-[10px] font-bold text-white/50 uppercase tracking-widest">หอพัก</span>
                 <p className="text-lg font-bold text-white truncate">{pendingContract.dorm_name || 'SmartDom Dormitory'}</p>
@@ -213,7 +213,7 @@ export default async function TenantDashboard() {
                 </Link>
                 <Link
                   href="/explore"
-                  className="px-5 py-2.5 bg-white/10 hover:bg-white/20 text-white font-bold rounded-2xl text-xs transition-all border border-white/10 hover:scale-105 active:scale-95"
+                  className="px-5 py-2.5 bg-white/10 hover:bg-white/20 text-white font-bold rounded-2xl text-xs transition-all border border-border hover:scale-105 active:scale-95"
                 >
                   สำรวจห้องอื่น
                 </Link>
@@ -226,11 +226,11 @@ export default async function TenantDashboard() {
         {/* 2. ACTIVE TENANT WELCOME SECTION (เมื่อมีสัญญา Active) */}
         {/* ========================================================================= */}
         {roomInfo && (
-          <section className="relative overflow-hidden bg-[#0F172A] rounded-[3rem] border border-white/20/10 p-8 sm:p-12 shadow-2xl shadow-[#3E342B]/5">
+          <section className="relative overflow-hidden bg-card rounded-[3rem] border border-border p-8 sm:p-12 shadow-2xl shadow-[#3E342B]/5">
               <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full -mr-32 -mt-32 blur-3xl" />
               <div className="relative z-10 flex flex-col lg:flex-row justify-between items-center gap-8">
                   <div className="text-center lg:text-left">
-                      <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight mb-3">
+                      <h1 className="text-4xl md:text-5xl font-black text-foreground tracking-tight mb-3">
                           ยินดีต้อนรับสู่บ้านใหม่
                       </h1>
                       <p className="text-base text-muted-foreground font-medium max-w-md">
@@ -239,17 +239,17 @@ export default async function TenantDashboard() {
                   </div>
                   
                   <div className="flex gap-4 md:gap-6 flex-wrap justify-center">
-                      <div className="bg-[#0F172A] px-8 py-5 rounded-3xl border border-white/20/10 text-center min-w-[130px] transform hover:scale-105 transition-transform">
-                          <span className="block text-[10px] font-black uppercase tracking-[0.2em] text-white/50 mb-1">Room</span>
-                          <span className="text-3xl font-black text-white">{roomInfo.room_number}</span>
+                      <div className="bg-card px-8 py-5 rounded-3xl border border-border text-center min-w-[130px] transform hover:scale-105 transition-transform">
+                          <span className="block text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground mb-1">Room</span>
+                          <span className="text-3xl font-black text-foreground">{roomInfo.room_number}</span>
                       </div>
-                      <div className="bg-[#0F172A] px-8 py-5 rounded-3xl border border-white/20/10 text-center min-w-[130px] transform hover:scale-105 transition-transform">
-                          <span className="block text-[10px] font-black uppercase tracking-[0.2em] text-white/50 mb-1">Floor</span>
-                          <span className="text-3xl font-black text-white">{roomInfo.floor}</span>
+                      <div className="bg-card px-8 py-5 rounded-3xl border border-border text-center min-w-[130px] transform hover:scale-105 transition-transform">
+                          <span className="block text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground mb-1">Floor</span>
+                          <span className="text-3xl font-black text-foreground">{roomInfo.floor}</span>
                       </div>
-                      <div className="bg-[#0F172A] px-8 py-5 rounded-3xl border border-white/20/10 text-center min-w-[130px] transform hover:scale-105 transition-transform">
-                          <span className="block text-[10px] font-black uppercase tracking-[0.2em] text-white/50 mb-1">Type</span>
-                          <span className="text-lg font-black text-white truncate max-w-[120px]">{roomInfo.room_type}</span>
+                      <div className="bg-card px-8 py-5 rounded-3xl border border-border text-center min-w-[130px] transform hover:scale-105 transition-transform">
+                          <span className="block text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground mb-1">Type</span>
+                          <span className="text-lg font-black text-foreground truncate max-w-[120px]">{roomInfo.room_type}</span>
                       </div>
                   </div>
               </div>
@@ -260,12 +260,12 @@ export default async function TenantDashboard() {
         {/* 3. NO BOOKING OR ROOM (เมื่อเป็น Guest ที่ยังไม่ได้จองห้องพักใดๆ) */}
         {/* ========================================================================= */}
         {!roomInfo && !pendingContract && (
-          <section className="bg-[#0F172A] rounded-[3rem] border border-white/10 p-10 sm:p-14 text-center shadow-xl space-y-6">
+          <section className="bg-card rounded-[3rem] border border-border p-10 sm:p-14 text-center shadow-xl space-y-6">
             <div className="w-20 h-20 rounded-full bg-primary/10 border border-primary/20 text-primary flex items-center justify-center text-4xl mx-auto">
               🏠
             </div>
             <div className="space-y-2 max-w-md mx-auto">
-              <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight">คุณยังไม่มีรายการห้องพักหรือการจอง</h2>
+              <h2 className="text-2xl sm:text-3xl font-black text-foreground tracking-tight">คุณยังไม่มีรายการห้องพักหรือการจอง</h2>
               <p className="text-sm text-slate-300">
                 เลือกชมหอพักและห้องพักที่ว่างพร้อมเข้าอยู่หน้ามหาวิทยาลัยพะเยา แล้วเริ่มต้นจองห้องพักออนไลน์ได้ทันที
               </p>
@@ -318,15 +318,15 @@ export default async function TenantDashboard() {
               
               <div className="grid gap-6">
                 {recentMaintenance.length === 0 ? (
-                    <div className="bg-[#0F172A] border-2 border-dashed border-white/20/10 rounded-[2rem] p-10 text-center">
-                      <div className="w-14 h-14 bg-[#0F172A] rounded-full flex items-center justify-center mx-auto mb-3">
+                    <div className="bg-card border-2 border-dashed border-border rounded-[2rem] p-10 text-center">
+                      <div className="w-14 h-14 bg-card rounded-full flex items-center justify-center mx-auto mb-3">
                         <svg className="w-7 h-7 text-muted-foreground/60" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
                       </div>
                       <p className="text-white/50 font-bold text-sm">ยังไม่มีรายการแจ้งซ่อมในขณะนี้</p>
                       <Link href="/tenant/maintenance" className="mt-3 inline-block text-primary font-bold text-xs">แจ้งซ่อมใหม่ →</Link>
                     </div>
                 ) : recentMaintenance.map((maint: any) => (
-                    <div key={maint.id} className="bg-[#0F172A] rounded-[2rem] border border-white/20/10 p-6 sm:p-8 shadow-sm hover:shadow-lg transition-all group">
+                    <div key={maint.id} className="bg-card rounded-[2rem] border border-border p-6 sm:p-8 shadow-sm hover:shadow-lg transition-all group">
                       <div className="flex flex-col sm:flex-row justify-between items-start gap-4 mb-4">
                         <div className="flex gap-4 items-start">
                             <div className={`h-11 w-11 rounded-xl flex items-center justify-center shrink-0 ${
@@ -370,25 +370,25 @@ export default async function TenantDashboard() {
               </div>
               
               <div className="grid gap-6 md:grid-cols-2">
-                <Link href="/tenant/contract/simulate" className="group bg-[#0F172A] rounded-[2.5rem] border border-white/20/10 p-8 shadow-sm hover:border-primary/30 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 overflow-hidden relative">
+                <Link href="/tenant/contract/simulate" className="group bg-card rounded-[2.5rem] border border-border p-8 shadow-sm hover:border-primary/30 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 overflow-hidden relative">
                   <div className="flex items-start gap-5 relative z-10">
                     <div className="w-14 h-14 bg-primary/10 rounded-2xl flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all shadow-inner shrink-0">
                       <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M11 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>
                     </div>
                     <div>
-                      <h3 className="text-lg font-black text-white mb-1.5">จำลองสัญญาเช่า</h3>
+                      <h3 className="text-lg font-black text-foreground mb-1.5">จำลองสัญญาเช่า</h3>
                       <p className="text-xs text-muted-foreground leading-relaxed font-medium">คำนวณเงินประกันและค่างวดล่วงหน้า เพื่อวางแผนการย้ายเข้าหรืออาศัยอยู่ต่อ</p>
                     </div>
                   </div>
                 </Link>
                 
-                <Link href="/tenant/maintenance" className="group bg-[#0F172A] rounded-[2.5rem] border border-white/20/10 p-8 shadow-sm hover:border-accent/30 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
+                <Link href="/tenant/maintenance" className="group bg-card rounded-[2.5rem] border border-border p-8 shadow-sm hover:border-accent/30 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
                   <div className="flex items-start gap-5 relative z-10">
                     <div className="w-14 h-14 bg-accent/10 rounded-2xl flex items-center justify-center text-accent group-hover:bg-accent group-hover:text-white transition-all shrink-0">
                       <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" /></svg>
                     </div>
                     <div>
-                      <h3 className="text-lg font-black text-white mb-1.5">แจ้งปัญหาการใช้งาน</h3>
+                      <h3 className="text-lg font-black text-foreground mb-1.5">แจ้งปัญหาการใช้งาน</h3>
                       <p className="text-xs text-muted-foreground leading-relaxed font-medium">พบปัญหาอุปกรณ์ชำรุด หรือไฟดับ? แจ้งเจ้าหน้าที่ได้ทันทีผ่านระบบออนไลน์</p>
                     </div>
                   </div>

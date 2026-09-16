@@ -65,7 +65,7 @@ export default function ResearcherDashboardPage() {
           <div className="flex items-center justify-between">
             <span className="text-3xl">🚀</span>
             <span className="text-xs font-bold text-emerald-400 bg-emerald-950/80 px-2.5 py-1 rounded-lg border border-emerald-800/50">
-              v2.5.0
+              {SYSTEM_UPDATES[0]?.version || 'v2.6.1'}
             </span>
           </div>
           <div className="mt-4">
@@ -165,7 +165,7 @@ export default function ResearcherDashboardPage() {
               Release Notes & Updates
             </h3>
             <p className="text-xs text-slate-400 leading-relaxed">
-              บันทึกประวัติการปรับปรุงระบบและการพัฒนาฟีเจอร์เวอร์ชันล่าสุด (v2.5.0) รายละเอียดการแก้ไขบั๊ก และการเพิ่มประสิทธิภาพของระบบ
+              บันทึกประวัติการปรับปรุงระบบและการพัฒนาฟีเจอร์เวอร์ชันล่าสุด ({SYSTEM_UPDATES[0]?.version || 'v2.6.1'}) รายละเอียดการแก้ไขบั๊ก และการเพิ่มประสิทธิภาพของระบบ
             </p>
           </div>
           <div className="mt-6 flex items-center gap-2 text-xs font-bold text-purple-400 group-hover:translate-x-1 transition-transform">

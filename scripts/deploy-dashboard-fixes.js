@@ -20,7 +20,10 @@ const filesToUpload = [
   'app/platform/layout.tsx',
   'app/platform/page.tsx',
   'app/platform/components/PlatformSidebar.tsx',
+  'app/researcher/layout.tsx',
+  'app/researcher/page.tsx',
   'app/researcher/components/ResearcherNavbar.tsx',
+  'app/researcher/components/ResearcherSidebar.tsx',
   'app/researcher/updates/page.tsx',
   'app/updates/page.tsx',
   'app/explore/[dormId]/page.tsx',
@@ -39,7 +42,6 @@ const filesToUpload = [
   'auth.ts',
   'app/api/auth/signup/route.ts',
   'app/api/auth/update-role/route.ts',
-  'app/researcher/components/ResearcherSidebar.tsx',
   'docs/account.md'
 ];
 

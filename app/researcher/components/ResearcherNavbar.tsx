@@ -12,7 +12,7 @@ export default function ResearcherNavbar({ onToggleMobileMenu }: ResearcherNavba
   const { data: session } = useSession();
 
   return (
-    <header className="h-16 w-full bg-slate-900 border-b border-white/10 flex items-center justify-between px-4 sm:px-8 shrink-0 z-40 shadow-md">
+    <header className="h-16 w-full bg-[#130924] border-b border-purple-500/20 flex items-center justify-between px-4 sm:px-8 shrink-0 z-40 shadow-md">
       {/* Brand / Logo */}
       <div className="flex items-center gap-3">
         <button
@@ -30,19 +30,19 @@ export default function ResearcherNavbar({ onToggleMobileMenu }: ResearcherNavba
           className="flex items-center gap-3 hover:opacity-95 transition-opacity cursor-pointer group"
           title="แดชบอร์ดงานวิจัย SmartDom"
         >
-          <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-white p-1 flex items-center justify-center shadow-lg border border-white/20 flex-shrink-0 group-hover:scale-105 transition-transform">
+          <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-white p-1 flex items-center justify-center shadow-lg border border-purple-500/20 flex-shrink-0 group-hover:scale-105 transition-transform">
             <img src="/up-logo.png" alt="ตรามหาวิทยาลัยพะเยา" className="w-full h-full object-contain" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h2 className="font-black text-white tracking-tight text-sm sm:text-base group-hover:text-cyan-300 transition-colors">
+              <h2 className="font-black text-white tracking-tight text-sm sm:text-base group-hover:text-purple-300 transition-colors">
                 SmartDom Research Hub
               </h2>
-              <span className="hidden sm:inline-block px-2 py-0.5 rounded-md text-[10px] font-black bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 tracking-wider">
+              <span className="hidden sm:inline-block px-2 py-0.5 rounded-md text-[10px] font-black bg-purple-500/20 text-purple-300 border border-purple-500/30 tracking-wider">
                 THESIS / RESEARCH
               </span>
             </div>
-            <p className="text-[10px] font-bold text-cyan-400 uppercase tracking-[0.15em] leading-none mt-0.5">
+            <p className="text-[10px] font-bold text-amber-400 uppercase tracking-[0.15em] leading-none mt-0.5">
               University Dormitory Information System
             </p>
           </div>

@@ -1,39 +1,39 @@
 @import "tailwindcss";
 
 :root {
-  /* UP Purple & Gold Light Theme */
-  --background: #F8FAFC; /* Slate 50 */
-  --foreground: #0F172A; /* Slate 900 */
+  /* UP Purple & Gold Light Theme - University of Phayao */
+  --background: #FAF5FF; /* Subtle purple lavender tint */
+  --foreground: #1A0D2E; /* Royal purple-black */
   
   --card: #FFFFFF;
-  --card-foreground: #0F172A;
+  --card-foreground: #1A0D2E;
   
   --popover: #FFFFFF;
-  --popover-foreground: #0F172A;
+  --popover-foreground: #1A0D2E;
   
-  --primary: #8E24AA; /* UP Purple */
+  --primary: #7B1FA2; /* University of Phayao Royal Purple */
   --primary-foreground: #FFFFFF;
   
-  --secondary: #F1F5F9; /* Slate 100 */
-  --secondary-foreground: #475569; /* Slate 600 */
+  --secondary: #F3E8FF; /* Light lavender purple */
+  --secondary-foreground: #581C87;
   
-  --muted: #F8FAFC;
-  --muted-foreground: #64748B; /* Slate 500 */
+  --muted: #F5EEFD;
+  --muted-foreground: #7E659A;
   
-  --accent: #FDF8F0; /* Light Gold tint */
-  --accent-foreground: #7C501A;
+  --accent: #FEF3C7; /* UP Gold tint */
+  --accent-foreground: #92400E;
   
-  --gold: #C59B63; /* UP Gold */
+  --gold: #D97706; /* UP Gold */
   
   --destructive: #EF4444;
   --destructive-foreground: #FFFFFF;
   
-  --border: #E2E8F0; /* Slate 200 */
-  --input: #E2E8F0;
-  --ring: #8E24AA;
+  --border: #E9D5FF; /* Subtle purple border */
+  --input: #E9D5FF;
+  --ring: #9333EA;
   
   /* Selection colors */
-  --selection-bg: #F3E8FF;
+  --selection-bg: #E9D5FF;
   --selection-text: #581C87;
 
   /* Typography */
@@ -49,39 +49,39 @@
 }
 
 .dark {
-  /* UP Purple & Gold Dark Theme */
-  --background: #0B0F19; 
-  --foreground: #F8FAFC;
+  /* UP Purple & Gold Dark Theme - University of Phayao */
+  --background: #0E071D; /* Obsidian Royal Purple */
+  --foreground: #FAF5FF;
   
-  --card: #151B2C; 
-  --card-foreground: #F8FAFC;
+  --card: #180D2F; /* Rich Dark Royal Purple Card */
+  --card-foreground: #FAF5FF;
   
-  --popover: #151B2C;
-  --popover-foreground: #F8FAFC;
+  --popover: #180D2F;
+  --popover-foreground: #FAF5FF;
   
-  --primary: #A855F7; /* UP Purple Vibrant */
+  --primary: #A855F7; /* Luminous UP Purple */
   --primary-foreground: #FFFFFF;
   
-  --secondary: #1E293B; /* Slate 800 */
-  --secondary-foreground: #94A3B8; /* Slate 400 */
+  --secondary: #2A1647; /* Deep Purple Surface */
+  --secondary-foreground: #E9D5FF;
   
-  --muted: #0F172A;
-  --muted-foreground: #94A3B8;
+  --muted: #140A26;
+  --muted-foreground: #A892C6;
   
-  --accent: #2D1F3F;
-  --accent-foreground: #F3E8FF;
+  --accent: #3B1B61; /* Royal Purple Accent */
+  --accent-foreground: #FAF5FF;
   
-  --gold: #D4AF37; /* UP Gold Metallic */
+  --gold: #F59E0B; /* UP Gold */
   
   --destructive: #F87171;
   --destructive-foreground: #FFFFFF;
   
-  --border: #1E293B; /* Slate 800 */
-  --input: #1E293B;
-  --ring: #A855F7;
+  --border: #3B1F66; /* Elegant Purple Border */
+  --input: #261242;
+  --ring: #C084FC;
   
-  --selection-bg: #581C87;
-  --selection-text: #F3E8FF;
+  --selection-bg: #6B21A8;
+  --selection-text: #FAF5FF;
 }
 
 @theme {
@@ -309,15 +309,15 @@
   background-color: var(--secondary) !important;
 }
 
-/* ── Overrides to replace remaining brown tones (#3E342B) with Dark Slate/Navy ── */
+/* ── Overrides for University of Phayao Purple Theme ── */
 :root {
-  --brown-override: #0F172A; /* Dark Navy Slate */
-  --brown-glow: rgba(15, 23, 42, 0.2);
+  --brown-override: #7B1FA2;
+  --brown-glow: rgba(123, 31, 162, 0.25);
 }
 
 .dark {
-  --brown-override: #0F172A;
-  --brown-glow: rgba(15, 23, 42, 0.2);
+  --brown-override: #180D2F;
+  --brown-glow: rgba(168, 85, 247, 0.25);
 }
 
 /* Backgrounds */
@@ -331,13 +331,13 @@
 /* Gradients */
 .from-\[\#2C241B\],
 .from-\[\#2c241b\] {
-  --tw-gradient-from: #0F172A !important; /* Slate 900 */
-  --tw-gradient-to: #1E293B !important;
+  --tw-gradient-from: #180D2F !important;
+  --tw-gradient-to: #2A1647 !important;
   --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important;
 }
 .to-\[\#3E342B\],
 .to-\[\#3e342b\] {
-  --tw-gradient-to: #1E293B !important; /* Slate 800 */
+  --tw-gradient-to: #2A1647 !important;
 }
 
 /* Borders and Focus outline */

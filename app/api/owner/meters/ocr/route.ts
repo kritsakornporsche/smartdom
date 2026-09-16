@@ -1,6 +1,31 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
 
+// Global singleton worker to avoid 10-15s re-initialization on every request
+const globalForOcr = globalThis as unknown as {
+  _ocrWorkerPromise?: Promise<any>;
+  _ocrWorker?: any;
+};
+
+async function getSharedOcrWorker() {
+  if (globalForOcr._ocrWorker) {
+    return globalForOcr._ocrWorker;
+  }
+  if (!globalForOcr._ocrWorkerPromise) {
+    globalForOcr._ocrWorkerPromise = (async () => {
+      const { createWorker } = await import('tesseract.js');
+      const worker = await createWorker('eng');
+      await worker.setParameters({
+        tessedit_char_whitelist: '0123456789.',
+        tessedit_pageseg_mode: '7' as any, // Single line mode: drastically faster & tailored for meter counters
+      });
+      globalForOcr._ocrWorker = worker;
+      return worker;
+    })();
+  }
+  return globalForOcr._ocrWorkerPromise;
+}
+
 export async function POST(req: Request) {
   try {
     const session = await auth();
@@ -17,23 +42,27 @@ export async function POST(req: Request) {
     let detectedNumber: number | null = null;
     let rawText = '';
     let confidence = 0;
-    let engineUsed = 'tesseract';
+    let engineUsed = 'tesseract-fast';
 
     // 1. Try Gemini Vision if GEMINI_API_KEY is available
     if (process.env.GEMINI_API_KEY) {
       try {
         const base64Data = image.replace(/^data:image\/\w+;base64,/, '');
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 4000); // 4s timeout
+
         const geminiRes = await fetch(
           `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
           {
             method: 'POST',
+            signal: controller.signal,
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               contents: [
                 {
                   parts: [
                     {
-                      text: `You are an expert utility meter reader. Analyze this image of a ${type || 'utility'} meter (water/electric). Read the current numerical reading display (digits on the dials or digital counter, integers only). Return a JSON object with: { "reading": 1234, "confidence": 0.95 } without any markdown backticks. If unreadable, return { "reading": null, "confidence": 0 }`,
+                      text: `Read utility meter number display (${type || 'meter'}). Return JSON: { "reading": 1234, "confidence": 0.95 } without markdown. If unreadable, { "reading": null, "confidence": 0 }`,
                     },
                     {
                       inline_data: {
@@ -47,6 +76,7 @@ export async function POST(req: Request) {
             }),
           }
         );
+        clearTimeout(timeoutId);
 
         if (geminiRes.ok) {
           const geminiData = await geminiRes.json();
@@ -59,27 +89,21 @@ export async function POST(req: Request) {
             engineUsed = 'gemini-1.5-flash';
           }
         }
-      } catch (geminiErr) {
-        console.warn('Gemini vision error, falling back to local OCR:', geminiErr);
+      } catch {
+        // Fallback to high-speed local worker
       }
     }
 
-    // 2. Fallback to Tesseract.js (On-Device / Server-Side Node OCR)
+    // 2. High-Speed Singleton Tesseract OCR (PSM 7 Single Line)
     if (detectedNumber === null) {
       try {
-        const { createWorker } = await import('tesseract.js');
-        const worker = await createWorker('eng');
-        await worker.setParameters({
-          tessedit_char_whitelist: '0123456789.',
-        });
-
         const base64Buffer = Buffer.from(
           image.replace(/^data:image\/\w+;base64,/, ''),
           'base64'
         );
 
+        const worker = await getSharedOcrWorker();
         const ret = await worker.recognize(base64Buffer);
-        await worker.terminate();
 
         rawText = ret.data.text.trim();
         confidence = ret.data.confidence;
@@ -87,13 +111,11 @@ export async function POST(req: Request) {
         // Extract continuous digit sequences
         const matches = rawText.match(/\d+(\.\d+)?/g);
         if (matches && matches.length > 0) {
-          // Sort candidates by length or closeness to previous reading
-          const candidates = matches.map(m => parseFloat(m)).filter(n => !isNaN(n) && n > 0);
+          const candidates = matches.map(m => parseFloat(m)).filter(n => !isNaN(n) && n >= 0);
           if (candidates.length > 0) {
             if (previous_reading !== undefined && previous_reading !== null) {
               const prev = Number(previous_reading);
-              // Pick candidate that is >= prev and within reasonable range
-              const validCandidates = candidates.filter(c => c >= prev && c <= prev + 2000);
+              const validCandidates = candidates.filter(c => c >= prev && c <= prev + 2500);
               detectedNumber = validCandidates.length > 0 ? validCandidates[0] : candidates[0];
             } else {
               detectedNumber = candidates[0];
@@ -101,7 +123,7 @@ export async function POST(req: Request) {
           }
         }
       } catch (tessErr: any) {
-        console.error('Tesseract OCR error:', tessErr);
+        console.warn('Tesseract OCR error:', tessErr);
       }
     }
 

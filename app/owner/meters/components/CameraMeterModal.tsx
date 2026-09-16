@@ -309,6 +309,22 @@ export default function CameraMeterModal({
     onClose();
   };
 
+  const handleRetake = () => {
+    setCapturedImage(null);
+    setDetectedReading('');
+    setWarning(null);
+    setAnalyzing(false);
+    startLiveStream(facingMode);
+  };
+
+  const handleRetakeNative = () => {
+    setCapturedImage(null);
+    setDetectedReading('');
+    setWarning(null);
+    setAnalyzing(false);
+    fileInputRef.current?.click();
+  };
+
   if (!isOpen) return null;
 
   const isWater = meterType === 'Water';
@@ -316,7 +332,7 @@ export default function CameraMeterModal({
   const unitsDelta = detectedReading ? Number(detectedReading) - previousReading : 0;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 sm:backdrop-blur-md animate-in fade-in p-0 sm:p-4">
+    <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/90 sm:backdrop-blur-md animate-in fade-in p-0 sm:p-4">
       {/* Hidden Native Camera Input */}
       <input
         type="file"
@@ -567,18 +583,27 @@ export default function CameraMeterModal({
           {/* B. Review & Result Controls */}
           {capturedImage && (
             <div className="space-y-2.5">
-              {/* Header row: Retake & cycle info */}
-              <div className="flex items-center justify-between">
-                <button
-                  type="button"
-                  onClick={() => startLiveStream(facingMode)}
-                  className="px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-purple-200 font-bold text-[11px] flex items-center gap-1 cursor-pointer border border-white/10"
-                >
-                  <span>🔄 ถ่ายใหม่</span>
-                </button>
+              {/* Header row: Retake buttons & cycle info */}
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-1.5">
+                  <button
+                    type="button"
+                    onClick={handleRetake}
+                    className="px-2.5 py-1 rounded-lg bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs flex items-center gap-1 cursor-pointer transition-all shadow-sm active:scale-95"
+                  >
+                    <span>🔄 ถ่ายใหม่</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleRetakeNative}
+                    className="px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-white/70 font-bold text-xs flex items-center gap-1 cursor-pointer border border-white/10 transition-all"
+                  >
+                    <span>📷 กล้องมือถือ</span>
+                  </button>
+                </div>
 
-                <span className="text-[11px] text-purple-300/80 font-mono">
-                  งวดก่อน: <strong className="text-amber-400">{previousReading}</strong>
+                <span className="text-xs text-purple-300/80 font-mono">
+                  งวดก่อน: <strong className="text-amber-400 font-black">{previousReading}</strong>
                 </span>
               </div>
 

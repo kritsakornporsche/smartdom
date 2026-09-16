@@ -114,7 +114,7 @@ export default function ChatWidget({ dormId, ownerName, initialConversationId }:
   }, [session, dormId, conversationId]);
 
   return (
-    <div className="fixed bottom-8 right-8 z-[100] font-sans">
+    <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-30 font-sans">
       {!isOpen ? (
         <button
           id="open-chat-widget-btn"

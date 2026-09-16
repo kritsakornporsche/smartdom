@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import OwnerNavbar from './components/OwnerNavbar';
 import OwnerSidebar from './components/OwnerSidebar';
-import OwnerChatMessenger from './components/OwnerChatMessenger';
 
 export default function OwnerLayout({
   children,
@@ -25,7 +24,6 @@ export default function OwnerLayout({
         />
         <div className="flex-1 flex flex-col overflow-hidden relative bg-background text-foreground">
           {children}
-          <OwnerChatMessenger />
         </div>
       </div>
     </div>

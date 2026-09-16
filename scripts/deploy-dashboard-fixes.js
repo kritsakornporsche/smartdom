@@ -7,6 +7,7 @@ const filesToUpload = [
   'components/NotificationsPopover.tsx',
   'app/components/ThemeToggle.tsx',
   'app/components/PromptPayBankSelector.tsx',
+  'app/components/ChatWidget.tsx',
   'app/signin/SigninContent.tsx',
   'app/owner/layout.tsx',
   'app/owner/components/OwnerNavbar.tsx',

@@ -189,7 +189,7 @@ export default function CameraMeterModal({
     const width = video.videoWidth || 1280;
     const height = video.videoHeight || 720;
 
-    // 1. Scaled Evidence Photo (max 1280px dimension, high visual quality, ~90KB size)
+    // 1. Scaled Evidence Photo (max 1280px dimension, high visual quality)
     const evidenceCanvas = document.createElement('canvas');
     const maxDim = 1280;
     let targetW = width;
@@ -217,11 +217,33 @@ export default function CameraMeterModal({
         evCtx.drawImage(video, 0, 0, targetW, targetH);
       }
     }
-
     const fullDataUrl = evidenceCanvas.toDataURL('image/jpeg', 0.85);
+
+    // 2. Zoomed Central Dial Crop (Matches reticle box: 70% width, 35% height)
+    let cropDataUrl: string | undefined = undefined;
+    try {
+      const dialCanvas = document.createElement('canvas');
+      const effZoom = zoomLevel > 1 ? zoomLevel : 1;
+      const dialCropW = Math.round((width * 0.70) / effZoom);
+      const dialCropH = Math.round((height * 0.35) / effZoom);
+      const dialCropX = Math.round((width - dialCropW) / 2);
+      const dialCropY = Math.round((height - dialCropH) / 2);
+
+      dialCanvas.width = 720;
+      dialCanvas.height = 360;
+      const dialCtx = dialCanvas.getContext('2d');
+      if (dialCtx) {
+        dialCtx.drawImage(video, dialCropX, dialCropY, dialCropW, dialCropH, 0, 0, 720, 360);
+        enhanceDialCanvas(dialCanvas);
+        cropDataUrl = dialCanvas.toDataURL('image/jpeg', 0.90);
+      }
+    } catch (cropErr) {
+      console.warn('Dial crop failed:', cropErr);
+    }
+
     stopLiveStream();
     setCapturedImage(fullDataUrl);
-    analyzeMeterImage(fullDataUrl);
+    analyzeMeterImage(fullDataUrl, cropDataUrl);
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -235,8 +257,11 @@ export default function CameraMeterModal({
 
       const img = new Image();
       img.onload = () => {
+        let fullUrl = dataUrl;
+        let cropUrl: string | undefined = undefined;
+
         try {
-          // Compress evidence photo to max 1280px
+          // 1. Evidence full photo (max 1280px)
           const maxDim = 1280;
           let w = img.width;
           let h = img.height;
@@ -255,16 +280,30 @@ export default function CameraMeterModal({
           const cx = c.getContext('2d');
           if (cx) {
             cx.drawImage(img, 0, 0, w, h);
-            const compressed = c.toDataURL('image/jpeg', 0.85);
-            setCapturedImage(compressed);
-            analyzeMeterImage(compressed);
-            return;
+            fullUrl = c.toDataURL('image/jpeg', 0.85);
+          }
+
+          // 2. Central dial crop (center 75% width, 40% height)
+          const dialC = document.createElement('canvas');
+          const cropW = Math.round(img.width * 0.75);
+          const cropH = Math.round(img.height * 0.40);
+          const cropX = Math.round((img.width - cropW) / 2);
+          const cropY = Math.round((img.height - cropH) / 2);
+
+          dialC.width = 720;
+          dialC.height = 360;
+          const dialCx = dialC.getContext('2d');
+          if (dialCx) {
+            dialCx.drawImage(img, cropX, cropY, cropW, cropH, 0, 0, 720, 360);
+            enhanceDialCanvas(dialC);
+            cropUrl = dialC.toDataURL('image/jpeg', 0.90);
           }
         } catch (err) {
           console.warn('Canvas file processing error:', err);
         }
-        setCapturedImage(dataUrl);
-        analyzeMeterImage(dataUrl);
+
+        setCapturedImage(fullUrl);
+        analyzeMeterImage(fullUrl, cropUrl);
       };
       img.src = dataUrl;
     };
@@ -272,7 +311,7 @@ export default function CameraMeterModal({
     e.target.value = '';
   };
 
-  const analyzeMeterImage = async (dataUrl: string) => {
+  const analyzeMeterImage = async (dataUrl: string, cropDataUrl?: string) => {
     setAnalyzing(true);
     setWarning(null);
     setCandidates([]);
@@ -291,6 +330,7 @@ export default function CameraMeterModal({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           image: dataUrl,
+          cropImage: cropDataUrl,
           type: meterType,
           previous_reading: previousReading,
         }),
@@ -328,7 +368,10 @@ export default function CameraMeterModal({
       }
     } finally {
       setAnalyzing(false);
-      setTimeout(() => readingInputRef.current?.focus(), 150);
+      setTimeout(() => {
+        readingInputRef.current?.focus();
+        readingInputRef.current?.select();
+      }, 150);
     }
   };
 
@@ -740,10 +783,10 @@ export default function CameraMeterModal({
                 type="button"
                 onClick={handleSave}
                 disabled={analyzing || !detectedReading}
-                className="w-full py-2.5 bg-gradient-to-r from-purple-600 via-purple-500 to-amber-500 hover:from-purple-500 hover:to-amber-400 disabled:opacity-40 text-white font-black text-xs sm:text-sm rounded-xl shadow-lg shadow-purple-600/20 transition-all cursor-pointer flex items-center justify-center gap-1.5"
+                className="w-full py-3 bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-500 hover:from-emerald-500 hover:to-teal-400 disabled:opacity-40 text-white font-black text-xs sm:text-sm rounded-xl shadow-lg shadow-emerald-600/30 transition-all cursor-pointer flex items-center justify-center gap-2 active:scale-98"
               >
                 <span>💾</span>
-                <span>บันทึกตัวเลขและรูปถ่ายห้อง {roomNumber}</span>
+                <span>กรอกค่า {detectedReading ? `[ ${detectedReading} ]` : ''} ลงในช่องห้อง {roomNumber}</span>
               </button>
             </div>
           )}

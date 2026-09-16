@@ -432,7 +432,7 @@ export default function MetersPage() {
        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
          <div>
            <div className="flex items-center gap-3">
-             <h1 className="text-2xl lg:text-3xl font-display font-black tracking-tight text-white">ระบบจดมิเตอร์น้ำ-ไฟ</h1>
+             <h1 className="text-2xl lg:text-3xl font-display font-black tracking-tight text-foreground">ระบบจดมิเตอร์น้ำ-ไฟ</h1>
              <span className="px-3 py-1 rounded-full text-xs font-black bg-purple-500/20 text-purple-300 border border-purple-500/30">
                รอบล่าสุด: {latestCycle}
              </span>
@@ -461,7 +461,7 @@ export default function MetersPage() {
            <button 
              onClick={fetchMeters} 
              disabled={loading}
-             className="bg-white/10 hover:bg-white/15 text-white/80 hover:text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-all flex items-center gap-2 cursor-pointer"
+             className="bg-secondary hover:bg-secondary/80 text-foreground border border-border text-xs font-bold px-4 py-2.5 rounded-xl transition-all flex items-center gap-2 cursor-pointer"
            >
              <svg className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -474,10 +474,10 @@ export default function MetersPage() {
        {/* Stats Grid */}
        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
          <div className="bg-card border border-border p-6 rounded-3xl shadow-sm relative overflow-hidden group">
-           <div className="text-xs font-bold text-white/50 uppercase tracking-wider">ห้องที่บันทึกแล้ว</div>
+           <div className="text-xs font-bold text-muted-foreground uppercase tracking-wider">ห้องที่บันทึกแล้ว</div>
            <div className="mt-3 flex items-baseline gap-2">
-             <span className="text-3xl font-display font-black text-white">{stats.recordedRooms}</span>
-             <span className="text-xs text-white/40 font-medium">/ {rooms.length} ห้อง</span>
+             <span className="text-3xl font-display font-black text-foreground">{stats.recordedRooms}</span>
+             <span className="text-xs text-muted-foreground font-medium">/ {rooms.length} ห้อง</span>
            </div>
          </div>
          <div className="bg-card border border-border p-6 rounded-3xl shadow-sm relative overflow-hidden group">
@@ -502,7 +502,7 @@ export default function MetersPage() {
            
            {/* Room Search */}
            <div className="md:col-span-4 relative">
-             <label className="block text-[11px] font-bold text-white/50 uppercase tracking-wider mb-1.5">
+             <label className="block text-[11px] font-bold text-muted-foreground uppercase tracking-wider mb-1.5">
                🔍 ค้นหาเลขห้อง
              </label>
              <div className="relative">
@@ -511,15 +511,15 @@ export default function MetersPage() {
                  placeholder="พิมพ์เลขห้อง เช่น 101, 202..."
                  value={searchRoom}
                  onChange={e => setSearchRoom(e.target.value)}
-                 className="w-full bg-background border border-border text-foreground rounded-2xl pl-10 pr-10 py-2.5 text-xs text-white placeholder-white/40 font-bold outline-none focus:ring-2 focus:ring-blue-500/30"
+                 className="w-full bg-background border border-border text-foreground rounded-2xl pl-10 pr-10 py-2.5 text-xs text-foreground placeholder-muted-foreground font-bold outline-none focus:ring-2 focus:ring-blue-500/30"
                />
-               <svg className="w-4 h-4 text-white/40 absolute left-3.5 top-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+               <svg className="w-4 h-4 text-muted-foreground absolute left-3.5 top-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                </svg>
                {searchRoom && (
                  <button
                    onClick={() => setSearchRoom('')}
-                   className="absolute right-3 top-2.5 text-xs text-white/40 hover:text-white"
+                   className="absolute right-3 top-2.5 text-xs text-muted-foreground hover:text-foreground"
                  >
                    ✕
                  </button>
@@ -529,7 +529,7 @@ export default function MetersPage() {
 
            {/* Date / Month Search */}
            <div className="md:col-span-3 relative">
-             <label className="block text-[11px] font-bold text-white/50 uppercase tracking-wider mb-1.5">
+             <label className="block text-[11px] font-bold text-muted-foreground uppercase tracking-wider mb-1.5">
                📅 ค้นหาตามวันที่ / รอบเดือน
              </label>
              <div className="relative">
@@ -537,12 +537,12 @@ export default function MetersPage() {
                  type="month"
                  value={searchDate}
                  onChange={e => setSearchDate(e.target.value)}
-                 className="w-full bg-background border border-border text-foreground rounded-2xl px-4 py-2 text-xs text-white font-bold outline-none focus:ring-2 focus:ring-blue-500/30"
+                 className="w-full bg-background border border-border text-foreground rounded-2xl px-4 py-2 text-xs text-foreground font-bold outline-none focus:ring-2 focus:ring-blue-500/30"
                />
                {searchDate && (
                  <button
                    onClick={() => setSearchDate('')}
-                   className="absolute right-9 top-2 text-xs text-white/40 hover:text-white"
+                   className="absolute right-9 top-2 text-xs text-muted-foreground hover:text-foreground"
                    title="ล้างวันที่"
                  >
                    ✕
@@ -553,13 +553,13 @@ export default function MetersPage() {
 
            {/* Billing Cycle Selector */}
            <div className="md:col-span-3">
-             <label className="block text-[11px] font-bold text-white/50 uppercase tracking-wider mb-1.5">
+             <label className="block text-[11px] font-bold text-muted-foreground uppercase tracking-wider mb-1.5">
                🔄 รอบบิล
              </label>
              <select
                value={selectedCycle}
                onChange={e => setSelectedCycle(e.target.value)}
-               className="w-full bg-background border border-border text-foreground rounded-2xl px-4 py-2.5 text-xs text-white font-bold outline-none focus:ring-2 focus:ring-blue-500/30 cursor-pointer"
+               className="w-full bg-background border border-border text-foreground rounded-2xl px-4 py-2.5 text-xs text-foreground font-bold outline-none focus:ring-2 focus:ring-blue-500/30 cursor-pointer"
              >
                <option value="all">ทุกรอบบิลทั้งหมด ({readings.length} รายการ)</option>
                {billingCycles.map(c => (
@@ -570,13 +570,13 @@ export default function MetersPage() {
 
            {/* Rows per page */}
            <div className="md:col-span-2">
-             <label className="block text-[11px] font-bold text-white/50 uppercase tracking-wider mb-1.5">
+             <label className="block text-[11px] font-bold text-muted-foreground uppercase tracking-wider mb-1.5">
                📄 แสดงต่อหน้า
              </label>
              <select
                value={pageSize}
                onChange={e => setPageSize(Number(e.target.value))}
-               className="w-full bg-background border border-border text-foreground rounded-2xl px-3 py-2.5 text-xs text-white font-bold outline-none focus:ring-2 focus:ring-blue-500/30 cursor-pointer"
+               className="w-full bg-background border border-border text-foreground rounded-2xl px-3 py-2.5 text-xs text-foreground font-bold outline-none focus:ring-2 focus:ring-blue-500/30 cursor-pointer"
              >
                <option value={10}>10 รายการ</option>
                <option value={20}>20 รายการ</option>
@@ -591,7 +591,7 @@ export default function MetersPage() {
          {/* Second Filter Row: Meter Type Tabs & Filter Status */}
          <div className="mt-4 pt-4 border-t border-purple-500/20 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
            <div className="flex items-center gap-2">
-             <span className="text-[11px] font-bold text-white/50 uppercase mr-1">ประเภทมิเตอร์:</span>
+             <span className="text-[11px] font-bold text-muted-foreground uppercase mr-1">ประเภทมิเตอร์:</span>
              {(['all', 'Water', 'Electricity'] as const).map(t => (
                <button
                  key={t}
@@ -603,7 +603,7 @@ export default function MetersPage() {
                        : t === 'Electricity'
                        ? 'bg-orange-600 text-white shadow-sm'
                        : 'bg-primary text-white shadow-sm'
-                     : 'bg-white/5 text-white/60 hover:bg-white/10 hover:text-white'
+                     : 'bg-secondary text-muted-foreground hover:bg-secondary/80 hover:text-foreground'
                  }`}
                >
                  {t === 'all' ? 'ทั้งหมด' : t === 'Water' ? '💧 น้ำประปา' : '⚡ ไฟฟ้า'}
@@ -620,8 +620,8 @@ export default function MetersPage() {
                  ✕ ล้างตัวกรองทั้งหมด
                </button>
              )}
-             <span className="text-xs font-bold text-white/60">
-               พบ <strong className="text-white">{filteredReadings.length}</strong> รายการ
+             <span className="text-xs font-bold text-muted-foreground">
+               พบ <strong className="text-foreground">{filteredReadings.length}</strong> รายการ
                {pageSize > 0 && ` (หน้า ${currentPage}/${totalPages})`}
              </span>
            </div>
@@ -636,7 +636,7 @@ export default function MetersPage() {
                {selectedRoomIds.length}
              </div>
              <div>
-               <div className="text-sm font-black text-white">
+               <div className="text-sm font-black text-foreground">
                  เลือกอยู่ {selectedRoomIds.length} ห้อง
                </div>
                <div className="text-xs text-blue-200/70 font-medium">
@@ -662,7 +662,7 @@ export default function MetersPage() {
 
              <button
                onClick={() => setSelectedRoomIds([])}
-               className="px-3 py-2.5 rounded-xl border border-white/20 text-xs font-bold text-white/70 hover:text-white hover:bg-white/10 transition-all cursor-pointer"
+               className="px-3 py-2.5 rounded-xl border border-border text-xs font-bold text-muted-foreground hover:text-foreground hover:bg-secondary transition-all cursor-pointer"
              >
                ✕ ยกเลิก
              </button>
@@ -675,18 +675,18 @@ export default function MetersPage() {
          {loading ? (
             <div className="p-20 text-center flex flex-col items-center gap-4">
               <div className="w-10 h-10 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
-              <p className="text-sm font-medium text-white/50">กำลังโหลดข้อมูลมิเตอร์...</p>
+              <p className="text-sm font-medium text-muted-foreground">กำลังโหลดข้อมูลมิเตอร์...</p>
             </div>
          ) : paginatedReadings.length === 0 ? (
             <div className="p-20 text-center flex flex-col items-center gap-4">
-              <div className="text-4xl text-white/40">⚡</div>
-              <p className="text-sm font-medium text-white/50">
+              <div className="text-4xl text-muted-foreground/50">⚡</div>
+              <p className="text-sm font-medium text-muted-foreground">
                 {isFiltering ? 'ไม่พบข้อมูลที่ตรงกับเงื่อนไขการค้นหา' : 'ยังไม่มีข้อมูลการจดมิเตอร์ในรอบบิลนี้'}
               </p>
               {isFiltering ? (
                 <button
                   onClick={clearAllFilters}
-                  className="mt-2 bg-white/10 hover:bg-white/15 text-white text-xs font-bold px-4 py-2 rounded-xl transition-all cursor-pointer"
+                  className="mt-2 bg-secondary hover:bg-secondary/80 text-foreground border border-border text-xs font-bold px-4 py-2 rounded-xl transition-all cursor-pointer"
                 >
                   ล้างตัวกรองเพื่อดูข้อมูลทั้งหมด
                 </button>
@@ -703,7 +703,7 @@ export default function MetersPage() {
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="border-b border-purple-500/20 text-white/50 text-xs uppercase tracking-wider bg-white/5">
+                  <tr className="border-b border-border text-muted-foreground text-xs uppercase tracking-wider bg-secondary/50">
                     <th className="py-4 px-6">ห้อง</th>
                     <th className="py-4 px-6">ประเภท</th>
                     <th className="py-4 px-6">รอบบิล</th>
@@ -714,7 +714,7 @@ export default function MetersPage() {
                     {/* Checkbox Column Header at the end */}
                     <th className="py-4 px-6 text-center w-24">
                       <div className="flex flex-col items-center gap-1">
-                        <label className="text-[10px] font-bold text-white/60 cursor-pointer">เลือก</label>
+                        <label className="text-[10px] font-bold text-muted-foreground cursor-pointer">เลือก</label>
                         <input
                           type="checkbox"
                           checked={isAllCurrentPageSelected}
@@ -744,11 +744,11 @@ export default function MetersPage() {
                             <span className={`h-8 w-10 border rounded-lg flex items-center justify-center font-black text-xs transition-colors ${
                               isSelected 
                                 ? 'bg-blue-600 text-white border-blue-400' 
-                                : 'bg-white/5 border-purple-500/20 text-white group-hover:border-blue-400/40'
+                                : 'bg-secondary border-border text-foreground group-hover:border-primary/40'
                             }`}>
                               {r.room_number}
                             </span>
-                            <span className="font-bold text-white group-hover:text-blue-300 transition-colors">ห้อง {r.room_number}</span>
+                            <span className="font-bold text-foreground group-hover:text-primary transition-colors">ห้อง {r.room_number}</span>
                           </div>
                         </td>
                         <td className="py-4 px-6">
@@ -761,10 +761,10 @@ export default function MetersPage() {
                           </span>
                         </td>
                         <td className="py-4 px-6 text-muted-foreground font-medium">{r.billing_cycle}</td>
-                        <td className="py-4 px-6 text-right font-mono text-white/60">{Number(r.previous_reading).toFixed(2)}</td>
+                        <td className="py-4 px-6 text-right font-mono text-muted-foreground font-semibold">{Number(r.previous_reading).toFixed(2)}</td>
                         <td className="py-4 px-6 text-right font-mono text-emerald-400 font-black text-base">{Number(r.current_reading).toFixed(2)}</td>
-                        <td className="py-4 px-6 text-right font-mono font-black text-white">
-                          <span className="px-2.5 py-0.5 rounded-lg bg-white/10 text-white font-bold">
+                        <td className="py-4 px-6 text-right font-mono font-black text-foreground">
+                          <span className="px-2.5 py-0.5 rounded-lg bg-secondary text-foreground font-bold border border-border">
                             {units >= 0 ? units : 0}
                           </span>
                         </td>
@@ -792,7 +792,7 @@ export default function MetersPage() {
                               <span className="text-xs font-bold font-mono">📷 ดูรูป</span>
                             </button>
                           ) : (
-                            <span className="text-[11px] text-white/30 italic font-medium">ไม่มีรูป</span>
+                            <span className="text-[11px] text-muted-foreground/50 italic font-medium">ไม่มีรูป</span>
                           )}
                         </td>
                         
@@ -818,17 +818,17 @@ export default function MetersPage() {
          {/* Pagination Controls Section */}
          {pageSize > 0 && totalPages > 1 && (
            <div className="px-6 py-4 bg-card border-t border-purple-500/20 flex flex-col sm:flex-row items-center justify-between gap-4">
-             <div className="text-xs text-white/50 font-medium">
-               แสดงรายการที่ <strong className="text-white font-bold">{(currentPage - 1) * pageSize + 1}</strong> ถึง{' '}
-               <strong className="text-white font-bold">{Math.min(currentPage * pageSize, filteredReadings.length)}</strong> จากทั้งหมด{' '}
-               <strong className="text-white font-bold">{filteredReadings.length}</strong> รายการ
+             <div className="text-xs text-muted-foreground font-medium">
+               แสดงรายการที่ <strong className="text-foreground font-bold">{(currentPage - 1) * pageSize + 1}</strong> ถึง{' '}
+               <strong className="text-foreground font-bold">{Math.min(currentPage * pageSize, filteredReadings.length)}</strong> จากทั้งหมด{' '}
+               <strong className="text-foreground font-bold">{filteredReadings.length}</strong> รายการ
              </div>
              
              <div className="flex items-center gap-1">
                <button
                  onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                  disabled={currentPage === 1}
-                 className="px-3 py-1.5 rounded-xl border border-purple-500/20 text-xs font-bold text-white/70 hover:text-white hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer"
+                 className="px-3 py-1.5 rounded-xl border border-border text-xs font-bold text-muted-foreground hover:text-foreground hover:bg-secondary disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer"
                >
                  ‹ ก่อนหน้า
                </button>
@@ -840,14 +840,14 @@ export default function MetersPage() {
                    return (
                      <div key={pageNum} className="flex items-center">
                        {prev && pageNum - prev > 1 && (
-                         <span className="px-1 text-white/30 text-xs font-bold">...</span>
+                         <span className="px-1 text-muted-foreground/50 text-xs font-bold">...</span>
                        )}
                        <button
                          onClick={() => setCurrentPage(pageNum)}
                          className={`h-8 w-8 rounded-xl text-xs font-black transition-all cursor-pointer ${
                            currentPage === pageNum
                              ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30'
-                             : 'border border-purple-500/20 text-white/60 hover:bg-white/10 hover:text-white'
+                             : 'border border-border text-muted-foreground hover:bg-secondary hover:text-foreground'
                          }`}
                        >
                          {pageNum}
@@ -859,7 +859,7 @@ export default function MetersPage() {
                <button
                  onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
                  disabled={currentPage === totalPages}
-                 className="px-3 py-1.5 rounded-xl border border-purple-500/20 text-xs font-bold text-white/70 hover:text-white hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer"
+                 className="px-3 py-1.5 rounded-xl border border-border text-xs font-bold text-muted-foreground hover:text-foreground hover:bg-secondary disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer"
                >
                  ถัดไป ›
                </button>
@@ -869,7 +869,7 @@ export default function MetersPage() {
 
          {/* Prominent Bottom Action Bar Under Table */}
          <div className="p-6 bg-secondary/30 border-t border-purple-500/20 flex flex-col sm:flex-row items-center justify-between gap-4">
-           <div className="flex items-center gap-3 text-xs text-white/60">
+           <div className="flex items-center gap-3 text-xs text-muted-foreground">
              <span className="h-3 w-3 rounded-full bg-emerald-500 animate-ping"></span>
              <span>สิ้นสุดตารางข้อมูลมิเตอร์ • พร้อมบันทึกรอบเดือนใหม่ถัดไป: <strong>{getNextMonthCycle(latestCycle)}</strong></span>
            </div>
@@ -897,10 +897,10 @@ export default function MetersPage() {
             <div className="bg-card rounded-3xl p-5 sm:p-7 max-w-md w-full shadow-2xl border border-purple-500/25 relative z-10 animate-in fade-in zoom-in duration-200 max-h-[92vh] overflow-y-auto">
               <div className="flex justify-between items-center mb-5 pb-3 border-b border-purple-500/20">
                 <div>
-                  <h2 className="text-lg font-display font-black text-white">บันทึกมิเตอร์รอบเดือนใหม่</h2>
+                  <h2 className="text-lg font-display font-black text-foreground">บันทึกมิเตอร์รอบเดือนใหม่</h2>
                   <p className="text-xs text-purple-300/70 mt-0.5">ระบุเลขมิเตอร์ห้องพักรายบุคคล</p>
                 </div>
-                <button onClick={() => setShowModal(false)} className="text-white/40 hover:text-white transition-colors cursor-pointer p-1">
+                <button onClick={() => setShowModal(false)} className="text-muted-foreground hover:text-foreground transition-colors cursor-pointer p-1">
                   ✕
                 </button>
               </div>
@@ -913,7 +913,7 @@ export default function MetersPage() {
                     required 
                     value={form.billing_cycle} 
                     onChange={e => setForm({...form, billing_cycle: e.target.value})} 
-                    className="w-full bg-background border border-border text-foreground rounded-xl px-4 py-2.5 text-sm text-white font-bold outline-none focus:ring-2 focus:ring-purple-500" 
+                    className="w-full bg-background border border-border text-foreground rounded-xl px-4 py-2.5 text-sm font-bold outline-none focus:ring-2 focus:ring-purple-500" 
                   />
                 </div>
 
@@ -923,7 +923,7 @@ export default function MetersPage() {
                     required 
                     value={form.room_id} 
                     onChange={e => handleRoomSelectChange(e.target.value)} 
-                    className="w-full bg-background border border-border text-foreground rounded-xl px-4 py-2.5 text-sm text-white font-bold outline-none focus:ring-2 focus:ring-purple-500"
+                    className="w-full bg-background border border-border text-foreground rounded-xl px-4 py-2.5 text-sm font-bold outline-none focus:ring-2 focus:ring-purple-500"
                   >
                     <option value="">-- เลือกห้องพัก --</option>
                     {rooms.map((room: any) => (
@@ -941,7 +941,7 @@ export default function MetersPage() {
                       className={`py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                         form.type === 'Water'
                           ? 'bg-purple-600 text-white shadow-md'
-                          : 'bg-white/5 text-white/60 hover:bg-white/10'
+                          : 'bg-secondary text-muted-foreground hover:bg-secondary/80'
                       }`}
                     >
                       💧 น้ำประปา
@@ -952,7 +952,7 @@ export default function MetersPage() {
                       className={`py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                         form.type === 'Electricity'
                           ? 'bg-amber-500 text-slate-950 font-black shadow-md'
-                          : 'bg-white/5 text-white/60 hover:bg-white/10'
+                          : 'bg-secondary text-muted-foreground hover:bg-secondary/80'
                       }`}
                     >
                       ⚡ ไฟฟ้า
@@ -980,7 +980,7 @@ export default function MetersPage() {
                       required 
                       value={form.current_reading} 
                       onChange={e => setForm({...form, current_reading: e.target.value})} 
-                      className="w-full bg-secondary/40 border-2 border-amber-400/50 rounded-xl px-3 py-2 text-sm text-amber-300 font-mono font-black outline-none focus:border-amber-400" 
+                      className="w-full bg-background border-2 border-amber-500/70 dark:border-amber-400/50 rounded-xl px-3 py-2 text-base text-amber-600 dark:text-amber-300 font-mono font-black outline-none focus:ring-2 focus:ring-amber-500 shadow-inner" 
                       placeholder="0.00"
                     />
                   </div>
@@ -1066,7 +1066,7 @@ export default function MetersPage() {
                   <button 
                     type="button" 
                     onClick={() => setShowModal(false)} 
-                    className="flex-1 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 transition-colors text-xs font-bold text-white/60 cursor-pointer"
+                    className="flex-1 py-2.5 rounded-xl bg-secondary hover:bg-secondary/80 transition-colors text-xs font-bold text-foreground cursor-pointer border border-border"
                   >
                     ยกเลิก
                   </button>
@@ -1093,7 +1093,7 @@ export default function MetersPage() {
               <div className="flex justify-between items-center mb-4 pb-3 border-b border-purple-500/20 shrink-0">
                 <div>
                   <div className="flex items-center gap-2 sm:gap-3">
-                    <h2 className="text-base sm:text-lg font-display font-black text-white">
+                    <h2 className="text-base sm:text-lg font-display font-black text-foreground">
                       ⚡ จดมิเตอร์ด่วน {selectedRoomIds.length > 0 ? `(${batchItems.length} ห้องที่เลือก)` : `(ทั้งหมด ${batchItems.length} ห้อง)`}
                     </h2>
                     <span className="px-2.5 py-0.5 rounded-full text-[11px] font-black bg-purple-500/20 text-purple-300 border border-purple-500/30">
@@ -1102,7 +1102,7 @@ export default function MetersPage() {
                   </div>
                   <p className="text-[11px] text-purple-300/70 mt-0.5">กรอกเลขมิเตอร์ครั้งนี้ของแต่ละห้อง หรือกดปุ่ม 📸 เพื่อถ่ายภาพให้ AI อ่าน</p>
                 </div>
-                <button onClick={() => setShowBatchModal(false)} className="w-8 h-8 rounded-xl bg-white/5 hover:bg-white/10 text-white/50 hover:text-white flex items-center justify-center transition-colors cursor-pointer">
+                <button onClick={() => setShowBatchModal(false)} className="w-8 h-8 rounded-xl bg-secondary hover:bg-secondary/80 text-muted-foreground hover:text-foreground flex items-center justify-center transition-colors cursor-pointer border border-border">
                   ✕
                 </button>
               </div>
@@ -1114,7 +1114,7 @@ export default function MetersPage() {
                   type="month" 
                   value={batchCycle} 
                   onChange={e => setBatchCycle(e.target.value)} 
-                  className="bg-background border border-border text-foreground rounded-xl px-3 py-1.5 text-xs text-white font-bold outline-none focus:border-amber-400"
+                  className="bg-background border border-border text-foreground rounded-xl px-3 py-1.5 text-xs font-bold outline-none focus:border-amber-400"
                 />
               </div>
 
@@ -1126,7 +1126,7 @@ export default function MetersPage() {
                   {batchItems.map((item, idx) => (
                     <div key={item.room_id} className="p-3 rounded-2xl bg-background border border-border text-foreground space-y-2">
                       <div className="flex items-center justify-between">
-                        <span className="font-black text-white text-sm sm:text-base">ห้อง {item.room_number}</span>
+                        <span className="font-black text-foreground text-sm sm:text-base">ห้อง {item.room_number}</span>
                         <span className="text-[10px] text-purple-300/60 font-mono">ห้องพัก</span>
                       </div>
 
@@ -1151,7 +1151,7 @@ export default function MetersPage() {
                                   return copy;
                                 });
                               }}
-                              className="w-full bg-secondary/40 border border-purple-400/40 rounded-lg px-2 py-1 text-center font-mono font-bold text-amber-300 text-xs outline-none focus:border-amber-400"
+                              className="w-full bg-background border border-purple-400/50 dark:border-purple-400/40 rounded-lg px-2 py-1 text-center font-mono font-bold text-amber-600 dark:text-amber-300 text-xs outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 shadow-inner"
                             />
                             {item.water_photo && (
                               <button
@@ -1271,7 +1271,7 @@ export default function MetersPage() {
                   <tbody className="divide-y divide-purple-500/10 bg-card">
                     {batchItems.map((item, idx) => (
                       <tr key={item.room_id} className="hover:bg-purple-500/5">
-                        <td className="py-2.5 px-4 font-black text-white text-sm">
+                        <td className="py-2.5 px-4 font-black text-foreground text-sm">
                           ห้อง {item.room_number}
                         </td>
                         <td className="py-2.5 px-4 text-center font-mono text-purple-300/60">
@@ -1292,7 +1292,7 @@ export default function MetersPage() {
                                   return copy;
                                 });
                               }}
-                              className="w-24 bg-secondary/40 border border-purple-400/40 rounded-lg px-2 py-1 text-center font-mono font-bold text-amber-300 text-xs outline-none focus:border-amber-400"
+                              className="w-24 bg-background border border-purple-400/50 dark:border-purple-400/40 rounded-lg px-2 py-1 text-center font-mono font-bold text-amber-600 dark:text-amber-300 text-xs outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 shadow-inner"
                             />
                             {item.water_photo && (
                               <button
@@ -1383,7 +1383,7 @@ export default function MetersPage() {
                               className={`p-1.5 rounded-lg border transition-all text-xs cursor-pointer ${
                                 item.elec_photo 
                                   ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40' 
-                                  : 'bg-white/5 hover:bg-orange-500/20 text-white/60 hover:text-orange-400 border-purple-500/20'
+                                  : 'bg-secondary hover:bg-secondary/80 text-muted-foreground hover:text-foreground border border-border'
                               }`}
                             >
                               📸
@@ -1400,7 +1400,7 @@ export default function MetersPage() {
                 <button 
                   type="button" 
                   onClick={() => setShowBatchModal(false)} 
-                  className="px-4 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 transition-colors text-xs font-bold text-white/60 cursor-pointer"
+                  className="px-4 py-2.5 rounded-xl bg-secondary hover:bg-secondary/80 transition-colors text-xs font-bold text-foreground cursor-pointer border border-border"
                 >
                   ยกเลิก
                 </button>
@@ -1450,11 +1450,11 @@ export default function MetersPage() {
                     {viewingPhoto.type === 'Water' ? '💧' : '⚡'}
                   </div>
                   <div>
-                    <h3 className="text-sm sm:text-base font-black text-white">
+                    <h3 className="text-sm sm:text-base font-black text-foreground">
                       หลักฐานภาพถ่าย{viewingPhoto.type === 'Water' ? 'มิเตอร์น้ำ' : 'มิเตอร์ไฟ'} ห้อง <span className="text-amber-400 font-mono">{viewingPhoto.roomNumber}</span>
                     </h3>
                     <p className="text-[11px] text-purple-300/70 font-mono">
-                      รอบบิล: <span className="text-white font-bold">{viewingPhoto.cycle}</span>
+                      รอบบิล: <span className="text-foreground font-bold">{viewingPhoto.cycle}</span>
                     </p>
                   </div>
                 </div>
@@ -1462,7 +1462,7 @@ export default function MetersPage() {
                 <button
                   type="button"
                   onClick={() => setViewingPhoto(null)}
-                  className="w-8 h-8 rounded-xl bg-white/5 hover:bg-white/10 text-white/60 hover:text-white flex items-center justify-center transition-colors cursor-pointer"
+                  className="w-8 h-8 rounded-xl bg-secondary hover:bg-secondary/80 text-muted-foreground hover:text-foreground flex items-center justify-center transition-colors cursor-pointer border border-border"
                 >
                   ✕
                 </button>
@@ -1472,7 +1472,7 @@ export default function MetersPage() {
               <div className="grid grid-cols-3 gap-2 bg-secondary/40 p-3 rounded-2xl border border-purple-500/20 text-center shrink-0">
                 <div>
                   <span className="text-[9px] text-purple-300/70 block uppercase font-bold">เลขครั้งก่อน</span>
-                  <span className="font-mono text-xs sm:text-sm font-bold text-white/80">
+                  <span className="font-mono text-xs sm:text-sm font-bold text-foreground">
                     {Number(viewingPhoto.prevReading).toFixed(2)}
                   </span>
                 </div>
@@ -1505,7 +1505,7 @@ export default function MetersPage() {
                   href={viewingPhoto.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-bold text-white/80 hover:text-white transition-all inline-flex items-center gap-1.5 cursor-pointer"
+                  className="px-4 py-2 rounded-xl bg-secondary hover:bg-secondary/80 border border-border text-xs font-bold text-foreground transition-all inline-flex items-center gap-1.5 cursor-pointer"
                 >
                   <span>🔗</span>
                   <span>เปิดรูปขนาดเต็ม</span>

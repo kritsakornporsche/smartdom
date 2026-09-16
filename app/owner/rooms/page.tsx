@@ -405,8 +405,8 @@ export default function RoomsManagement() {
         ) : filteredRooms.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-center py-20">
             <div className="w-24 h-24 bg-white/5 rounded-full flex items-center justify-center text-4xl mb-6">🔍</div>
-            <h3 className="text-xl font-black text-white mb-2 text-balance">ไม่พบข้อมูลห้องพักที่คุณต้องการ</h3>
-            <p className="text-white/50 text-sm font-medium">ลองเปลี่ยนเงื่อนไขการค้นหา หรือเพิ่มห้องพักใหม่ในระบบ</p>
+            <h3 className="text-xl font-black text-foreground mb-2 text-balance">ไม่พบข้อมูลห้องพักที่คุณต้องการ</h3>
+            <p className="text-muted-foreground text-sm font-medium">ลองเปลี่ยนเงื่อนไขการค้นหา หรือเพิ่มห้องพักใหม่ในระบบ</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 pb-12">
@@ -438,7 +438,7 @@ export default function RoomsManagement() {
                         <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">SMARTDOM UNIT</span>
                      </div>
                    )}
-                   <div className="absolute top-4 left-4 bg-card/90 border border-white/20 backdrop-blur-md text-white px-4 py-2 rounded-2xl text-sm font-black shadow-lg z-10">
+                   <div className="absolute top-4 left-4 bg-card/90 border border-border backdrop-blur-md text-foreground px-4 py-2 rounded-2xl text-sm font-black shadow-lg z-10">
                       ห้อง {room.room_number}
                    </div>
                    <div className={`absolute top-4 right-4 px-4 py-2 rounded-2xl text-[10px] font-black uppercase tracking-widest border backdrop-blur-md shadow-xl z-10 ${
@@ -451,12 +451,12 @@ export default function RoomsManagement() {
 
                 <div className="p-8 flex flex-col flex-1">
                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-[10px] font-black text-white/50 uppercase tracking-[0.2em]">{room.room_type} (Type)</span>
-                      <span className="text-[10px] font-black text-white/50 uppercase tracking-[0.2em]">ชั้น {room.floor} (Floor)</span>
+                      <span className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">{room.room_type} (Type)</span>
+                      <span className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">ชั้น {room.floor} (Floor)</span>
                    </div>
                    <div className="flex items-end gap-1 mb-8">
-                      <span className="text-3xl font-black text-white">฿{Number(room.price).toLocaleString()}</span>
-                      <span className="text-xs font-bold text-white/50 mb-1.5 whitespace-nowrap">/ เดือน</span>
+                      <span className="text-3xl font-black text-foreground">฿{Number(room.price).toLocaleString()}</span>
+                      <span className="text-xs font-bold text-muted-foreground mb-1.5 whitespace-nowrap">/ เดือน</span>
                    </div>
 
                    <div className="mt-auto flex items-center gap-3 pt-6 border-t border-[#F3EFE9]">
@@ -495,22 +495,22 @@ export default function RoomsManagement() {
                <form onSubmit={handleSubmit} className="space-y-8">
                   <div className="grid grid-cols-2 gap-8">
                     <div className="space-y-2">
-                        <label className="block text-[10px] font-black text-white/50 uppercase tracking-widest ml-1">หมายเลขห้อง</label>
+                        <label className="block text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">หมายเลขห้อง</label>
                         <input 
                           type="text" 
                           required
                           value={formData.room_number}
                           onChange={(e) => setFormData({...formData, room_number: e.target.value})}
-                          className="w-full px-6 py-4 bg-white/5 border border-border rounded-[24px] focus:ring-4 focus:ring-primary/10 focus:border-primary focus:bg-card outline-none font-black text-white text-lg transition-all"
+                          className="w-full px-6 py-4 bg-background border border-border rounded-[24px] focus:ring-4 focus:ring-primary/10 focus:border-primary focus:bg-card outline-none font-black text-foreground text-lg transition-all"
                           placeholder="101"
                         />
                     </div>
                     <div className="space-y-2">
-                        <label className="block text-[10px] font-black text-white/50 uppercase tracking-widest ml-1">ประเภท (Type)</label>
+                        <label className="block text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">ประเภท (Type)</label>
                         <select 
                             value={formData.room_type}
                             onChange={(e) => setFormData({...formData, room_type: e.target.value})}
-                            className="w-full px-6 py-4 bg-white/5 border border-border rounded-[24px] font-black outline-none text-white transition-all focus:bg-card cursor-pointer"
+                            className="w-full px-6 py-4 bg-background border border-border rounded-[24px] font-black outline-none text-foreground transition-all focus:bg-card cursor-pointer"
                         >
                             <option>Standard</option>
                             <option>Deluxe</option>
@@ -522,20 +522,20 @@ export default function RoomsManagement() {
 
                   <div className="grid grid-cols-2 gap-8">
                     <div className="space-y-2">
-                        <label className="block text-[10px] font-black text-white/50 uppercase tracking-widest ml-1">ชั้น (Floor)</label>
+                        <label className="block text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">ชั้น (Floor)</label>
                         <input 
                             type="number" 
                             value={formData.floor}
                             onChange={(e) => setFormData({...formData, floor: parseInt(e.target.value)})}
-                            className="w-full px-6 py-4 bg-white/5 border border-border rounded-[24px] font-black outline-none text-white focus:bg-card transition-all"
+                            className="w-full px-6 py-4 bg-background border border-border rounded-[24px] font-black outline-none text-foreground focus:bg-card transition-all"
                         />
                     </div>
                     <div className="space-y-2">
-                        <label className="block text-[10px] font-black text-white/50 uppercase tracking-widest ml-1">สถานะ (Status)</label>
+                        <label className="block text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">สถานะ (Status)</label>
                         <select 
                             value={formData.status}
                             onChange={(e) => setFormData({...formData, status: e.target.value})}
-                            className="w-full px-6 py-4 bg-white/5 border border-border rounded-[24px] font-black outline-none text-white focus:bg-card cursor-pointer"
+                            className="w-full px-6 py-4 bg-background border border-border rounded-[24px] font-black outline-none text-foreground focus:bg-card cursor-pointer"
                         >
                             <option value="Available">ว่าง (Available)</option>
                             <option value="Occupied">มีผู้เช่า (Occupied)</option>
@@ -545,7 +545,7 @@ export default function RoomsManagement() {
                   </div>
 
                   <div className="space-y-2">
-                    <label className="block text-[10px] font-black text-white/50 uppercase tracking-widest ml-1 text-center">ราคาเช่ารายเดือน (Rental Price)</label>
+                    <label className="block text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1 text-center">ราคาเช่ารายเดือน (Rental Price)</label>
                     <div className="relative group max-w-xs mx-auto">
                         <span className="absolute left-6 top-1/2 -translate-y-1/2 text-2xl font-black text-muted-foreground group-focus-within:scale-110 transition-transform">฿</span>
                         <input 
@@ -553,13 +553,13 @@ export default function RoomsManagement() {
                           required
                           value={formData.price}
                           onChange={(e) => setFormData({...formData, price: parseFloat(e.target.value)})}
-                          className="w-full pl-14 pr-6 py-5 bg-white/5 border border-primary/30 rounded-[30px] font-black outline-none text-white text-3xl text-center focus:ring-8 focus:ring-primary/5 focus:bg-card transition-all"
+                          className="w-full pl-14 pr-6 py-5 bg-white/5 border border-primary/30 rounded-[30px] font-black outline-none text-foreground text-3xl text-center focus:ring-8 focus:ring-primary/5 focus:bg-card transition-all"
                         />
                     </div>
                   </div>
 
                   <div className="space-y-4">
-                    <label className="block text-[10px] font-black text-white/50 uppercase tracking-widest ml-1">รูปภาพห้องพัก (Gallery - หลายรูป)</label>
+                    <label className="block text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">รูปภาพห้องพัก (Gallery - หลายรูป)</label>
                     
                     <div className="grid grid-cols-3 gap-4">
                         {formData.images.map((img, idx) => (
@@ -597,7 +597,7 @@ export default function RoomsManagement() {
                     <button 
                       type="button" 
                       onClick={() => setIsModalOpen(false)} 
-                      className="flex-1 py-5 text-white/50 font-black hover:bg-card rounded-[28px] transition-all"
+                      className="flex-1 py-5 text-muted-foreground font-black hover:bg-secondary rounded-[28px] transition-all"
                     >
                       ยกเลิก
                     </button>
@@ -629,57 +629,57 @@ export default function RoomsManagement() {
                <form onSubmit={handleBatchSubmit} className="space-y-8">
                   <div className="grid grid-cols-2 gap-6">
                     <div className="space-y-2">
-                        <label className="block text-[10px] font-black text-white/50 uppercase tracking-widest ml-1">ตึก / คำนำหน้า (Building / Prefix)</label>
+                        <label className="block text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">ตึก / คำนำหน้า (Building / Prefix)</label>
                         <input 
                           type="text" 
                           value={batchForm.prefix}
                           onChange={(e) => setBatchForm({...batchForm, prefix: e.target.value})}
-                          className="w-full px-6 py-4 bg-white/5 border border-border rounded-[24px] focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 focus:bg-card outline-none font-black text-white text-lg transition-all"
+                          className="w-full px-6 py-4 bg-background border border-border rounded-[24px] focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 focus:bg-card outline-none font-black text-foreground text-lg transition-all"
                           placeholder="เช่น A หรือ ตึก A-"
                         />
                     </div>
                     <div className="space-y-2">
-                        <label className="block text-[10px] font-black text-white/50 uppercase tracking-widest ml-1">ชั้น (Floor)</label>
+                        <label className="block text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">ชั้น (Floor)</label>
                         <input 
                           type="number" 
                           required
                           min={1}
                           value={batchForm.floor}
                           onChange={(e) => setBatchForm({...batchForm, floor: parseInt(e.target.value) || 1})}
-                          className="w-full px-6 py-4 bg-white/5 border border-border rounded-[24px] focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 focus:bg-card outline-none font-black text-white text-lg transition-all"
+                          className="w-full px-6 py-4 bg-background border border-border rounded-[24px] focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 focus:bg-card outline-none font-black text-foreground text-lg transition-all"
                         />
                     </div>
                   </div>
 
                   <div className="grid grid-cols-2 gap-6">
                     <div className="space-y-2">
-                        <label className="block text-[10px] font-black text-white/50 uppercase tracking-widest ml-1">เลขห้องเริ่มต้น (Start)</label>
+                        <label className="block text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">เลขห้องเริ่มต้น (Start)</label>
                         <input 
                           type="number" 
                           required
                           min={1}
                           value={batchForm.startRoom}
                           onChange={(e) => setBatchForm({...batchForm, startRoom: parseInt(e.target.value) || 1})}
-                          className="w-full px-6 py-4 bg-white/5 border border-border rounded-[24px] focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 focus:bg-card outline-none font-black text-white text-lg transition-all"
+                          className="w-full px-6 py-4 bg-background border border-border rounded-[24px] focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 focus:bg-card outline-none font-black text-foreground text-lg transition-all"
                           placeholder="1"
                         />
                     </div>
                     <div className="space-y-2">
-                        <label className="block text-[10px] font-black text-white/50 uppercase tracking-widest ml-1">เลขห้องสิ้นสุด (End)</label>
+                        <label className="block text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">เลขห้องสิ้นสุด (End)</label>
                         <input 
                           type="number" 
                           required
                           min={1}
                           value={batchForm.endRoom}
                           onChange={(e) => setBatchForm({...batchForm, endRoom: parseInt(e.target.value) || 1})}
-                          className="w-full px-6 py-4 bg-white/5 border border-border rounded-[24px] focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 focus:bg-card outline-none font-black text-white text-lg transition-all"
+                          className="w-full px-6 py-4 bg-background border border-border rounded-[24px] focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 focus:bg-card outline-none font-black text-foreground text-lg transition-all"
                           placeholder="10"
                         />
                     </div>
                   </div>
 
                   <div className="space-y-2">
-                    <label className="block text-[10px] font-black text-white/50 uppercase tracking-widest ml-1">รูปแบบการสร้างเลขห้อง (Format Pattern)</label>
+                    <label className="block text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">รูปแบบการสร้างเลขห้อง (Format Pattern)</label>
                     <div className="grid grid-cols-3 gap-3">
                       {[
                         { id: 'prefix_floor_num', label: 'ตึก + ชั้น + เลขห้อง', example: `${batchForm.prefix}${batchForm.floor}01` },
@@ -693,7 +693,7 @@ export default function RoomsManagement() {
                           className={`p-4 rounded-2xl border text-left flex flex-col gap-1 transition-all ${
                             batchForm.pattern === p.id 
                             ? 'bg-emerald-500/10 border-emerald-500 text-white' 
-                            : 'bg-white/5 border-border text-white/60 hover:text-white hover:bg-white/10'
+                            : 'bg-secondary border-border text-muted-foreground hover:text-foreground hover:bg-secondary/80'
                           }`}
                         >
                           <span className="text-xs font-bold">{p.label}</span>
@@ -705,11 +705,11 @@ export default function RoomsManagement() {
 
                   <div className="grid grid-cols-2 gap-6">
                     <div className="space-y-2">
-                        <label className="block text-[10px] font-black text-white/50 uppercase tracking-widest ml-1">ประเภท (Type)</label>
+                        <label className="block text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">ประเภท (Type)</label>
                         <select 
                             value={batchForm.room_type}
                             onChange={(e) => setBatchForm({...batchForm, room_type: e.target.value})}
-                            className="w-full px-6 py-4 bg-white/5 border border-border rounded-[24px] font-black outline-none text-white transition-all focus:bg-card cursor-pointer"
+                            className="w-full px-6 py-4 bg-background border border-border rounded-[24px] font-black outline-none text-foreground transition-all focus:bg-card cursor-pointer"
                         >
                             <option>Standard</option>
                             <option>Deluxe</option>
@@ -718,11 +718,11 @@ export default function RoomsManagement() {
                         </select>
                     </div>
                     <div className="space-y-2">
-                        <label className="block text-[10px] font-black text-white/50 uppercase tracking-widest ml-1">สถานะเริ่มต้น (Status)</label>
+                        <label className="block text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">สถานะเริ่มต้น (Status)</label>
                         <select 
                             value={batchForm.status}
                             onChange={(e) => setBatchForm({...batchForm, status: e.target.value})}
-                            className="w-full px-6 py-4 bg-white/5 border border-border rounded-[24px] font-black outline-none text-white focus:bg-card cursor-pointer"
+                            className="w-full px-6 py-4 bg-background border border-border rounded-[24px] font-black outline-none text-foreground focus:bg-card cursor-pointer"
                         >
                             <option value="Available">ว่าง (Available)</option>
                             <option value="Occupied">มีผู้เช่า (Occupied)</option>
@@ -732,7 +732,7 @@ export default function RoomsManagement() {
                   </div>
 
                   <div className="space-y-2">
-                    <label className="block text-[10px] font-black text-white/50 uppercase tracking-widest ml-1 text-center">ราคาเช่ารายเดือนทุกห้อง (Rental Price)</label>
+                    <label className="block text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1 text-center">ราคาเช่ารายเดือนทุกห้อง (Rental Price)</label>
                     <div className="relative group max-w-xs mx-auto">
                         <span className="absolute left-6 top-1/2 -translate-y-1/2 text-2xl font-black text-muted-foreground group-focus-within:scale-110 transition-transform">฿</span>
                         <input 
@@ -740,7 +740,7 @@ export default function RoomsManagement() {
                           required
                           value={batchForm.price}
                           onChange={(e) => setBatchForm({...batchForm, price: parseFloat(e.target.value) || 0})}
-                          className="w-full pl-14 pr-6 py-5 bg-white/5 border border-emerald-500/40 rounded-[30px] font-black outline-none text-white text-3xl text-center focus:ring-8 focus:ring-emerald-500/10 focus:bg-card transition-all"
+                          className="w-full pl-14 pr-6 py-5 bg-white/5 border border-emerald-500/40 rounded-[30px] font-black outline-none text-foreground text-3xl text-center focus:ring-8 focus:ring-emerald-500/10 focus:bg-card transition-all"
                         />
                     </div>
                   </div>
@@ -768,7 +768,7 @@ export default function RoomsManagement() {
                     <button 
                       type="button" 
                       onClick={() => setIsBatchModalOpen(false)} 
-                      className="flex-1 py-4 text-white/50 font-black hover:bg-white/5 rounded-[24px] transition-all text-sm"
+                      className="flex-1 py-4 text-muted-foreground font-black hover:bg-secondary rounded-[24px] transition-all text-sm"
                     >
                       ยกเลิก
                     </button>

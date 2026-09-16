@@ -583,7 +583,7 @@ export default function OwnerBillingPage() {
               <span className="text-[11px] font-black text-slate-400 uppercase tracking-widest">
                 บิลทั้งหมดในระบบ
               </span>
-              <span className="px-2.5 py-0.5 rounded-full bg-white/10 text-white font-black text-xs">
+              <span className="px-2.5 py-0.5 rounded-full bg-secondary text-foreground font-black text-xs border border-border">
                 {stats.totalCount} ฉบับ
               </span>
             </div>
@@ -621,7 +621,7 @@ export default function OwnerBillingPage() {
                       ? tab.id === 'Pending'
                         ? 'bg-amber-500 text-slate-950 shadow-lg shadow-amber-500/20'
                         : 'bg-primary text-white shadow-lg shadow-primary/20'
-                      : 'text-slate-400 hover:text-white hover:bg-white/5',
+                      : 'text-slate-400 hover:text-foreground hover:bg-secondary',
                     tab.highlight && filterStatus !== tab.id && tab.count > 0 && 'text-amber-400 font-bold animate-pulse'
                   )}
                 >
@@ -647,7 +647,7 @@ export default function OwnerBillingPage() {
                 className="bg-secondary/40 text-slate-200 border border-border px-4 py-2.5 rounded-xl text-xs font-bold outline-none focus:border-primary cursor-pointer transition-colors"
               >
                 {billingCycles.map((c) => (
-                  <option key={c} value={c} className="bg-card text-white">
+                  <option key={c} value={c} className="bg-card text-foreground">
                     {c === 'All' ? '📅 ทุกรอบบิล' : c}
                   </option>
                 ))}
@@ -761,7 +761,7 @@ export default function OwnerBillingPage() {
 
                         {/* Tenant Info */}
                         <td className="px-6 py-5">
-                          <p className="font-bold text-sm text-white">{bill.tenant_name || 'ไม่ระบุผู้เช่า'}</p>
+                          <p className="font-bold text-sm text-foreground">{bill.tenant_name || 'ไม่ระบุผู้เช่า'}</p>
                           {bill.tenant_phone && (
                             <p className="text-xs text-slate-400 flex items-center gap-1 mt-0.5">
                               📞 {bill.tenant_phone}
@@ -865,7 +865,7 @@ export default function OwnerBillingPage() {
                             {/* Receipt / Invoice Modal Button */}
                             <button
                               onClick={() => setReceiptBill(bill)}
-                              className="p-2 rounded-xl text-slate-300 hover:text-white hover:bg-white/10 transition-colors"
+                              className="p-2 rounded-xl text-slate-300 hover:text-foreground hover:bg-secondary transition-colors"
                               title="ดูใบแจ้งหนี้ / ใบเสร็จรับเงิน"
                             >
                               <svg className="w-4 h-4 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -931,7 +931,7 @@ export default function OwnerBillingPage() {
               </div>
               <button
                 onClick={() => setInspectingBill(null)}
-                className="p-2 text-slate-400 hover:text-white bg-white/5 hover:bg-white/10 rounded-xl transition-colors cursor-pointer"
+                className="p-2 text-muted-foreground hover:text-foreground bg-white/5 hover:bg-white/10 rounded-xl transition-colors cursor-pointer"
               >
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -1113,7 +1113,7 @@ export default function OwnerBillingPage() {
               <div className="flex items-center gap-3">
                 <button
                   onClick={() => window.print()}
-                  className="px-4 py-2 bg-primary hover:bg-primary/90 text-white font-bold text-xs rounded-xl flex items-center gap-2 transition-all shadow-lg cursor-pointer"
+                  className="px-4 py-2 bg-primary hover:bg-primary/90 text-foreground font-bold text-xs rounded-xl flex items-center gap-2 transition-all shadow-lg cursor-pointer"
                 >
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
@@ -1122,7 +1122,7 @@ export default function OwnerBillingPage() {
                 </button>
                 <button
                   onClick={() => setReceiptBill(null)}
-                  className="p-2 text-slate-400 hover:text-white bg-white/5 hover:bg-white/10 rounded-xl transition-colors"
+                  className="p-2 text-muted-foreground hover:text-foreground bg-white/5 hover:bg-white/10 rounded-xl transition-colors"
                 >
                   ✕
                 </button>
@@ -1272,7 +1272,7 @@ export default function OwnerBillingPage() {
               </div>
               <button
                 onClick={() => setIsBatchModalOpen(false)}
-                className="text-slate-400 hover:text-white"
+                className="text-muted-foreground hover:text-foreground"
               >
                 ✕
               </button>
@@ -1365,7 +1365,7 @@ export default function OwnerBillingPage() {
               </div>
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="text-slate-400 hover:text-white"
+                className="text-muted-foreground hover:text-foreground"
               >
                 ✕
               </button>
@@ -1386,7 +1386,7 @@ export default function OwnerBillingPage() {
                 >
                   <option value="">-- กรุณาเลือกห้องพัก --</option>
                   {tenants.map((t) => (
-                    <option key={t.id} value={t.id} className="bg-card text-white">
+                    <option key={t.id} value={t.id} className="bg-card text-foreground">
                       ห้อง {t.room_number} - {t.name}
                     </option>
                   ))}
@@ -1418,7 +1418,7 @@ export default function OwnerBillingPage() {
                       const val = parseFloat(e.target.value) || 0;
                       updateUtilityAmounts(parseFloat(formData.water_amount) || 0, parseFloat(formData.electric_amount) || 0, val);
                     }}
-                    className="w-full px-3 py-2 bg-card border border-border rounded-xl text-white font-bold"
+                    className="w-full px-3 py-2 bg-card border border-border rounded-xl text-foreground font-bold"
                   />
                 </div>
                 <div>
@@ -1430,7 +1430,7 @@ export default function OwnerBillingPage() {
                       const val = parseFloat(e.target.value) || 0;
                       updateUtilityAmounts(val, parseFloat(formData.electric_amount) || 0, parseFloat(formData.room_amount) || 0);
                     }}
-                    className="w-full px-3 py-2 bg-card border border-border rounded-xl text-white font-bold"
+                    className="w-full px-3 py-2 bg-card border border-border rounded-xl text-foreground font-bold"
                   />
                 </div>
                 <div>
@@ -1442,7 +1442,7 @@ export default function OwnerBillingPage() {
                       const val = parseFloat(e.target.value) || 0;
                       updateUtilityAmounts(parseFloat(formData.water_amount) || 0, val, parseFloat(formData.room_amount) || 0);
                     }}
-                    className="w-full px-3 py-2 bg-card border border-border rounded-xl text-white font-bold"
+                    className="w-full px-3 py-2 bg-card border border-border rounded-xl text-foreground font-bold"
                   />
                 </div>
               </div>

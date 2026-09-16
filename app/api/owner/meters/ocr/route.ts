@@ -34,10 +34,11 @@ const METER_NOISE_CONSTANTS = new Set([
 
 /**
  * Robust parser for utility meters:
- * 1. Handles mechanical rotating wheels with single-digit gaps e.g. "0 0 1 8 4" -> "00184"
- * 2. Does NOT corrupt brand words (Sanwa, Mitsubishi) into numbers
- * 3. Filters out electrical ratings (220V, 50Hz, 1200r/kWh) and dates
- * 4. Scores candidates based on closeness to previous reading
+ * 1. Handles mechanical rotating wheels with dividers e.g. "0 | 0 | 1 | 8 | 4" -> 184
+ * 2. Normalizes bracketed odometer windows "[00184]"
+ * 3. Does NOT corrupt brand words (Sanwa, Mitsubishi) into numbers
+ * 4. Filters out electrical ratings (220V, 50Hz, 1200r/kWh) and dates
+ * 5. Scores candidates based on closeness to previous reading
  */
 function parseMeterDigits(rawText: string, previousReading?: number | string | null): {
   reading: number | null;
@@ -51,12 +52,21 @@ function parseMeterDigits(rawText: string, previousReading?: number | string | n
     ? Number(previousReading) 
     : 0;
 
-  // 1. Find sequences of spaced odometer digits: e.g. "0 0 1 8 4" or "0 1 2 4 5 . 8"
-  let processed = rawText.replace(/\b([0-9])\s+([0-9])(?:\s+([0-9]))*(?:\s*\.\s*([0-9]))?\b/g, (match) => {
+  // 1. Remove brackets around counter windows
+  let processed = rawText.replace(/\[\s*([0-9\s|:,\._\/-]+)\s*\]/g, '$1')
+                         .replace(/\(\s*([0-9\s|:,\._\/-]+)\s*\)/g, '$1');
+
+  // 2. Collapse single digits separated by typical mechanical wheel dividers (| : - . / space)
+  processed = processed.replace(/\b([0-9])(?:[\s|:,\._\/-]+([0-9])){2,6}\b/g, (match) => {
+    return match.replace(/[^0-9.]/g, '');
+  });
+
+  // 3. Find standard sequences of spaced odometer digits: e.g. "0 0 1 8 4" or "0 1 2 4 5 . 8"
+  processed = processed.replace(/\b([0-9])\s+([0-9])(?:\s+([0-9]))*(?:\s*\.\s*([0-9]))?\b/g, (match) => {
     return match.replace(/\s+/g, '');
   });
 
-  // Handle letter O / I / l when inside or adjacent to digit sequences
+  // 4. Handle letter O / I / l when inside or adjacent to digit sequences
   processed = processed.replace(/(?<=\d)[Oo](?=\d)/g, '0')
                        .replace(/(?<=\d)[Il|](?=\d)/g, '1')
                        .replace(/\b[Oo]\b/g, '0');
@@ -95,7 +105,7 @@ function parseMeterDigits(rawText: string, previousReading?: number | string | n
     // Boost 3-6 digit numbers which are standard meter odometer lengths
     const digitCount = Math.floor(c).toString().length;
     if (digitCount >= 3 && digitCount <= 6) {
-      score += 15;
+      score += 20;
     }
     return { candidate: c, score, diff };
   });
@@ -117,9 +127,9 @@ export async function POST(req: Request) {
       // ignore
     }
 
-    const { image, previous_reading, type } = await req.json();
+    const { image, cropImage, previous_reading, type } = await req.json();
 
-    if (!image) {
+    if (!image && !cropImage) {
       return NextResponse.json({ success: false, message: 'Image data is required' }, { status: 400 });
     }
 
@@ -129,10 +139,11 @@ export async function POST(req: Request) {
     let engineUsed = 'tesseract-smart';
     let allCandidates: number[] = [];
 
-    // 1. Try Gemini Vision if GEMINI_API_KEY is available
-    if (process.env.GEMINI_API_KEY) {
+    // 1. Try Gemini Vision if GEMINI_API_KEY is available (prioritize crop if present)
+    const targetImageForVision = cropImage || image;
+    if (process.env.GEMINI_API_KEY && targetImageForVision) {
       try {
-        const base64Data = image.replace(/^data:image\/\w+;base64,/, '');
+        const base64Data = targetImageForVision.replace(/^data:image\/\w+;base64,/, '');
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 5000);
 
@@ -179,8 +190,34 @@ export async function POST(req: Request) {
       }
     }
 
-    // 2. High-Speed Local Tesseract OCR with Smart Spaced-Dial Parser
-    if (detectedNumber === null) {
+    // 2. Dual-Pass Local Tesseract OCR:
+    // Pass A: Run on zoomed, high-contrast center dial crop (fast & most accurate on mechanical odometers)
+    if (detectedNumber === null && cropImage) {
+      try {
+        const cropBuffer = Buffer.from(
+          cropImage.replace(/^data:image\/\w+;base64,/, ''),
+          'base64'
+        );
+        const worker = await getSharedOcrWorker();
+        const ret = await worker.recognize(cropBuffer);
+        const text = ret.data.text ? ret.data.text.trim() : '';
+        if (text) {
+          rawText = text;
+          confidence = ret.data.confidence;
+          const parsed = parseMeterDigits(text, previous_reading);
+          if (parsed.reading !== null) {
+            detectedNumber = parsed.reading;
+            allCandidates = parsed.candidates;
+            engineUsed = 'tesseract-dial-crop';
+          }
+        }
+      } catch (cropErr: any) {
+        console.warn('Tesseract dial crop OCR error:', cropErr);
+      }
+    }
+
+    // Pass B: Fallback to full image if crop didn't catch reading
+    if (detectedNumber === null && image) {
       try {
         const base64Buffer = Buffer.from(
           image.replace(/^data:image\/\w+;base64,/, ''),
@@ -190,14 +227,19 @@ export async function POST(req: Request) {
         const worker = await getSharedOcrWorker();
         const ret = await worker.recognize(base64Buffer);
 
-        rawText = ret.data.text ? ret.data.text.trim() : '';
-        confidence = ret.data.confidence;
-
-        const parsed = parseMeterDigits(rawText, previous_reading);
-        detectedNumber = parsed.reading;
-        allCandidates = parsed.candidates;
+        const text = ret.data.text ? ret.data.text.trim() : '';
+        if (text) {
+          rawText = (rawText ? rawText + ' | ' : '') + text;
+          confidence = Math.max(confidence, ret.data.confidence);
+          const parsed = parseMeterDigits(text, previous_reading);
+          if (parsed.reading !== null) {
+            detectedNumber = parsed.reading;
+            allCandidates = Array.from(new Set([...allCandidates, ...parsed.candidates]));
+            engineUsed = 'tesseract-full-frame';
+          }
+        }
       } catch (tessErr: any) {
-        console.warn('Tesseract OCR error:', tessErr);
+        console.warn('Tesseract full image OCR error:', tessErr);
       }
     }
 

@@ -353,7 +353,7 @@ export default function OwnerContractsPage() {
             className={`pb-4 font-black text-sm transition-all border-b-2 ${
               activeTab === 'Active' 
                 ? 'border-primary text-primary' 
-                : 'border-transparent text-muted-foreground hover:text-white'
+                : 'border-transparent text-muted-foreground hover:text-foreground'
             }`}
           >
             🟢 รายการสัญญาปัจจุบัน ({activeContracts.length})
@@ -363,7 +363,7 @@ export default function OwnerContractsPage() {
             className={`pb-4 font-black text-sm transition-all border-b-2 ${
               activeTab === 'History' 
                 ? 'border-primary text-primary' 
-                : 'border-transparent text-muted-foreground hover:text-white'
+                : 'border-transparent text-muted-foreground hover:text-foreground'
             }`}
           >
             📜 ประวัติสัญญาย้อนหลัง / หมดอายุ ({historyContracts.length})
@@ -494,7 +494,7 @@ export default function OwnerContractsPage() {
               </div>
               <button 
                 onClick={() => setIsCreateModalOpen(false)}
-                className="w-10 h-10 bg-white/5 hover:bg-white/10 rounded-xl text-muted-foreground hover:text-white flex items-center justify-center transition-all cursor-pointer"
+                className="w-10 h-10 bg-white/5 hover:bg-white/10 rounded-xl text-muted-foreground hover:text-foreground flex items-center justify-center transition-all cursor-pointer"
               >
                 ✕
               </button>
@@ -518,7 +518,7 @@ export default function OwnerContractsPage() {
                     required
                     value={formData.room_id}
                     onChange={(e) => setFormData({ ...formData, room_id: e.target.value })}
-                    className="w-full px-6 py-4 bg-white/5 border border-white/20 rounded-2xl text-white font-bold outline-none focus:border-primary transition-all cursor-pointer"
+                    className="w-full px-6 py-4 bg-background border border-border rounded-2xl text-foreground font-bold outline-none focus:border-primary transition-all cursor-pointer"
                   >
                     <option value="" className="bg-card">-- เลือกห้องพัก --</option>
                     {rooms.map(r => (
@@ -538,7 +538,7 @@ export default function OwnerContractsPage() {
                       placeholder="สมชาย ใจดี"
                       value={formData.tenant_name}
                       onChange={(e) => setFormData({ ...formData, tenant_name: e.target.value })}
-                      className="w-full px-6 py-4 bg-white/5 border border-white/20 rounded-2xl text-white font-bold outline-none focus:border-primary transition-all"
+                      className="w-full px-6 py-4 bg-background border border-border rounded-2xl text-foreground font-bold outline-none focus:border-primary transition-all"
                     />
                   </div>
 
@@ -550,7 +550,7 @@ export default function OwnerContractsPage() {
                       placeholder="tenant@gmail.com"
                       value={formData.tenant_email}
                       onChange={(e) => setFormData({ ...formData, tenant_email: e.target.value })}
-                      className="w-full px-6 py-4 bg-white/5 border border-white/20 rounded-2xl text-white font-bold outline-none focus:border-primary transition-all"
+                      className="w-full px-6 py-4 bg-background border border-border rounded-2xl text-foreground font-bold outline-none focus:border-primary transition-all"
                     />
                   </div>
                 </div>
@@ -563,7 +563,7 @@ export default function OwnerContractsPage() {
                       placeholder="089-123-4567"
                       value={formData.tenant_phone}
                       onChange={(e) => setFormData({ ...formData, tenant_phone: e.target.value })}
-                      className="w-full px-6 py-4 bg-white/5 border border-white/20 rounded-2xl text-white font-bold outline-none focus:border-primary transition-all"
+                      className="w-full px-6 py-4 bg-background border border-border rounded-2xl text-foreground font-bold outline-none focus:border-primary transition-all"
                     />
                   </div>
 
@@ -574,7 +574,7 @@ export default function OwnerContractsPage() {
                       required
                       value={formData.deposit_amount}
                       onChange={(e) => setFormData({ ...formData, deposit_amount: parseFloat(e.target.value) || 0 })}
-                      className="w-full px-6 py-4 bg-white/5 border border-white/20 rounded-2xl text-white font-bold outline-none focus:border-primary transition-all"
+                      className="w-full px-6 py-4 bg-background border border-border rounded-2xl text-foreground font-bold outline-none focus:border-primary transition-all"
                     />
                   </div>
                 </div>
@@ -644,7 +644,7 @@ export default function OwnerContractsPage() {
               </div>
               <button 
                 onClick={() => setRenewingContract(null)}
-                className="w-10 h-10 bg-white/5 hover:bg-white/10 rounded-xl text-muted-foreground hover:text-white flex items-center justify-center transition-all cursor-pointer"
+                className="w-10 h-10 bg-white/5 hover:bg-white/10 rounded-xl text-muted-foreground hover:text-foreground flex items-center justify-center transition-all cursor-pointer"
               >
                 ✕
               </button>
@@ -668,7 +668,7 @@ export default function OwnerContractsPage() {
                   type="number"
                   value={renewData.deposit_amount}
                   onChange={(e) => setRenewData({ ...renewData, deposit_amount: parseFloat(e.target.value) || 0 })}
-                  className="w-full px-6 py-4 bg-white/5 border border-white/20 rounded-2xl text-white font-bold outline-none focus:border-primary transition-all"
+                  className="w-full px-6 py-4 bg-background border border-border rounded-2xl text-foreground font-bold outline-none focus:border-primary transition-all"
                 />
               </div>
 
@@ -729,7 +729,7 @@ export default function OwnerContractsPage() {
                 </a>
                 <button
                   onClick={() => setPreviewingFileUrl(null)}
-                  className="w-10 h-10 bg-white/5 hover:bg-white/10 rounded-xl text-muted-foreground hover:text-white flex items-center justify-center transition-all cursor-pointer"
+                  className="w-10 h-10 bg-white/5 hover:bg-white/10 rounded-xl text-muted-foreground hover:text-foreground flex items-center justify-center transition-all cursor-pointer"
                 >
                   ✕
                 </button>

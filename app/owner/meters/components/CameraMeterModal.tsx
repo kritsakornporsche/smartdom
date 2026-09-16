@@ -184,22 +184,22 @@ export default function CameraMeterModal({
       stopLiveStream();
       setCapturedImage(fullDataUrl);
 
-      // 2. High-speed OCR ROI Crop (aiming reticle center area)
+      // 2. High-speed OCR Target (generous 70% height & 94% width to avoid clipping digits)
       try {
         const ocrCanvas = document.createElement('canvas');
-        const roiW = Math.round(width * 0.88);
-        const roiH = Math.round(height * 0.44);
+        const roiW = Math.round(width * 0.94);
+        const roiH = Math.round(height * 0.70);
         const roiX = Math.round((width - roiW) / 2);
         const roiY = Math.round((height - roiH) / 2);
 
-        const ocrW = 640;
-        const ocrH = Math.round((roiH / roiW) * 640);
+        const ocrW = 720;
+        const ocrH = Math.round((roiH / roiW) * 720);
         ocrCanvas.width = ocrW;
         ocrCanvas.height = ocrH;
         const ocrCtx = ocrCanvas.getContext('2d');
         if (ocrCtx) {
           ocrCtx.drawImage(canvas, roiX, roiY, roiW, roiH, 0, 0, ocrW, ocrH);
-          const ocrDataUrl = ocrCanvas.toDataURL('image/jpeg', 0.80);
+          const ocrDataUrl = ocrCanvas.toDataURL('image/jpeg', 0.85);
           analyzeMeterImage(ocrDataUrl);
           return;
         }
@@ -263,7 +263,7 @@ export default function CameraMeterModal({
     setDetectedReading('');
 
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 7000); // 7s max timeout
+    const timeoutId = setTimeout(() => controller.abort(), 25000); // 25s timeout for mobile connections
 
     try {
       const res = await fetch('/api/owner/meters/ocr', {
@@ -284,12 +284,12 @@ export default function CameraMeterModal({
         setWarning(data.data.warning || null);
         setEngineUsed(data.data.engine);
       } else {
-        setWarning('ระบบไม่สามารถอ่านตัวเลขได้ชัดเจน กรุณาตรวจสอบหรือกรอกตัวเลขด้วยตนเอง');
+        setWarning('ระบบตรวจจับตัวเลขยังไม่ชัดเจน กรุณากรอกตัวเลขหน้าปัด หรือกดถ่ายใหม่อีกครั้ง');
       }
     } catch (err: any) {
       clearTimeout(timeoutId);
       if (err?.name === 'AbortError') {
-        setWarning('การประมวลผล AI ใช้เวลานาน กรุณากรอกตัวเลขหน้าปัดด้วยตนเอง');
+        setWarning('การประมวลผลใช้เวลานาน กรุณากรอกตัวเลขหน้าปัดด้วยตนเอง');
       } else {
         console.error('OCR analyze error:', err);
         setWarning('ไม่สามารถเชื่อมต่อระบบอ่านตัวเลขได้ กรุณากรอกตัวเลขด้วยตนเอง');

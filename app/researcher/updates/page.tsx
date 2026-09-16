@@ -64,7 +64,7 @@ export default function ResearcherUpdatesPage() {
             บันทึกการพัฒนาและอัปเดตระบบ (Release Notes)
           </h1>
           <p className="text-xs sm:text-sm text-slate-400 mt-1">
-            ประวัติการปรับปรุงระบบ SmartDom การแก้ไขบั๊ก และการพัฒนาฟังก์ชันการทำงานเวอร์ชันล่าสุด (v2.5.0)
+            ประวัติการปรับปรุงระบบ SmartDom การแก้ไขบั๊ก และการพัฒนาฟังก์ชันการทำงานเวอร์ชันล่าสุด ({SYSTEM_UPDATES[0]?.version || 'v2.6.1'})
           </p>
         </div>
       </div>

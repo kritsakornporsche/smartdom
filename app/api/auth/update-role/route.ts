@@ -11,7 +11,7 @@ export async function POST(request: Request) {
 
   try {
     const { newRole } = await request.json();
-    if (!['tenant', 'guest'].includes(newRole)) {
+    if (!['tenant', 'guest', 'researcher', 'owner'].includes(newRole)) {
       return NextResponse.json({ success: false, message: 'Invalid role' }, { status: 400 });
     }
 

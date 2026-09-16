@@ -90,7 +90,7 @@ export default function ResearcherSidebar({ isOpen, onClose }: ResearcherSidebar
       {/* System Version Footer */}
       <div className="p-4 border-t border-white/10 bg-black/20 text-center shrink-0">
         <p className="text-[10px] font-bold text-white/40">SmartDom Thesis Framework</p>
-        <p className="text-[9px] text-cyan-400/80 font-mono mt-0.5">Version 2.5.0 • Multi-Role RBAC</p>
+        <p className="text-[9px] text-cyan-400/80 font-mono mt-0.5">Version 2.6.1 • Multi-Role RBAC</p>
       </div>
     </div>
   );

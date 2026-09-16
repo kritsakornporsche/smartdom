@@ -42,7 +42,7 @@ export async function POST(request: Request) {
     }
 
     // ── Validate role ─────────────────────────────────────────────────────────
-    const validRoles = ['guest', 'tenant', 'keeper', 'owner'];
+    const validRoles = ['guest', 'tenant', 'keeper', 'owner', 'researcher'];
     const chosenRole = validRoles.includes(role) ? role : 'guest';
 
     if (chosenRole === 'keeper') {

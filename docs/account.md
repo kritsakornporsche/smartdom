@@ -35,15 +35,24 @@
 
 > **คำอธิบาย**: บัญชีผู้เช่า สำหรับตรวจสอบบิลรายเดือน, สแกนชำระเงินค่าน้ำ-ไฟผ่าน QR Code, แจ้งซ่อมพร้อมแนบรูปภาพ และดูสัญญาเช่า
 
+## 4. บัญชีผู้วิจัยระบบ (Researchers)
+
+| ID | อีเมล / ชื่อบัญชี (Email/Username) | รหัสผ่าน (Password) | ชื่อแสดงผล | บทบาท (Role) | การเข้าถึง |
+|---:|:---|:---|:---|:---|:---|
+| 156 | `Researcher` | **`Researcher`** | Researcher | `researcher` | `/researcher` |
+
+> **คำอธิบาย**: บัญชีสำหรับผู้วิจัยและอาจารย์ที่ปรึกษา สำหรับเข้าดูเอกสารสถาปัตยกรรมระบบ แผนภาพ ER Diagram, Sequence Diagrams, Use Case Analysis และ Release Notes
+
 ---
 
-## 4. สรุปข้อมูลการเข้าสู่ระบบแบบรวดเร็ว (Quick Access Cheat Sheet)
+## 5. สรุปข้อมูลการเข้าสู่ระบบแบบรวดเร็ว (Quick Access Cheat Sheet)
 
 ```text
 =====================================================
 ROLE             | USERNAME / EMAIL             | PASSWORD
 =====================================================
 Platform Admin   | admin                        | admin
+Researcher       | Researcher                   | Researcher
 Dorm Owner #1    | kritsakorn801@gmail.com       | smartdom
 Dorm Owner #2    | admin                        | admin
 Tenant           | tenant@gmail.com             | smartdom

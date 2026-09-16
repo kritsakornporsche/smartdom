@@ -140,7 +140,7 @@ export default function PlatformDashboard() {
                       {latestUpdate?.tagline}
                     </h2>
                     <p className="text-white/60 text-xs max-w-2xl leading-relaxed">
-                      สรุปการปรับปรุงระบบ: ระบบแจ้งเตือนสลิปไปยังเจ้าของหอพักทันที, ปลดระวางโมดูลเหรียญ/Wallet, และจัดระเบียบโครงสร้างฐานข้อมูล Single Database เหลือ 21 ตารางมาตรฐาน
+                      {latestUpdate?.tasks ? latestUpdate.tasks.map((t) => t.title).slice(0, 3).join(' • ') : 'สรุปการปรับปรุงและฟีเจอร์ใหม่ล่าสุด'}
                     </p>
                   </div>
 

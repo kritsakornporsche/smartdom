@@ -88,6 +88,7 @@ export default function Navbar() {
                     (session.user as any)?.role === 'platform_admin' ? '/platform' :
                     (session.user as any)?.role === 'owner' ? '/owner' :
                     (session.user as any)?.role === 'keeper' ? '/keeper' :
+                    (session.user as any)?.role === 'researcher' ? '/researcher' :
                     '/tenant'
                   }
                   className={cn(
@@ -214,6 +215,7 @@ export default function Navbar() {
                     (session.user as any)?.role === 'platform_admin' ? '/platform' :
                     (session.user as any)?.role === 'owner' ? '/owner' :
                     (session.user as any)?.role === 'keeper' ? '/keeper' :
+                    (session.user as any)?.role === 'researcher' ? '/researcher' :
                     '/tenant'
                   }
                   onClick={() => setMobileMenuOpen(false)}

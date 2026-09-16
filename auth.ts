@@ -132,13 +132,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 token.dormId = null;
               } else {
                 const dbUsers = await sql`
-                  SELECT u.primary_role, r.role, r.sub_role, r.dorm_id 
+                  SELECT u.role as user_role, u.primary_role, r.role as dorm_role, r.sub_role, r.dorm_id 
                   FROM users u
                   LEFT JOIN user_dorm_roles r ON u.id = r.user_id AND r.is_active = TRUE
-                  WHERE u.email = ${email} LIMIT 1
+                  WHERE LOWER(u.email) = ${email} OR LOWER(u.name) = ${email} LIMIT 1
                 `;
                 if (dbUsers.length > 0) {
-                  token.role = dbUsers[0].role || dbUsers[0].primary_role || 'guest';
+                  token.role = dbUsers[0].user_role || dbUsers[0].dorm_role || dbUsers[0].primary_role || 'guest';
                   token.sub_role = dbUsers[0].sub_role || null;
                   token.dormId = dbUsers[0].dorm_id || null;
                 } else {

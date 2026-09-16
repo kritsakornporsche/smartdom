@@ -18,9 +18,11 @@ const filesToUpload = [
   'app/tenant/billing/page.tsx',
   'app/keeper/components/KeeperSidebar.tsx',
   'app/platform/layout.tsx',
+  'app/platform/page.tsx',
   'app/platform/components/PlatformSidebar.tsx',
   'app/researcher/components/ResearcherNavbar.tsx',
   'app/researcher/updates/page.tsx',
+  'app/updates/page.tsx',
   'app/explore/[dormId]/page.tsx',
   'app/explore/room/[id]/page.tsx',
   'app/owner/settings/page.tsx',
@@ -32,7 +34,13 @@ const filesToUpload = [
   'app/api/contracts/route.ts',
   'app/api/notifications/route.ts',
   'app/api/owner/bookings/route.ts',
-  'app/api/owner/stats/route.ts'
+  'app/api/owner/stats/route.ts',
+  'app/components/Navbar.tsx',
+  'auth.ts',
+  'app/api/auth/signup/route.ts',
+  'app/api/auth/update-role/route.ts',
+  'app/researcher/components/ResearcherSidebar.tsx',
+  'docs/account.md'
 ];
 
 const conn = new Client();

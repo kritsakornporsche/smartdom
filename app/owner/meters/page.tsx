@@ -416,13 +416,13 @@ export default function MetersPage() {
   const isFiltering = searchRoom !== '' || searchDate !== '' || selectedCycle !== 'all' || selectedType !== 'all';
 
   return (
-    <div className="flex-1 overflow-y-auto p-8 relative z-10 text-white min-h-screen bg-[#080F1E]">
+    <div className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 relative z-10 text-white min-h-screen bg-[#0E071D]">
        {/* Top Header */}
        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
          <div>
            <div className="flex items-center gap-3">
              <h1 className="text-2xl lg:text-3xl font-display font-black tracking-tight text-white">ระบบจดมิเตอร์น้ำ-ไฟ</h1>
-             <span className="px-3 py-1 rounded-full text-xs font-black bg-blue-500/20 text-blue-300 border border-blue-500/30">
+             <span className="px-3 py-1 rounded-full text-xs font-black bg-purple-500/20 text-purple-300 border border-purple-500/30">
                รอบล่าสุด: {latestCycle}
              </span>
            </div>
@@ -462,21 +462,21 @@ export default function MetersPage() {
 
        {/* Stats Grid */}
        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
-         <div className="bg-[#0F172A] border border-white/10 p-6 rounded-3xl shadow-sm relative overflow-hidden group">
+         <div className="bg-[#180D2F] border border-purple-500/20 p-6 rounded-3xl shadow-sm relative overflow-hidden group">
            <div className="text-xs font-bold text-white/50 uppercase tracking-wider">ห้องที่บันทึกแล้ว</div>
            <div className="mt-3 flex items-baseline gap-2">
              <span className="text-3xl font-display font-black text-white">{stats.recordedRooms}</span>
              <span className="text-xs text-white/40 font-medium">/ {rooms.length} ห้อง</span>
            </div>
          </div>
-         <div className="bg-[#0F172A] border border-white/10 p-6 rounded-3xl shadow-sm relative overflow-hidden group">
+         <div className="bg-[#180D2F] border border-purple-500/20 p-6 rounded-3xl shadow-sm relative overflow-hidden group">
            <div className="text-xs font-bold text-blue-400 uppercase tracking-wider">หน่วยน้ำประปารวม</div>
            <div className="mt-3 flex items-baseline gap-2">
              <span className="text-3xl font-display font-black text-blue-400">{stats.waterUnits.toLocaleString()}</span>
              <span className="text-xs text-blue-400/60 font-medium">หน่วย (ยูนิต)</span>
            </div>
          </div>
-         <div className="bg-[#0F172A] border border-white/10 p-6 rounded-3xl shadow-sm relative overflow-hidden group">
+         <div className="bg-[#180D2F] border border-purple-500/20 p-6 rounded-3xl shadow-sm relative overflow-hidden group">
            <div className="text-xs font-bold text-orange-400 uppercase tracking-wider">หน่วยไฟฟ้ารวม</div>
            <div className="mt-3 flex items-baseline gap-2">
              <span className="text-3xl font-display font-black text-orange-400">{stats.elecUnits.toLocaleString()}</span>
@@ -486,7 +486,7 @@ export default function MetersPage() {
        </div>
 
        {/* Advanced Search & Multi-filter Suite */}
-       <div className="bg-[#0F172A] border border-white/10 rounded-3xl p-6 mb-6 shadow-sm">
+       <div className="bg-[#180D2F] border border-purple-500/20 rounded-3xl p-6 mb-6 shadow-sm">
          <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
            
            {/* Room Search */}
@@ -500,7 +500,7 @@ export default function MetersPage() {
                  placeholder="พิมพ์เลขห้อง เช่น 101, 202..."
                  value={searchRoom}
                  onChange={e => setSearchRoom(e.target.value)}
-                 className="w-full bg-[#1E293B] border border-white/10 rounded-2xl pl-10 pr-10 py-2.5 text-xs text-white placeholder-white/40 font-bold outline-none focus:ring-2 focus:ring-blue-500/30"
+                 className="w-full bg-[#0E071D] border border-purple-500/20 rounded-2xl pl-10 pr-10 py-2.5 text-xs text-white placeholder-white/40 font-bold outline-none focus:ring-2 focus:ring-blue-500/30"
                />
                <svg className="w-4 h-4 text-white/40 absolute left-3.5 top-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -526,7 +526,7 @@ export default function MetersPage() {
                  type="month"
                  value={searchDate}
                  onChange={e => setSearchDate(e.target.value)}
-                 className="w-full bg-[#1E293B] border border-white/10 rounded-2xl px-4 py-2 text-xs text-white font-bold outline-none focus:ring-2 focus:ring-blue-500/30"
+                 className="w-full bg-[#0E071D] border border-purple-500/20 rounded-2xl px-4 py-2 text-xs text-white font-bold outline-none focus:ring-2 focus:ring-blue-500/30"
                />
                {searchDate && (
                  <button
@@ -548,7 +548,7 @@ export default function MetersPage() {
              <select
                value={selectedCycle}
                onChange={e => setSelectedCycle(e.target.value)}
-               className="w-full bg-[#1E293B] border border-white/10 rounded-2xl px-4 py-2.5 text-xs text-white font-bold outline-none focus:ring-2 focus:ring-blue-500/30 cursor-pointer"
+               className="w-full bg-[#0E071D] border border-purple-500/20 rounded-2xl px-4 py-2.5 text-xs text-white font-bold outline-none focus:ring-2 focus:ring-blue-500/30 cursor-pointer"
              >
                <option value="all">ทุกรอบบิลทั้งหมด ({readings.length} รายการ)</option>
                {billingCycles.map(c => (
@@ -565,7 +565,7 @@ export default function MetersPage() {
              <select
                value={pageSize}
                onChange={e => setPageSize(Number(e.target.value))}
-               className="w-full bg-[#1E293B] border border-white/10 rounded-2xl px-3 py-2.5 text-xs text-white font-bold outline-none focus:ring-2 focus:ring-blue-500/30 cursor-pointer"
+               className="w-full bg-[#0E071D] border border-purple-500/20 rounded-2xl px-3 py-2.5 text-xs text-white font-bold outline-none focus:ring-2 focus:ring-blue-500/30 cursor-pointer"
              >
                <option value={10}>10 รายการ</option>
                <option value={20}>20 รายการ</option>
@@ -578,7 +578,7 @@ export default function MetersPage() {
          </div>
 
          {/* Second Filter Row: Meter Type Tabs & Filter Status */}
-         <div className="mt-4 pt-4 border-t border-white/10 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+         <div className="mt-4 pt-4 border-t border-purple-500/20 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
            <div className="flex items-center gap-2">
              <span className="text-[11px] font-bold text-white/50 uppercase mr-1">ประเภทมิเตอร์:</span>
              {(['all', 'Water', 'Electricity'] as const).map(t => (
@@ -660,7 +660,7 @@ export default function MetersPage() {
        )}
 
        {/* Main Table Container */}
-       <div className="bg-[#0F172A] rounded-3xl border border-white/10 shadow-xl overflow-hidden backdrop-blur-xl mb-6">
+       <div className="bg-[#180D2F] rounded-3xl border border-purple-500/20 shadow-xl overflow-hidden backdrop-blur-xl mb-6">
          {loading ? (
             <div className="p-20 text-center flex flex-col items-center gap-4">
               <div className="w-10 h-10 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
@@ -692,7 +692,7 @@ export default function MetersPage() {
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="border-b border-white/10 text-white/50 text-xs uppercase tracking-wider bg-white/5">
+                  <tr className="border-b border-purple-500/20 text-white/50 text-xs uppercase tracking-wider bg-white/5">
                     <th className="py-4 px-6">ห้อง</th>
                     <th className="py-4 px-6">ประเภท</th>
                     <th className="py-4 px-6">รอบบิล</th>
@@ -732,7 +732,7 @@ export default function MetersPage() {
                             <span className={`h-8 w-10 border rounded-lg flex items-center justify-center font-black text-xs transition-colors ${
                               isSelected 
                                 ? 'bg-blue-600 text-white border-blue-400' 
-                                : 'bg-white/5 border-white/10 text-white group-hover:border-blue-400/40'
+                                : 'bg-white/5 border-purple-500/20 text-white group-hover:border-blue-400/40'
                             }`}>
                               {r.room_number}
                             </span>
@@ -778,7 +778,7 @@ export default function MetersPage() {
 
          {/* Pagination Controls Section */}
          {pageSize > 0 && totalPages > 1 && (
-           <div className="px-6 py-4 bg-[#0B132B] border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
+           <div className="px-6 py-4 bg-[#180D2F] border-t border-purple-500/20 flex flex-col sm:flex-row items-center justify-between gap-4">
              <div className="text-xs text-white/50 font-medium">
                แสดงรายการที่ <strong className="text-white font-bold">{(currentPage - 1) * pageSize + 1}</strong> ถึง{' '}
                <strong className="text-white font-bold">{Math.min(currentPage * pageSize, filteredReadings.length)}</strong> จากทั้งหมด{' '}
@@ -789,7 +789,7 @@ export default function MetersPage() {
                <button
                  onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                  disabled={currentPage === 1}
-                 className="px-3 py-1.5 rounded-xl border border-white/10 text-xs font-bold text-white/70 hover:text-white hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer"
+                 className="px-3 py-1.5 rounded-xl border border-purple-500/20 text-xs font-bold text-white/70 hover:text-white hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer"
                >
                  ‹ ก่อนหน้า
                </button>
@@ -808,7 +808,7 @@ export default function MetersPage() {
                          className={`h-8 w-8 rounded-xl text-xs font-black transition-all cursor-pointer ${
                            currentPage === pageNum
                              ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30'
-                             : 'border border-white/10 text-white/60 hover:bg-white/10 hover:text-white'
+                             : 'border border-purple-500/20 text-white/60 hover:bg-white/10 hover:text-white'
                          }`}
                        >
                          {pageNum}
@@ -820,7 +820,7 @@ export default function MetersPage() {
                <button
                  onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
                  disabled={currentPage === totalPages}
-                 className="px-3 py-1.5 rounded-xl border border-white/10 text-xs font-bold text-white/70 hover:text-white hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer"
+                 className="px-3 py-1.5 rounded-xl border border-purple-500/20 text-xs font-bold text-white/70 hover:text-white hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer"
                >
                  ถัดไป ›
                </button>
@@ -829,7 +829,7 @@ export default function MetersPage() {
          )}
 
          {/* Prominent Bottom Action Bar Under Table */}
-         <div className="p-6 bg-[#081026] border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
+         <div className="p-6 bg-[#130924] border-t border-purple-500/20 flex flex-col sm:flex-row items-center justify-between gap-4">
            <div className="flex items-center gap-3 text-xs text-white/60">
              <span className="h-3 w-3 rounded-full bg-emerald-500 animate-ping"></span>
              <span>สิ้นสุดตารางข้อมูลมิเตอร์ • พร้อมบันทึกรอบเดือนใหม่ถัดไป: <strong>{getNextMonthCycle(latestCycle)}</strong></span>
@@ -837,13 +837,13 @@ export default function MetersPage() {
            <div className="flex flex-wrap gap-3 w-full sm:w-auto">
              <button
                onClick={() => handleOpenNewMonthSingle()}
-               className="flex-1 sm:flex-initial bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs font-black px-6 py-3.5 rounded-2xl shadow-xl shadow-blue-600/30 transition-all transform hover:scale-105 active:scale-95 flex items-center justify-center gap-2 cursor-pointer border border-blue-400/30"
+               className="flex-1 sm:flex-initial bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white text-xs font-black px-5 py-3 rounded-xl shadow-lg shadow-purple-600/25 transition-all transform hover:scale-105 active:scale-95 flex items-center justify-center gap-2 cursor-pointer border border-blue-400/30"
              >
                <span className="text-base">➕</span> จดมิเตอร์เดือนใหม่ ({getNextMonthCycle(latestCycle)})
              </button>
              <button
                onClick={() => handleOpenBatchModal(false)}
-               className="flex-1 sm:flex-initial bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-xs font-black px-6 py-3.5 rounded-2xl shadow-xl shadow-emerald-600/30 transition-all transform hover:scale-105 active:scale-95 flex items-center justify-center gap-2 cursor-pointer border border-emerald-400/30"
+               className="flex-1 sm:flex-initial bg-gradient-to-r from-purple-600 via-purple-500 to-amber-500 hover:from-purple-500 hover:to-amber-400 text-white text-xs font-black px-5 py-3 rounded-xl shadow-lg shadow-purple-600/25 transition-all transform hover:scale-105 active:scale-95 flex items-center justify-center gap-2 cursor-pointer border border-emerald-400/30"
              >
                <span className="text-base">⚡</span> จดมิเตอร์ด่วนทุกห้อง ({getNextMonthCycle(latestCycle)})
              </button>
@@ -851,190 +851,190 @@ export default function MetersPage() {
          </div>
        </div>
 
-       {/* Modal: Single Meter Entry */}
-       {showModal && (
-         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowModal(false)}></div>
-           <div className="bg-[#0F172A] rounded-[32px] p-8 max-w-md w-full shadow-2xl border border-white/10 relative z-10 animate-in fade-in zoom-in duration-200">
-             <div className="flex justify-between items-center mb-6 pb-4 border-b border-white/10">
-               <div>
-                 <h2 className="text-xl font-display font-black text-white">บันทึกมิเตอร์รอบเดือนใหม่</h2>
-                 <p className="text-xs text-white/50 mt-0.5">ระบุเลขมิเตอร์ห้องพักรายบุคคล</p>
-               </div>
-               <button onClick={() => setShowModal(false)} className="text-white/40 hover:text-white transition-colors cursor-pointer p-1">
-                 ✕
-               </button>
-             </div>
+        {/* Modal: Single Meter Entry */}
+        {showModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4">
+            <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setShowModal(false)}></div>
+            <div className="bg-[#180D2F] rounded-3xl p-5 sm:p-7 max-w-md w-full shadow-2xl border border-purple-500/25 relative z-10 animate-in fade-in zoom-in duration-200 max-h-[92vh] overflow-y-auto">
+              <div className="flex justify-between items-center mb-5 pb-3 border-b border-purple-500/20">
+                <div>
+                  <h2 className="text-lg font-display font-black text-white">บันทึกมิเตอร์รอบเดือนใหม่</h2>
+                  <p className="text-xs text-purple-300/70 mt-0.5">ระบุเลขมิเตอร์ห้องพักรายบุคคล</p>
+                </div>
+                <button onClick={() => setShowModal(false)} className="text-white/40 hover:text-white transition-colors cursor-pointer p-1">
+                  ✕
+                </button>
+              </div>
 
-             <form onSubmit={handleSubmitSingle} className="space-y-4">
-               <div>
-                 <label className="block text-xs font-bold uppercase tracking-wider text-white/60 mb-1.5">เลือกรอบบิล (YYYY-MM)</label>
-                 <input 
-                   type="month" 
-                   required 
-                   value={form.billing_cycle} 
-                   onChange={e => setForm({...form, billing_cycle: e.target.value})} 
-                   className="w-full bg-[#1E293B] border border-white/10 rounded-2xl px-4 py-3 text-sm text-white font-bold outline-none focus:ring-2 focus:ring-blue-500" 
-                 />
-               </div>
+              <form onSubmit={handleSubmitSingle} className="space-y-4">
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-purple-300/80 mb-1.5">เลือกรอบบิล (YYYY-MM)</label>
+                  <input 
+                    type="month" 
+                    required 
+                    value={form.billing_cycle} 
+                    onChange={e => setForm({...form, billing_cycle: e.target.value})} 
+                    className="w-full bg-[#0E071D] border border-purple-500/30 rounded-xl px-4 py-2.5 text-sm text-white font-bold outline-none focus:ring-2 focus:ring-purple-500" 
+                  />
+                </div>
 
-               <div>
-                 <label className="block text-xs font-bold uppercase tracking-wider text-white/60 mb-1.5">ห้องพัก</label>
-                 <select 
-                   required 
-                   value={form.room_id} 
-                   onChange={e => handleRoomSelectChange(e.target.value)} 
-                   className="w-full bg-[#1E293B] border border-white/10 rounded-2xl px-4 py-3 text-sm text-white font-bold outline-none focus:ring-2 focus:ring-blue-500"
-                 >
-                   <option value="">-- เลือกห้องพัก --</option>
-                   {rooms.map((room: any) => (
-                     <option key={room.id} value={room.id}>ห้อง {room.room_number}</option>
-                   ))}
-                 </select>
-               </div>
-               
-               <div>
-                 <label className="block text-xs font-bold uppercase tracking-wider text-white/60 mb-1.5">ประเภทมิเตอร์</label>
-                 <div className="grid grid-cols-2 gap-2">
-                   <button
-                     type="button"
-                     onClick={() => handleTypeSelectChange('Water')}
-                     className={`py-2.5 rounded-xl text-xs font-bold transition-all ${
-                       form.type === 'Water'
-                         ? 'bg-blue-600 text-white shadow-md'
-                         : 'bg-white/5 text-white/60 hover:bg-white/10'
-                     }`}
-                   >
-                     💧 น้ำประปา
-                   </button>
-                   <button
-                     type="button"
-                     onClick={() => handleTypeSelectChange('Electricity')}
-                     className={`py-2.5 rounded-xl text-xs font-bold transition-all ${
-                       form.type === 'Electricity'
-                         ? 'bg-orange-600 text-white shadow-md'
-                         : 'bg-white/5 text-white/60 hover:bg-white/10'
-                     }`}
-                   >
-                     ⚡ ไฟฟ้า
-                   </button>
-                 </div>
-               </div>
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-purple-300/80 mb-1.5">ห้องพัก</label>
+                  <select 
+                    required 
+                    value={form.room_id} 
+                    onChange={e => handleRoomSelectChange(e.target.value)} 
+                    className="w-full bg-[#0E071D] border border-purple-500/30 rounded-xl px-4 py-2.5 text-sm text-white font-bold outline-none focus:ring-2 focus:ring-purple-500"
+                  >
+                    <option value="">-- เลือกห้องพัก --</option>
+                    {rooms.map((room: any) => (
+                      <option key={room.id} value={room.id}>ห้อง {room.room_number}</option>
+                    ))}
+                  </select>
+                </div>
+                
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-purple-300/80 mb-1.5">ประเภทมิเตอร์</label>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => handleTypeSelectChange('Water')}
+                      className={`py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                        form.type === 'Water'
+                          ? 'bg-purple-600 text-white shadow-md'
+                          : 'bg-white/5 text-white/60 hover:bg-white/10'
+                      }`}
+                    >
+                      💧 น้ำประปา
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleTypeSelectChange('Electricity')}
+                      className={`py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                        form.type === 'Electricity'
+                          ? 'bg-amber-500 text-slate-950 font-black shadow-md'
+                          : 'bg-white/5 text-white/60 hover:bg-white/10'
+                      }`}
+                    >
+                      ⚡ ไฟฟ้า
+                    </button>
+                  </div>
+                </div>
 
-               <div className="grid grid-cols-2 gap-4 pt-2">
-                 <div>
-                   <label className="block text-xs font-bold uppercase tracking-wider text-white/60 mb-1.5">เลขครั้งก่อน</label>
-                   <input 
-                     type="number" 
-                     step="0.01" 
-                     value={form.previous_reading} 
-                     onChange={e => setForm({...form, previous_reading: e.target.value})} 
-                     className="w-full bg-[#1E293B] border border-white/10 rounded-2xl px-4 py-3 text-sm text-white font-mono outline-none focus:ring-2 focus:ring-blue-500" 
-                     placeholder="0" 
-                   />
-                 </div>
-                 <div>
-                   <label className="block text-xs font-bold uppercase tracking-wider text-white/60 mb-1.5">เลขครั้งนี้ (ใหม่)</label>
-                   <input 
-                     type="number" 
-                     step="0.01" 
-                     required 
-                     value={form.current_reading} 
-                     onChange={e => setForm({...form, current_reading: e.target.value})} 
-                     className="w-full bg-[#1E293B] border-2 border-emerald-500/40 rounded-2xl px-4 py-3 text-sm text-emerald-400 font-mono font-black outline-none focus:ring-2 focus:ring-emerald-500" 
-                     placeholder="0.00"
-                   />
-                 </div>
-               </div>
+                <div className="grid grid-cols-2 gap-3 pt-1">
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-purple-300/80 mb-1.5">เลขครั้งก่อน</label>
+                    <input 
+                      type="number" 
+                      step="any" 
+                      value={form.previous_reading} 
+                      onChange={e => setForm({...form, previous_reading: e.target.value})} 
+                      className="w-full bg-[#0E071D] border border-purple-500/30 rounded-xl px-3 py-2 text-sm text-white font-mono outline-none" 
+                      placeholder="0" 
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-purple-300/80 mb-1.5">เลขครั้งนี้ (ใหม่)</label>
+                    <input 
+                      type="number" 
+                      step="any" 
+                      required 
+                      value={form.current_reading} 
+                      onChange={e => setForm({...form, current_reading: e.target.value})} 
+                      className="w-full bg-[#0E071D] border-2 border-amber-400/50 rounded-xl px-3 py-2 text-sm text-amber-300 font-mono font-black outline-none focus:border-amber-400" 
+                      placeholder="0.00"
+                    />
+                  </div>
+                </div>
 
-               {form.current_reading && form.previous_reading && (
-                 <div className="bg-white/5 p-3 rounded-xl flex items-center justify-between text-xs">
-                   <span className="text-white/60">จำนวนหน่วยที่ใช้ในรอบนี้:</span>
-                   <span className="font-mono font-black text-emerald-400 text-sm">
-                     {Math.max(0, Number(form.current_reading) - Number(form.previous_reading))} ยูนิต
-                   </span>
-                 </div>
-               )}
+                {form.current_reading && form.previous_reading && (
+                  <div className="bg-[#0E071D] p-3 rounded-xl flex items-center justify-between text-xs border border-purple-500/20">
+                    <span className="text-purple-300/80">ใช้ไปในรอบนี้:</span>
+                    <span className="font-mono font-black text-emerald-400 text-sm">
+                      {Math.max(0, Number(form.current_reading) - Number(form.previous_reading)).toFixed(2)} ยูนิต
+                    </span>
+                  </div>
+                )}
 
-               <div className="flex gap-3 pt-4">
-                 <button 
-                   type="button" 
-                   onClick={() => setShowModal(false)} 
-                   className="flex-1 py-3 rounded-2xl bg-white/5 hover:bg-white/10 transition-colors text-xs font-bold text-white/60"
-                 >
-                   ยกเลิก
-                 </button>
-                 <button 
-                   type="submit" 
-                   disabled={submitting} 
-                   className="flex-1 py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 transition-all font-bold text-xs text-white shadow-lg shadow-emerald-600/20"
-                 >
-                   {submitting ? 'กำลังบันทึก...' : 'บันทึกมิเตอร์'}
-                 </button>
-               </div>
-             </form>
-           </div>
-         </div>
-       )}
+                <div className="flex gap-2.5 pt-3">
+                  <button 
+                    type="button" 
+                    onClick={() => setShowModal(false)} 
+                    className="flex-1 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 transition-colors text-xs font-bold text-white/60 cursor-pointer"
+                  >
+                    ยกเลิก
+                  </button>
+                  <button 
+                    type="submit" 
+                    disabled={submitting} 
+                    className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-amber-500 hover:from-purple-500 hover:to-amber-400 disabled:opacity-50 transition-all font-bold text-xs text-white shadow-lg shadow-purple-600/20 cursor-pointer"
+                  >
+                    {submitting ? 'กำลังบันทึก...' : 'บันทึกมิเตอร์'}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
 
-       {/* Modal: Batch Quick Entry Sheet */}
-       {showBatchModal && (
-         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowBatchModal(false)}></div>
-           <div className="bg-[#0F172A] rounded-[36px] p-8 max-w-4xl w-full max-h-[90vh] flex flex-col shadow-2xl border border-white/10 relative z-10 animate-in fade-in zoom-in duration-200">
-             <div className="flex justify-between items-center mb-6 pb-4 border-b border-white/10 shrink-0">
-               <div>
-                 <div className="flex items-center gap-3">
-                   <h2 className="text-xl font-display font-black text-white">
-                     ⚡ จดมิเตอร์ด่วนรอบเดือนใหม่ {selectedRoomIds.length > 0 ? `(เฉพาะ ${batchItems.length} ห้องที่เลือก)` : '(ทุกห้อง)'}
-                   </h2>
-                   <span className="px-3 py-1 rounded-full text-xs font-black bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                     รอบบิล {batchCycle}
-                   </span>
-                 </div>
-                 <p className="text-xs text-white/50 mt-1">กรอกเลขมิเตอร์ครั้งนี้ของแต่ละห้อง ระบบจะดึงเลขครั้งก่อนให้อัตโนมัติ</p>
-               </div>
-               <button onClick={() => setShowBatchModal(false)} className="text-white/40 hover:text-white transition-colors cursor-pointer p-1">
-                 ✕
-               </button>
-             </div>
+        {/* Modal: Batch Quick Entry Sheet (Clean, Responsive, Mobile Cards) */}
+        {showBatchModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-0 sm:p-4">
+            <div className="absolute inset-0 bg-black/75 backdrop-blur-sm" onClick={() => setShowBatchModal(false)}></div>
+            <div className="bg-[#180D2F] sm:rounded-3xl p-4 sm:p-6 w-full max-w-4xl h-[100dvh] sm:h-auto sm:max-h-[90vh] flex flex-col shadow-2xl border border-purple-500/25 relative z-10 animate-in fade-in zoom-in duration-200">
+              
+              {/* Header */}
+              <div className="flex justify-between items-center mb-4 pb-3 border-b border-purple-500/20 shrink-0">
+                <div>
+                  <div className="flex items-center gap-2 sm:gap-3">
+                    <h2 className="text-base sm:text-lg font-display font-black text-white">
+                      ⚡ จดมิเตอร์ด่วน {selectedRoomIds.length > 0 ? `(${batchItems.length} ห้องที่เลือก)` : `(ทั้งหมด ${batchItems.length} ห้อง)`}
+                    </h2>
+                    <span className="px-2.5 py-0.5 rounded-full text-[11px] font-black bg-purple-500/20 text-purple-300 border border-purple-500/30">
+                      รอบบิล {batchCycle}
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-purple-300/70 mt-0.5">กรอกเลขมิเตอร์ครั้งนี้ของแต่ละห้อง หรือกดปุ่ม 📸 เพื่อถ่ายภาพให้ AI อ่าน</p>
+                </div>
+                <button onClick={() => setShowBatchModal(false)} className="w-8 h-8 rounded-xl bg-white/5 hover:bg-white/10 text-white/50 hover:text-white flex items-center justify-center transition-colors cursor-pointer">
+                  ✕
+                </button>
+              </div>
 
-             <div className="mb-4 flex items-center gap-3 shrink-0">
-               <label className="text-xs font-bold text-white/60">เลือกรอบบิล:</label>
-               <input 
-                 type="month" 
-                 value={batchCycle} 
-                 onChange={e => setBatchCycle(e.target.value)} 
-                 className="bg-[#1E293B] border border-white/10 rounded-xl px-3 py-1.5 text-xs text-white font-bold outline-none"
-               />
-             </div>
+              {/* Cycle Selector Bar */}
+              <div className="mb-3 flex items-center gap-2 shrink-0">
+                <label className="text-xs font-bold text-purple-300/80">เลือกรอบบิล:</label>
+                <input 
+                  type="month" 
+                  value={batchCycle} 
+                  onChange={e => setBatchCycle(e.target.value)} 
+                  className="bg-[#0E071D] border border-purple-500/30 rounded-xl px-3 py-1.5 text-xs text-white font-bold outline-none focus:border-amber-400"
+                />
+              </div>
 
-             {/* Batch Table Sheet */}
-             <div className="flex-1 overflow-y-auto border border-white/10 rounded-2xl">
-               <table className="w-full text-left border-collapse text-xs">
-                 <thead className="bg-[#1E293B] sticky top-0 z-10 text-white/60">
-                   <tr className="border-b border-white/10">
-                     <th className="py-3 px-4">ห้อง</th>
-                     <th className="py-3 px-4 text-center">💧 เลขน้ำก่อนหน้า</th>
-                     <th className="py-3 px-4 text-center">💧 เลขน้ำครั้งนี้ (ใหม่)</th>
-                     <th className="py-3 px-4 text-center">⚡ เลขไฟก่อนหน้า</th>
-                     <th className="py-3 px-4 text-center">⚡ เลขไฟครั้งนี้ (ใหม่)</th>
-                   </tr>
-                 </thead>
-                 <tbody className="divide-y divide-white/5">
-                    {batchItems.map((item, idx) => (
-                      <tr key={item.room_id} className="hover:bg-white/5">
-                        <td className="py-3 px-4 font-black text-white text-sm">
-                          ห้อง {item.room_number}
-                        </td>
-                        <td className="py-3 px-4 text-center font-mono text-white/60">
-                          {item.water_prev.toFixed(2)}
-                        </td>
-                        <td className="py-3 px-4 text-center">
-                          <div className="inline-flex items-center gap-1.5 justify-center">
+              {/* Sheet Container: Cards on Mobile, Table on Desktop */}
+              <div className="flex-1 min-h-0 overflow-y-auto rounded-2xl border border-purple-500/20">
+                
+                {/* Mobile Responsive Cards (md:hidden) */}
+                <div className="md:hidden divide-y divide-purple-500/15 p-2 space-y-2.5">
+                  {batchItems.map((item, idx) => (
+                    <div key={item.room_id} className="p-3 rounded-2xl bg-[#0E071D] border border-purple-500/20 space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="font-black text-white text-sm sm:text-base">ห้อง {item.room_number}</span>
+                        <span className="text-[10px] text-purple-300/60 font-mono">ห้องพัก</span>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-2">
+                        {/* Water Input Box */}
+                        <div className="p-2 rounded-xl bg-[#180D2F] border border-purple-500/20 space-y-1">
+                          <div className="flex items-center justify-between text-[10px]">
+                            <span className="font-bold text-purple-300">💧 น้ำ</span>
+                            <span className="text-purple-300/60 font-mono">เดิม {item.water_prev.toFixed(1)}</span>
+                          </div>
+                          <div className="flex items-center gap-1">
                             <input 
                               type="number" 
-                              step="0.01" 
+                              step="any" 
                               placeholder={`${item.water_prev}`} 
                               value={item.water_curr}
                               onChange={e => {
@@ -1045,7 +1045,114 @@ export default function MetersPage() {
                                   return copy;
                                 });
                               }}
-                              className="w-24 bg-[#1E293B] border border-blue-500/40 rounded-lg px-2 py-1.5 text-center font-mono font-bold text-blue-300 outline-none focus:ring-2 focus:ring-blue-500"
+                              className="w-full bg-[#0E071D] border border-purple-400/40 rounded-lg px-2 py-1 text-center font-mono font-bold text-amber-300 text-xs outline-none focus:border-amber-400"
+                            />
+                            <button
+                              type="button"
+                              title="ถ่ายรูปมิเตอร์น้ำ"
+                              onClick={() => setCameraModal({
+                                isOpen: true,
+                                roomNumber: item.room_number,
+                                roomId: item.room_id,
+                                meterType: 'Water',
+                                previousReading: item.water_prev,
+                                batchIndex: idx
+                              })}
+                              className={`p-1.5 rounded-lg border text-xs cursor-pointer shrink-0 transition-all ${
+                                item.water_photo 
+                                  ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40' 
+                                  : 'bg-purple-500/10 hover:bg-purple-500/25 text-purple-300 border-purple-500/20'
+                              }`}
+                            >
+                              📸
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Electricity Input Box */}
+                        <div className="p-2 rounded-xl bg-[#180D2F] border border-purple-500/20 space-y-1">
+                          <div className="flex items-center justify-between text-[10px]">
+                            <span className="font-bold text-amber-400">⚡ ไฟ</span>
+                            <span className="text-amber-300/60 font-mono">เดิม {item.elec_prev.toFixed(1)}</span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <input 
+                              type="number" 
+                              step="any" 
+                              placeholder={`${item.elec_prev}`} 
+                              value={item.elec_curr}
+                              onChange={e => {
+                                const val = e.target.value;
+                                setBatchItems(prev => {
+                                  const copy = [...prev];
+                                  copy[idx].elec_curr = val;
+                                  return copy;
+                                });
+                              }}
+                              className="w-full bg-[#0E071D] border border-amber-500/40 rounded-lg px-2 py-1 text-center font-mono font-bold text-amber-300 text-xs outline-none focus:border-amber-400"
+                            />
+                            <button
+                              type="button"
+                              title="ถ่ายรูปมิเตอร์ไฟ"
+                              onClick={() => setCameraModal({
+                                isOpen: true,
+                                roomNumber: item.room_number,
+                                roomId: item.room_id,
+                                meterType: 'Electricity',
+                                previousReading: item.elec_prev,
+                                batchIndex: idx
+                              })}
+                              className={`p-1.5 rounded-lg border text-xs cursor-pointer shrink-0 transition-all ${
+                                item.elec_photo 
+                                  ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40' 
+                                  : 'bg-amber-500/10 hover:bg-amber-500/25 text-amber-300 border-amber-500/20'
+                              }`}
+                            >
+                              📸
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Desktop Table (hidden md:table) */}
+                <table className="hidden md:table w-full text-left border-collapse text-xs">
+                  <thead className="bg-[#0E071D] sticky top-0 z-10 text-purple-300/80">
+                    <tr className="border-b border-purple-500/20">
+                      <th className="py-2.5 px-4 font-bold">ห้อง</th>
+                      <th className="py-2.5 px-4 text-center font-bold">💧 เลขน้ำก่อนหน้า</th>
+                      <th className="py-2.5 px-4 text-center font-bold">💧 เลขน้ำครั้งนี้ (ใหม่)</th>
+                      <th className="py-2.5 px-4 text-center font-bold">⚡ เลขไฟก่อนหน้า</th>
+                      <th className="py-2.5 px-4 text-center font-bold">⚡ เลขไฟครั้งนี้ (ใหม่)</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-purple-500/10 bg-[#180D2F]">
+                    {batchItems.map((item, idx) => (
+                      <tr key={item.room_id} className="hover:bg-purple-500/5">
+                        <td className="py-2.5 px-4 font-black text-white text-sm">
+                          ห้อง {item.room_number}
+                        </td>
+                        <td className="py-2.5 px-4 text-center font-mono text-purple-300/60">
+                          {item.water_prev.toFixed(2)}
+                        </td>
+                        <td className="py-2.5 px-4 text-center">
+                          <div className="inline-flex items-center gap-1.5 justify-center">
+                            <input 
+                              type="number" 
+                              step="any" 
+                              placeholder={`${item.water_prev}`} 
+                              value={item.water_curr}
+                              onChange={e => {
+                                const val = e.target.value;
+                                setBatchItems(prev => {
+                                  const copy = [...prev];
+                                  copy[idx].water_curr = val;
+                                  return copy;
+                                });
+                              }}
+                              className="w-24 bg-[#0E071D] border border-purple-400/40 rounded-lg px-2 py-1 text-center font-mono font-bold text-amber-300 text-xs outline-none focus:border-amber-400"
                             />
                             <button
                               type="button"
@@ -1061,21 +1168,21 @@ export default function MetersPage() {
                               className={`p-1.5 rounded-lg border transition-all text-xs cursor-pointer ${
                                 item.water_photo 
                                   ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40' 
-                                  : 'bg-white/5 hover:bg-blue-500/20 text-white/60 hover:text-blue-400 border-white/10'
+                                  : 'bg-purple-500/10 hover:bg-purple-500/25 text-purple-300 border-purple-500/20'
                               }`}
                             >
                               📸
                             </button>
                           </div>
                         </td>
-                        <td className="py-3 px-4 text-center font-mono text-white/60">
+                        <td className="py-2.5 px-4 text-center font-mono text-purple-300/60">
                           {item.elec_prev.toFixed(2)}
                         </td>
-                        <td className="py-3 px-4 text-center">
+                        <td className="py-2.5 px-4 text-center">
                           <div className="inline-flex items-center gap-1.5 justify-center">
                             <input 
                               type="number" 
-                              step="0.01" 
+                              step="any" 
                               placeholder={`${item.elec_prev}`} 
                               value={item.elec_curr}
                               onChange={e => {
@@ -1086,7 +1193,7 @@ export default function MetersPage() {
                                   return copy;
                                 });
                               }}
-                              className="w-24 bg-[#1E293B] border border-orange-500/40 rounded-lg px-2 py-1.5 text-center font-mono font-bold text-orange-300 outline-none focus:ring-2 focus:ring-orange-500"
+                              className="w-24 bg-[#0E071D] border border-amber-500/40 rounded-lg px-2 py-1 text-center font-mono font-bold text-amber-300 text-xs outline-none focus:border-amber-400"
                             />
                             <button
                               type="button"
@@ -1102,7 +1209,7 @@ export default function MetersPage() {
                               className={`p-1.5 rounded-lg border transition-all text-xs cursor-pointer ${
                                 item.elec_photo 
                                   ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40' 
-                                  : 'bg-white/5 hover:bg-orange-500/20 text-white/60 hover:text-orange-400 border-white/10'
+                                  : 'bg-white/5 hover:bg-orange-500/20 text-white/60 hover:text-orange-400 border-purple-500/20'
                               }`}
                             >
                               📸
@@ -1115,26 +1222,26 @@ export default function MetersPage() {
                </table>
              </div>
 
-             <div className="flex gap-3 pt-6 shrink-0">
-               <button 
-                 type="button" 
-                 onClick={() => setShowBatchModal(false)} 
-                 className="flex-1 py-3 rounded-2xl bg-white/5 hover:bg-white/10 transition-colors text-xs font-bold text-white/60 cursor-pointer"
-               >
-                 ยกเลิก
-               </button>
-               <button 
-                 type="button"
-                 onClick={handleSubmitBatch}
-                 disabled={submitting} 
-                 className="flex-2 py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 transition-all font-bold text-xs text-white shadow-lg shadow-emerald-600/20 cursor-pointer"
-               >
-                 {submitting ? 'กำลังบันทึกข้อมูล...' : `บันทึกมิเตอร์รอบเดือน ${batchCycle} ทั้งหมด (${batchItems.length} ห้อง)`}
-               </button>
-             </div>
-           </div>
-         </div>
-       )}
+             <div className="flex gap-2.5 pt-4 shrink-0">
+                <button 
+                  type="button" 
+                  onClick={() => setShowBatchModal(false)} 
+                  className="px-4 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 transition-colors text-xs font-bold text-white/60 cursor-pointer"
+                >
+                  ยกเลิก
+                </button>
+                <button 
+                  type="button" 
+                  onClick={handleSubmitBatch} 
+                  disabled={submitting} 
+                  className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-amber-500 hover:from-purple-500 hover:to-amber-400 disabled:opacity-50 transition-all font-bold text-xs text-white shadow-lg shadow-purple-600/20 cursor-pointer"
+                >
+                  {submitting ? 'กำลังบันทึกข้อมูล...' : `บันทึกทั้งหมด (${batchItems.length} ห้อง)`}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
     
         {/* AI & Camera Meter Reading Modal */}
         {cameraModal && cameraModal.isOpen && (

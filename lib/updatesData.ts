@@ -61,6 +61,17 @@ export const SYSTEM_UPDATES: DailyUpdate[] = [
       },
       {
         id: '2026-09-16-5',
+        title: 'ระบบจัดเก็บภาพถ่ายมิเตอร์เป็นหลักฐานถาวร พร้อมระบบ AI Auto-fill & Quick Fill',
+        category: 'Feature',
+        details: [
+          'บันทึกภาพถ่ายหน้าปัดมิเตอร์จากกล้องลงระบบจัดเก็บถาวร (/uploads/meters/) และผูก URL เข้ากับ meter_readings ในฐานข้อมูล',
+          'เพิ่มคอลัมน์ "หลักฐานภาพถ่าย" ในตารางจดมิเตอร์ของเจ้าของหอพัก พร้อมปุ่ม 📷 ดูรูป และ Lightbox Modal แสดงภาพถ่ายความละเอียดสูงและเปรียบเทียบหน่วยที่ใช้',
+          'ปรับปรุงระบบอ่านตัวเลขมิเตอร์ด้วย Canvas Contrast Boost และ Tesseract Numeric Whitelist (PSM 7)',
+          'ระบบกรอกค่าอัตโนมัติ (Auto-fill) ทันทีที่ AI อ่านตัวเลขหน้าปัดได้ พร้อมปุ่มเลือกตัวเลขสำรอง (Candidate Pills) และปุ่ม Quick Fill (ใช้เลขเดิม, +1, +5, +10)'
+        ]
+      },
+      {
+        id: '2026-09-16-6',
         title: 'ระบบอัปเดตเวอร์ชันและสร้าง Git Tag อัตโนมัติทุกครั้งที่ Push ขึ้น Git',
         category: 'Performance',
         details: [
@@ -70,7 +81,7 @@ export const SYSTEM_UPDATES: DailyUpdate[] = [
         ]
       },
       {
-        id: '2026-09-16-6',
+        id: '2026-09-16-7',
         title: 'ซิงค์ประวัติการอัปเดตและ Release Notes สู่หน้าแสดงผลทุกแดชบอร์ด',
         category: 'Feature',
         details: [

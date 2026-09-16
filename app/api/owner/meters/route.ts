@@ -1,6 +1,54 @@
 import { NextResponse } from 'next/server';
 import { getDb } from '@/lib/db';
 import { auth } from '@/auth';
+import fs from 'fs';
+import path from 'path';
+
+/**
+ * Persist Base64 meter photo to local disk under public/uploads/meters/
+ * Returns static web path e.g. /uploads/meters/meter_1_16_water_2026-04_1234567.jpg
+ */
+function saveMeterPhoto(
+  photoData: string | null | undefined, 
+  dormId: number, 
+  roomId: number, 
+  type: string, 
+  billingCycle: string
+): string | null {
+  if (!photoData || typeof photoData !== 'string') return null;
+  
+  // If it's already a URL or server path, return as is
+  if (!photoData.startsWith('data:image/')) {
+    return photoData;
+  }
+
+  try {
+    const matches = photoData.match(/^data:image\/([a-zA-Z0-9]+);base64,(.+)$/);
+    if (!matches || matches.length < 3) return photoData;
+
+    const rawExt = matches[1].toLowerCase();
+    const ext = rawExt === 'jpeg' ? 'jpg' : rawExt;
+    const base64Data = matches[2];
+    const buffer = Buffer.from(base64Data, 'base64');
+
+    const uploadsDir = path.join(process.cwd(), 'public', 'uploads', 'meters');
+    if (!fs.existsSync(uploadsDir)) {
+      fs.mkdirSync(uploadsDir, { recursive: true });
+    }
+
+    const cleanCycle = (billingCycle || 'cycle').replace(/[^a-zA-Z0-9_-]/g, '');
+    const filename = `meter_${dormId}_${roomId}_${type.toLowerCase()}_${cleanCycle}_${Date.now()}.${ext}`;
+    const filePath = path.join(uploadsDir, filename);
+
+    fs.writeFileSync(filePath, buffer);
+    return `/uploads/meters/${filename}`;
+  } catch (err) {
+    console.error('[saveMeterPhoto File Write Error]', err);
+    // Fallback to storing raw base64 data URL in longtext column so the evidence is never lost
+    return photoData;
+  }
+}
+
 
 // Fetch all meter readings or filter by room
 export async function GET(req: Request) {
@@ -83,6 +131,9 @@ export async function POST(req: Request) {
         const { room_id, type, previous_reading, current_reading, billing_cycle, photo_url } = item;
         if (!room_id || !type || current_reading === undefined || !billing_cycle) continue;
 
+        // Persist photo to disk and get static URL
+        const finalPhotoUrl = saveMeterPhoto(photo_url, dormId, Number(room_id), type, billing_cycle);
+
         // Upsert
         const existing = await sql`
           SELECT id FROM meter_readings 
@@ -94,13 +145,13 @@ export async function POST(req: Request) {
             UPDATE meter_readings
             SET previous_reading = ${previous_reading || 0}, 
                 current_reading = ${current_reading},
-                photo_url = COALESCE(${photo_url || null}, photo_url)
+                photo_url = COALESCE(${finalPhotoUrl || null}, photo_url)
             WHERE id = ${existing[0].id}
           `;
         } else {
           await sql`
             INSERT INTO meter_readings (dorm_id, room_id, type, previous_reading, current_reading, billing_cycle, photo_url)
-            VALUES (${dormId}, ${room_id}, ${type}, ${previous_reading || 0}, ${current_reading}, ${billing_cycle}, ${photo_url || null})
+            VALUES (${dormId}, ${room_id}, ${type}, ${previous_reading || 0}, ${current_reading}, ${billing_cycle}, ${finalPhotoUrl || null})
           `;
         }
         insertedCount++;
@@ -115,6 +166,9 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: false, message: 'Missing required fields' }, { status: 400 });
     }
     
+    // Persist photo to disk and get static URL
+    const finalPhotoUrl = saveMeterPhoto(photo_url, dormId, Number(room_id), type, billing_cycle);
+
     // Check for existing record
     const existing = await sql`
       SELECT id FROM meter_readings 
@@ -126,7 +180,7 @@ export async function POST(req: Request) {
         UPDATE meter_readings
         SET previous_reading = ${previous_reading || 0}, 
             current_reading = ${current_reading},
-            photo_url = COALESCE(${photo_url || null}, photo_url)
+            photo_url = COALESCE(${finalPhotoUrl || null}, photo_url)
         WHERE id = ${existing[0].id}
       `;
       return NextResponse.json({ success: true, message: 'อัปเดตการจดมิเตอร์เรียบร้อยแล้ว' });
@@ -134,7 +188,7 @@ export async function POST(req: Request) {
 
     const result = await sql`
       INSERT INTO meter_readings (dorm_id, room_id, type, previous_reading, current_reading, billing_cycle, photo_url)
-      VALUES (${dormId}, ${room_id}, ${type}, ${previous_reading || 0}, ${current_reading}, ${billing_cycle}, ${photo_url || null})
+      VALUES (${dormId}, ${room_id}, ${type}, ${previous_reading || 0}, ${current_reading}, ${billing_cycle}, ${finalPhotoUrl || null})
     `;
 
     return NextResponse.json({ success: true, message: 'บันทึกมิเตอร์เรียบร้อยแล้ว', data: { id: (result as any).insertId } }, { status: 201 });

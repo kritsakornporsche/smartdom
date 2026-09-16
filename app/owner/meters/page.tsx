@@ -40,6 +40,17 @@ export default function MetersPage() {
     batchIndex?: number;
   } | null>(null);
 
+  // Photo Evidence Lightbox Modal State
+  const [viewingPhoto, setViewingPhoto] = useState<{
+    url: string;
+    roomNumber: string;
+    type: 'Water' | 'Electricity';
+    cycle: string;
+    reading: number | string;
+    prevReading: number | string;
+    createdAt?: string;
+  } | null>(null);
+
   // Checkbox Selection States
   const [selectedRoomIds, setSelectedRoomIds] = useState<number[]>([]);
 
@@ -699,6 +710,7 @@ export default function MetersPage() {
                     <th className="py-4 px-6 text-right">เลขครั้งก่อน</th>
                     <th className="py-4 px-6 text-right">เลขครั้งนี้</th>
                     <th className="py-4 px-6 text-right">หน่วยที่ใช้</th>
+                    <th className="py-4 px-6 text-center">หลักฐานภาพถ่าย</th>
                     {/* Checkbox Column Header at the end */}
                     <th className="py-4 px-6 text-center w-24">
                       <div className="flex flex-col items-center gap-1">
@@ -755,6 +767,33 @@ export default function MetersPage() {
                           <span className="px-2.5 py-0.5 rounded-lg bg-white/10 text-white font-bold">
                             {units >= 0 ? units : 0}
                           </span>
+                        </td>
+
+                        {/* Photo Evidence Column */}
+                        <td className="py-4 px-6 text-center" onClick={e => e.stopPropagation()}>
+                          {r.photo_url ? (
+                            <button
+                              type="button"
+                              onClick={() => setViewingPhoto({
+                                url: r.photo_url,
+                                roomNumber: r.room_number,
+                                type: r.type,
+                                cycle: r.billing_cycle,
+                                reading: r.current_reading,
+                                prevReading: r.previous_reading,
+                                createdAt: r.created_at,
+                              })}
+                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-purple-500/15 hover:bg-purple-500/25 border border-purple-500/30 text-purple-200 hover:text-white transition-all cursor-pointer shadow-sm active:scale-95 group"
+                              title="คลิกเพื่อดูภาพหลักฐานหน้าปัดมิเตอร์"
+                            >
+                              <span className="w-6 h-6 rounded-lg overflow-hidden bg-black/50 border border-purple-400/40 flex items-center justify-center shrink-0">
+                                <img src={r.photo_url} alt="Proof" className="w-full h-full object-cover group-hover:scale-110 transition-transform" />
+                              </span>
+                              <span className="text-xs font-bold font-mono">📷 ดูรูป</span>
+                            </button>
+                          ) : (
+                            <span className="text-[11px] text-white/30 italic font-medium">ไม่มีรูป</span>
+                          )}
                         </td>
                         
                         {/* Checkbox at the end of each row */}
@@ -956,6 +995,73 @@ export default function MetersPage() {
                   </div>
                 )}
 
+                {/* Evidence Photo / Camera Action in Single Modal */}
+                <div className="pt-1">
+                  <div className="flex items-center justify-between gap-2">
+                    <label className="text-xs font-bold uppercase tracking-wider text-purple-300/80">หลักฐานภาพถ่าย</label>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (!form.room_id) {
+                          alert('กรุณาเลือกห้องพักก่อน');
+                          return;
+                        }
+                        const curRoom = rooms.find(r => String(r.id) === String(form.room_id));
+                        setCameraModal({
+                          isOpen: true,
+                          roomNumber: curRoom?.room_number || '',
+                          roomId: Number(form.room_id),
+                          meterType: form.type,
+                          previousReading: parseFloat(form.previous_reading) || 0,
+                        });
+                      }}
+                      className="px-3 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs flex items-center gap-1.5 cursor-pointer shadow-sm transition-all"
+                    >
+                      <span>📸</span>
+                      <span>เปิดกล้องถ่าย/สแกน AI</span>
+                    </button>
+                  </div>
+
+                  {form.photo_url ? (
+                    <div className="mt-2 p-2 rounded-xl bg-[#0E071D] border border-purple-500/20 flex items-center justify-between gap-2">
+                      <div 
+                        className="flex items-center gap-2 cursor-pointer group"
+                        onClick={() => {
+                          const curRoom = rooms.find(r => String(r.id) === String(form.room_id));
+                          setViewingPhoto({
+                            url: form.photo_url,
+                            roomNumber: curRoom?.room_number || '',
+                            type: form.type,
+                            cycle: form.billing_cycle,
+                            reading: form.current_reading || '0',
+                            prevReading: form.previous_reading || '0',
+                          });
+                        }}
+                      >
+                        <div className="w-10 h-10 rounded-lg overflow-hidden border border-purple-400/40 shrink-0">
+                          <img src={form.photo_url} alt="Proof" className="w-full h-full object-cover group-hover:scale-110 transition-transform" />
+                        </div>
+                        <div>
+                          <span className="text-xs font-bold text-emerald-400 block">✓ บันทึกภาพแล้ว</span>
+                          <span className="text-[10px] text-purple-300/60 font-mono">คลิกเพื่อดูภาพขยาย</span>
+                        </div>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => setForm(prev => ({ ...prev, photo_url: '' }))}
+                        className="text-xs text-rose-400 hover:text-rose-300 px-2 py-1 rounded-lg bg-rose-500/10 border border-rose-500/20 cursor-pointer"
+                      >
+                        ✕ ลบรูป
+                      </button>
+                    </div>
+                  ) : (
+                    <p className="text-[10px] text-purple-300/50 mt-1 italic">
+                      * สามารถกดถ่ายภาพหน้าปัดมิเตอร์เพื่อเก็บเป็นหลักฐานยืนยันกับผู้เช่าได้
+                    </p>
+                  )}
+                </div>
+
                 <div className="flex gap-2.5 pt-3">
                   <button 
                     type="button" 
@@ -1047,6 +1153,23 @@ export default function MetersPage() {
                               }}
                               className="w-full bg-[#0E071D] border border-purple-400/40 rounded-lg px-2 py-1 text-center font-mono font-bold text-amber-300 text-xs outline-none focus:border-amber-400"
                             />
+                            {item.water_photo && (
+                              <button
+                                type="button"
+                                title="ดูภาพถ่ายมิเตอร์น้ำ"
+                                onClick={() => setViewingPhoto({
+                                  url: item.water_photo!,
+                                  roomNumber: item.room_number,
+                                  type: 'Water',
+                                  cycle: batchCycle,
+                                  reading: item.water_curr || item.water_prev,
+                                  prevReading: item.water_prev
+                                })}
+                                className="w-6 h-6 rounded-md overflow-hidden border border-emerald-400/50 shrink-0 cursor-pointer shadow-sm hover:scale-105 transition-transform"
+                              >
+                                <img src={item.water_photo} alt="Water meter" className="w-full h-full object-cover" />
+                              </button>
+                            )}
                             <button
                               type="button"
                               title="ถ่ายรูปมิเตอร์น้ำ"
@@ -1091,6 +1214,23 @@ export default function MetersPage() {
                               }}
                               className="w-full bg-[#0E071D] border border-amber-500/40 rounded-lg px-2 py-1 text-center font-mono font-bold text-amber-300 text-xs outline-none focus:border-amber-400"
                             />
+                            {item.elec_photo && (
+                              <button
+                                type="button"
+                                title="ดูภาพถ่ายมิเตอร์ไฟ"
+                                onClick={() => setViewingPhoto({
+                                  url: item.elec_photo!,
+                                  roomNumber: item.room_number,
+                                  type: 'Electricity',
+                                  cycle: batchCycle,
+                                  reading: item.elec_curr || item.elec_prev,
+                                  prevReading: item.elec_prev
+                                })}
+                                className="w-6 h-6 rounded-md overflow-hidden border border-amber-400/50 shrink-0 cursor-pointer shadow-sm hover:scale-105 transition-transform"
+                              >
+                                <img src={item.elec_photo} alt="Elec meter" className="w-full h-full object-cover" />
+                              </button>
+                            )}
                             <button
                               type="button"
                               title="ถ่ายรูปมิเตอร์ไฟ"
@@ -1154,6 +1294,23 @@ export default function MetersPage() {
                               }}
                               className="w-24 bg-[#0E071D] border border-purple-400/40 rounded-lg px-2 py-1 text-center font-mono font-bold text-amber-300 text-xs outline-none focus:border-amber-400"
                             />
+                            {item.water_photo && (
+                              <button
+                                type="button"
+                                title="ดูภาพถ่ายมิเตอร์น้ำ"
+                                onClick={() => setViewingPhoto({
+                                  url: item.water_photo!,
+                                  roomNumber: item.room_number,
+                                  type: 'Water',
+                                  cycle: batchCycle,
+                                  reading: item.water_curr || item.water_prev,
+                                  prevReading: item.water_prev
+                                })}
+                                className="w-6 h-6 rounded-md overflow-hidden border border-emerald-400/50 shrink-0 cursor-pointer shadow-sm hover:scale-105 transition-transform"
+                              >
+                                <img src={item.water_photo} alt="Water meter" className="w-full h-full object-cover" />
+                              </button>
+                            )}
                             <button
                               type="button"
                               title="ถ่ายรูป/สแกนมิเตอร์น้ำ"
@@ -1195,6 +1352,23 @@ export default function MetersPage() {
                               }}
                               className="w-24 bg-[#0E071D] border border-amber-500/40 rounded-lg px-2 py-1 text-center font-mono font-bold text-amber-300 text-xs outline-none focus:border-amber-400"
                             />
+                            {item.elec_photo && (
+                              <button
+                                type="button"
+                                title="ดูภาพถ่ายมิเตอร์ไฟ"
+                                onClick={() => setViewingPhoto({
+                                  url: item.elec_photo!,
+                                  roomNumber: item.room_number,
+                                  type: 'Electricity',
+                                  cycle: batchCycle,
+                                  reading: item.elec_curr || item.elec_prev,
+                                  prevReading: item.elec_prev
+                                })}
+                                className="w-6 h-6 rounded-md overflow-hidden border border-amber-400/50 shrink-0 cursor-pointer shadow-sm hover:scale-105 transition-transform"
+                              >
+                                <img src={item.elec_photo} alt="Elec meter" className="w-full h-full object-cover" />
+                              </button>
+                            )}
                             <button
                               type="button"
                               title="ถ่ายรูป/สแกนมิเตอร์ไฟ"
@@ -1253,6 +1427,100 @@ export default function MetersPage() {
             previousReading={cameraModal.previousReading}
             onConfirmReading={handleCameraConfirm}
           />
+        )}
+
+        {/* Photo Evidence Lightbox Modal */}
+        {viewingPhoto && (
+          <div 
+            className="fixed inset-0 z-[80] flex items-center justify-center bg-black/85 backdrop-blur-md p-3 sm:p-6 animate-in fade-in"
+            onClick={() => setViewingPhoto(null)}
+          >
+            <div 
+              className="bg-[#180D2F] border border-purple-500/30 rounded-3xl p-5 sm:p-6 max-w-lg w-full shadow-2xl flex flex-col gap-4 relative animate-in zoom-in-95 max-h-[92vh] overflow-hidden"
+              onClick={e => e.stopPropagation()}
+            >
+              {/* Header */}
+              <div className="flex items-center justify-between pb-3 border-b border-purple-500/20 shrink-0">
+                <div className="flex items-center gap-2.5">
+                  <div className={`w-8 h-8 rounded-xl flex items-center justify-center text-sm font-bold shadow-sm ${
+                    viewingPhoto.type === 'Water'
+                      ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30'
+                      : 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
+                  }`}>
+                    {viewingPhoto.type === 'Water' ? '💧' : '⚡'}
+                  </div>
+                  <div>
+                    <h3 className="text-sm sm:text-base font-black text-white">
+                      หลักฐานภาพถ่าย{viewingPhoto.type === 'Water' ? 'มิเตอร์น้ำ' : 'มิเตอร์ไฟ'} ห้อง <span className="text-amber-400 font-mono">{viewingPhoto.roomNumber}</span>
+                    </h3>
+                    <p className="text-[11px] text-purple-300/70 font-mono">
+                      รอบบิล: <span className="text-white font-bold">{viewingPhoto.cycle}</span>
+                    </p>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setViewingPhoto(null)}
+                  className="w-8 h-8 rounded-xl bg-white/5 hover:bg-white/10 text-white/60 hover:text-white flex items-center justify-center transition-colors cursor-pointer"
+                >
+                  ✕
+                </button>
+              </div>
+
+              {/* Stats Bar */}
+              <div className="grid grid-cols-3 gap-2 bg-[#0E071D] p-3 rounded-2xl border border-purple-500/20 text-center shrink-0">
+                <div>
+                  <span className="text-[9px] text-purple-300/70 block uppercase font-bold">เลขครั้งก่อน</span>
+                  <span className="font-mono text-xs sm:text-sm font-bold text-white/80">
+                    {Number(viewingPhoto.prevReading).toFixed(2)}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-[9px] text-purple-300/70 block uppercase font-bold">เลขครั้งนี้</span>
+                  <span className="font-mono text-xs sm:text-sm font-black text-amber-400">
+                    {Number(viewingPhoto.reading).toFixed(2)}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-[9px] text-purple-300/70 block uppercase font-bold">หน่วยที่ใช้</span>
+                  <span className="font-mono text-xs sm:text-sm font-black text-emerald-400">
+                    +{(Math.max(0, Number(viewingPhoto.reading) - Number(viewingPhoto.prevReading))).toFixed(2)}
+                  </span>
+                </div>
+              </div>
+
+              {/* Image View Area */}
+              <div className="flex-1 min-h-0 relative bg-black rounded-2xl overflow-hidden border border-purple-500/20 flex items-center justify-center group min-h-[220px]">
+                <img
+                  src={viewingPhoto.url}
+                  alt={`Meter evidence room ${viewingPhoto.roomNumber}`}
+                  className="w-full h-full max-h-[50vh] object-contain select-none"
+                />
+              </div>
+
+              {/* Footer Actions */}
+              <div className="flex items-center justify-between gap-2 pt-1 shrink-0">
+                <a
+                  href={viewingPhoto.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-bold text-white/80 hover:text-white transition-all inline-flex items-center gap-1.5 cursor-pointer"
+                >
+                  <span>🔗</span>
+                  <span>เปิดรูปขนาดเต็ม</span>
+                </a>
+
+                <button
+                  type="button"
+                  onClick={() => setViewingPhoto(null)}
+                  className="px-5 py-2 rounded-xl bg-gradient-to-r from-purple-600 to-amber-500 hover:from-purple-500 hover:to-amber-400 text-xs font-black text-white shadow-md shadow-purple-600/20 cursor-pointer"
+                >
+                  ปิดหน้าต่าง
+                </button>
+              </div>
+            </div>
+          </div>
         )}
       </div>
   );

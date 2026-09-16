@@ -133,11 +133,27 @@
 - `lib/updatesData.ts`: เพิ่มบันทึกการอัปเดตเวอร์ชัน `v2.6.0` ประจำวันที่ 14 กันยายน 2569
 - `package.json` & `package-lock.json`: เพิ่มไลบรารี `tesseract.js`
 
+### การปรับปรุงล่าสุด (16 กันยายน 2569):
+- **ระบบบันทึกและจัดเก็บภาพถ่ายมิเตอร์เป็นหลักฐานถาวร (Meter Photo Evidence Storage):**
+  - บันทึกภาพถ่ายหน้าปัดมิเตอร์จากกล้องลงโฟลเดอร์ `public/uploads/meters/` พร้อมชื่อไฟล์ระบุรอบบิลและห้อง
+  - จัดเก็บ URL ภาพถ่ายลงในตาราง `meter_readings.photo_url` ในฐานข้อมูล
+  - เพิ่มคอลัมน์ **"หลักฐานภาพถ่าย"** ในตารางจดมิเตอร์ของเจ้าของหอพัก พร้อมปุ่ม `📷 ดูรูป`
+  - พัฒนาระบบ Lightbox Modal แสดงภาพถ่ายขยายความละเอียดสูง พร้อมเปรียบเทียบเลขเดิมและเลขใหม่
+  - เพิ่มรูปตัวอย่าง Thumbnail ในหน้ารวมการจดมิเตอร์ด่วน (Batch Entry Sheet) ทั้งบนมือถือและคอมพิวเตอร์
+  - เพิ่มปุ่มถ่ายรูปพร้อมตัวอย่างภาพในหน้าต่างบันทึกมิเตอร์รายบุคคล (Single Entry Modal)
+- **ปรับปรุงระบบอ่านตัวเลขและเติมค่าอัตโนมัติ (AI Auto-Fill & Enhancement):**
+  - เพิ่มระบบ Canvas Image Contrast Enhancement ขาวดำและเร่งคอนทราสต์ตัวเลขหน้าปัดก่อนส่งวิเคราะห์
+  - ปรับปรุง Tesseract OCR ด้วย PSM 7 (Single Line) และ Numeric Whitelist เฉพาะตัวเลข
+  - กรองค่าคงที่ของมิเตอร์ไทย (220V, 50Hz, 1200r/kWh) เพื่อไม่ให้สับสนกับตัวเลขหน่วยวัด
+  - ปรับระบบกรอกค่าอัตโนมัติ (Auto-fill) ทันทีที่ AI ตรวจพบเลขหน้าปัด
+  - เพิ่มปุ่มตัวเลือกตัวเลขสำรอง (Candidate Pills) และปุ่ม Quick Fill (ใช้เลขเดิม, +1, +5, +10) เพื่อให้ใช้งานได้ราบรื่น 100%
+
 ---
 
 ## 🌐 ลิงก์และช่องทางการเข้าถึงระบบ
 
-- **HTTPS Domain (Cloudflare Tunnel):** [https://alcohol-houston-structural-oklahoma.trycloudflare.com](https://alcohol-houston-structural-oklahoma.trycloudflare.com)
+- **Production Domain:** [https://smartdom.phannext.com](https://smartdom.phannext.com)
+
 - **HTTP / DDNS Direct:** `http://kritsakorn.thddns.net:5993`
 - **หน้ารายงานการอัปเดตในระบบ:** `/updates`
 - **หน้าระบบผู้วิจัย:** `/researcher` และ `/admin/diagrams`

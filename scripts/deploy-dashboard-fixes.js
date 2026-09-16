@@ -17,6 +17,7 @@ const filesToUpload = [
   'app/owner/meters/page.tsx',
   'app/owner/meters/components/CameraMeterModal.tsx',
   'app/api/owner/meters/ocr/route.ts',
+  'app/api/owner/meters/route.ts',
   'app/tenant/components/TenantSidebar.tsx',
   'app/tenant/billing/page.tsx',
   'app/keeper/components/KeeperSidebar.tsx',
@@ -117,7 +118,8 @@ conn.on('ready', () => {
       $ErrorActionPreference = 'Continue'
       Set-Location "C:\\kritsakorn\\smartdom"
       Write-Host "1. PULLING/CHECKING ENVIRONMENT:"
-      Get-Content "C:\\kritsakorn\\smartdom\\.env.local"
+      New-Item -ItemType Directory -Force -Path "C:\\kritsakorn\\smartdom\\public\\uploads\\meters" | Out-Null
+      Write-Host "Created public\\uploads\\meters directory"
       Write-Host ""
       Write-Host "2. RUNNING NPM RUN BUILD ON REMOTE SERVER:"
       npm run build

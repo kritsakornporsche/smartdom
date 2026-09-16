@@ -11,6 +11,29 @@ interface CameraMeterModalProps {
   onConfirmReading: (reading: number, photoUrl: string) => void;
 }
 
+/**
+ * Grayscale & contrast enhancement on canvas to make mechanical meter digits pop for OCR
+ */
+function enhanceDialCanvas(canvas: HTMLCanvasElement) {
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+  try {
+    const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const data = imgData.data;
+    const factor = 1.65; // contrast boost
+    for (let i = 0; i < data.length; i += 4) {
+      const gray = 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
+      const adjusted = Math.min(255, Math.max(0, factor * (gray - 128) + 128));
+      data[i] = adjusted;
+      data[i + 1] = adjusted;
+      data[i + 2] = adjusted;
+    }
+    ctx.putImageData(imgData, 0, 0);
+  } catch {
+    // Ignore if tainted or unreadable
+  }
+}
+
 export default function CameraMeterModal({
   isOpen,
   onClose,
@@ -22,6 +45,7 @@ export default function CameraMeterModal({
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
   const [analyzing, setAnalyzing] = useState(false);
   const [detectedReading, setDetectedReading] = useState<string>('');
+  const [candidates, setCandidates] = useState<number[]>([]);
   const [warning, setWarning] = useState<string | null>(null);
   const [engineUsed, setEngineUsed] = useState<string | null>(null);
   const [liveStreamActive, setLiveStreamActive] = useState(false);
@@ -34,6 +58,7 @@ export default function CameraMeterModal({
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const readingInputRef = useRef<HTMLInputElement>(null);
 
   const stopLiveStream = useCallback(() => {
     if (streamRef.current) {
@@ -161,54 +186,65 @@ export default function CameraMeterModal({
     const video = videoRef.current;
     if (!video) return;
 
-    const canvas = document.createElement('canvas');
     const width = video.videoWidth || 1280;
     const height = video.videoHeight || 720;
-    canvas.width = width;
-    canvas.height = height;
-    const ctx = canvas.getContext('2d');
 
-    if (ctx) {
+    // 1. Scaled Evidence Photo (max 1280px dimension, high visual quality, ~90KB size)
+    const evidenceCanvas = document.createElement('canvas');
+    const maxDim = 1280;
+    let targetW = width;
+    let targetH = height;
+    if (targetW > maxDim || targetH > maxDim) {
+      if (targetW > targetH) {
+        targetH = Math.round((targetH * maxDim) / targetW);
+        targetW = maxDim;
+      } else {
+        targetW = Math.round((targetW * maxDim) / targetH);
+        targetH = maxDim;
+      }
+    }
+    evidenceCanvas.width = targetW;
+    evidenceCanvas.height = targetH;
+    const evCtx = evidenceCanvas.getContext('2d');
+    if (evCtx) {
       if (zoomLevel > 1) {
         const cropW = width / zoomLevel;
         const cropH = height / zoomLevel;
         const cropX = (width - cropW) / 2;
         const cropY = (height - cropH) / 2;
-        ctx.drawImage(video, cropX, cropY, cropW, cropH, 0, 0, width, height);
+        evCtx.drawImage(video, cropX, cropY, cropW, cropH, 0, 0, targetW, targetH);
       } else {
-        ctx.drawImage(video, 0, 0, width, height);
+        evCtx.drawImage(video, 0, 0, targetW, targetH);
       }
-
-      // 1. High-resolution photo retained as evidence for bill
-      const fullDataUrl = canvas.toDataURL('image/jpeg', 0.88);
-      stopLiveStream();
-      setCapturedImage(fullDataUrl);
-
-      // 2. High-speed OCR Target (generous 70% height & 94% width to avoid clipping digits)
-      try {
-        const ocrCanvas = document.createElement('canvas');
-        const roiW = Math.round(width * 0.94);
-        const roiH = Math.round(height * 0.70);
-        const roiX = Math.round((width - roiW) / 2);
-        const roiY = Math.round((height - roiH) / 2);
-
-        const ocrW = 720;
-        const ocrH = Math.round((roiH / roiW) * 720);
-        ocrCanvas.width = ocrW;
-        ocrCanvas.height = ocrH;
-        const ocrCtx = ocrCanvas.getContext('2d');
-        if (ocrCtx) {
-          ocrCtx.drawImage(canvas, roiX, roiY, roiW, roiH, 0, 0, ocrW, ocrH);
-          const ocrDataUrl = ocrCanvas.toDataURL('image/jpeg', 0.85);
-          analyzeMeterImage(ocrDataUrl);
-          return;
-        }
-      } catch (err) {
-        console.warn('ROI crop error:', err);
-      }
-
-      analyzeMeterImage(fullDataUrl);
     }
+
+    const fullDataUrl = evidenceCanvas.toDataURL('image/jpeg', 0.80);
+    stopLiveStream();
+    setCapturedImage(fullDataUrl);
+
+    // 2. High-speed, High-Contrast Center Dial Crop for OCR (matches reticle: ~40% height & 80% width)
+    try {
+      const ocrCanvas = document.createElement('canvas');
+      const roiW = Math.round(width * 0.80);
+      const roiH = Math.round(height * 0.40);
+      const roiX = Math.round((width - roiW) / 2);
+      const roiY = Math.round((height - roiH) / 2);
+
+      ocrCanvas.width = 640;
+      ocrCanvas.height = Math.round((roiH / roiW) * 640);
+      const ocrCtx = ocrCanvas.getContext('2d');
+      if (ocrCtx) {
+        ocrCtx.drawImage(video, roiX, roiY, roiW, roiH, 0, 0, ocrCanvas.width, ocrCanvas.height);
+        enhanceDialCanvas(ocrCanvas);
+        const ocrDataUrl = ocrCanvas.toDataURL('image/jpeg', 0.85);
+        analyzeMeterImage(ocrDataUrl);
+        return;
+      }
+    } catch (err) {
+      console.warn('ROI crop error:', err);
+    }
+
+    analyzeMeterImage(fullDataUrl);
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -219,13 +255,12 @@ export default function CameraMeterModal({
     reader.onload = () => {
       const dataUrl = reader.result as string;
       stopLiveStream();
-      setCapturedImage(dataUrl);
 
-      // Downscale for fast OCR if the phone took a huge photo
       const img = new Image();
       img.onload = () => {
         try {
-          const maxDim = 800;
+          // 1. Compress evidence photo to max 1280px
+          const maxDim = 1280;
           let w = img.width;
           let h = img.height;
           if (w > maxDim || h > maxDim) {
@@ -243,12 +278,31 @@ export default function CameraMeterModal({
           const cx = c.getContext('2d');
           if (cx) {
             cx.drawImage(img, 0, 0, w, h);
-            analyzeMeterImage(c.toDataURL('image/jpeg', 0.82));
+            const compressed = c.toDataURL('image/jpeg', 0.80);
+            setCapturedImage(compressed);
+
+            // 2. Center crop for OCR
+            const ocrCanvas = document.createElement('canvas');
+            const roiW = Math.round(w * 0.80);
+            const roiH = Math.round(h * 0.40);
+            const roiX = Math.round((w - roiW) / 2);
+            const roiY = Math.round((h - roiH) / 2);
+            ocrCanvas.width = 640;
+            ocrCanvas.height = Math.round((roiH / roiW) * 640);
+            const ocrCtx = ocrCanvas.getContext('2d');
+            if (ocrCtx) {
+              ocrCtx.drawImage(c, roiX, roiY, roiW, roiH, 0, 0, ocrCanvas.width, ocrCanvas.height);
+              enhanceDialCanvas(ocrCanvas);
+              analyzeMeterImage(ocrCanvas.toDataURL('image/jpeg', 0.85));
+              return;
+            }
+            analyzeMeterImage(compressed);
             return;
           }
-        } catch {
-          // fallback to full image
+        } catch (err) {
+          console.warn('Canvas file processing error:', err);
         }
+        setCapturedImage(dataUrl);
         analyzeMeterImage(dataUrl);
       };
       img.src = dataUrl;
@@ -261,9 +315,10 @@ export default function CameraMeterModal({
     setAnalyzing(true);
     setWarning(null);
     setDetectedReading('');
+    setCandidates([]);
 
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 25000); // 25s timeout for mobile connections
+    const timeoutId = setTimeout(() => controller.abort(), 25000);
 
     try {
       const res = await fetch('/api/owner/meters/ocr', {
@@ -280,11 +335,19 @@ export default function CameraMeterModal({
 
       const data = await res.json();
       if (data.success && data.data?.reading !== null && data.data?.reading !== undefined) {
-        setDetectedReading(String(data.data.reading));
+        const detectedStr = String(data.data.reading);
+        setDetectedReading(detectedStr);
+        setCandidates(data.data.candidates || []);
         setWarning(data.data.warning || null);
         setEngineUsed(data.data.engine);
       } else {
-        setWarning('ระบบตรวจจับตัวเลขยังไม่ชัดเจน กรุณากรอกตัวเลขหน้าปัด หรือกดถ่ายใหม่อีกครั้ง');
+        if (data.data?.candidates && data.data.candidates.length > 0) {
+          setCandidates(data.data.candidates);
+          setDetectedReading(String(data.data.candidates[0]));
+          setWarning('AI เลือกตัวเลขที่ใกล้เคียงที่สุด กรุณายืนยันความถูกต้อง');
+        } else {
+          setWarning('AI ตรวจจับตัวเลขยังไม่ชัดเจน กรุณากรอกตัวเลขหน้าปัด หรือแตะปุ่มเลือกเลขงวดก่อน');
+        }
       }
     } catch (err: any) {
       clearTimeout(timeoutId);
@@ -296,6 +359,7 @@ export default function CameraMeterModal({
       }
     } finally {
       setAnalyzing(false);
+      setTimeout(() => readingInputRef.current?.focus(), 150);
     }
   };
 
@@ -312,6 +376,7 @@ export default function CameraMeterModal({
   const handleRetake = () => {
     setCapturedImage(null);
     setDetectedReading('');
+    setCandidates([]);
     setWarning(null);
     setAnalyzing(false);
     startLiveStream(facingMode);
@@ -320,6 +385,7 @@ export default function CameraMeterModal({
   const handleRetakeNative = () => {
     setCapturedImage(null);
     setDetectedReading('');
+    setCandidates([]);
     setWarning(null);
     setAnalyzing(false);
     fileInputRef.current?.click();
@@ -611,6 +677,7 @@ export default function CameraMeterModal({
               <div className="flex items-center gap-2">
                 <div className="relative flex-1">
                   <input
+                    ref={readingInputRef}
                     type="number"
                     step="any"
                     value={detectedReading}
@@ -618,6 +685,11 @@ export default function CameraMeterModal({
                     placeholder="กรอกเลขหน้าปัด"
                     className="w-full px-3.5 py-2.5 bg-[#0E071D] border border-purple-400/50 focus:border-amber-400 rounded-xl text-xl font-black text-amber-300 font-mono outline-none shadow-inner"
                   />
+                  {detectedReading && !warning && (
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-full border border-emerald-500/30 font-bold">
+                      พร้อมบันทึก
+                    </span>
+                  )}
                 </div>
 
                 <div className="shrink-0 bg-[#0E071D] px-3 py-2 rounded-xl border border-purple-500/20 text-right min-w-[80px]">
@@ -631,12 +703,68 @@ export default function CameraMeterModal({
                 </div>
               </div>
 
+              {/* AI Candidates Pills if multiple found */}
+              {candidates.length > 1 && (
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <span className="text-[10px] text-purple-300/70 font-medium">AI ตรวจพบ:</span>
+                  {candidates.slice(0, 4).map((c, idx) => (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => setDetectedReading(String(c))}
+                      className={`px-2 py-0.5 rounded-lg text-xs font-mono font-bold transition-all cursor-pointer border ${
+                        detectedReading === String(c)
+                          ? 'bg-amber-400 text-slate-950 border-amber-300 shadow-sm'
+                          : 'bg-purple-600/20 hover:bg-purple-600/40 text-purple-200 border-purple-400/30'
+                      }`}
+                    >
+                      {c}
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {/* Quick Fill suggestions to ensure user is never blocked */}
+              <div className="flex items-center gap-1.5 flex-wrap">
+                <button
+                  type="button"
+                  onClick={() => setDetectedReading(String(previousReading))}
+                  className="px-2 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-purple-200 hover:text-white text-[10px] sm:text-[11px] font-bold border border-purple-500/20 transition-all cursor-pointer flex items-center gap-1"
+                >
+                  <span>📌</span>
+                  <span>ใช้เลขเดิม ({previousReading})</span>
+                </button>
+                {[1, 5, 10].map((add) => (
+                  <button
+                    key={add}
+                    type="button"
+                    onClick={() => {
+                      const base = parseFloat(detectedReading) || previousReading || 0;
+                      const next = (base + add).toFixed(2).replace(/\.00$/, '');
+                      setDetectedReading(next);
+                    }}
+                    className="px-2 py-1 rounded-lg bg-amber-500/10 hover:bg-amber-500/25 text-amber-300 text-[10px] sm:text-[11px] font-mono font-bold border border-amber-500/30 transition-all cursor-pointer"
+                  >
+                    +{add}
+                  </button>
+                ))}
+              </div>
+
               {/* Warning if any */}
               {warning && (
                 <p className="text-[11px] text-amber-300 bg-amber-500/10 border border-amber-500/20 px-2.5 py-1.5 rounded-lg leading-tight">
                   ⚠️ {warning}
                 </p>
               )}
+
+              {/* Evidence photo confirmation pill */}
+              <div className="flex items-center justify-between px-2.5 py-1 rounded-lg bg-[#0E071D] border border-emerald-500/20 text-[10px] text-emerald-300">
+                <span className="flex items-center gap-1">
+                  <span>📸</span>
+                  <span>บันทึกภาพถ่ายเป็นหลักฐานในระบบอัตโนมัติ</span>
+                </span>
+                <span className="font-mono text-white/50 font-bold">หลักฐานพร้อมแนบ</span>
+              </div>
 
               {/* Big Confirm Save Button */}
               <button
@@ -646,7 +774,7 @@ export default function CameraMeterModal({
                 className="w-full py-2.5 bg-gradient-to-r from-purple-600 via-purple-500 to-amber-500 hover:from-purple-500 hover:to-amber-400 disabled:opacity-40 text-white font-black text-xs sm:text-sm rounded-xl shadow-lg shadow-purple-600/20 transition-all cursor-pointer flex items-center justify-center gap-1.5"
               >
                 <span>💾</span>
-                <span>บันทึกตัวเลขมิเตอร์ห้อง {roomNumber}</span>
+                <span>บันทึกตัวเลขและรูปถ่ายห้อง {roomNumber}</span>
               </button>
             </div>
           )}

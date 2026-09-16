@@ -16,7 +16,8 @@ async function getSharedOcrWorker() {
       const { createWorker } = await import('tesseract.js');
       const worker = await createWorker('eng');
       await worker.setParameters({
-        tessedit_pageseg_mode: '6' as any, // Uniform block of text (far more resilient for meter dials)
+        tessedit_pageseg_mode: '7' as any, // PSM 7: Single text line (most accurate for odometer/meter wheels)
+        tessedit_char_whitelist: '0123456789.', // Strictly numbers and decimal dot
       });
       globalForOcr._ocrWorker = worker;
       return worker;
@@ -25,12 +26,15 @@ async function getSharedOcrWorker() {
   return globalForOcr._ocrWorkerPromise;
 }
 
+// Known constant metadata on Thai meters to ignore (voltage, frequency, amp ratings, meter constants)
+const METER_NOISE_CONSTANTS = new Set([220, 230, 240, 50, 60, 1200, 1600, 2400, 4064]);
+
 /**
  * Robust parser for utility meters:
  * 1. Handles mechanical rotating wheels with physical gaps e.g. "0 1 5 2 4" -> "01524"
  * 2. Handles decimal dots e.g. "00142 . 8" -> "142.8"
  * 3. Resolves common OCR letter misclassifications (O->0, l/I->1, S->5, B->8)
- * 4. Filters out noise (e.g. 220V, 50Hz, 5(15)A) by prioritizing numbers close to previous reading
+ * 4. Filters out noise (e.g. 220V, 50Hz, 1200r/kWh) by prioritizing numbers close to previous reading
  */
 function parseMeterDigits(rawText: string, previousReading?: number | string | null): {
   reading: number | null;
@@ -60,9 +64,17 @@ function parseMeterDigits(rawText: string, previousReading?: number | string | n
     return { reading: null, candidates: [] };
   }
 
-  const candidates = matches
+  let candidates = matches
     .map(m => parseFloat(m))
     .filter(n => !isNaN(n) && n >= 0);
+
+  // If there are other options, filter out known meter noise constants
+  if (candidates.length > 1) {
+    const filtered = candidates.filter(n => !METER_NOISE_CONSTANTS.has(n));
+    if (filtered.length > 0) {
+      candidates = filtered;
+    }
+  }
 
   if (candidates.length === 0) {
     return { reading: null, candidates: [] };

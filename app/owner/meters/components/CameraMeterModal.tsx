@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 
 interface CameraMeterModalProps {
   isOpen: boolean;
@@ -24,64 +24,162 @@ export default function CameraMeterModal({
   const [detectedReading, setDetectedReading] = useState<string>('');
   const [warning, setWarning] = useState<string | null>(null);
   const [engineUsed, setEngineUsed] = useState<string | null>(null);
-  const [mode, setMode] = useState<'upload' | 'live'>('upload');
   const [liveStreamActive, setLiveStreamActive] = useState(false);
+  const [streamError, setStreamError] = useState<string | null>(null);
+  const [facingMode, setFacingMode] = useState<'environment' | 'user'>('environment');
+  const [hasTorch, setHasTorch] = useState(false);
+  const [torchOn, setTorchOn] = useState(false);
+  const [zoomLevel, setZoomLevel] = useState<number>(1);
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Stop video stream on close
+  const stopLiveStream = useCallback(() => {
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((track) => {
+        try {
+          track.stop();
+        } catch {
+          // ignore
+        }
+      });
+      streamRef.current = null;
+    }
+    if (videoRef.current) {
+      videoRef.current.srcObject = null;
+    }
+    setLiveStreamActive(false);
+    setTorchOn(false);
+  }, []);
+
+  const startLiveStream = useCallback(async (preferredFacing: 'environment' | 'user' = facingMode) => {
+    stopLiveStream();
+    setStreamError(null);
+
+    // Guard if mediaDevices not supported
+    if (!navigator?.mediaDevices?.getUserMedia) {
+      setStreamError('เบราว์เซอร์นี้ไม่รองรับการสตรีมกล้องสด กรุณาใช้กล้องมือถือถ่ายภาพ');
+      return;
+    }
+
+    try {
+      const constraints: MediaStreamConstraints = {
+        video: {
+          facingMode: { ideal: preferredFacing },
+          width: { ideal: 1920, min: 640 },
+          height: { ideal: 1080, min: 480 },
+        },
+        audio: false,
+      };
+
+      const stream = await navigator.mediaDevices.getUserMedia(constraints);
+      streamRef.current = stream;
+
+      // Check for torch capability
+      const videoTrack = stream.getVideoTracks()[0];
+      if (videoTrack && typeof (videoTrack as any).getCapabilities === 'function') {
+        const capabilities = (videoTrack as any).getCapabilities() || {};
+        setHasTorch(Boolean(capabilities.torch));
+      } else {
+        setHasTorch(false);
+      }
+
+      const videoEl = videoRef.current;
+      if (videoEl) {
+        videoEl.srcObject = stream;
+        videoEl.setAttribute('playsinline', 'true');
+        videoEl.setAttribute('webkit-playsinline', 'true');
+        videoEl.muted = true;
+        
+        videoEl.onloadedmetadata = () => {
+          videoEl.play().catch((err) => {
+            console.warn('Auto-play blocked or error:', err);
+          });
+        };
+        
+        // Immediate play attempt
+        videoEl.play().catch(() => {});
+      }
+
+      setLiveStreamActive(true);
+    } catch (err: any) {
+      console.warn('getUserMedia error:', err);
+      let errorMsg = 'ไม่สามารถเปิดกล้องสดได้';
+      if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+        errorMsg = 'ท่านปฏิเสธการเข้าถึงกล้อง กรุณาอนุญาตหรือใช้ปุ่มเปิดกล้องมือถือ (Native Camera)';
+      } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
+        errorMsg = 'ไม่พบอุปกรณ์กล้องบนเครื่องนี้';
+      }
+      setStreamError(errorMsg);
+      setLiveStreamActive(false);
+    }
+  }, [facingMode, stopLiveStream]);
+
+  // Handle modal open/close lifecycle
   useEffect(() => {
-    if (!isOpen) {
-      stopLiveStream();
+    if (isOpen) {
       setCapturedImage(null);
       setDetectedReading('');
       setWarning(null);
       setAnalyzing(false);
+      setZoomLevel(1);
+      // Auto start live stream on open
+      startLiveStream('environment');
+    } else {
+      stopLiveStream();
     }
-  }, [isOpen]);
 
-  const stopLiveStream = () => {
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach((track) => track.stop());
-      streamRef.current = null;
+    return () => {
+      stopLiveStream();
+    };
+  }, [isOpen, startLiveStream, stopLiveStream]);
+
+  const toggleTorch = async () => {
+    if (!streamRef.current || !hasTorch) return;
+    const track = streamRef.current.getVideoTracks()[0];
+    if (track) {
+      try {
+        const nextState = !torchOn;
+        await (track as any).applyConstraints({
+          advanced: [{ torch: nextState }],
+        });
+        setTorchOn(nextState);
+      } catch (err) {
+        console.warn('Failed to toggle torch:', err);
+      }
     }
-    setLiveStreamActive(false);
   };
 
-  const startLiveStream = async () => {
-    try {
-      stopLiveStream();
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'environment' },
-      });
-      streamRef.current = stream;
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        videoRef.current.play();
-      }
-      setLiveStreamActive(true);
-      setMode('live');
-    } catch (err) {
-      console.warn('Live stream not supported or permission denied, using Native Camera capture');
-      setMode('upload');
-      if (fileInputRef.current) {
-        fileInputRef.current.click();
-      }
-    }
+  const toggleFacingMode = () => {
+    const nextMode = facingMode === 'environment' ? 'user' : 'environment';
+    setFacingMode(nextMode);
+    startLiveStream(nextMode);
   };
 
   const captureLiveFrame = () => {
-    if (!videoRef.current) return;
     const video = videoRef.current;
+    if (!video) return;
+
     const canvas = document.createElement('canvas');
-    canvas.width = video.videoWidth || 640;
-    canvas.height = video.videoHeight || 480;
+    const width = video.videoWidth || 1280;
+    const height = video.videoHeight || 720;
+    canvas.width = width;
+    canvas.height = height;
     const ctx = canvas.getContext('2d');
+
     if (ctx) {
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-      const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+      if (zoomLevel > 1) {
+        const cropW = width / zoomLevel;
+        const cropH = height / zoomLevel;
+        const cropX = (width - cropW) / 2;
+        const cropY = (height - cropH) / 2;
+        ctx.drawImage(video, cropX, cropY, cropW, cropH, 0, 0, width, height);
+      } else {
+        ctx.drawImage(video, 0, 0, width, height);
+      }
+
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
       stopLiveStream();
       setCapturedImage(dataUrl);
       analyzeMeterImage(dataUrl);
@@ -95,10 +193,13 @@ export default function CameraMeterModal({
     const reader = new FileReader();
     reader.onload = () => {
       const dataUrl = reader.result as string;
+      stopLiveStream();
       setCapturedImage(dataUrl);
       analyzeMeterImage(dataUrl);
     };
     reader.readAsDataURL(file);
+    // Clear input so same file can be selected again
+    e.target.value = '';
   };
 
   const analyzeMeterImage = async (dataUrl: string) => {
@@ -123,7 +224,7 @@ export default function CameraMeterModal({
         setWarning(data.data.warning || null);
         setEngineUsed(data.data.engine);
       } else {
-        setWarning('ระบบไม่สามารถอ่านตัวเลขได้ชัดเจน กรุณากรอกตัวเลขด้วยตนเอง');
+        setWarning('ระบบไม่สามารถอ่านตัวเลขได้ชัดเจน กรุณาตรวจสอบหรือกรอกตัวเลขด้วยตนเอง');
       }
     } catch (err) {
       console.error('OCR analyze error:', err);
@@ -145,12 +246,13 @@ export default function CameraMeterModal({
 
   if (!isOpen) return null;
 
-  const typeColor = meterType === 'Water' ? 'text-blue-400' : 'text-amber-400';
-  const typeLabel = meterType === 'Water' ? 'มิเตอร์น้ำ' : 'มิเตอร์ไฟ';
+  const isWater = meterType === 'Water';
+  const typeLabel = isWater ? 'มิเตอร์น้ำ' : 'มิเตอร์ไฟ';
+  const typeColor = isWater ? 'text-cyan-400' : 'text-amber-400';
   const unitsDelta = detectedReading ? Number(detectedReading) - previousReading : 0;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-in fade-in">
+    <div className="fixed inset-0 z-50 flex flex-col sm:items-center sm:justify-center bg-black/90 sm:backdrop-blur-md animate-in fade-in sm:p-4">
       {/* Hidden Native Camera Input */}
       <input
         type="file"
@@ -161,186 +263,382 @@ export default function CameraMeterModal({
         className="hidden"
       />
 
-      <div className="bg-[#0F172A] border border-white/15 rounded-3xl w-full max-w-md overflow-hidden shadow-2xl space-y-4 p-6 relative">
-        {/* Header */}
-        <div className="flex items-center justify-between pb-3 border-b border-white/10">
-          <div>
-            <span className="text-[10px] font-black uppercase tracking-wider text-white/50">
-              AI Vision Meter Scanner
-            </span>
-            <h3 className="text-lg font-black text-white flex items-center gap-2">
-              <span>📸</span>
-              <span>สแกน{typeLabel} ห้อง {roomNumber}</span>
-            </h3>
+      {/* Main Container: Fullscreen on mobile, elegant dialog on desktop */}
+      <div className="flex flex-col w-full h-full sm:h-auto sm:max-h-[94vh] sm:max-w-2xl bg-slate-950 sm:bg-[#0B1120] sm:border sm:border-white/15 sm:rounded-3xl shadow-2xl overflow-hidden relative">
+        
+        {/* 1. Header Bar */}
+        <div className="h-16 px-4 sm:px-6 bg-slate-900/90 border-b border-white/10 flex items-center justify-between shrink-0 z-20 backdrop-blur-md">
+          <div className="flex items-center gap-3">
+            <div className={`w-9 h-9 rounded-xl flex items-center justify-center text-lg font-bold ${
+              isWater ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30' : 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
+            }`}>
+              {isWater ? '💧' : '⚡'}
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">
+                  AI Meter Vision Scanner
+                </span>
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              </div>
+              <h3 className="text-sm sm:text-base font-black text-white">
+                สแกน{typeLabel} <span className="text-cyan-400 font-mono">ห้อง {roomNumber}</span>
+              </h3>
+            </div>
           </div>
-          <button
-            onClick={() => {
-              stopLiveStream();
-              onClose();
-            }}
-            className="p-2 text-white/50 hover:text-white rounded-xl text-lg hover:bg-white/5 transition-colors cursor-pointer"
-          >
-            ✕
-          </button>
+
+          <div className="flex items-center gap-2">
+            {/* Camera Switch button (when live) */}
+            {liveStreamActive && !capturedImage && (
+              <button
+                type="button"
+                onClick={toggleFacingMode}
+                title="สลับกล้องหน้า/หลัง"
+                className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-white/80 border border-white/10 text-xs flex items-center gap-1 transition-all cursor-pointer"
+              >
+                <span>🔄</span>
+                <span className="hidden sm:inline text-[11px]">สลับกล้อง</span>
+              </button>
+            )}
+
+            {/* Torch button (when supported) */}
+            {liveStreamActive && !capturedImage && hasTorch && (
+              <button
+                type="button"
+                onClick={toggleTorch}
+                title={torchOn ? 'ปิดไฟฉาย' : 'เปิดไฟฉาย'}
+                className={`p-2 rounded-xl border text-xs flex items-center gap-1 transition-all cursor-pointer ${
+                  torchOn
+                    ? 'bg-amber-400 text-slate-950 font-bold border-amber-300 shadow-[0_0_15px_rgba(251,191,36,0.6)]'
+                    : 'bg-white/5 hover:bg-white/10 text-white/80 border-white/10'
+                }`}
+              >
+                <span>🔦</span>
+                <span className="hidden sm:inline text-[11px]">{torchOn ? 'ไฟเปิด' : 'เปิดไฟ'}</span>
+              </button>
+            )}
+
+            {/* Close Button */}
+            <button
+              type="button"
+              onClick={() => {
+                stopLiveStream();
+                onClose();
+              }}
+              className="w-9 h-9 rounded-xl bg-white/5 hover:bg-white/15 text-white/70 hover:text-white flex items-center justify-center transition-colors cursor-pointer border border-white/10"
+            >
+              ✕
+            </button>
+          </div>
         </div>
 
-        {/* Viewfinder / Preview Box */}
-        <div className="relative rounded-2xl overflow-hidden bg-black/60 border border-white/10 aspect-[4/3] flex items-center justify-center">
-          {/* 1. Live Stream View */}
-          {liveStreamActive && (
-            <div className="relative w-full h-full">
-              <video
-                ref={videoRef}
-                autoPlay
-                playsInline
-                muted
-                className="w-full h-full object-cover"
-              />
-              {/* Target Aim Box */}
-              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <div className="w-3/4 h-24 border-2 border-cyan-400/80 rounded-xl shadow-[0_0_20px_rgba(6,182,212,0.4)] flex items-center justify-center">
-                  <span className="text-[10px] font-bold text-cyan-300 bg-black/60 px-2 py-0.5 rounded">
-                    เล็งหน้าปัดตัวเลขให้อยู่ในกรอบ
-                  </span>
-                </div>
+        {/* 2. Camera Viewfinder Area (Expanded, High-Resolution, Large Frame) */}
+        <div className="flex-1 relative w-full bg-black flex items-center justify-center overflow-hidden min-h-[50vh] sm:min-h-[440px]">
+          
+          {/* Always-mounted Video Element with playsInline and muted for Safari */}
+          <video
+            ref={videoRef}
+            autoPlay
+            playsInline
+            muted
+            style={{
+              transform: `scale(${zoomLevel})`,
+              transformOrigin: 'center center',
+              transition: 'transform 0.2s ease-out',
+            }}
+            className={`w-full h-full object-cover select-none ${
+              liveStreamActive && !capturedImage ? 'block' : 'hidden'
+            }`}
+          />
+
+          {/* Aiming Reticle Overlay (Only shown during active live stream) */}
+          {liveStreamActive && !capturedImage && (
+            <div className="absolute inset-0 pointer-events-none flex flex-col items-center justify-center">
+              
+              {/* Top Hint Badge */}
+              <div className="mb-3 px-4 py-1.5 rounded-full bg-black/75 backdrop-blur-md border border-cyan-400/30 shadow-lg flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
+                <span className="text-xs font-bold text-cyan-300 tracking-wide">
+                  เล็งหน้าปัดตัวเลขมิเตอร์ให้อยู่ในกรอบนี้
+                </span>
               </div>
+
+              {/* Large High-Contrast Viewfinder Aim Box */}
+              <div className="w-[88%] max-w-md h-48 sm:h-56 relative rounded-2xl border-2 border-cyan-400/60 shadow-[0_0_25px_rgba(6,182,212,0.35)] bg-cyan-950/10 overflow-hidden">
+                
+                {/* 4 Glowing Corner Brackets */}
+                <div className="absolute top-0 left-0 w-6 h-6 border-t-4 border-l-4 border-cyan-400 rounded-tl-xl shadow-[0_0_10px_#22d3ee]" />
+                <div className="absolute top-0 right-0 w-6 h-6 border-t-4 border-r-4 border-cyan-400 rounded-tr-xl shadow-[0_0_10px_#22d3ee]" />
+                <div className="absolute bottom-0 left-0 w-6 h-6 border-b-4 border-l-4 border-cyan-400 rounded-bl-xl shadow-[0_0_10px_#22d3ee]" />
+                <div className="absolute bottom-0 right-0 w-6 h-6 border-b-4 border-r-4 border-cyan-400 rounded-br-xl shadow-[0_0_10px_#22d3ee]" />
+
+                {/* Center Crosshair Tick Marks */}
+                <div className="absolute inset-0 flex items-center justify-center opacity-30">
+                  <div className="w-8 h-0.5 bg-cyan-300" />
+                  <div className="h-8 w-0.5 bg-cyan-300 -ml-4" />
+                </div>
+
+                {/* Scanning Laser Line Animation */}
+                <div 
+                  className="absolute left-0 right-0 h-1 bg-gradient-to-r from-transparent via-cyan-400 to-transparent shadow-[0_0_12px_#22d3ee] animate-pulse"
+                  style={{
+                    animation: 'meterScan 2.4s ease-in-out infinite',
+                  }}
+                />
+              </div>
+
+              {/* Bottom Instruction */}
+              <p className="mt-3 text-[11px] font-semibold text-white/70 bg-black/60 px-3 py-1 rounded-full">
+                {isWater ? '💧 มิเตอร์น้ำ: ถ่ายตัวเลขแถบดำ-แดง' : '⚡ มิเตอร์ไฟ: ถ่ายตัวเลขช่องกระจกหมุน'}
+              </p>
             </div>
           )}
 
-          {/* 2. Captured Image Preview */}
-          {!liveStreamActive && capturedImage && (
-            <div className="relative w-full h-full">
+          {/* Floating Zoom Controls (1x, 1.5x, 2x) on viewfinder */}
+          {liveStreamActive && !capturedImage && (
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center bg-black/70 backdrop-blur-md rounded-full p-1 border border-white/15 shadow-xl z-10 gap-1">
+              {[1, 1.5, 2].map((lvl) => (
+                <button
+                  key={lvl}
+                  type="button"
+                  onClick={() => setZoomLevel(lvl)}
+                  className={`px-3 py-1 rounded-full text-xs font-bold transition-all cursor-pointer ${
+                    zoomLevel === lvl
+                      ? 'bg-cyan-500 text-slate-950 shadow-md scale-105'
+                      : 'text-white/70 hover:text-white'
+                  }`}
+                >
+                  {lvl}x
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* 3. Captured Image Review State */}
+          {capturedImage && (
+            <div className="relative w-full h-full flex items-center justify-center bg-black">
               <img
                 src={capturedImage}
-                alt="Captured Meter"
-                className="w-full h-full object-contain"
+                alt="Captured Meter Reading"
+                className="w-full h-full object-contain max-h-[60vh]"
               />
+
               {analyzing && (
-                <div className="absolute inset-0 bg-black/70 flex flex-col items-center justify-center gap-2 backdrop-blur-xs">
-                  <div className="w-8 h-8 border-3 border-cyan-400 border-t-transparent rounded-full animate-spin" />
-                  <p className="text-xs font-bold text-cyan-300">
-                    AI กำลังอ่านตัวเลขหน้าปัด...
-                  </p>
+                <div className="absolute inset-0 bg-black/75 backdrop-blur-xs flex flex-col items-center justify-center gap-3">
+                  <div className="relative w-14 h-14">
+                    <div className="absolute inset-0 rounded-full border-4 border-cyan-500/20" />
+                    <div className="absolute inset-0 rounded-full border-4 border-cyan-400 border-t-transparent animate-spin" />
+                    <div className="absolute inset-2 rounded-full border-4 border-emerald-400 border-b-transparent animate-spin" style={{ animationDirection: 'reverse', animationDuration: '1.2s' }} />
+                  </div>
+                  <div className="text-center">
+                    <p className="text-sm font-black text-white">
+                      AI กำลังอ่านตัวเลขบนหน้าปัด...
+                    </p>
+                    <p className="text-xs text-cyan-400/80 font-mono mt-0.5">
+                      Analyzing Optical Character Recognition
+                    </p>
+                  </div>
                 </div>
               )}
             </div>
           )}
 
-          {/* 3. Empty State (Initial) */}
+          {/* 4. Stream Error or Fallback State */}
           {!liveStreamActive && !capturedImage && (
-            <div className="text-center p-6 space-y-3">
-              <span className="text-4xl block">📸</span>
-              <p className="text-xs text-white/60">
-                เลือกวิธีถ่ายรูปมิเตอร์ห้อง {roomNumber}
-              </p>
-              <div className="flex flex-col gap-2 pt-2">
+            <div className="p-6 max-w-md text-center space-y-4">
+              <div className="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-3xl mx-auto">
+                📸
+              </div>
+              <div className="space-y-1">
+                <h4 className="text-base font-bold text-white">
+                  เลือกวิธีบันทึกภาพมิเตอร์ห้อง {roomNumber}
+                </h4>
+                {streamError && (
+                  <p className="text-xs text-amber-300 bg-amber-500/10 border border-amber-500/20 p-2 rounded-xl">
+                    {streamError}
+                  </p>
+                )}
+                <p className="text-xs text-white/50">
+                  ถ่ายภาพหน้าปัดให้เห็นตัวเลขชัดเจน เพื่อให้ระบบ AI สกัดตัวเลขอัตโนมัติ
+                </p>
+              </div>
+
+              <div className="flex flex-col gap-2.5 pt-2">
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
-                  className="px-4 py-2.5 bg-cyan-500 hover:bg-cyan-400 text-slate-950 rounded-xl font-bold text-xs shadow-lg shadow-cyan-500/20 transition-all cursor-pointer flex items-center justify-center gap-2"
+                  className="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-black text-sm shadow-lg shadow-emerald-500/25 flex items-center justify-center gap-2 cursor-pointer transition-transform active:scale-[0.99]"
                 >
-                  <span>📷</span>
+                  <span className="text-lg">📷</span>
                   <span>เปิดกล้องมือถือถ่ายภาพ (Native Camera)</span>
                 </button>
+
                 <button
                   type="button"
-                  onClick={startLiveStream}
-                  className="px-4 py-2 bg-white/10 hover:bg-white/15 text-white/80 text-xs font-semibold rounded-xl transition-all cursor-pointer flex items-center justify-center gap-2"
+                  onClick={() => startLiveStream('environment')}
+                  className="w-full py-3 px-4 rounded-xl bg-white/10 hover:bg-white/15 text-white font-bold text-xs border border-white/10 flex items-center justify-center gap-2 cursor-pointer transition-all"
                 >
-                  <span>🎥</span>
-                  <span>สตรีมกล้องสด (Live Video)</span>
+                  <span className="text-base">🎥</span>
+                  <span>ลองเปิดกล้องสดอีกครั้ง (Retry Live Camera)</span>
                 </button>
               </div>
             </div>
           )}
         </div>
 
-        {/* Live Stream Controls */}
-        {liveStreamActive && (
-          <div className="flex gap-2">
-            <button
-              onClick={captureLiveFrame}
-              className="flex-1 py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer"
-            >
-              <span>📸</span>
-              <span>ถ่ายภาพและอ่านตัวเลข</span>
-            </button>
-            <button
-              onClick={stopLiveStream}
-              className="px-4 py-3 bg-white/10 text-white/70 hover:text-white rounded-xl text-xs font-bold cursor-pointer"
-            >
-              ยกเลิก
-            </button>
-          </div>
-        )}
+        {/* 3. Bottom Controls Panel */}
+        <div className="p-4 sm:p-5 bg-slate-900/95 border-t border-white/10 shrink-0 z-20 space-y-4">
+          
+          {/* A. Controls during active live stream: Prominent Shutter + Native Camera */}
+          {liveStreamActive && !capturedImage && (
+            <div className="flex items-center justify-between gap-3">
+              {/* Native camera trigger button */}
+              <button
+                type="button"
+                onClick={() => {
+                  stopLiveStream();
+                  fileInputRef.current?.click();
+                }}
+                className="flex-1 py-3 px-3 rounded-2xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs border border-white/10 flex items-center justify-center gap-2 cursor-pointer transition-all shadow"
+              >
+                <span className="text-base">📷</span>
+                <span>กล้องมือถือชัดสูง</span>
+              </button>
 
-        {/* Retake buttons when image captured */}
-        {!liveStreamActive && capturedImage && (
-          <div className="flex items-center justify-between text-xs">
-            <button
-              type="button"
-              onClick={() => fileInputRef.current?.click()}
-              className="text-cyan-400 hover:text-cyan-300 font-bold flex items-center gap-1 cursor-pointer"
-            >
-              <span>🔄</span>
-              <span>ถ่ายภาพใหม่</span>
-            </button>
-            {engineUsed && (
-              <span className="text-[10px] text-white/40 font-mono">
-                Engine: {engineUsed}
-              </span>
-            )}
-          </div>
-        )}
+              {/* Big Ergonomic Camera Shutter Button */}
+              <button
+                type="button"
+                onClick={captureLiveFrame}
+                title="กดถ่ายภาพและอ่านตัวเลข"
+                className="w-18 h-18 rounded-full border-4 border-white flex items-center justify-center p-1 cursor-pointer transition-transform active:scale-90 shrink-0 shadow-[0_0_20px_rgba(255,255,255,0.4)]"
+              >
+                <div className="w-full h-full rounded-full bg-white hover:bg-emerald-400 active:bg-emerald-500 transition-colors flex items-center justify-center text-slate-950 text-xl font-bold">
+                  📸
+                </div>
+              </button>
 
-        {/* OCR Result & Input Field */}
-        {capturedImage && (
-          <div className="p-4 rounded-2xl bg-[#080F1E] border border-white/10 space-y-3">
-            <div className="flex items-center justify-between">
-              <label className="text-xs font-bold text-white">
-                ตัวเลขมิเตอร์ที่อ่านได้:
-              </label>
-              <span className="text-[11px] text-slate-400 font-mono">
-                เลขงวดก่อน: <strong>{previousReading}</strong>
-              </span>
+              {/* Cancel Button */}
+              <button
+                type="button"
+                onClick={() => {
+                  stopLiveStream();
+                  onClose();
+                }}
+                className="flex-1 py-3 px-3 rounded-2xl bg-white/5 hover:bg-white/10 text-white/70 hover:text-white font-bold text-xs border border-white/10 flex items-center justify-center gap-1 cursor-pointer transition-all"
+              >
+                <span>✕ ยกเลิก</span>
+              </button>
             </div>
+          )}
 
-            <div className="flex items-center gap-3">
-              <input
-                type="number"
-                step="any"
-                value={detectedReading}
-                onChange={(e) => setDetectedReading(e.target.value)}
-                placeholder="กรอกตัวเลข"
-                className="flex-1 px-4 py-2.5 bg-slate-900 border border-white/20 focus:border-cyan-400 rounded-xl text-lg font-black text-cyan-300 font-mono outline-none shadow-inner"
-              />
-              <div className="text-right shrink-0">
-                <span className="text-[10px] text-white/50 block">ใช้ไปงวดนี้</span>
-                <span className={`text-sm font-black ${unitsDelta >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
-                  {unitsDelta >= 0 ? `+${unitsDelta}` : unitsDelta} หน่วย
-                </span>
+          {/* B. Controls during Captured Image Review & OCR Result Verification */}
+          {capturedImage && (
+            <div className="space-y-3">
+              
+              {/* Retake and Engine status bar */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => startLiveStream(facingMode)}
+                    className="px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/15 text-cyan-300 font-bold text-xs flex items-center gap-1.5 cursor-pointer border border-white/10 transition-all"
+                  >
+                    <span>🔄 ถ่ายใหม่ (กล้องสด)</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-white/70 font-bold text-xs flex items-center gap-1.5 cursor-pointer border border-white/5 transition-all"
+                  >
+                    <span>📷 กล้องมือถือ</span>
+                  </button>
+                </div>
+
+                {engineUsed && (
+                  <span className="text-[10px] font-mono text-white/40 bg-white/5 px-2 py-1 rounded-md">
+                    AI: {engineUsed}
+                  </span>
+                )}
               </div>
+
+              {/* Number Input & Delta calculation */}
+              <div className="p-3.5 sm:p-4 rounded-2xl bg-slate-950 border border-white/10 space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-bold text-white flex items-center gap-1.5">
+                    <span>🔢</span>
+                    <span>ตัวเลขมิเตอร์ที่อ่านได้:</span>
+                  </label>
+                  <span className="text-[11px] text-slate-400 font-mono">
+                    งวดก่อน: <strong className="text-white">{previousReading}</strong>
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <div className="relative flex-1">
+                    <input
+                      type="number"
+                      step="any"
+                      value={detectedReading}
+                      onChange={(e) => setDetectedReading(e.target.value)}
+                      placeholder="กรอกตัวเลขหน้าปัด"
+                      className="w-full px-4 py-3 bg-slate-900 border border-cyan-400/40 focus:border-cyan-400 rounded-xl text-xl sm:text-2xl font-black text-cyan-300 font-mono outline-none shadow-inner tracking-wider"
+                    />
+                  </div>
+
+                  <div className="text-right shrink-0 bg-slate-900 px-3 py-2 rounded-xl border border-white/10 min-w-[90px]">
+                    <span className="text-[10px] text-slate-400 block font-bold">ใช้ไปงวดนี้</span>
+                    <span className={`text-base font-black font-mono ${
+                      unitsDelta >= 0 ? 'text-emerald-400' : 'text-rose-400'
+                    }`}>
+                      {unitsDelta >= 0 ? `+${unitsDelta}` : unitsDelta}
+                    </span>
+                    <span className="text-[10px] text-slate-400 ml-1">หน่วย</span>
+                  </div>
+                </div>
+
+                {/* Warning message if any */}
+                {warning && (
+                  <p className="text-xs text-amber-300 bg-amber-500/10 border border-amber-500/20 p-2.5 rounded-xl leading-relaxed">
+                    ⚠️ {warning}
+                  </p>
+                )}
+              </div>
+
+              {/* Confirm Save Button */}
+              <button
+                type="button"
+                onClick={handleSave}
+                disabled={analyzing || !detectedReading}
+                className="w-full py-3.5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 disabled:opacity-40 text-slate-950 font-black text-sm rounded-xl shadow-lg shadow-emerald-500/20 transition-all cursor-pointer flex items-center justify-center gap-2"
+              >
+                <span>💾</span>
+                <span>บันทึกตัวเลขมิเตอร์ห้อง {roomNumber}</span>
+              </button>
             </div>
+          )}
 
-            {/* Warning Message */}
-            {warning && (
-              <p className="text-xs text-amber-300 bg-amber-500/10 border border-amber-500/20 p-2.5 rounded-xl leading-relaxed">
-                ⚠️ {warning}
-              </p>
-            )}
+        </div>
 
-            {/* Confirm Save Button */}
-            <button
-              onClick={handleSave}
-              disabled={analyzing || !detectedReading}
-              className="w-full py-3 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 disabled:opacity-50 text-slate-950 font-black text-xs rounded-xl shadow-lg shadow-cyan-500/20 transition-all cursor-pointer flex items-center justify-center gap-2"
-            >
-              <span>💾</span>
-              <span>บันทึกตัวเลขและแนบรูปภาพเป็นหลักฐาน</span>
-            </button>
-          </div>
-        )}
       </div>
+
+      <style jsx>{`
+        @keyframes meterScan {
+          0% {
+            top: 4%;
+            opacity: 0.2;
+          }
+          20% {
+            opacity: 1;
+          }
+          80% {
+            opacity: 1;
+          }
+          100% {
+            top: 94%;
+            opacity: 0.2;
+          }
+        }
+      `}</style>
     </div>
   );
 }

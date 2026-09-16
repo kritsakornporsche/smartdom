@@ -14,6 +14,7 @@ const filesToUpload = [
   'app/owner/page.tsx',
   'app/owner/rooms/page.tsx',
   'app/owner/meters/page.tsx',
+  'app/owner/meters/components/CameraMeterModal.tsx',
   'app/tenant/components/TenantSidebar.tsx',
   'app/tenant/billing/page.tsx',
   'app/keeper/components/KeeperSidebar.tsx',

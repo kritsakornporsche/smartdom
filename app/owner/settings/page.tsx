@@ -215,6 +215,34 @@ export default function OwnerSettings() {
                     placeholder="ระบุเลขที่ ถนน แขวง เขต..."
                   />
                 </div>
+
+                <div className="space-y-2 md:col-span-2">
+                  <div className="flex items-center justify-between">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-white/50 block pl-1">
+                      📍 ลิงก์ Google Maps / พิกัดปักหมุดแผนที่ (Map Location URL)
+                    </label>
+                    {formData.map_url && (
+                      <a
+                        href={formData.map_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[10px] text-cyan-400 hover:text-cyan-300 underline font-bold"
+                      >
+                        ทดสอบเปิดแผนที่ ↗
+                      </a>
+                    )}
+                  </div>
+                  <input
+                    type="text"
+                    value={formData.map_url}
+                    onChange={e => setFormData({ ...formData, map_url: e.target.value })}
+                    className="w-full bg-[#0F172A] border border-white/20 rounded-xl px-4 py-3 text-white font-bold text-sm focus:outline-none focus:border-primary"
+                    placeholder="เช่น https://maps.google.com/?q=19.0286,99.8967 หรือ ลิงก์แชร์จาก Google Maps"
+                  />
+                  <p className="text-[11px] text-white/40 pl-1">
+                    * พิกัดนี้จะนำไปแสดงเป็นแผนที่แบบโต้ตอบ (Interactive Map) บนหน้ารายละเอียดหอพักใน Explore เพื่อให้นักศึกษาค้นหาและนำทางมายังหอพักได้ง่าย
+                  </p>
+                </div>
               </div>
             </div>
 

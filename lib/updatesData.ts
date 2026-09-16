@@ -15,10 +15,66 @@ export interface DailyUpdate {
 
 export const SYSTEM_UPDATES: DailyUpdate[] = [
   {
+    date: '16 กันยายน 2026',
+    version: 'v2.6.1',
+    tagline: 'ระบบแจ้งเตือนการจองห้องพักสำหรับเจ้าของหอ, แผนที่ปักหมุด Interactive Google Maps บนหน้า Explore, ปรับปรุงคอนทราสต์ธีมสว่าง และสลับหอพักบนมือถือ',
+    isLatest: true,
+    tasks: [
+      {
+        id: '2026-09-16-1',
+        title: 'ระบบแจ้งเตือนเจ้าของหอพักเมื่อมีการจองห้องพัก พร้อมเมนู "รายการจองห้อง"',
+        category: 'Feature',
+        details: [
+          'ส่งการแจ้งเตือนอัตโนมัติเข้าตาราง notifications ถึงเจ้าของหอพักทันทีที่ผู้เช่าส่งคำขอจองห้องพร้อมแนบสลิปมัดจำ',
+          'เพิ่มเมนู "รายการจองห้อง" (🛎️) บน Sidebar และ Drawer ของเจ้าของหอพัก สามารถคลิกจากกระดิ่งแจ้งเตือนไปยังหน้าตรวจสอบได้ทันที (/owner/bookings)',
+          'ปรับปรุง API สถิติ (/api/owner/stats) ให้นับคำขอจองห้องค้างตรวจ (PendingOwnerSignature) ถูกต้องเรียลไทม์'
+        ]
+      },
+      {
+        id: '2026-09-16-2',
+        title: 'แสดงแผนที่และพิกัดปักหมุดแบบโต้ตอบ (Interactive Pinned Map) บนหน้าหอพัก Explore',
+        category: 'Feature',
+        details: [
+          'ฝังกรอบแผนที่ Google Maps แบบโต้ตอบ (iframe) แสดงตำแหน่งพิกัดปักหมุดจริงของหอพักบนหน้ารายละเอียดหอพัก (/explore/[dormId]) และหน้าจองห้องพัก (/explore/room/[id])',
+          'เพิ่มปุ่ม "🧭 ขอเส้นทางนำทาง" เชื่อมตรงเข้าแอป Google Maps นำทางมายังหอพักได้ทันที 1-Click',
+          'เพิ่มช่องกรอกและทดสอบพิกัดแผนที่ (Map Location URL) ในหน้าตั้งค่าหอพักของเจ้าของหอพัก (/owner/settings)'
+        ]
+      },
+      {
+        id: '2026-09-16-3',
+        title: 'ปรับปรุงคอนทราสต์โหมดสว่าง (Light Theme Contrast) คมชัดทุกไอคอน ไม่จมพื้นหลัง',
+        category: 'Design',
+        details: [
+          'เพิ่ม Global Theme Overrides ใน app/globals.css สำหรับ :root:not(.dark) ให้ไอคอน SVG และข้อความความโปร่งใสสีขาวแสดงผลเป็นสี Slate คมชัดบนพื้นหลังสว่าง',
+          'ปรับแต่งแถบ Header, Sidebar และ Input ค้นหาห้องพักทุกแดชบอร์ดให้ใช้ Semantic Tokens (bg-card, text-card-foreground, border-border) ปราศจากสีจม'
+        ]
+      },
+      {
+        id: '2026-09-16-4',
+        title: 'เพิ่มเมนูดรอปดาวน์สลับหอพักและ "+ เพิ่มหอพัก" ใน Mobile Drawer Menu',
+        category: 'Design',
+        details: [
+          'นำกล่องเลือกหอพักและปุ่มเพิ่มหอพักมาไว้ส่วนบนสุดของแถบเมนูข้าง (OwnerSidebar) ให้ผู้ใช้งานบนมือถือสามารถสลับหอพักและเพิ่มหอพักใหม่ได้สะดวกใน Drawer',
+          'นำรูปภาพ Profile Face Avatar ออกจาก Top Navbar ทุกแดชบอร์ดเพื่อความสะอาดตาและโฟกัสฟังก์ชันสำคัญ'
+        ]
+      },
+      {
+        id: '2026-09-16-5',
+        title: 'ระบบอัปเดตเวอร์ชันและสร้าง Git Tag อัตโนมัติทุกครั้งที่ Push ขึ้น Git',
+        category: 'Performance',
+        details: [
+          'พัฒนา scripts/generate-version.js ให้นับ Build Number เชื่อมโยงกับ Git Commit Count แบบย้อนหลังและไปข้างหน้า 100%',
+          'สร้าง Git Tags ย้อนหลังสำหรับทุกเวอร์ชันหลัก (v2.0.0, v2.1.0, v2.2.0, v2.3.0, v2.4.0, v2.5.0, v2.6.0, v2.6.1) พร้อม Push ขึ้น GitHub',
+          'ติดตั้ง Git Hooks (pre-commit & pre-push) และสคริปต์ npm run git:push ตรวจจับการเปลี่ยนแปลงและสร้าง Tag อัตโนมัติ'
+        ]
+      }
+    ]
+  },
+  {
     date: '14 กันยายน 2026',
     version: 'v2.6.0',
     tagline: 'ระบบจดมิเตอร์อัจฉริยะด้วยกล้อง AI (Hybrid OCR), ชำระเงิน Dynamic PromptPay พร้อม Bank Deeplink (0% Fee) และเปิดใช้งาน SSL HTTPS Server',
-    isLatest: true,
+    isLatest: false,
     tasks: [
       {
         id: '2026-09-14-1',

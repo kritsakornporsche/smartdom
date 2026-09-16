@@ -20,6 +20,41 @@ interface Room {
   move_out_status?: string | null;
 }
 
+function getGoogleMapsEmbedUrl(mapUrl?: string, address?: string, dormName?: string) {
+  if (mapUrl) {
+    const trimmed = mapUrl.trim();
+    if (trimmed.includes('/embed')) {
+      return trimmed;
+    }
+    const coordMatch = trimmed.match(/(-?\d+\.\d+)\s*,\s*(-?\d+\.\d+)/);
+    if (coordMatch) {
+      const lat = coordMatch[1];
+      const lng = coordMatch[2];
+      return `https://maps.google.com/maps?q=${lat},${lng}&t=&z=16&ie=UTF8&iwloc=&output=embed`;
+    }
+    try {
+      const url = new URL(trimmed);
+      const q = url.searchParams.get('q') || url.searchParams.get('query');
+      if (q) {
+        return `https://maps.google.com/maps?q=${encodeURIComponent(q)}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
+      }
+    } catch (e) {}
+    if (trimmed.startsWith('http')) {
+      return `https://maps.google.com/maps?q=${encodeURIComponent(trimmed)}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
+    }
+  }
+  const query = [dormName, address, 'มหาวิทยาลัยพะเยา'].filter(Boolean).join(' ');
+  return `https://maps.google.com/maps?q=${encodeURIComponent(query)}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
+}
+
+function getGoogleMapsDirectUrl(mapUrl?: string, address?: string, dormName?: string) {
+  if (mapUrl && !mapUrl.includes('/embed') && mapUrl.startsWith('http')) {
+    return mapUrl;
+  }
+  const query = [dormName, address, 'มหาวิทยาลัยพะเยา'].filter(Boolean).join(' ');
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
+}
+
 export default function GuestDormRoomsPage({ params }: { params: Promise<{ dormId: string }> }) {
   const resolvedParams = use(params);
   const dormId = resolvedParams.dormId;
@@ -298,6 +333,59 @@ export default function GuestDormRoomsPage({ params }: { params: Promise<{ dormI
               </div>
             )}
           </div>
+        </div>
+      </div>
+
+      {/* 📍 Pinned Map & Location Section */}
+      <div className="rounded-3xl bg-card text-card-foreground border border-border p-6 sm:p-8 shadow-sm space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary flex items-center gap-1.5 mb-1">
+              <span>📍</span> แผนที่และการเดินทาง
+            </span>
+            <h2 className="text-xl sm:text-2xl font-black text-foreground">
+              ตำแหน่งที่ตั้งและการปักหมุดหอพัก
+            </h2>
+            {dormInfo?.address && (
+              <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1.5">
+                <span>📌</span>
+                <span>{dormInfo.address}</span>
+              </p>
+            )}
+          </div>
+
+          <div className="flex items-center gap-2.5 shrink-0 flex-wrap">
+            <a
+              href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent((dormName ? dormName + ' ' : '') + (dormInfo?.address || 'มหาวิทยาลัยพะเยา'))}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-4 py-2.5 bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-bold rounded-xl flex items-center gap-1.5 transition-all shadow-sm hover:scale-105 active:scale-95"
+            >
+              <span>🧭</span>
+              <span>ขอเส้นทางนำทาง ↗</span>
+            </a>
+            <a
+              href={getGoogleMapsDirectUrl(dormInfo?.map_url, dormInfo?.address, dormName)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-4 py-2.5 bg-secondary hover:bg-secondary/80 text-foreground text-xs font-bold rounded-xl border border-border flex items-center gap-1.5 transition-all"
+            >
+              <span>🗺️</span>
+              <span>เปิดใน Google Maps</span>
+            </a>
+          </div>
+        </div>
+
+        {/* Embedded Interactive Map */}
+        <div className="w-full h-72 sm:h-96 rounded-2xl overflow-hidden border border-border shadow-inner relative bg-muted/40">
+          <iframe
+            title={`แผนที่ ${dormName}`}
+            src={getGoogleMapsEmbedUrl(dormInfo?.map_url, dormInfo?.address, dormName)}
+            className="w-full h-full border-0"
+            loading="lazy"
+            allowFullScreen
+            referrerPolicy="no-referrer-when-downgrade"
+          />
         </div>
       </div>
 

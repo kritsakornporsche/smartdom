@@ -10,6 +10,41 @@ import ContractSimulator from '@/app/components/ContractSimulator';
 import ContractSigner from '@/app/components/ContractSigner';
 import PromptPayBankSelector from '@/app/components/PromptPayBankSelector';
 
+function getGoogleMapsEmbedUrl(mapUrl?: string, address?: string, dormName?: string) {
+  if (mapUrl) {
+    const trimmed = mapUrl.trim();
+    if (trimmed.includes('/embed')) {
+      return trimmed;
+    }
+    const coordMatch = trimmed.match(/(-?\d+\.\d+)\s*,\s*(-?\d+\.\d+)/);
+    if (coordMatch) {
+      const lat = coordMatch[1];
+      const lng = coordMatch[2];
+      return `https://maps.google.com/maps?q=${lat},${lng}&t=&z=16&ie=UTF8&iwloc=&output=embed`;
+    }
+    try {
+      const url = new URL(trimmed);
+      const q = url.searchParams.get('q') || url.searchParams.get('query');
+      if (q) {
+        return `https://maps.google.com/maps?q=${encodeURIComponent(q)}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
+      }
+    } catch (e) {}
+    if (trimmed.startsWith('http')) {
+      return `https://maps.google.com/maps?q=${encodeURIComponent(trimmed)}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
+    }
+  }
+  const query = [dormName, address, 'มหาวิทยาลัยพะเยา'].filter(Boolean).join(' ');
+  return `https://maps.google.com/maps?q=${encodeURIComponent(query)}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
+}
+
+function getGoogleMapsDirectUrl(mapUrl?: string, address?: string, dormName?: string) {
+  if (mapUrl && !mapUrl.includes('/embed') && mapUrl.startsWith('http')) {
+    return mapUrl;
+  }
+  const query = [dormName, address, 'มหาวิทยาลัยพะเยา'].filter(Boolean).join(' ');
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
+}
+
 export default function RoomBookingPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = use(params);
   const roomId = resolvedParams.id;
@@ -492,23 +527,32 @@ export default function RoomBookingPage({ params }: { params: Promise<{ id: stri
                 </div>
               )}
 
-              {/* Location & Map Link */}
-              {room.dorm_map_url && (
-                <div className="pt-2">
+              {/* 📍 Pinned Map & Location */}
+              <div className="pt-3 space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                    <span>📍</span> พิกัดตำแหน่งหอพัก
+                  </span>
                   <a
-                    href={room.dorm_map_url}
+                    href={getGoogleMapsDirectUrl(room.dorm_map_url, room.dorm_address, room.dorm_name)}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-full py-3.5 px-4 bg-muted/40 hover:bg-muted text-xs font-bold rounded-xl border border-border flex items-center justify-between transition-colors group"
+                    className="text-[11px] font-bold text-primary hover:underline"
                   >
-                    <span className="flex items-center gap-2">
-                      <span>🗺️</span>
-                      <span>ดูพิกัดตำแหน่งหอพักบน Google Maps</span>
-                    </span>
-                    <span className="text-primary group-hover:translate-x-1 transition-transform">เปิดดูแผนที่ ↗</span>
+                    เปิดใน Google Maps ↗
                   </a>
                 </div>
-              )}
+                <div className="w-full h-48 rounded-2xl overflow-hidden border border-border shadow-inner relative bg-muted/40">
+                  <iframe
+                    title={`แผนที่ ${room.dorm_name}`}
+                    src={getGoogleMapsEmbedUrl(room.dorm_map_url, room.dorm_address, room.dorm_name)}
+                    className="w-full h-full border-0"
+                    loading="lazy"
+                    allowFullScreen
+                    referrerPolicy="no-referrer-when-downgrade"
+                  />
+                </div>
+              </div>
             </div>
 
           </div>

@@ -79,13 +79,13 @@ export default function OwnerSidebar({ isOpen, onClose }: OwnerSidebarProps) {
         ))}
       </nav>
 
-      {/* Bottom Minimal Logout */}
-      <div className="p-3 border-t border-white/5 bg-black/10 shrink-0">
+      {/* Bottom Logout Button */}
+      <div className="p-3 border-t border-white/10 bg-black/20 shrink-0">
         <button
-          onClick={() => signOut({ callbackUrl: '/' })}
-          className="w-full flex items-center justify-center gap-2 py-1.5 rounded-lg hover:bg-white/[0.04] text-white/40 hover:text-white text-xs font-medium transition-colors cursor-pointer"
+          onClick={() => signOut({ callbackUrl: '/signin' })}
+          className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 text-rose-300 hover:text-rose-100 border border-rose-500/30 text-xs font-bold transition-all cursor-pointer active:scale-95 shadow-sm"
         >
-          <span>🚪</span>
+          <span className="text-sm">🚪</span>
           <span>ออกจากระบบ</span>
         </button>
       </div>

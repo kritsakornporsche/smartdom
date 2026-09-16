@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { signOut, useSession } from 'next-auth/react';
+import ThemeToggle from '@/app/components/ThemeToggle';
 
 interface ResearcherNavbarProps {
   onToggleMobileMenu: () => void;
@@ -56,6 +57,8 @@ export default function ResearcherNavbar({ onToggleMobileMenu }: ResearcherNavba
             สถานะ: {session?.user?.name || 'Researcher'} (ผู้วิจัยระบบ)
           </span>
         </div>
+
+        <ThemeToggle />
 
         <Link
           href="/explore"

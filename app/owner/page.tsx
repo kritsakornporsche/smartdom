@@ -106,14 +106,13 @@ export default function OwnerDashboard() {
           <div className="flex items-center gap-2 text-xs">
             <Link
               href="/owner/settings"
-              className="text-white/40 hover:text-white transition-colors"
+              className="px-2.5 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-white/90 hover:text-white font-bold transition-all flex items-center gap-1 border border-white/10 shadow-sm"
             >
               ⚙️ ตั้งค่า
             </Link>
-            <span className="text-white/20">•</span>
             <Link
               href="/explore"
-              className="text-white/40 hover:text-white transition-colors"
+              className="px-2.5 py-1 rounded-lg bg-cyan-500/15 hover:bg-cyan-500/25 text-cyan-300 hover:text-cyan-200 font-bold transition-all flex items-center gap-1 border border-cyan-500/30 shadow-sm"
             >
               🌐 ดูหน้าเว็บหอ
             </Link>

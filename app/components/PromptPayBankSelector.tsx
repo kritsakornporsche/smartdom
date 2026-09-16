@@ -48,18 +48,62 @@ export default function PromptPayBankSelector({
     }
   };
 
-  const handleDownloadQR = () => {
+  const [savedSuccess, setSavedSuccess] = useState(false);
+
+  const handleDownloadQR = async () => {
     if (!qrImage) return;
     setDownloading(true);
+
     try {
+      // 1. Try Native Web Share API (supports iOS "Save to Files" / บันทึกไปยังแอปไฟล์ and "Save Image")
+      if (typeof navigator !== 'undefined' && typeof window !== 'undefined') {
+        try {
+          const res = await fetch(qrImage);
+          const blob = await res.blob();
+          const file = new File([blob], fileName, { type: blob.type || 'image/png' });
+
+          if (navigator.canShare && navigator.canShare({ files: [file] })) {
+            await navigator.share({
+              files: [file],
+              title: 'QR Code สำหรับชำระเงิน',
+              text: promptpayName ? `ชำระให้: ${promptpayName}` : undefined,
+            });
+            setSavedSuccess(true);
+            setTimeout(() => setSavedSuccess(false), 3000);
+            return;
+          }
+        } catch (shareErr: any) {
+          if (shareErr.name === 'AbortError') {
+            // User cancelled or closed the share sheet
+            return;
+          }
+          console.warn('Share API notice, falling back to download:', shareErr);
+        }
+      }
+
+      // 2. Fallback: Direct Blob Download Link
+      const res = await fetch(qrImage);
+      const blob = await res.blob();
+      const blobUrl = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = blobUrl;
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      setTimeout(() => URL.revokeObjectURL(blobUrl), 2000);
+
+      setSavedSuccess(true);
+      setTimeout(() => setSavedSuccess(false), 3000);
+    } catch (e) {
+      console.error('Download QR error:', e);
+      // Last-resort fallback
       const link = document.createElement("a");
       link.href = qrImage;
       link.download = fileName;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-    } catch (e) {
-      console.error(e);
     } finally {
       setTimeout(() => setDownloading(false), 800);
     }
@@ -78,17 +122,24 @@ export default function PromptPayBankSelector({
           type="button"
           onClick={handleDownloadQR}
           disabled={!qrImage || downloading}
-          className="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-white/10 hover:bg-white/15 active:scale-95 transition-all text-xs font-bold text-white cursor-pointer border border-white/10"
+          className="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-emerald-600/20 hover:bg-emerald-600/30 active:scale-95 transition-all text-xs font-bold text-emerald-300 hover:text-emerald-100 cursor-pointer border border-emerald-500/30 shadow-sm"
+          title="บันทึกรูปลงแอปไฟล์ หรืออัลบั้มภาพในเครื่อง"
         >
-          <span>📥</span>
-          <span>{downloading ? "กำลังดาวน์โหลด..." : "บันทึกรูป QR"}</span>
+          <span>{savedSuccess ? "✓" : "📁"}</span>
+          <span>
+            {downloading
+              ? "กำลังดำเนินการ..."
+              : savedSuccess
+              ? "บันทึกสำเร็จ!"
+              : "บันทึกลงแอปไฟล์"}
+          </span>
         </button>
 
         <button
           type="button"
           onClick={handleCopy}
           disabled={!promptpayNumber}
-          className="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-white/10 hover:bg-white/15 active:scale-95 transition-all text-xs font-bold text-white cursor-pointer border border-white/10"
+          className="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-white/10 hover:bg-white/15 active:scale-95 transition-all text-xs font-bold text-white cursor-pointer border border-white/10 shadow-sm"
         >
           <span>{copied ? "✓" : "📋"}</span>
           <span className={copied ? "text-emerald-400" : ""}>

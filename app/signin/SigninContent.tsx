@@ -40,42 +40,41 @@ export default function SignInContent() {
     setError('');
 
     try {
-      // 1. Authenticate with NextAuth to create HTTP-only session cookie
-      const origin = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000';
-      const result = await signIn('credentials', {
-        redirect: false,
-        email: email.trim(),
-        password: password,
-        callbackUrl: origin,
+      // 1. Verify credentials and get user metadata first via direct API endpoint
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email.trim(), password }),
       });
+      const data = await res.json();
 
-      if (result?.error) {
-        setError('อีเมลหรือรหัสผ่านไม่ถูกต้อง');
+      if (!res.ok || !data.success) {
+        setError(data.message || 'อีเมลหรือรหัสผ่านไม่ถูกต้อง');
         setLoading(false);
         return;
       }
 
-      // 2. Also query /api/auth/login to get proper user metadata & redirect destination
-      let redirectUrl = '/explore';
+      // Store user metadata in localStorage
+      let redirectUrl = data.redirectUrl || '/explore';
+      if (typeof window !== 'undefined' && data.user) {
+        localStorage.setItem('userEmail', email.toLowerCase().trim());
+        localStorage.setItem('userRole', data.user.role || 'guest');
+        localStorage.setItem('userSubRole', data.user.sub_role || '');
+        localStorage.setItem('userName', data.user.name || '');
+        localStorage.setItem('userId', String(data.user.id || ''));
+      }
+
+      // 2. Authenticate with NextAuth to create HTTP-only session cookie
       try {
-        const res = await fetch('/api/auth/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, password }),
+        const origin = typeof window !== 'undefined' ? window.location.origin : '';
+        await signIn('credentials', {
+          redirect: false,
+          email: email.trim(),
+          password: password,
+          callbackUrl: origin || undefined,
         });
-        const data = await res.json();
-        if (data.success) {
-          redirectUrl = data.redirectUrl || '/explore';
-          if (typeof window !== 'undefined' && data.user) {
-            localStorage.setItem('userEmail', email.toLowerCase().trim());
-            localStorage.setItem('userRole', data.user.role || 'guest');
-            localStorage.setItem('userSubRole', data.user.sub_role || '');
-            localStorage.setItem('userName', data.user.name || '');
-            localStorage.setItem('userId', String(data.user.id || ''));
-          }
-        }
-      } catch (err) {
-        console.warn('Fallback metadata fetch error:', err);
+      } catch (authErr) {
+        console.warn('NextAuth signIn non-fatal notice:', authErr);
       }
 
       const targetPath = callbackUrl || redirectUrl;
@@ -83,8 +82,8 @@ export default function SignInContent() {
         window.location.href = targetPath;
       }
     } catch (err: any) {
-      console.error(err);
-      setError('เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์');
+      console.error('Signin error:', err);
+      setError(err?.message || 'เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์ กรุณาลองใหม่อีกครั้ง');
       setLoading(false);
     }
   };

@@ -6,6 +6,7 @@ import { signOut } from 'next-auth/react';
 import { useState } from 'react';
 import Image from 'next/image';
 import NotificationsPopover from '@/components/NotificationsPopover';
+import ThemeToggle from '@/app/components/ThemeToggle';
 
 const navItems = [
   { href: '/tenant', label: 'หน้าหลัก', icon: '🏠' },
@@ -62,6 +63,9 @@ export default function TenantSidebar({ roomInfo = 'ไม่ระบุ', user
           {/* Notification Bell */}
           <NotificationsPopover />
 
+          {/* Theme Toggle */}
+          <ThemeToggle />
+
           <div className="flex items-center gap-3 pl-3 border-l border-white/20/10">
             <div className="text-right hidden sm:block">
               <p className="text-sm font-bold text-white">{userName}</p>
@@ -71,6 +75,17 @@ export default function TenantSidebar({ roomInfo = 'ไม่ระบุ', user
               <Image width={40} height={40} src={`https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=0F172A&color=fff&bold=true`} alt="Profile" />
             </div>
           </div>
+
+          {/* Sign Out Button */}
+          <button
+            type="button"
+            onClick={() => signOut({ callbackUrl: '/signin' })}
+            className="h-9 px-3 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 text-rose-300 hover:text-rose-100 border border-rose-500/30 transition-all flex items-center gap-1.5 text-xs font-bold shadow-sm cursor-pointer active:scale-95 shrink-0"
+            title="ออกจากระบบ"
+          >
+            <span>🚪</span>
+            <span className="hidden sm:inline">ออกจากระบบ</span>
+          </button>
         </div>
       </header>
 
@@ -134,13 +149,13 @@ export default function TenantSidebar({ roomInfo = 'ไม่ระบุ', user
           })}
         </nav>
 
-        <div className="p-6 border-t border-white/20/10">
+        <div className="p-4 border-t border-white/10 bg-black/20">
           <button
             onClick={() => signOut({ callbackUrl: '/signin' })}
-            className="w-full flex items-center gap-4 px-4 py-3.5 text-white/40 hover:text-white rounded-xl font-bold text-sm transition-all hover:bg-[#0F172A]/5"
+            className="w-full flex items-center justify-center gap-3 py-2.5 px-4 bg-rose-500/15 hover:bg-rose-500/25 text-rose-300 hover:text-rose-100 border border-rose-500/30 rounded-xl font-bold text-sm transition-all cursor-pointer shadow-sm active:scale-95"
           >
-            <span className="text-lg">🚪</span>
-            ออกจากระบบ
+            <span className="text-base">🚪</span>
+            <span>ออกจากระบบ</span>
           </button>
         </div>
       </aside>

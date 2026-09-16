@@ -1,9 +1,10 @@
 'use client';
 
 import Link from 'next/link';
-import { useSession } from 'next-auth/react';
+import { useSession, signOut } from 'next-auth/react';
 import { useState, useEffect } from 'react';
 import NotificationsPopover from '@/components/NotificationsPopover';
+import ThemeToggle from '@/app/components/ThemeToggle';
 
 interface OwnerNavbarProps {
   onToggleMobileMenu: () => void;
@@ -136,6 +137,9 @@ export default function OwnerNavbar({ onToggleMobileMenu }: OwnerNavbarProps) {
 
         <NotificationsPopover />
 
+        {/* Theme Toggle Button */}
+        <ThemeToggle />
+
         {/* User Card */}
         <div className="flex items-center gap-2.5 pl-2 border-l border-white/10">
           <div className="text-right hidden sm:block">
@@ -154,6 +158,17 @@ export default function OwnerNavbar({ onToggleMobileMenu }: OwnerNavbarProps) {
             />
           </div>
         </div>
+
+        {/* Sign Out Button */}
+        <button
+          type="button"
+          onClick={() => signOut({ callbackUrl: '/signin' })}
+          className="h-9 px-3 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 text-rose-300 hover:text-rose-100 border border-rose-500/30 transition-all flex items-center gap-1.5 text-xs font-bold shadow-sm cursor-pointer active:scale-95 shrink-0"
+          title="ออกจากระบบ"
+        >
+          <span>🚪</span>
+          <span className="hidden sm:inline">ออกจากระบบ</span>
+        </button>
       </div>
     </header>
   );

@@ -16,10 +16,10 @@ export default function ResearcherLayout({ children }: { children: React.ReactNo
     const localRole = typeof window !== 'undefined' ? localStorage.getItem('userRole') : null;
     const userRole = (session?.user as any)?.role || localRole;
     
-    // Allow researcher, platform_admin, super_admin, or owner to review research hub
-    const allowedRoles = ['researcher', 'platform_admin', 'super_admin', 'owner'];
-    if (!userRole || !allowedRoles.includes(userRole)) {
-      router.push('/signin?callbackUrl=/researcher');
+    // Redirect unauthenticated users to signin with return URL
+    if (!session && !localRole) {
+      const currentPath = typeof window !== 'undefined' ? (window.location.pathname + window.location.search) : '/researcher';
+      router.push(`/signin?callbackUrl=${encodeURIComponent(currentPath)}`);
       return;
     }
   }, [session, status, router]);

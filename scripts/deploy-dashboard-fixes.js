@@ -24,11 +24,18 @@ const filesToUpload = [
   'app/researcher/page.tsx',
   'app/researcher/components/ResearcherNavbar.tsx',
   'app/researcher/components/ResearcherSidebar.tsx',
+  'app/researcher/diagrams/page.tsx',
+  'app/researcher/sequence/page.tsx',
+  'app/sequence/page.tsx',
+  'app/researcher/use-cases/page.tsx',
+  'app/researcher/er-diagram/page.tsx',
   'app/researcher/updates/page.tsx',
   'app/updates/page.tsx',
   'app/explore/[dormId]/page.tsx',
   'app/explore/room/[id]/page.tsx',
   'app/owner/settings/page.tsx',
+  'lib/diagramsData.ts',
+  'app/components/MermaidRenderer.tsx',
   'lib/updatesData.ts',
   'daily.md',
   'lib/version.json',
@@ -62,7 +69,15 @@ conn.on('ready', () => {
     }
 
     function ensureDir(remoteDir, cb) {
-      sftp.mkdir(remoteDir, () => cb());
+      const parts = remoteDir.split('/').filter(Boolean);
+      let current = parts[0];
+      let i = 1;
+      function step() {
+        if (i >= parts.length) return cb();
+        current += '/' + parts[i++];
+        sftp.mkdir(current, () => step());
+      }
+      step();
     }
 
     let idx = 0;

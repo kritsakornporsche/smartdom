@@ -42,7 +42,11 @@ const filesToUpload = [
   'auth.ts',
   'app/api/auth/signup/route.ts',
   'app/api/auth/update-role/route.ts',
-  'docs/account.md'
+  'docs/account.md',
+  'ecosystem.config.js',
+  'lib/mysql-adapter.js',
+  'scripts/switch-db.js',
+  'run_lighthouse_flow.js'
 ];
 
 const conn = new Client();

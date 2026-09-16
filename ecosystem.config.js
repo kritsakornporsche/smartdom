@@ -12,8 +12,8 @@ module.exports = {
         NODE_ENV: 'production',
         PORT: 3000,
         HOSTNAME: '0.0.0.0',
-        AUTH_URL: 'http://kritsakorn.thddns.net:5993',
-        NEXTAUTH_URL: 'http://kritsakorn.thddns.net:5993',
+        AUTH_URL: 'https://smartdorm.phannext.com',
+        NEXTAUTH_URL: 'https://smartdorm.phannext.com',
         AUTH_TRUST_HOST: 'true'
       }
     }

@@ -13,29 +13,9 @@ if (!fs.existsSync(envPath)) {
 let content = fs.readFileSync(envPath, 'utf8');
 
 const LOCAL_DB = 'mysql://smartdom:smartdom@localhost:3306/smartdomdb';
-const REMOTE_DB = 'mysql://smartdom:smartdom@kritsakorn.thddns.net:5994/smartdomdb';
 
-const currentIsRemote = content.includes('kritsakorn.thddns.net:5994');
-
-let newDb = '';
-let targetMode = '';
-
-if (target === 'local') {
-  newDb = LOCAL_DB;
-  targetMode = 'LOCAL (localhost:3306)';
-} else if (target === 'remote' || target === 'thddns') {
-  newDb = REMOTE_DB;
-  targetMode = 'REMOTE THDDNS (kritsakorn.thddns.net:5994)';
-} else {
-  // Toggle
-  if (currentIsRemote) {
-    newDb = LOCAL_DB;
-    targetMode = 'LOCAL (localhost:3306)';
-  } else {
-    newDb = REMOTE_DB;
-    targetMode = 'REMOTE THDDNS (kritsakorn.thddns.net:5994)';
-  }
-}
+let newDb = LOCAL_DB;
+let targetMode = 'LOCAL (localhost:3306) [THDDNS has been completely disabled]';
 
 if (/DATABASE_URL=.*(\r?\n|$)/.test(content)) {
   content = content.replace(/DATABASE_URL=.*(\r?\n|$)/, `DATABASE_URL="${newDb}"\n`);

@@ -13,12 +13,17 @@ export async function GET(req: Request) {
     const userId = (session.user as any).id;
     const sql = getDb();
 
-    const notifications = await sql`
+    const rawNotifications = await sql`
       SELECT * FROM notifications 
       WHERE user_id = ${userId}
       ORDER BY created_at DESC 
       LIMIT 20
     `;
+
+    const notifications = rawNotifications.map((n: any) => ({
+      ...n,
+      action_url: n.link || n.action_url || (n.type === 'booking' ? '/owner/bookings' : n.type === 'payment' ? '/owner/billing' : '/owner')
+    }));
 
     // Get unread count
     const unreadRes = await sql`

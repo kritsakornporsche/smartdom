@@ -13,7 +13,7 @@ export default function OwnerLayout({
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <div className="flex flex-col h-screen w-screen bg-[#080F1E] text-slate-100 font-sans overflow-hidden">
+    <div className="flex flex-col h-screen w-screen bg-background text-foreground font-sans overflow-hidden">
       {/* 1. Full-width Top Navbar */}
       <OwnerNavbar onToggleMobileMenu={() => setMobileMenuOpen((prev) => !prev)} />
 
@@ -23,7 +23,7 @@ export default function OwnerLayout({
           isOpen={mobileMenuOpen}
           onClose={() => setMobileMenuOpen(false)}
         />
-        <div className="flex-1 flex flex-col overflow-hidden relative bg-[#080F1E]">
+        <div className="flex-1 flex flex-col overflow-hidden relative bg-background text-foreground">
           {children}
           <OwnerChatMessenger />
         </div>

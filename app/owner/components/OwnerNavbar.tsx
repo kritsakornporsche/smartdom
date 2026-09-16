@@ -48,17 +48,17 @@ export default function OwnerNavbar({ onToggleMobileMenu }: OwnerNavbarProps) {
   };
 
   if (!mounted) {
-    return <header className="h-16 bg-[#0F172A] border-b border-white/10 shrink-0" />;
+    return <header className="h-16 bg-card border-b border-border shrink-0" />;
   }
 
   return (
-    <header className="h-16 bg-[#0F172A] border-b border-white/10 flex items-center justify-between px-4 sm:px-6 shrink-0 z-40 sticky top-0 shadow-lg backdrop-blur-md">
+    <header className="h-16 bg-card text-card-foreground border-b border-border flex items-center justify-between px-4 sm:px-6 shrink-0 z-40 sticky top-0 shadow-sm backdrop-blur-md">
       {/* Left side: Brand Logo + Mobile Hamburger */}
       <div className="flex items-center gap-3">
         {/* Mobile Hamburger Toggle */}
         <button
           onClick={onToggleMobileMenu}
-          className="md:hidden p-2 -ml-1 text-white/70 hover:bg-white/10 hover:text-white rounded-xl transition-colors focus:outline-none cursor-pointer"
+          className="md:hidden p-2 -ml-1 text-foreground/80 hover:bg-secondary hover:text-foreground rounded-xl transition-colors focus:outline-none cursor-pointer"
           title="เปิดเมนูนำทาง"
         >
           <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -72,44 +72,44 @@ export default function OwnerNavbar({ onToggleMobileMenu }: OwnerNavbarProps) {
           className="flex items-center gap-3 hover:opacity-90 transition-opacity cursor-pointer group"
           title="แดชบอร์ดเจ้าของหอพัก"
         >
-          <div className="w-10 h-10 rounded-2xl bg-white p-1 flex items-center justify-center shadow-lg border border-white/20 shrink-0 group-hover:scale-105 transition-transform">
+          <div className="w-10 h-10 rounded-2xl bg-white p-1 flex items-center justify-center shadow-md border border-border shrink-0 group-hover:scale-105 transition-transform">
             <img src="/up-logo.png" alt="ตรามหาวิทยาลัยพะเยา" className="w-full h-full object-contain" />
           </div>
           <div className="hidden sm:block">
-            <h2 className="font-black text-white tracking-tight text-sm sm:text-base group-hover:text-cyan-300 transition-colors">
+            <h2 className="font-black text-foreground tracking-tight text-sm sm:text-base group-hover:text-primary transition-colors">
               SmartDom
             </h2>
             <div className="flex items-center gap-1.5 leading-none">
-              <span className="text-[9px] font-black text-cyan-400 uppercase tracking-[0.15em]">
+              <span className="text-[9px] font-black text-primary uppercase tracking-[0.15em]">
                 Owner Portal
               </span>
-              <span className="text-white/30 text-[9px]">•</span>
-              <span className="text-[9px] text-white/50">หอพักหน้า ม.พะเยา</span>
+              <span className="text-muted-foreground text-[9px]">•</span>
+              <span className="text-[9px] text-muted-foreground">หอพักหน้า ม.พะเยา</span>
             </div>
           </div>
         </Link>
       </div>
 
       {/* Middle: Dormitory Quick Switcher (Desktop) */}
-      <div className="hidden lg:flex items-center gap-2 bg-[#080F1E] px-3.5 py-1.5 rounded-2xl border border-white/10 shadow-inner">
+      <div className="hidden lg:flex items-center gap-2 bg-secondary/80 px-3.5 py-1.5 rounded-2xl border border-border shadow-inner">
         <span className="text-sm">🏢</span>
-        <span className="text-[11px] font-bold text-white/50 uppercase tracking-wider">
+        <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
           หอพักที่ดูแล:
         </span>
         {dorms.length > 0 ? (
           <select
             value={selectedDb || ''}
             onChange={(e) => handleDormChange(e.target.value)}
-            className="bg-transparent text-xs font-black text-cyan-300 focus:outline-none cursor-pointer pr-2"
+            className="bg-transparent text-xs font-black text-primary focus:outline-none cursor-pointer pr-2"
           >
             {dorms.map((d: any) => (
-              <option key={d.db_name} value={d.db_name} className="bg-slate-900 text-white">
+              <option key={d.db_name} value={d.db_name} className="bg-card text-foreground">
                 {d.dorm_name}
               </option>
             ))}
           </select>
         ) : (
-          <span className="text-xs font-bold text-white/70">
+          <span className="text-xs font-bold text-foreground">
             {dormName || 'กำลังโหลด...'}
           </span>
         )}
@@ -117,18 +117,18 @@ export default function OwnerNavbar({ onToggleMobileMenu }: OwnerNavbarProps) {
         {canAddDorm && (
           <Link
             href="/owner/onboarding?force=true"
-            className="text-[11px] text-amber-400 hover:text-amber-300 font-bold ml-1 pl-2 border-l border-white/10 transition-colors"
+            className="text-[11px] text-amber-500 hover:text-amber-400 font-bold ml-1 pl-2 border-l border-border transition-colors"
           >
             + เพิ่มหอ
           </Link>
         )}
       </div>
 
-      {/* Right side: Explore, Notifications, Profile */}
+      {/* Right side: Explore, Notifications, Theme, Profile Info, Sign Out */}
       <div className="flex items-center gap-2 sm:gap-3">
         <Link
           href="/explore"
-          className="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-white/80 hover:text-white text-xs font-bold transition-all flex items-center gap-1.5 border border-white/10 shadow-sm cursor-pointer hover:scale-105 active:scale-95"
+          className="px-3 py-1.5 rounded-xl bg-secondary hover:bg-secondary/80 text-foreground text-xs font-bold transition-all flex items-center gap-1.5 border border-border shadow-sm cursor-pointer hover:scale-105 active:scale-95"
           title="หน้าสำรวจหอพักสำหรับบุคคลทั่วไป"
         >
           <span>🌐</span>
@@ -140,30 +140,21 @@ export default function OwnerNavbar({ onToggleMobileMenu }: OwnerNavbarProps) {
         {/* Theme Toggle Button */}
         <ThemeToggle />
 
-        {/* User Card */}
-        <div className="flex items-center gap-2.5 pl-2 border-l border-white/10">
-          <div className="text-right hidden sm:block">
-            <p className="text-xs font-bold text-white truncate max-w-[130px]">
-              {session?.user?.name || 'Owner'}
-            </p>
-            <p className="text-[10px] text-cyan-300/80 font-medium truncate max-w-[130px]">
-              {dormName || 'SmartDom'}
-            </p>
-          </div>
-          <div className="h-9 w-9 rounded-xl bg-cyan-500/20 border border-cyan-400/40 shadow-sm overflow-hidden flex items-center justify-center shrink-0">
-            <img
-              src={session?.user?.image || 'https://api.dicebear.com/7.x/notionists/svg?seed=Felix'}
-              alt="profile"
-              className="w-full h-full object-cover"
-            />
-          </div>
+        {/* User Info (No Face Avatar) */}
+        <div className="text-right pl-2 border-l border-border">
+          <p className="text-xs font-bold text-foreground truncate max-w-[130px]">
+            {session?.user?.name || 'Owner'}
+          </p>
+          <p className="text-[10px] text-muted-foreground font-medium truncate max-w-[130px]">
+            {dormName || 'SmartDom'}
+          </p>
         </div>
 
         {/* Sign Out Button */}
         <button
           type="button"
           onClick={() => signOut({ callbackUrl: '/signin' })}
-          className="h-9 px-3 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 text-rose-300 hover:text-rose-100 border border-rose-500/30 transition-all flex items-center gap-1.5 text-xs font-bold shadow-sm cursor-pointer active:scale-95 shrink-0"
+          className="h-9 px-3 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 text-rose-500 hover:text-rose-600 dark:text-rose-300 dark:hover:text-rose-100 border border-rose-500/30 transition-all flex items-center gap-1.5 text-xs font-bold shadow-sm cursor-pointer active:scale-95 shrink-0"
           title="ออกจากระบบ"
         >
           <span>🚪</span>

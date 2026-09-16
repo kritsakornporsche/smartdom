@@ -24,7 +24,7 @@ export default function TenantBillingPage() {
   const [selectedBill, setSelectedBill] = useState<Bill | null>(null);
   const [modalType, setModalType] = useState<'qr' | 'upload' | null>(null);
   const [uploading, setUploading] = useState(false);
-  const [qrData, setQrData] = useState<{qrImage: string, amount: number, promptpayNumber: string} | null>(null);
+  const [qrData, setQrData] = useState<{qrImage: string, amount: number, promptpayNumber: string, promptpayName?: string} | null>(null);
   const [qrLoading, setQrLoading] = useState(false);
 
   useEffect(() => {

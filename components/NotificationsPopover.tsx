@@ -82,29 +82,29 @@ export default function NotificationsPopover() {
       {/* Bell Button */}
       <button 
         onClick={() => setIsOpen(!isOpen)} 
-        className="relative p-2 text-white/70 hover:bg-white/10 hover:text-white rounded-xl transition-colors focus:outline-none cursor-pointer"
+        className="relative p-2 text-foreground/80 hover:bg-secondary hover:text-foreground rounded-xl transition-colors focus:outline-none cursor-pointer"
         title="การแจ้งเตือนและอัปเดตระบบ"
       >
         <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
         </svg>
         {unreadCount > 0 && (
-          <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-[#0F172A] animate-pulse"></span>
+          <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-background animate-pulse"></span>
         )}
       </button>
 
       {/* Popover Dropdown */}
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-[#1e293b] border border-white/10 rounded-2xl shadow-2xl z-50 overflow-hidden transform opacity-100 scale-100 transition-all origin-top-right">
+        <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-card text-card-foreground border border-border rounded-2xl shadow-2xl z-50 overflow-hidden transform opacity-100 scale-100 transition-all origin-top-right">
           
           {/* Tabs Navigation Header */}
-          <div className="bg-[#0f172a]/70 p-2 border-b border-white/10 flex items-center gap-1">
+          <div className="bg-secondary/50 p-2 border-b border-border flex items-center gap-1">
             <button
               onClick={() => setActiveTab('notifications')}
               className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer ${
                 activeTab === 'notifications'
-                  ? 'bg-primary text-white shadow-md'
-                  : 'text-white/60 hover:text-white hover:bg-white/5'
+                  ? 'bg-primary text-primary-foreground shadow-md'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-secondary'
               }`}
             >
               <span>🔔 การแจ้งเตือน</span>
@@ -120,7 +120,7 @@ export default function NotificationsPopover() {
               className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer ${
                 activeTab === 'updates'
                   ? 'bg-purple-600 text-white shadow-md'
-                  : 'text-white/60 hover:text-white hover:bg-white/5'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-secondary'
               }`}
             >
               <span>🚀 อัปเดตระบบ</span>
@@ -133,12 +133,12 @@ export default function NotificationsPopover() {
           {/* Tab 1: Notifications */}
           {activeTab === 'notifications' && (
             <div>
-              <div className="px-4 py-2.5 border-b border-white/10 flex items-center justify-between bg-[#0f172a]/40">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-white/50">รายการแจ้งเตือนส่วนตัว</span>
+              <div className="px-4 py-2.5 border-b border-border flex items-center justify-between bg-secondary/20">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">รายการแจ้งเตือนส่วนตัว</span>
                 {unreadCount > 0 && (
                   <button 
                     onClick={handleMarkAsRead}
-                    className="text-xs text-blue-400 hover:text-blue-300 font-bold cursor-pointer"
+                    className="text-xs text-primary hover:underline font-bold cursor-pointer"
                   >
                     ทำเครื่องหมายอ่านแล้ว
                   </button>
@@ -147,27 +147,27 @@ export default function NotificationsPopover() {
               
               <div className="max-h-[380px] overflow-y-auto">
                 {loading ? (
-                  <div className="p-8 text-center text-white/50 text-sm">กำลังโหลด...</div>
+                  <div className="p-8 text-center text-muted-foreground text-sm">กำลังโหลด...</div>
                 ) : notifications.length === 0 ? (
                   <div className="p-8 text-center flex flex-col items-center">
                     <span className="text-4xl mb-3 opacity-50">📭</span>
-                    <p className="text-white/50 text-sm font-bold">ไม่มีการแจ้งเตือน</p>
+                    <p className="text-muted-foreground text-sm font-bold">ไม่มีการแจ้งเตือน</p>
                   </div>
                 ) : (
-                  <div className="divide-y divide-white/5">
+                  <div className="divide-y divide-border">
                     {notifications.map((n) => (
                       <div 
                         key={n.id} 
                         onClick={() => handleNotificationClick(n.action_url)}
-                        className={`p-4 hover:bg-white/5 transition-colors cursor-pointer flex gap-4 ${n.is_read ? 'opacity-70' : 'bg-blue-500/5'}`}
+                        className={`p-4 hover:bg-secondary/50 transition-colors cursor-pointer flex gap-4 ${n.is_read ? 'opacity-70' : 'bg-primary/5'}`}
                       >
                         <div className="flex-shrink-0 mt-1">
                           {n.type === 'billing' ? '💰' : n.type === 'maintenance' ? '🔧' : '📢'}
                         </div>
                         <div>
-                          <h4 className={`text-sm ${n.is_read ? 'font-medium text-white/80' : 'font-bold text-white'}`}>{n.title}</h4>
-                          <p className="text-xs text-white/60 mt-1 line-clamp-2 leading-relaxed">{n.message}</p>
-                          <p className="text-[10px] font-bold text-white/30 uppercase mt-2">{new Date(n.created_at).toLocaleString('th-TH')}</p>
+                          <h4 className={`text-sm ${n.is_read ? 'font-medium text-muted-foreground' : 'font-bold text-foreground'}`}>{n.title}</h4>
+                          <p className="text-xs text-muted-foreground mt-1 line-clamp-2 leading-relaxed">{n.message}</p>
+                          <p className="text-[10px] font-bold text-muted-foreground/60 uppercase mt-2">{new Date(n.created_at).toLocaleString('th-TH')}</p>
                         </div>
                       </div>
                     ))}
@@ -180,9 +180,9 @@ export default function NotificationsPopover() {
           {/* Tab 2: System Updates (Daily Progress) */}
           {activeTab === 'updates' && (
             <div>
-              <div className="px-4 py-2.5 border-b border-white/10 flex items-center justify-between bg-[#0f172a]/40">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-purple-300">ประวัติการปรับปรุงระบบ</span>
-                <span className="text-[10px] font-extrabold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+              <div className="px-4 py-2.5 border-b border-border flex items-center justify-between bg-secondary/20">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-purple-500 dark:text-purple-300">ประวัติการปรับปรุงระบบ</span>
+                <span className="text-[10px] font-extrabold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
                   {SYSTEM_UPDATES[0]?.version}
                 </span>
               </div>
@@ -191,25 +191,25 @@ export default function NotificationsPopover() {
                 {latestUpdates.map((upd) => (
                   <div 
                     key={upd.date}
-                    className="p-3.5 rounded-xl bg-white/5 border border-white/10 hover:border-purple-500/40 transition-all"
+                    className="p-3.5 rounded-xl bg-secondary/40 border border-border hover:border-purple-500/40 transition-all"
                   >
                     <div className="flex items-center justify-between gap-2 mb-2">
-                      <span className="text-xs font-black text-white flex items-center gap-1.5">
+                      <span className="text-xs font-black text-foreground flex items-center gap-1.5">
                         <span>📅</span> {upd.date}
                       </span>
                       {upd.version && (
-                        <span className="text-[10px] font-extrabold px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 border border-purple-500/30">
+                        <span className="text-[10px] font-extrabold px-2 py-0.5 rounded bg-purple-500/10 text-purple-600 dark:text-purple-300 border border-purple-500/30">
                           {upd.version}
                         </span>
                       )}
                     </div>
-                    <p className="text-xs text-white/70 font-medium line-clamp-2 leading-snug mb-2">
+                    <p className="text-xs text-muted-foreground font-medium line-clamp-2 leading-snug mb-2">
                       {upd.tagline}
                     </p>
                     <div className="space-y-1">
                       {upd.tasks.slice(0, 2).map((t) => (
-                        <div key={t.id} className="text-[11px] text-white/80 flex items-start gap-1.5">
-                          <span className="text-purple-400 font-bold">•</span>
+                        <div key={t.id} className="text-[11px] text-foreground/80 flex items-start gap-1.5">
+                          <span className="text-purple-500 font-bold">•</span>
                           <span className="font-semibold line-clamp-1">{t.title}</span>
                         </div>
                       ))}
@@ -219,11 +219,11 @@ export default function NotificationsPopover() {
               </div>
 
               {/* View Full Updates Link */}
-              <div className="p-3 bg-[#0f172a]/80 border-t border-white/10 text-center">
+              <div className="p-3 bg-secondary/40 border-t border-border text-center">
                 <Link
                   href="/updates"
                   onClick={() => setIsOpen(false)}
-                  className="w-full py-2 px-4 rounded-xl bg-purple-600/20 hover:bg-purple-600 text-purple-200 hover:text-white font-bold text-xs transition-all flex items-center justify-center gap-1.5 shadow-sm border border-purple-500/30"
+                  className="w-full py-2 px-4 rounded-xl bg-purple-600/15 hover:bg-purple-600 text-purple-600 dark:text-purple-200 hover:text-white font-bold text-xs transition-all flex items-center justify-center gap-1.5 shadow-sm border border-purple-500/30"
                 >
                   <span>ดูรายละเอียดการอัปเดตทั้งหมด</span>
                   <span>➔</span>

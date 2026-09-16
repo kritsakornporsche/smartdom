@@ -255,21 +255,58 @@
 }
 
 :root:not(.dark) .bg-\[\#080F1E\] .text-white\/80,
-:root:not(.dark) .bg-\[\#0F172A\] .text-white\/80 {
+:root:not(.dark) .bg-\[\#0F172A\] .text-white\/80,
+:root:not(.dark) .text-white\/80 {
   color: var(--foreground) !important;
-  opacity: 0.8;
+  opacity: 0.85;
 }
 
 :root:not(.dark) .bg-\[\#080F1E\] .text-white\/50,
 :root:not(.dark) .bg-\[\#0F172A\] .text-white\/50,
-:root:not(.dark) .text-white\/50 {
+:root:not(.dark) .text-white\/30,
+:root:not(.dark) .text-white\/40,
+:root:not(.dark) .text-white\/50,
+:root:not(.dark) .text-white\/60,
+:root:not(.dark) .text-white\/70 {
   color: var(--muted-foreground) !important;
+}
+
+/* Ensure SVG icons do not sink or fade out in light mode */
+:root:not(.dark) svg.text-white\/30,
+:root:not(.dark) svg.text-white\/40,
+:root:not(.dark) svg.text-white\/50,
+:root:not(.dark) svg.text-white\/60,
+:root:not(.dark) svg.text-white\/70,
+:root:not(.dark) svg.text-white\/80,
+:root:not(.dark) svg.opacity-50 {
+  color: #475569 !important; /* Slate 600 */
+  opacity: 1 !important;
+}
+
+/* Maintain crisp white text inside buttons or badges with strong background */
+.bg-primary .text-white,
+.bg-emerald-600 .text-white,
+.bg-emerald-500 .text-white,
+.bg-violet-600 .text-white,
+.bg-purple-600 .text-white,
+.bg-rose-500 .text-white,
+.bg-rose-600 .text-white,
+.bg-blue-600 .text-white,
+.bg-blue-500 .text-white,
+.bg-amber-500 .text-white {
+  color: #FFFFFF !important;
 }
 
 :root:not(.dark) .border-white\/20\/10,
 :root:not(.dark) .border-white\/10,
-:root:not(.dark) .border-white\/20 {
+:root:not(.dark) .border-white\/20,
+:root:not(.dark) .border-white\/30 {
   border-color: var(--border) !important;
+}
+
+:root:not(.dark) .bg-white\/5,
+:root:not(.dark) .bg-white\/10 {
+  background-color: var(--secondary) !important;
 }
 
 /* ── Overrides to replace remaining brown tones (#3E342B) with Dark Slate/Navy ── */

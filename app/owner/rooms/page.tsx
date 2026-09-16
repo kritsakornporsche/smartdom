@@ -316,9 +316,9 @@ export default function RoomsManagement() {
               placeholder="ค้นหาเลขห้อง หรือ ประเภท..." 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-12 pr-6 py-3 bg-white/5 border border-white/20/10 rounded-2xl text-sm font-bold text-white/80 focus:ring-2 focus:ring-primary focus:bg-[#0F172A] transition-all outline-none w-64 group-hover:w-80 duration-500"
+              className="pl-12 pr-6 py-3 bg-secondary/80 border border-border rounded-2xl text-sm font-bold text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-primary focus:bg-card transition-all outline-none w-64 group-hover:w-80 duration-500 shadow-sm"
             />
-            <svg className="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-white/50 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg className="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
           </div>

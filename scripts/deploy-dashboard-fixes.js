@@ -3,16 +3,28 @@ const path = require('path');
 const { Client } = require('ssh2');
 
 const filesToUpload = [
+  'app/globals.css',
+  'components/NotificationsPopover.tsx',
   'app/components/ThemeToggle.tsx',
   'app/components/PromptPayBankSelector.tsx',
   'app/signin/SigninContent.tsx',
+  'app/owner/layout.tsx',
   'app/owner/components/OwnerNavbar.tsx',
   'app/owner/components/OwnerSidebar.tsx',
   'app/owner/page.tsx',
+  'app/owner/rooms/page.tsx',
+  'app/owner/meters/page.tsx',
   'app/tenant/components/TenantSidebar.tsx',
+  'app/tenant/billing/page.tsx',
   'app/keeper/components/KeeperSidebar.tsx',
+  'app/platform/layout.tsx',
   'app/platform/components/PlatformSidebar.tsx',
-  'app/researcher/components/ResearcherNavbar.tsx'
+  'app/researcher/components/ResearcherNavbar.tsx',
+  'app/researcher/updates/page.tsx',
+  'app/api/contracts/route.ts',
+  'app/api/notifications/route.ts',
+  'app/api/owner/bookings/route.ts',
+  'app/api/owner/stats/route.ts'
 ];
 
 const conn = new Client();

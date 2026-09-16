@@ -13,9 +13,18 @@ export async function GET(req: Request) {
 
     let dormIds: number[] = [];
 
-    if (dormIdParam && !isNaN(parseInt(dormIdParam))) {
-      dormIds = [parseInt(dormIdParam)];
-    } else if (userEmail) {
+    if (dormIdParam) {
+      if (!isNaN(parseInt(dormIdParam))) {
+        dormIds = [parseInt(dormIdParam)];
+      } else {
+        const dormByDb = await sql`SELECT id FROM dormitory_registry WHERE db_name = ${dormIdParam} LIMIT 1`;
+        if (dormByDb.length > 0) {
+          dormIds = [dormByDb[0].id];
+        }
+      }
+    }
+    
+    if (dormIds.length === 0 && userEmail) {
       const userRes = await sql`SELECT id, role FROM users WHERE email = ${userEmail} LIMIT 1`;
       if (userRes.length > 0) {
         const ownerId = userRes[0].id;
@@ -45,11 +54,22 @@ export async function GET(req: Request) {
     }
 
     // Fetch all dorms info
-    const dorms = await sql`
-      SELECT id, dorm_name 
-      FROM dormitory_registry 
-      WHERE id IN (${dormIds})
-    `;
+    let dorms = [];
+    if (userEmail) {
+      dorms = await sql`
+        SELECT dr.id, dr.dorm_name, dr.db_name 
+        FROM dormitory_registry dr
+        LEFT JOIN users u ON dr.owner_id = u.id OR dr.owner_email = u.email
+        WHERE (u.email = ${userEmail} OR dr.owner_email = ${userEmail}) AND dr.status = 'Active'
+      `.catch(() => []);
+    }
+    if (dorms.length === 0) {
+      dorms = await sql`
+        SELECT id, dorm_name, db_name 
+        FROM dormitory_registry 
+        WHERE id IN (${dormIds})
+      `;
+    }
 
     // Fetch all bookings for these dormitories
     const bookings = await sql`

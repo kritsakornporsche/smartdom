@@ -35,8 +35,20 @@ export async function GET(req: Request) {
     const unpaidBillsResult = await sql`SELECT COUNT(*) as count FROM bills WHERE status = 'Unpaid'`.catch(() => [{ count: 0 }]);
     const unpaidBills = Number(unpaidBillsResult[0]?.count || 0);
 
-    const pendingBookingsResult = await sql`SELECT COUNT(*) as count FROM booking_progress WHERE status IN ('pending', 'awaiting_approval', 'deposit_submitted')`.catch(() => [{ count: 0 }]);
-    const pendingBookings = Number(pendingBookingsResult[0]?.count || 0);
+    const pendingContractsResult = await sql`
+      SELECT COUNT(*) as count 
+      FROM contracts c
+      JOIN rooms r ON c.room_id = r.id
+      WHERE c.status = 'PendingOwnerSignature'
+    `.catch(() => [{ count: 0 }]);
+
+    const pendingDraftsResult = await sql`
+      SELECT COUNT(*) as count 
+      FROM booking_progress 
+      WHERE status IN ('pending', 'awaiting_approval', 'deposit_submitted')
+    `.catch(() => [{ count: 0 }]);
+
+    const pendingBookings = Number(pendingContractsResult[0]?.count || 0) + Number(pendingDraftsResult[0]?.count || 0);
 
     const availableRooms = Math.max(0, totalRooms - occupiedRooms);
 

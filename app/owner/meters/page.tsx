@@ -232,6 +232,7 @@ export default function MetersPage() {
       previous_reading: lastRecord ? String(lastRecord.current_reading) : '0',
       current_reading: '',
       billing_cycle: nextCycle,
+      photo_url: '',
     });
     setShowModal(true);
   };
@@ -1141,10 +1142,9 @@ export default function MetersPage() {
             isOpen={cameraModal.isOpen}
             onClose={() => setCameraModal(null)}
             roomNumber={cameraModal.roomNumber}
-            roomId={cameraModal.roomId}
             meterType={cameraModal.meterType}
             previousReading={cameraModal.previousReading}
-            onConfirm={handleCameraConfirm}
+            onConfirmReading={handleCameraConfirm}
           />
         )}
       </div>

@@ -117,7 +117,7 @@ export default function ResearcherUpdatesPage() {
                   <h3 className="text-base sm:text-lg font-black text-white">
                     {update.date}
                   </h3>
-                  <p className="text-xs text-cyan-400 font-medium">{update.summary}</p>
+                  <p className="text-xs text-cyan-400 font-medium">{update.tagline}</p>
                 </div>
               </div>
               <span className="px-3 py-1 rounded-xl text-xs font-bold bg-white/5 text-slate-300 border border-white/10">

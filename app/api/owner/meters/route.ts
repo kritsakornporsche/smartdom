@@ -17,18 +17,22 @@ function saveMeterPhoto(
 ): string | null {
   if (!photoData || typeof photoData !== 'string') return null;
   
-  // If it's already a URL or server path, return as is
+  // If it's already a saved URL or server path, return as is
   if (!photoData.startsWith('data:image/')) {
     return photoData;
   }
 
   try {
-    const matches = photoData.match(/^data:image\/([a-zA-Z0-9]+);base64,(.+)$/);
-    if (!matches || matches.length < 3) return photoData;
+    const commaIdx = photoData.indexOf(',');
+    if (commaIdx <= 0) return photoData;
 
-    const rawExt = matches[1].toLowerCase();
+    const meta = photoData.substring(0, commaIdx);
+    const base64Data = photoData.substring(commaIdx + 1).replace(/\s/g, '');
+    if (!base64Data) return null;
+
+    const extMatch = meta.match(/data:image\/([a-zA-Z0-9\-\+]+)/);
+    const rawExt = extMatch ? extMatch[1].toLowerCase() : 'jpg';
     const ext = rawExt === 'jpeg' ? 'jpg' : rawExt;
-    const base64Data = matches[2];
     const buffer = Buffer.from(base64Data, 'base64');
 
     const uploadsDir = path.join(process.cwd(), 'public', 'uploads', 'meters');

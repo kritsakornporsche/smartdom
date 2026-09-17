@@ -6,8 +6,8 @@ import { signOut, useSession } from 'next-auth/react';
 import { useState, useEffect } from 'react';
 
 interface OwnerSidebarProps {
-  isOpen: boolean;
-  onClose: () => void;
+  isOpen?: boolean;
+  onClose?: () => void;
 }
 
 const navSections = [
@@ -177,11 +177,10 @@ export default function OwnerSidebar({ isOpen, onClose }: OwnerSidebarProps) {
       )}
 
       {/* 3. Mobile Slide-out Drawer */}
-      <div
-        className={`fixed inset-y-0 left-0 z-50 w-72 bg-card border-r border-border flex flex-col md:hidden transition-transform duration-300 ease-in-out shadow-2xl ${
-          isOpen ? 'translate-x-0' : '-translate-x-full'
-        }`}
-      >
+      {isOpen && (
+        <div
+          className="fixed inset-y-0 left-0 z-50 w-72 bg-card border-r border-border flex flex-col md:hidden transition-transform duration-300 ease-in-out shadow-2xl translate-x-0"
+        >
         <div className="h-14 flex items-center justify-between px-4 border-b border-border shrink-0 bg-card text-card-foreground">
           <div className="flex items-center gap-2.5 min-w-0">
             <div className="w-8 h-8 rounded-xl bg-primary/10 text-primary flex items-center justify-center font-bold text-sm shrink-0 border border-primary/20">
@@ -210,6 +209,7 @@ export default function OwnerSidebar({ isOpen, onClose }: OwnerSidebarProps) {
           {NavContent}
         </div>
       </div>
+      )}
     </>
   );
 }

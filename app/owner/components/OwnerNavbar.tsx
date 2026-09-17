@@ -7,7 +7,7 @@ import NotificationsPopover from '@/components/NotificationsPopover';
 import ThemeToggle from '@/app/components/ThemeToggle';
 
 interface OwnerNavbarProps {
-  onToggleMobileMenu: () => void;
+  onToggleMobileMenu?: () => void;
 }
 
 export default function OwnerNavbar({ onToggleMobileMenu }: OwnerNavbarProps) {
@@ -83,28 +83,14 @@ export default function OwnerNavbar({ onToggleMobileMenu }: OwnerNavbarProps) {
 
   return (
     <header className="h-16 bg-card text-card-foreground border-b border-border flex items-center justify-between px-3 sm:px-6 shrink-0 z-40 sticky top-0 shadow-sm backdrop-blur-md">
-      {/* 1. Left side: Mobile Hamburger Toggle + Desktop Brand Logo */}
+      {/* 1. Left side: Brand Logo & Title (Mobile & Desktop) */}
       <div className="flex items-center gap-2 shrink-0">
-        {/* Mobile Hamburger Toggle */}
-        <button
-          type="button"
-          onClick={onToggleMobileMenu}
-          className="md:hidden p-2 -ml-1 text-foreground hover:bg-secondary rounded-xl transition-colors focus:outline-none cursor-pointer active:scale-95"
-          title="เปิดเมนูนำทาง"
-          aria-label="เปิดเมนูนำทาง"
-        >
-          <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-          </svg>
-        </button>
-
-        {/* Brand Logo & Title (Desktop only, saves space on mobile) */}
         <Link
           href="/owner"
-          className="hidden md:flex items-center gap-3 hover:opacity-90 transition-opacity cursor-pointer group"
+          className="flex items-center gap-2 sm:gap-3 hover:opacity-90 transition-opacity cursor-pointer group"
           title="แดชบอร์ดเจ้าของหอพัก"
         >
-          <div className="w-10 h-10 rounded-2xl bg-white p-1 flex items-center justify-center shadow-md border border-border shrink-0 group-hover:scale-105 transition-transform">
+          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-white p-1 flex items-center justify-center shadow-md border border-border shrink-0 group-hover:scale-105 transition-transform">
             <img src="/up-logo.png" alt="ตรามหาวิทยาลัยพะเยา" className="w-full h-full object-contain" />
           </div>
           <div>
@@ -115,8 +101,8 @@ export default function OwnerNavbar({ onToggleMobileMenu }: OwnerNavbarProps) {
               <span className="text-[9px] font-black text-primary uppercase tracking-[0.15em]">
                 Owner Portal
               </span>
-              <span className="text-muted-foreground text-[9px]">•</span>
-              <span className="text-[9px] text-muted-foreground">หอพักหน้า ม.พะเยา</span>
+              <span className="hidden sm:inline text-muted-foreground text-[9px]">•</span>
+              <span className="hidden sm:inline text-[9px] text-muted-foreground">หอพักหน้า ม.พะเยา</span>
             </div>
           </div>
         </Link>

@@ -3,14 +3,19 @@ const { Client } = require('ssh2');
 const conn = new Client();
 conn.on('ready', () => {
   const code = `
-    const mysql = require('mysql2/promise');
     (async () => {
-      const pool = mysql.createPool('mysql://smartdom:smartdom@localhost:3306/smartdomdb');
-      const [dorms] = await pool.query('SELECT id, dorm_name, owner_id, owner_name FROM dormitory_registry');
-      console.log('Dorms:', JSON.stringify(dorms, null, 2));
-      const [users] = await pool.query("SELECT id, name, email, role, primary_role FROM users WHERE role = 'owner' OR primary_role = 'owner'");
-      console.log('Owner Users:', JSON.stringify(users, null, 2));
-      await pool.end();
+      try {
+        const fetch = (...args) => import('node-fetch').then(({default: f}) => f(...args));
+        const res = await fetch('http://localhost:3000/api/owner/stats?dormDbName=1');
+        const data = await res.json();
+        console.log('Stats for dorm 1:', JSON.stringify(data, null, 2));
+
+        const res2 = await fetch('http://localhost:3000/api/owner/stats?dormDbName=10');
+        const data2 = await res2.json();
+        console.log('Stats for dorm 10:', JSON.stringify(data2, null, 2));
+      } catch (err) {
+        console.error('API test error:', err);
+      }
       process.exit(0);
     })();
   `;

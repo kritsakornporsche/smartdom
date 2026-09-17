@@ -67,8 +67,9 @@ export async function GET(req: Request) {
 
     const pendingDraftsResult = await sql`
       SELECT COUNT(*) as count 
-      FROM booking_progress 
-      WHERE dorm_id = ${dormFilter} AND status IN ('pending', 'awaiting_approval', 'deposit_submitted')
+      FROM booking_progress bp
+      JOIN rooms r ON bp.room_id = r.id
+      WHERE r.dorm_id = ${dormFilter} AND bp.status IN ('pending', 'awaiting_approval', 'deposit_submitted')
     `.catch(() => [{ count: 0 }]);
 
     const pendingBookings = Number(pendingContractsResult[0]?.count || 0) + Number(pendingDraftsResult[0]?.count || 0);

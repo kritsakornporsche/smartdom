@@ -68,7 +68,12 @@ const filesToUpload = [
   'ecosystem.config.js',
   'lib/mysql-adapter.js',
   'scripts/switch-db.js',
-  'run_lighthouse_flow.js'
+  'run_lighthouse_flow.js',
+  'app/api/chat/conversations/route.ts',
+  'app/api/chat/messages/route.ts',
+  'app/owner/components/OwnerChatMessenger.tsx',
+  'app/owner/chat/page.tsx',
+  'app/tenant/chat/page.tsx'
 ];
 
 const conn = new Client();

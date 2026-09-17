@@ -5,11 +5,17 @@ conn.on('ready', () => {
     const mysql = require('mysql2/promise');
     (async () => {
       const p = mysql.createPool('mysql://smartdom:smartdom@localhost:3306/smartdomdb');
-      const [owners] = await p.query("SELECT id, email, name, role, primary_role FROM users WHERE role = 'owner' OR primary_role = 'owner'");
-      console.log('OWNERS:', owners);
+      await p.query("DELETE FROM booking_progress WHERE room_id IN (SELECT id FROM rooms WHERE dorm_id = 1)");
+      
+      const fetch = (...args) => import('node-fetch').then(({default: f}) => f(...args));
+      const s1 = await (await fetch('http://localhost:3000/api/owner/stats?dormDbName=1')).json();
+      console.log('STATS FOR DORM 1 NOW:', s1);
 
-      const [dormReg] = await p.query("SELECT id, dorm_name, owner_id, owner_email FROM dormitory_registry");
-      console.log('DORM_REGISTRY:', dormReg);
+      const [rooms] = await p.query("SELECT status, count(*) as count FROM rooms WHERE dorm_id = 1 GROUP BY status");
+      console.log('ROOM STATUS IN DORM 1:', rooms);
+
+      await p.end();
+      process.exit(0);
 
       await p.end();
       process.exit(0);

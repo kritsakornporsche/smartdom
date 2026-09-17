@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { signOut, useSession } from 'next-auth/react';
+import versionData from '@/lib/version.json';
 
 interface SubAction {
   href: string;
@@ -388,16 +389,37 @@ export default function OwnerBottomNav() {
                 })}
               </div>
 
-              {/* Extra sign out button in Management category */}
+              {/* Extra sign out button & version in Management category */}
               {currentSheetCategory.id === 'more' && (
-                <button
-                  type="button"
-                  onClick={() => signOut({ callbackUrl: '/signin' })}
-                  className="w-full mt-2 p-3.5 rounded-2xl bg-rose-500/10 hover:bg-rose-500/15 border border-rose-500/25 text-rose-600 dark:text-rose-400 font-bold text-xs flex items-center justify-center gap-2 transition-all active:scale-[0.98] cursor-pointer"
-                >
-                  <span>🚪</span>
-                  <span>ออกจากระบบ (Sign Out)</span>
-                </button>
+                <div className="space-y-2 mt-2">
+                  <button
+                    type="button"
+                    onClick={() => signOut({ callbackUrl: '/signin' })}
+                    className="w-full p-3.5 rounded-2xl bg-rose-500/10 hover:bg-rose-500/15 border border-rose-500/25 text-rose-600 dark:text-rose-400 font-bold text-xs flex items-center justify-center gap-2 transition-all active:scale-[0.98] cursor-pointer"
+                  >
+                    <span>🚪</span>
+                    <span>ออกจากระบบ (Sign Out)</span>
+                  </button>
+
+                  <div className="pt-2.5 pb-1 border-t border-border/50 flex items-center justify-between text-[11px] text-muted-foreground font-medium px-2">
+                    <Link
+                      href="/updates"
+                      onClick={() => setActiveSheet(null)}
+                      className="flex items-center gap-1.5 hover:text-primary transition-colors font-mono"
+                    >
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                      <span className="font-bold text-foreground">{versionData.shortDisplay || `v2.6.1-b${versionData.buildNumber}`}</span>
+                      <span className="text-[10px] text-muted-foreground/70">({versionData.gitHash})</span>
+                    </Link>
+                    <Link
+                      href="/updates"
+                      onClick={() => setActiveSheet(null)}
+                      className="text-primary hover:underline font-bold text-[10px]"
+                    >
+                      Changelog →
+                    </Link>
+                  </div>
+                </div>
               )}
             </div>
 

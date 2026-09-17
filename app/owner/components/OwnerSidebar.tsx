@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { signOut, useSession } from 'next-auth/react';
 import { useState, useEffect } from 'react';
+import versionData from '@/lib/version.json';
 
 interface OwnerSidebarProps {
   isOpen?: boolean;
@@ -148,8 +149,8 @@ export default function OwnerSidebar({ isOpen, onClose }: OwnerSidebarProps) {
         ))}
       </nav>
 
-      {/* Bottom Logout Button */}
-      <div className="p-3 border-t border-border bg-secondary/30 shrink-0">
+      {/* Bottom Logout Button & Version */}
+      <div className="p-3 border-t border-border bg-secondary/30 shrink-0 space-y-2">
         <button
           onClick={() => signOut({ callbackUrl: '/signin' })}
           className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 text-rose-500 hover:text-rose-600 dark:text-rose-300 dark:hover:text-rose-100 border border-rose-500/30 text-xs font-bold transition-all cursor-pointer active:scale-95 shadow-sm"
@@ -157,6 +158,13 @@ export default function OwnerSidebar({ isOpen, onClose }: OwnerSidebarProps) {
           <span className="text-sm">🚪</span>
           <span>ออกจากระบบ</span>
         </button>
+        <div className="pt-1.5 border-t border-border/40 flex items-center justify-between text-[10px] text-muted-foreground px-1">
+          <Link href="/updates" className="hover:text-primary transition-colors flex items-center gap-1.5 font-mono">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            <span>{versionData.shortDisplay || `v2.6.1-b${versionData.buildNumber}`}</span>
+          </Link>
+          <span className="text-[9px] font-mono text-muted-foreground/60">{versionData.gitHash}</span>
+        </div>
       </div>
     </div>
   );

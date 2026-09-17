@@ -11,7 +11,7 @@ interface Conversation {
   dorm_name: string;
   last_message: string;
   updated_at: string;
-  unread_count?: number; // Potential feature
+  unread_count?: number;
 }
 
 interface Message {
@@ -21,6 +21,22 @@ interface Message {
   created_at: string;
 }
 
+function formatRelativeTime(dateStr: string) {
+  if (!dateStr) return '';
+  const now = new Date();
+  const date = new Date(dateStr);
+  const diffSec = Math.floor((now.getTime() - date.getTime()) / 1000);
+  if (diffSec < 60) return 'เมื่อสักครู่';
+  const diffMin = Math.floor(diffSec / 60);
+  if (diffMin < 60) return `${diffMin} นาที`;
+  const diffHr = Math.floor(diffMin / 60);
+  if (diffHr < 24) return `${diffHr} ชม.`;
+  const diffDay = Math.floor(diffHr / 24);
+  if (diffDay === 1) return 'เมื่อวานนี้';
+  if (diffDay < 7) return `${diffDay} วัน`;
+  return date.toLocaleDateString('th-TH', { day: 'numeric', month: 'short' });
+}
+
 export default function OwnerChatMessenger() {
   const { data: session } = useSession();
   const [isOpen, setIsOpen] = useState(false);
@@ -28,22 +44,33 @@ export default function OwnerChatMessenger() {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const mobileScrollRef = useRef<HTMLDivElement>(null);
+
+  // Listen to open event from top navbar button
+  useEffect(() => {
+    const handleOpen = () => setIsOpen(true);
+    window.addEventListener('open-owner-chat', handleOpen);
+    return () => window.removeEventListener('open-owner-chat', handleOpen);
+  }, []);
 
   // Poll for conversations
+  const fetchConvs = async () => {
+    try {
+      const res = await fetch('/api/chat/conversations');
+      const data = await res.json();
+      if (data.success && Array.isArray(data.data)) {
+        setConversations(data.data);
+      }
+    } catch (e) { console.error(e); }
+  };
+
   useEffect(() => {
     if (!session) return;
-    const fetchConvs = async () => {
-      try {
-        const res = await fetch('/api/chat/conversations');
-        const data = await res.json();
-        if (data.success) setConversations(data.data);
-      } catch (e) { console.error(e); }
-    };
-
     fetchConvs();
-    const interval = setInterval(fetchConvs, 10000); // Poll every 10s for list
+    const interval = setInterval(fetchConvs, 10000);
     return () => clearInterval(interval);
   }, [session]);
 
@@ -59,14 +86,17 @@ export default function OwnerChatMessenger() {
     };
 
     fetchMsgs();
-    const interval = setInterval(fetchMsgs, 4000);
+    const interval = setInterval(fetchMsgs, 3000);
     return () => clearInterval(interval);
   }, [activeConv, isOpen]);
 
-  // Scroll to bottom
+  // Scroll to bottom when messages update
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+    if (mobileScrollRef.current) {
+      mobileScrollRef.current.scrollTop = mobileScrollRef.current.scrollHeight;
     }
   }, [messages, activeConv]);
 
@@ -74,16 +104,19 @@ export default function OwnerChatMessenger() {
     e.preventDefault();
     if (!newMessage.trim() || !activeConv) return;
 
+    const messageText = newMessage;
+    setNewMessage('');
+
     try {
       const res = await fetch('/api/chat/messages', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ conversationId: activeConv.id, message: newMessage })
+        body: JSON.stringify({ conversationId: activeConv.id, message: messageText })
       });
       const data = await res.json();
       if (data.success) {
-        setMessages([...messages, data.data]);
-        setNewMessage('');
+        setMessages(prev => [...prev, data.data]);
+        fetchConvs();
       }
     } catch (e) { console.error(e); }
   };
@@ -92,11 +125,319 @@ export default function OwnerChatMessenger() {
   const isOwner = (session?.user as any)?.role === 'owner' || (session?.user as any)?.primary_role === 'owner';
   if (!session || !isOwner || pathname === '/owner/chat') return null;
 
+  // Filtered conversations by search query
+  const filteredConversations = conversations.filter(c => {
+    if (!searchQuery.trim()) return true;
+    const query = searchQuery.toLowerCase();
+    return (
+      c.guest_name?.toLowerCase().includes(query) ||
+      c.last_message?.toLowerCase().includes(query) ||
+      c.dorm_name?.toLowerCase().includes(query)
+    );
+  });
+
+  const dormTitle = conversations[0]?.dorm_name || 'SmartDom Messenger';
+
   return (
-    <div className="fixed bottom-8 right-8 z-[60] flex flex-col items-end gap-4">
-      {/* Messenger Window */}
+    <>
+      {/* ========================================================================= */}
+      {/* 1. MOBILE FULL-SCREEN CHAT (Instagram DM Style - Visible on mobile only)  */}
+      {/* ========================================================================= */}
       {isOpen && (
-        <div className="w-[380px] h-[550px] bg-card text-foreground rounded-[2rem] shadow-2xl border border-border flex flex-col overflow-hidden animate-in slide-in-from-bottom-5 duration-300">
+        <div className="fixed inset-0 z-[100] bg-background text-foreground flex flex-col md:hidden animate-in slide-in-from-bottom duration-300">
+          
+          {/* Top Bar / Navigation */}
+          <div className="h-14 px-4 bg-card border-b border-border flex items-center justify-between shrink-0 shadow-sm">
+            {activeConv ? (
+              /* Active Chat Header */
+              <div className="flex items-center gap-3 min-w-0 flex-1">
+                <button
+                  type="button"
+                  onClick={() => setActiveConv(null)}
+                  className="p-1.5 -ml-1.5 hover:bg-secondary rounded-full transition-colors active:scale-95 text-foreground"
+                  aria-label="กลับไปหน้ารายการข้อความ"
+                >
+                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
+                  </svg>
+                </button>
+                <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-purple-700 via-purple-600 to-indigo-600 text-white flex items-center justify-center font-bold text-sm shadow-sm shrink-0">
+                  {activeConv.guest_name?.charAt(0) || 'G'}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <h3 className="text-sm font-bold text-foreground truncate leading-tight">
+                    {activeConv.guest_name}
+                  </h3>
+                  <p className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1 leading-none mt-0.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                    <span>กำลังออนไลน์</span>
+                  </p>
+                </div>
+              </div>
+            ) : (
+              /* Messages List Header (Instagram style dropdown username) */
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setIsOpen(false)}
+                  className="p-1.5 -ml-1.5 hover:bg-secondary rounded-full transition-colors active:scale-95 text-foreground"
+                  aria-label="ปิดกล่องข้อความ"
+                >
+                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
+                  </svg>
+                </button>
+                <div className="flex items-center gap-1.5 cursor-pointer">
+                  <h2 className="text-base font-black tracking-tight text-foreground">
+                    {dormTitle}
+                  </h2>
+                  <span className="text-xs text-muted-foreground">▼</span>
+                </div>
+              </div>
+            )}
+
+            {/* Right Action Button */}
+            <div className="flex items-center gap-1 shrink-0">
+              <button
+                type="button"
+                onClick={() => {
+                  if (activeConv) {
+                    // refresh current
+                    fetch(`/api/chat/messages?convId=${activeConv.id}`)
+                      .then(r => r.json())
+                      .then(d => { if (d.success) setMessages(d.data); });
+                  } else {
+                    fetchConvs();
+                  }
+                }}
+                className="p-2 hover:bg-secondary rounded-full transition-colors text-muted-foreground hover:text-foreground active:scale-95"
+                title="รีเฟรชข้อความ"
+              >
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+              </button>
+              <button
+                type="button"
+                onClick={() => setIsOpen(false)}
+                className="p-2 hover:bg-secondary rounded-full transition-colors text-muted-foreground hover:text-foreground active:scale-95"
+                title="ปิด"
+              >
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          {/* Body */}
+          <div className="flex-1 flex flex-col overflow-hidden bg-background">
+            {!activeConv ? (
+              /* Conversation List View (Instagram DM Style) */
+              <div className="flex-1 overflow-y-auto flex flex-col">
+                {/* 1. Meta / Search Bar */}
+                <div className="px-4 pt-3 pb-2 shrink-0">
+                  <div className="bg-secondary/70 border border-border/60 rounded-2xl px-3.5 py-2 flex items-center gap-2.5 focus-within:ring-2 focus-within:ring-primary/40 transition-all">
+                    <svg className="w-4 h-4 text-muted-foreground shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                    <input
+                      type="text"
+                      placeholder="ค้นหาผู้เช่า หรือข้อความ..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="bg-transparent border-none outline-none text-xs font-medium text-foreground placeholder:text-muted-foreground w-full"
+                    />
+                    {searchQuery && (
+                      <button onClick={() => setSearchQuery('')} className="text-muted-foreground text-xs p-1">
+                        ✕
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                {/* 2. Instagram Notes / Quick Avatars Stories Row */}
+                <div className="px-4 py-2 border-b border-border/40 shrink-0">
+                  <div className="flex items-center gap-4 overflow-x-auto no-scrollbar py-1">
+                    {/* Owner Note / Dorm Status */}
+                    <div className="flex flex-col items-center shrink-0 w-16 text-center group cursor-pointer">
+                      <div className="relative mb-1">
+                        <div className="w-14 h-14 rounded-full bg-gradient-to-tr from-purple-600 via-purple-500 to-indigo-600 p-0.5 flex items-center justify-center shadow-md group-hover:scale-105 transition-transform">
+                          <div className="w-full h-full rounded-full bg-card flex items-center justify-center text-xl">
+                            🏢
+                          </div>
+                        </div>
+                        {/* Note speech bubble */}
+                        <div className="absolute -top-2 left-1/2 -translate-x-1/2 bg-card border border-border text-[9px] font-bold px-2 py-0.5 rounded-full shadow-sm text-primary whitespace-nowrap">
+                          พร้อมดูแล ✨
+                        </div>
+                      </div>
+                      <span className="text-[10px] font-medium text-muted-foreground truncate w-full">
+                        หอพักคุณ
+                      </span>
+                    </div>
+
+                    {/* Quick Contacts from recent conversations */}
+                    {conversations.slice(0, 7).map((c) => (
+                      <button
+                        key={c.id}
+                        type="button"
+                        onClick={() => setActiveConv(c)}
+                        className="flex flex-col items-center shrink-0 w-16 text-center group cursor-pointer focus:outline-none"
+                      >
+                        <div className="relative mb-1">
+                          <div className="w-14 h-14 rounded-full bg-gradient-to-tr from-purple-500 to-amber-500 p-0.5 flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform">
+                            <div className="w-full h-full rounded-full bg-card flex items-center justify-center font-bold text-foreground text-base">
+                              {c.guest_name.charAt(0)}
+                            </div>
+                          </div>
+                          {/* Green online dot */}
+                          <span className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-emerald-500 rounded-full ring-2 ring-background" />
+                        </div>
+                        <span className="text-[10px] font-medium text-foreground truncate w-full">
+                          {c.guest_name.split(' ')[0]}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* 3. Section Title */}
+                <div className="px-4 pt-3 pb-1 flex items-center justify-between shrink-0">
+                  <h3 className="text-sm font-black text-foreground tracking-tight">ข้อความ</h3>
+                  <span className="text-[11px] font-medium text-muted-foreground">
+                    ทั้งหมด {filteredConversations.length} รายการ
+                  </span>
+                </div>
+
+                {/* 4. Conversations List (Instagram DM Style) */}
+                <div className="flex-1 overflow-y-auto px-2 py-1 space-y-0.5">
+                  {filteredConversations.length === 0 ? (
+                    <div className="h-48 flex flex-col items-center justify-center text-center p-6">
+                      <div className="w-12 h-12 rounded-full bg-primary/10 text-primary flex items-center justify-center mb-3 text-xl">
+                        💬
+                      </div>
+                      <p className="text-xs font-bold text-muted-foreground">ไม่พบข้อความการสนทนา</p>
+                      <p className="text-[10px] text-muted-foreground/70 mt-1">ข้อความใหม่จะแสดงขึ้นที่นี่อัตโนมัติ</p>
+                    </div>
+                  ) : (
+                    filteredConversations.map((conv) => (
+                      <button
+                        key={conv.id}
+                        type="button"
+                        onClick={() => setActiveConv(conv)}
+                        className="w-full p-3 flex items-center gap-3.5 rounded-2xl hover:bg-secondary/70 transition-all text-left group active:bg-secondary"
+                      >
+                        {/* Avatar */}
+                        <div className="relative shrink-0">
+                          <div className="w-13 h-13 rounded-full bg-gradient-to-tr from-purple-700 via-purple-600 to-indigo-600 p-0.5 shadow-sm">
+                            <div className="w-12 h-12 rounded-full bg-card flex items-center justify-center font-bold text-foreground text-base">
+                              {conv.guest_name.charAt(0)}
+                            </div>
+                          </div>
+                          <span className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-emerald-500 rounded-full ring-2 ring-card" />
+                        </div>
+
+                        {/* Content */}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between gap-1">
+                            <div className="flex items-center gap-1.5 min-w-0">
+                              <h4 className="text-sm font-bold text-foreground truncate">
+                                {conv.guest_name}
+                              </h4>
+                              <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-md shrink-0 ${
+                                conv.guest_role === 'tenant'
+                                  ? 'bg-primary/15 text-primary'
+                                  : 'bg-muted text-muted-foreground'
+                              }`}>
+                                {conv.guest_role === 'tenant' ? 'ลูกหอ' : 'แขก'}
+                              </span>
+                            </div>
+                            <span className="text-[10px] text-muted-foreground shrink-0 font-medium">
+                              {formatRelativeTime(conv.updated_at)}
+                            </span>
+                          </div>
+
+                          <div className="flex items-center justify-between gap-2 mt-0.5">
+                            <p className="text-xs text-muted-foreground truncate leading-relaxed">
+                              {conv.last_message || 'เริ่มการสนทนาใหม่...'}
+                            </p>
+                            <span className="w-2 h-2 rounded-full bg-purple-600 shrink-0" />
+                          </div>
+                        </div>
+                      </button>
+                    ))
+                  )}
+                </div>
+              </div>
+            ) : (
+              /* Active 1-on-1 Chat View (Fullscreen) */
+              <div className="flex-1 flex flex-col overflow-hidden">
+                {/* Messages Feed */}
+                <div ref={mobileScrollRef} className="flex-1 p-4 overflow-y-auto space-y-3 bg-background/50">
+                  {messages.length === 0 ? (
+                    <div className="h-full flex flex-col items-center justify-center text-center p-8">
+                      <div className="w-14 h-14 rounded-full bg-primary/10 text-primary flex items-center justify-center mb-3 text-2xl">
+                        💬
+                      </div>
+                      <p className="text-xs font-bold text-muted-foreground">ยังไม่มีข้อความ</p>
+                      <p className="text-[10px] text-muted-foreground/70 mt-1">ส่งข้อความทักทายลูกหอหรือแขกได้เลย</p>
+                    </div>
+                  ) : (
+                    messages.map((msg) => {
+                      const isMe = String(msg.sender_id) === String((session?.user as any)?.id);
+                      return (
+                        <div key={msg.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'} animate-in fade-in duration-150`}>
+                          <div className={`max-w-[78%] p-3.5 rounded-2xl text-xs font-medium leading-relaxed shadow-sm ${
+                            isMe
+                              ? 'bg-gradient-to-br from-purple-700 via-purple-600 to-indigo-600 text-white rounded-tr-none shadow-md shadow-purple-600/15'
+                              : 'bg-card border border-border text-foreground rounded-tl-none shadow-sm'
+                          }`}>
+                            <p className="break-words whitespace-pre-wrap leading-relaxed">{msg.message}</p>
+                            <div className={`text-[9px] mt-1.5 font-medium flex items-center ${
+                              isMe ? 'justify-end text-purple-200' : 'justify-start text-muted-foreground'
+                            }`}>
+                              {msg.created_at ? new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })
+                  )}
+                </div>
+
+                {/* Sticky Bottom Input Bar */}
+                <div className="p-3 bg-card border-t border-border shrink-0 pb-safe">
+                  <form onSubmit={handleSendMessage} className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      placeholder="เขียนข้อความของคุณ..."
+                      value={newMessage}
+                      onChange={(e) => setNewMessage(e.target.value)}
+                      className="flex-1 py-3 px-4 bg-muted/60 text-foreground placeholder:text-muted-foreground rounded-full border border-border focus:border-primary focus:bg-background outline-none text-xs font-medium transition-all shadow-inner"
+                    />
+                    <button
+                      type="submit"
+                      disabled={!newMessage.trim()}
+                      className="p-3 bg-gradient-to-br from-purple-700 to-indigo-700 text-white rounded-full hover:scale-105 active:scale-95 transition-all shadow-md shadow-purple-600/25 disabled:opacity-50 disabled:grayscale disabled:scale-100 disabled:shadow-none cursor-pointer shrink-0"
+                    >
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                      </svg>
+                    </button>
+                  </form>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* 2. DESKTOP FLOATING MESSENGER (Visible on desktop screens only md:flex)   */}
+      {/* ========================================================================= */}
+      {isOpen && (
+        <div className="hidden md:flex w-[390px] h-[580px] fixed bottom-28 right-8 z-[60] bg-card text-foreground rounded-[2rem] shadow-2xl border border-border flex-col overflow-hidden animate-in slide-in-from-bottom-5 duration-300">
           
           {/* Header */}
           <div className="p-5 bg-gradient-to-r from-purple-800 via-purple-700 to-indigo-800 text-white flex items-center justify-between shrink-0 shadow-md">
@@ -162,7 +503,7 @@ export default function OwnerChatMessenger() {
                             </span>
                           </div>
                           <span className="text-[10px] text-muted-foreground font-medium shrink-0 ml-2">
-                            {new Date(conv.updated_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                            {formatRelativeTime(conv.updated_at)}
                           </span>
                         </div>
                         <p className="text-xs text-muted-foreground truncate mt-1">{conv.last_message || 'รอการตอบกลับ...'}</p>
@@ -221,11 +562,13 @@ export default function OwnerChatMessenger() {
         </div>
       )}
 
-      {/* Trigger Bubble */}
+      {/* ========================================================================= */}
+      {/* 3. DESKTOP TRIGGER BUBBLE (Hidden on mobile, only appears on md:flex)    */}
+      {/* ========================================================================= */}
       <button
         onClick={() => setIsOpen(!isOpen)}
         aria-label="SmartDom Messenger"
-        className={`w-16 h-16 rounded-[2rem] flex items-center justify-center transition-all shadow-2xl hover:scale-110 active:scale-95 ${
+        className={`hidden md:flex fixed bottom-8 right-8 z-[60] w-16 h-16 rounded-[2rem] items-center justify-center transition-all shadow-2xl hover:scale-110 active:scale-95 ${
           isOpen 
             ? 'bg-gradient-to-br from-purple-700 to-indigo-700 text-white rotate-90 shadow-purple-700/30' 
             : 'bg-gradient-to-br from-purple-700 to-indigo-700 text-white shadow-purple-700/30'
@@ -240,6 +583,6 @@ export default function OwnerChatMessenger() {
           </div>
         )}
       </button>
-    </div>
+    </>
   );
 }

@@ -128,64 +128,81 @@ export default function ChatWidget({ dormId, ownerName, initialConversationId }:
             else startConversation();
           }}
           disabled={loading}
-          className="w-16 h-16 rounded-full bg-primary text-primary-foreground shadow-2xl flex items-center justify-center hover:scale-110 transition-all group"
+          aria-label="ติดต่อหอพัก"
+          className="w-16 h-16 rounded-[2rem] bg-gradient-to-br from-purple-700 to-indigo-700 text-white shadow-2xl shadow-purple-700/30 flex items-center justify-center hover:scale-110 active:scale-95 transition-all group"
         >
           <svg className="w-8 h-8 group-hover:rotate-12 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
           </svg>
-          {loading && <div className="absolute inset-0 bg-white/20 animate-pulse rounded-full" />}
+          {loading && <div className="absolute inset-0 bg-white/20 animate-pulse rounded-[2rem]" />}
         </button>
       ) : (
-        <div className="w-96 h-[500px] bg-white rounded-[2.5rem] shadow-[0_32px_64px_-16px_rgba(0,0,0,0.2)] flex flex-col overflow-hidden border border-black/5 animate-in slide-in-from-bottom-8">
+        <div className="w-[360px] sm:w-96 h-[520px] bg-card text-foreground rounded-[2rem] shadow-2xl flex flex-col overflow-hidden border border-border animate-in slide-in-from-bottom-8 duration-300">
           {/* Header */}
-          <div className="p-6 bg-black text-white flex items-center justify-between">
+          <div className="p-5 bg-gradient-to-r from-purple-800 via-purple-700 to-indigo-800 text-white flex items-center justify-between shadow-md shrink-0">
             <div className="flex items-center gap-3">
-              <div className="w-2 h-2 bg-primary rounded-full animate-pulse" />
-              <p className="text-[11px] font-black uppercase tracking-widest">
-                {ownerName ? `แชทกับ ${ownerName}` : 'แชทกับเจ้าหน้าที่'}
-              </p>
+              <div className="w-2.5 h-2.5 bg-amber-400 rounded-full animate-pulse" />
+              <div>
+                <p className="text-xs font-bold tracking-tight text-white">
+                  {ownerName ? `แชทกับ ${ownerName}` : 'แชทกับเจ้าหน้าที่หอพัก'}
+                </p>
+                <p className="text-[10px] font-medium text-purple-200">สอบถามรายละเอียดห้องพัก</p>
+              </div>
             </div>
-            <button onClick={() => setIsOpen(false)} className="text-white/60 hover:text-white transition-colors">
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M6 18L18 6M6 6l12 12" /></svg>
+            <button 
+              onClick={() => setIsOpen(false)} 
+              className="p-1 text-white/70 hover:text-white hover:bg-white/10 rounded-full transition-colors"
+            >
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" /></svg>
             </button>
           </div>
 
           {/* Messages */}
-          <div ref={scrollRef} className="flex-1 p-6 overflow-y-auto space-y-4 bg-gray-50/50">
+          <div ref={scrollRef} className="flex-1 p-5 overflow-y-auto space-y-3 bg-background/50">
             {messages.length === 0 && (
               <div className="h-full flex flex-col items-center justify-center text-center px-6">
-                <div className="w-12 h-12 rounded-full bg-black/5 flex items-center justify-center mb-4">
-                   <svg className="w-6 h-6 text-black/20" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
+                <div className="w-12 h-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mb-3 text-xl">
+                  💬
                 </div>
-                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">เริ่มการสนทนา</p>
-                <p className="text-[10px] text-muted-foreground/60 italic mt-1">สอบถามข้อมูลเพิ่มเติมกับเจ้าหน้าที่ได้เลย</p>
+                <p className="text-xs font-bold text-foreground">เริ่มการสนทนา</p>
+                <p className="text-[11px] text-muted-foreground mt-1">สอบถามข้อมูลเพิ่มเติมกับเจ้าหน้าที่ได้เลย</p>
               </div>
             )}
             {messages.map((msg) => {
-               const isMe = String(msg.sender_id) === String((session?.user as any)?.id);
-               return (
-                  <div key={msg.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
-                    <div className={`max-w-[80%] p-4 rounded-2xl text-[11px] font-bold leading-relaxed shadow-sm ${isMe ? 'bg-primary text-white rounded-tr-none shadow-lg shadow-primary/20' : 'bg-white border border-black/5 text-black rounded-tl-none'}`}>
-                      {msg.message}
+              const isMe = String(msg.sender_id) === String((session?.user as any)?.id);
+              return (
+                <div key={msg.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'} animate-in fade-in duration-150`}>
+                  <div className={`max-w-[80%] p-3.5 rounded-2xl text-xs font-medium leading-relaxed shadow-sm ${
+                    isMe 
+                      ? 'bg-gradient-to-br from-purple-700 via-purple-600 to-indigo-600 text-white rounded-tr-none shadow-md shadow-purple-600/15' 
+                      : 'bg-card border border-border text-foreground rounded-tl-none shadow-sm'
+                  }`}>
+                    <p className="break-words whitespace-pre-wrap leading-relaxed">{msg.message}</p>
+                    <div className={`text-[9px] mt-1.5 font-medium flex items-center ${
+                      isMe ? 'justify-end text-purple-200' : 'justify-start text-muted-foreground'
+                    }`}>
+                      {msg.created_at ? new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
                     </div>
                   </div>
-               );
+                </div>
+              );
             })}
           </div>
 
           {/* Input */}
-          <form onSubmit={sendMessage} className="p-6 bg-white border-t border-black/5">
-            <div className="relative">
+          <form onSubmit={sendMessage} className="p-3.5 bg-card border-t border-border shrink-0">
+            <div className="relative flex items-center gap-2">
               <input
                 type="text"
                 placeholder="พิมพ์ข้อความ..."
                 value={newMessage}
                 onChange={(e) => setNewMessage(e.target.value)}
-                className="w-full px-6 py-4 bg-black/5 rounded-2xl border border-transparent focus:border-primary focus:bg-white outline-none text-xs font-bold transition-all pr-16"
+                className="flex-1 py-2.5 pl-4 pr-12 bg-muted/60 text-foreground placeholder:text-muted-foreground rounded-full border border-border focus:border-primary focus:bg-background outline-none text-xs font-medium transition-all shadow-inner"
               />
               <button
                 type="submit"
-                className="absolute right-2 top-2 w-10 h-10 bg-black text-white rounded-xl flex items-center justify-center hover:scale-105 transition-all"
+                disabled={!newMessage.trim()}
+                className="absolute right-1 top-1 bottom-1 aspect-square bg-gradient-to-br from-purple-700 to-indigo-700 text-white rounded-full flex items-center justify-center hover:scale-105 active:scale-95 transition-all shadow-md shadow-purple-600/25 disabled:opacity-50 disabled:grayscale disabled:scale-100 disabled:shadow-none cursor-pointer"
               >
                 <svg className="w-4 h-4 rotate-45" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" /></svg>
               </button>

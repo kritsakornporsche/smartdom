@@ -100,113 +100,131 @@ export default function TenantChatPage() {
   };
 
   return (
-    <div className="flex h-[calc(100vh-6rem)] bg-[#0F172A] font-sans">
+    <div className="flex h-[calc(100vh-6rem)] bg-background text-foreground font-sans overflow-hidden">
       {/* Sidebar - Conversation List */}
-      <div className="w-80 lg:w-96 border-r border-black/5 flex flex-col bg-[#0F172A] shrink-0">
-        <div className="p-8 border-b border-black/5 bg-[#080F1E]">
-          <h1 className="text-2xl font-black tracking-tight mb-1 italic">ข้อความแชท</h1>
-          <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Tenant Messages Center</p>
+      <div className="w-80 lg:w-96 border-r border-border flex flex-col bg-card shrink-0">
+        <div className="p-6 sm:p-8 border-b border-border bg-card/70 backdrop-blur-md">
+          <div className="flex items-center gap-2 mb-1">
+            <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+            <p className="text-[10px] font-black uppercase tracking-widest text-primary">Tenant Messages Center</p>
+          </div>
+          <h1 className="text-2xl font-black tracking-tight text-foreground italic">ข้อความแชท</h1>
         </div>
         
         <div className="flex-1 overflow-y-auto">
           {loading ? (
-            <div className="p-8 space-y-4">
-              {[1, 2, 3].map(i => <div key={i} className="h-20 bg-black/5 animate-pulse rounded-2xl" />)}
+            <div className="p-6 space-y-3">
+              {[1, 2, 3].map(i => <div key={i} className="h-20 bg-muted/60 animate-pulse rounded-2xl" />)}
             </div>
           ) : conversations.length === 0 ? (
             <div className="p-12 text-center">
-               <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-4 grayscale opacity-50">
-                  <svg className="w-8 h-8 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                  </svg>
+               <div className="w-16 h-16 bg-muted/50 rounded-full flex items-center justify-center mx-auto mb-4 text-muted-foreground">
+                 💬
                </div>
-               <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40 leading-relaxed">ยังไม่มีประวัติการพูดคุย</p>
+               <p className="text-xs font-bold text-muted-foreground">ยังไม่มีประวัติการพูดคุย</p>
+               <p className="text-[10px] text-muted-foreground/70 mt-1">การสนทนากับเจ้าหน้าที่หอพักจะปรากฏที่นี่</p>
             </div>
           ) : (
-            conversations.map((conv) => (
-              <button
-                key={conv.id}
-                onClick={() => setSelectedConv(conv)}
-                className={`w-full p-6 text-left border-b border-black/5 transition-all hover:bg-black/5 group ${selectedConv?.id === conv.id ? 'bg-[#3E342B] text-white' : ''}`}
-              >
-                <div className="flex justify-between items-start mb-2">
-                  <p className={`text-xs font-black uppercase tracking-widest ${selectedConv?.id === conv.id ? 'text-white/60' : 'text-muted-foreground'}`}>{conv.dorm_name}</p>
-                  <p className="text-[9px] opacity-40">{new Date(conv.updated_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
-                </div>
-                <div className="flex items-center justify-between gap-2">
-                  <h3 className="font-bold text-sm tracking-tight">{conv.owner_name}</h3>
-                  <span className={`text-[9px] font-black uppercase px-2 py-0.5 rounded-full border ${selectedConv?.id === conv.id ? 'bg-[#0F172A]/10 text-white border-white/20/10' : 'bg-black/5 text-muted-foreground border-transparent'}`}>
-                    เจ้าหน้าที่
-                  </span>
-                </div>
-                <p className={`text-[10px] truncate opacity-60 mt-2 font-medium ${selectedConv?.id === conv.id ? 'text-white/60' : 'text-white/80'}`}>
-                  {conv.last_message || 'เริ่มการสนทนาใหม่...'}
-                </p>
-              </button>
-            ))
+            conversations.map((conv) => {
+              const isSelected = selectedConv?.id === conv.id;
+              return (
+                <button
+                  key={conv.id}
+                  onClick={() => setSelectedConv(conv)}
+                  className={`w-full p-5 text-left border-b border-border/60 transition-all group ${
+                    isSelected 
+                      ? 'bg-primary/10 border-l-4 border-l-primary' 
+                      : 'hover:bg-muted/50 text-foreground'
+                  }`}
+                >
+                  <div className="flex justify-between items-start mb-1.5">
+                    <p className="text-[11px] font-black uppercase tracking-wider text-amber-600 dark:text-amber-400">
+                      {conv.dorm_name}
+                    </p>
+                    <p className="text-[10px] text-muted-foreground font-medium">
+                      {conv.updated_at ? new Date(conv.updated_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
+                    </p>
+                  </div>
+                  <div className="flex items-center justify-between gap-2 mb-1">
+                    <h3 className="font-bold text-sm text-foreground">{conv.owner_name}</h3>
+                    <span className="text-[9px] font-black uppercase px-2 py-0.5 rounded-full bg-primary/15 text-primary">
+                      เจ้าหน้าที่
+                    </span>
+                  </div>
+                  <p className="text-xs truncate text-muted-foreground font-medium">
+                    {conv.last_message || 'เริ่มการสนทนาใหม่...'}
+                  </p>
+                </button>
+              );
+            })
           )}
         </div>
       </div>
 
       {/* Main Chat Area */}
-      <div className="flex-1 flex flex-col bg-[#080F1E]">
+      <div className="flex-1 flex flex-col bg-background/50">
         {selectedConv ? (
           <>
             {/* Header */}
-            <div className="px-8 py-6 bg-[#0F172A] border-b border-black/5 flex items-center justify-between shrink-0">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-[#3E342B] rounded-2xl flex items-center justify-center text-white font-bold text-xl shadow-xl shadow-black/10">
+            <div className="px-6 sm:px-8 py-5 bg-card border-b border-border flex items-center justify-between shrink-0 shadow-sm">
+              <div className="flex items-center gap-3.5">
+                <div className="w-10 h-10 bg-gradient-to-br from-purple-700 to-indigo-700 rounded-2xl flex items-center justify-center text-white font-black text-base shadow-md shadow-purple-600/20">
                   {selectedConv.owner_name?.[0] || 'O'}
                 </div>
                 <div>
-                  <h2 className="text-lg font-black tracking-tight">{selectedConv.owner_name}</h2>
-                  <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{selectedConv.dorm_name}</p>
-                </div>
-              </div>
-              <div className="flex gap-2">
-                <div className="h-10 w-10 rounded-xl bg-black/5 flex items-center justify-center text-black/40 hover:bg-black/10 transition-colors cursor-pointer">
-                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>
+                  <h2 className="text-base font-black text-foreground">{selectedConv.owner_name}</h2>
+                  <p className="text-[10px] font-bold text-primary flex items-center gap-1">
+                    <span>🏢</span>
+                    <span>{selectedConv.dorm_name}</span>
+                  </p>
                 </div>
               </div>
             </div>
 
             {/* Messages */}
-            <div ref={scrollRef} className="flex-1 p-8 overflow-y-auto space-y-6">
-              {messages.map((msg) => {
-                const isMe = String(msg.sender_id) === String((session?.user as any)?.id);
-                return (
-                  <div key={msg.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'} animate-in fade-in slide-in-from-bottom-2 duration-300`}>
-                    <div className={`max-w-[70%] p-6 rounded-[2rem] text-sm font-bold leading-relaxed shadow-sm ${
-                      isMe 
-                        ? 'bg-[#3E342B] text-white rounded-tr-none shadow-xl shadow-black/10' 
-                        : 'bg-[#0F172A] border border-black/5 text-white rounded-tl-none'
-                    }`}>
-                      {msg.message}
-                      <div className={`text-[9px] mt-2 opacity-50 flex items-center gap-1 ${isMe ? 'justify-end text-white/50' : 'justify-start text-black/30'}`}>
-                        {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+            <div ref={scrollRef} className="flex-1 p-6 sm:p-8 overflow-y-auto space-y-4">
+              {messages.length === 0 ? (
+                <div className="h-full flex flex-col items-center justify-center text-center p-8">
+                  <p className="text-xs font-bold text-muted-foreground">ยังไม่มีข้อความ</p>
+                  <p className="text-[10px] text-muted-foreground/70 mt-1">พิมพ์ข้อความเพื่อสอบถามเจ้าหน้าที่หอพักได้เลย</p>
+                </div>
+              ) : (
+                messages.map((msg) => {
+                  const isMe = String(msg.sender_id) === String((session?.user as any)?.id);
+                  return (
+                    <div key={msg.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'} animate-in fade-in slide-in-from-bottom-2 duration-200`}>
+                      <div className={`max-w-[75%] sm:max-w-[60%] p-4 sm:p-5 rounded-2xl text-sm font-medium leading-relaxed ${
+                        isMe 
+                          ? 'bg-gradient-to-br from-purple-700 via-purple-600 to-indigo-600 text-white rounded-tr-none shadow-lg shadow-purple-700/20' 
+                          : 'bg-card border border-border text-foreground rounded-tl-none shadow-sm'
+                      }`}>
+                        <p className="break-words whitespace-pre-wrap leading-relaxed">{msg.message}</p>
+                        <div className={`text-[10px] mt-2 font-medium flex items-center gap-1 ${
+                          isMe ? 'justify-end text-purple-200' : 'justify-start text-muted-foreground'
+                        }`}>
+                          {msg.created_at ? new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })
+              )}
             </div>
 
             {/* Input Area */}
-            <div className="p-8 bg-[#0F172A] border-t border-black/5 shrink-0">
-              <form onSubmit={sendMessage} className="relative flex gap-4 max-w-4xl mx-auto">
+            <div className="p-4 sm:p-6 bg-card border-t border-border shrink-0">
+              <form onSubmit={sendMessage} className="max-w-4xl mx-auto relative flex items-center gap-3">
                 <input
                   type="text"
                   placeholder="พิมพ์ข้อความตอบกลับ..."
                   value={newMessage}
                   onChange={(e) => setNewMessage(e.target.value)}
-                  className="flex-1 px-8 py-5 bg-black/5 rounded-full border border-transparent focus:border-[#3E342B] focus:bg-[#0F172A] outline-none text-sm font-bold transition-all shadow-inner placeholder:text-black/20"
+                  className="flex-1 px-6 py-3.5 bg-muted/60 text-foreground placeholder:text-muted-foreground rounded-full border border-border focus:border-primary focus:bg-background outline-none text-sm font-medium transition-all shadow-inner"
                 />
                 <button
                   type="submit"
                   disabled={!newMessage.trim() || sending}
-                  className={`px-10 py-5 bg-[#3E342B] text-white rounded-full text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-all shadow-xl shadow-black/20 flex items-center gap-2 ${
-                    !newMessage.trim() || sending ? 'opacity-50 grayscale cursor-not-allowed shadow-none' : ''
-                  }`}
+                  className="px-8 py-3.5 bg-primary hover:bg-primary/90 text-primary-foreground rounded-full text-xs font-black uppercase tracking-wider hover:scale-105 active:scale-95 transition-all shadow-lg shadow-primary/25 disabled:opacity-50 disabled:grayscale disabled:scale-100 disabled:shadow-none cursor-pointer"
                 >
                   {sending ? 'กำลังส่ง...' : 'ส่งข้อความ'}
                 </button>
@@ -215,13 +233,11 @@ export default function TenantChatPage() {
           </>
         ) : (
           <div className="flex-1 flex flex-col items-center justify-center text-center p-12">
-            <div className="w-24 h-24 rounded-full bg-black/5 flex items-center justify-center mb-6">
-              <svg className="w-12 h-12 text-black/5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
-              </svg>
+            <div className="w-20 h-20 rounded-full bg-primary/10 text-primary flex items-center justify-center mb-6 text-3xl shadow-inner">
+              💬
             </div>
-            <h3 className="text-xl font-black tracking-tight mb-2">เลือกการสนทนา</h3>
-            <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground leading-relaxed max-w-xs">
+            <h3 className="text-xl font-display font-black text-foreground tracking-tight mb-2">เลือกการสนทนา</h3>
+            <p className="text-xs font-medium text-muted-foreground leading-relaxed max-w-sm">
               เลือกแชทจากรายการด้านซ้ายเพื่อพูดคุยสอบถามข้อมูลกับเจ้าของหอพักของคุณ
             </p>
           </div>

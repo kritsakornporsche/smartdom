@@ -1,9 +1,9 @@
 {
   "baseVersion": "v2.6.1",
-  "buildNumber": 219,
-  "gitHash": "adb9844",
-  "timestamp": "20260917.0926",
-  "updatedAt": "17 ก.ย. 2569 09:26",
-  "fullDisplay": "v2.6.1.219 (adb9844)",
-  "shortDisplay": "v2.6.1-b219"
+  "buildNumber": 220,
+  "gitHash": "4960dd9",
+  "timestamp": "20260917.0944",
+  "updatedAt": "17 ก.ย. 2569 09:44",
+  "fullDisplay": "v2.6.1.220 (4960dd9)",
+  "shortDisplay": "v2.6.1-b220"
 }

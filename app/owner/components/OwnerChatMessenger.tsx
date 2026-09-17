@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useSession } from 'next-auth/react';
+import { usePathname } from 'next/navigation';
 
 interface Conversation {
   id: number;
@@ -87,7 +88,9 @@ export default function OwnerChatMessenger() {
     } catch (e) { console.error(e); }
   };
 
-  if (!session || (session.user as any).role !== 'owner') return null;
+  const pathname = usePathname();
+  const isOwner = (session?.user as any)?.role === 'owner' || (session?.user as any)?.primary_role === 'owner';
+  if (!session || !isOwner || pathname === '/owner/chat') return null;
 
   return (
     <div className="fixed bottom-8 right-8 z-[60] flex flex-col items-end gap-4">

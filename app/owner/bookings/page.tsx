@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 
@@ -44,6 +44,7 @@ interface RoomOption {
 export default function OwnerBookingsPage() {
   const { data: session, status: authStatus } = useSession();
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [availableRooms, setAvailableRooms] = useState<RoomOption[]>([]);
@@ -109,8 +110,9 @@ export default function OwnerBookingsPage() {
     setLoading(true);
     try {
       const email = session?.user?.email || (typeof window !== 'undefined' ? localStorage.getItem('userEmail') : null);
+      const urlDormId = searchParams.get('dormId');
       const savedDb = typeof window !== 'undefined' ? localStorage.getItem('selectedDormDbName') : null;
-      const targetDorm = dormParam !== undefined ? dormParam : (selectedDormFilter !== 'ALL' ? selectedDormFilter : (savedDb || ''));
+      const targetDorm = dormParam !== undefined ? dormParam : (selectedDormFilter !== 'ALL' ? selectedDormFilter : (urlDormId || savedDb || ''));
 
       const params = new URLSearchParams();
       if (email) params.append('email', email);
@@ -124,6 +126,9 @@ export default function OwnerBookingsPage() {
         setAvailableRooms(data.availableRooms || []);
         setDormsList(data.dorms || []);
         setDormId(data.selectedDormId || null);
+        if (targetDorm && targetDorm !== 'ALL') {
+          setSelectedDormFilter(targetDorm);
+        }
       }
     } catch (err) {
       console.error('Fetch bookings error:', err);
@@ -133,8 +138,12 @@ export default function OwnerBookingsPage() {
   };
 
   useEffect(() => {
+    const urlTab = searchParams.get('tab');
+    if (urlTab && ['Pending', 'Active', 'Cancelled', 'All'].includes(urlTab)) {
+      setActiveTab(urlTab as any);
+    }
     fetchBookings();
-  }, [authStatus, session]);
+  }, [authStatus, session, searchParams]);
 
   const handleDormChange = (newDormVal: string) => {
     setSelectedDormFilter(newDormVal);

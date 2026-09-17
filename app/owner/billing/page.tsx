@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import PremiumDatePicker from '@/app/components/PremiumDatePicker';
 
@@ -46,9 +46,11 @@ interface Tenant {
 export default function OwnerBillingPage() {
   const { data: session, status: authStatus } = useSession();
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const [bills, setBills] = useState<Bill[]>([]);
   const [tenants, setTenants] = useState<Tenant[]>([]);
+  const [dormsList, setDormsList] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [ownerDormId, setOwnerDormId] = useState<number | null>(null);
   const [dormProfile, setDormProfile] = useState<any>(null);
@@ -130,20 +132,31 @@ export default function OwnerBillingPage() {
     }
 
     if (authStatus === 'authenticated' && session.user?.email) {
-      fetch(`/api/owner/onboarding?email=${session.user.email}`)
+      const urlStatus = searchParams.get('status');
+      const urlDormId = searchParams.get('dormId');
+      const savedDb = urlDormId || (typeof window !== 'undefined' ? localStorage.getItem('selectedDormDbName') : null);
+
+      if (urlStatus) {
+        setFilterStatus(urlStatus);
+        setSelectedCycle('All');
+      }
+
+      fetch(`/api/owner/onboarding?email=${encodeURIComponent(session.user.email)}${savedDb ? `&dormDbName=${savedDb}` : ''}`)
         .then((res) => res.json())
         .then((data) => {
           if (data.success && data.hasDorm) {
-            setOwnerDormId(data.dorm.id);
-            setDormProfile(data.dorm);
-            fetchBillData(data.dorm.id);
+            setDormsList(data.dorms || []);
+            const targetDorm = (urlDormId && data.dorms?.find((d: any) => String(d.id) === String(urlDormId) || d.db_name === urlDormId)) || data.dorm;
+            setOwnerDormId(targetDorm.id);
+            setDormProfile(targetDorm);
+            fetchBillData(targetDorm.id);
           } else {
             setLoading(false);
           }
         })
         .catch(() => setLoading(false));
     }
-  }, [authStatus, session, router]);
+  }, [authStatus, session, router, searchParams]);
 
   // Set default billing cycles on mount
   useEffect(() => {
@@ -430,15 +443,36 @@ export default function OwnerBillingPage() {
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 bg-card/80 backdrop-blur-xl p-6 sm:p-8 rounded-[2.5rem] border border-border shadow-2xl relative overflow-hidden">
           <div className="absolute top-0 right-0 w-96 h-96 bg-primary/10 rounded-full blur-3xl pointer-events-none" />
           <div className="relative z-10">
-            <div className="flex items-center gap-3 mb-2">
+            <div className="flex items-center gap-3 mb-2 flex-wrap">
               <span className="px-3 py-1 bg-amber-500/10 text-amber-400 border border-amber-500/20 text-xs font-black uppercase tracking-widest rounded-full">
                 ⚡ ระบบบิลและการเงิน
               </span>
-              {dormProfile?.name && (
+              {dormsList.length > 1 ? (
+                <select
+                  value={ownerDormId || ''}
+                  onChange={(e) => {
+                    const selectedId = Number(e.target.value);
+                    const chosen = dormsList.find((d: any) => d.id === selectedId);
+                    if (chosen) {
+                      setOwnerDormId(chosen.id);
+                      setDormProfile(chosen);
+                      if (chosen.db_name) localStorage.setItem('selectedDormDbName', chosen.db_name);
+                      fetchBillData(chosen.id);
+                    }
+                  }}
+                  className="bg-black/20 text-amber-300 text-xs font-bold px-3 py-1 rounded-xl border border-amber-500/30 outline-none cursor-pointer"
+                >
+                  {dormsList.map((d: any) => (
+                    <option key={d.id} value={d.id} className="bg-slate-900 text-white">
+                      🏢 {d.name || d.dorm_name}
+                    </option>
+                  ))}
+                </select>
+              ) : dormProfile?.name ? (
                 <span className="text-xs font-semibold text-slate-400">
                   📍 {dormProfile.name}
                 </span>
-              )}
+              ) : null}
             </div>
             <h1 className="text-3xl sm:text-4xl font-black text-foreground tracking-tight">
               การตรวจสอบและบิลค่าเช่า

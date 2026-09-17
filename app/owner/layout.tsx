@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import OwnerNavbar from './components/OwnerNavbar';
 import OwnerSidebar from './components/OwnerSidebar';
+import OwnerChatMessenger from './components/OwnerChatMessenger';
 
 export default function OwnerLayout({
   children,
@@ -26,6 +27,9 @@ export default function OwnerLayout({
           {children}
         </div>
       </div>
+
+      {/* 3. Floating Owner Chat Messenger */}
+      <OwnerChatMessenger />
     </div>
   );
 }

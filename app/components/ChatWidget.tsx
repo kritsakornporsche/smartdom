@@ -99,7 +99,8 @@ export default function ChatWidget({ dormId, ownerName, initialConversationId }:
         window.location.href = `/signin?callbackUrl=${encodeURIComponent(window.location.pathname)}`;
         return;
       }
-      if (e.detail?.dormId && e.detail.dormId === dormId) {
+      const targetDormId = e.detail?.dormId;
+      if (!targetDormId || Number(targetDormId) === Number(dormId)) {
         if (!conversationId) {
           startConversation();
         } else {

@@ -83,11 +83,12 @@ export default function RoomBookingPage({ params }: { params: Promise<{ id: stri
       router.push(`/signin?callbackUrl=${encodeURIComponent(window.location.pathname)}`);
       return;
     }
+    if (room?.dorm_id) {
+      window.dispatchEvent(new CustomEvent('open-chat', { detail: { dormId: Number(room.dorm_id) } }));
+    }
     const btn = document.getElementById('open-chat-widget-btn');
     if (btn) {
       btn.click();
-    } else {
-      window.dispatchEvent(new CustomEvent('open-chat', { detail: { dormId: room?.dorm_id } }));
     }
   };
 

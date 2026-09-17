@@ -124,7 +124,7 @@ export default function OwnerDashboard() {
           <div className="space-y-2.5">
             {hasPendingSlips && (
               <Link
-                href="/owner/billing"
+                href={dormInfo?.id ? `/owner/billing?status=Pending&dormId=${dormInfo.id}` : '/owner/billing?status=Pending'}
                 className="flex items-center justify-between p-3.5 px-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 hover:bg-amber-500/15 transition-all text-amber-600 dark:text-amber-200 text-xs font-semibold group cursor-pointer"
               >
                 <div className="flex items-center gap-2.5">
@@ -139,7 +139,7 @@ export default function OwnerDashboard() {
 
             {hasPendingMaint && (
               <Link
-                href="/owner/maintenance"
+                href={dormInfo?.id ? `/owner/maintenance?dormId=${dormInfo.id}` : '/owner/maintenance'}
                 className="flex items-center justify-between p-3.5 px-4 rounded-2xl bg-rose-500/10 border border-rose-500/30 hover:bg-rose-500/15 transition-all text-rose-600 dark:text-rose-200 text-xs font-semibold group cursor-pointer"
               >
                 <div className="flex items-center gap-2.5">
@@ -157,7 +157,7 @@ export default function OwnerDashboard() {
 
             {hasPendingBookings && (
               <Link
-                href="/owner/bookings"
+                href={dormInfo?.id ? `/owner/bookings?tab=Pending&dormId=${dormInfo.id}` : '/owner/bookings?tab=Pending'}
                 className="flex items-center justify-between p-3.5 px-4 rounded-2xl bg-blue-500/10 border border-blue-500/30 hover:bg-blue-500/15 transition-all text-blue-600 dark:text-blue-200 text-xs font-semibold group cursor-pointer"
               >
                 <div className="flex items-center gap-2.5">

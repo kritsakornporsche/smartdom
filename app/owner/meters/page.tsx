@@ -1017,8 +1017,7 @@ export default function MetersPage() {
                       }}
                       className="px-3 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs flex items-center gap-1.5 cursor-pointer shadow-sm transition-all"
                     >
-                      <span>📸</span>
-                      <span>เปิดกล้องถ่าย/สแกน AI</span>
+                      <span>📸 กล้อง / 🖼️ อัพรูป AI</span>
                     </button>
                   </div>
 

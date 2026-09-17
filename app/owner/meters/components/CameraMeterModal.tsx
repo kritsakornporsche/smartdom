@@ -57,8 +57,19 @@ export default function CameraMeterModal({
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
+  const galleryInputRef = useRef<HTMLInputElement>(null);
   const readingInputRef = useRef<HTMLInputElement>(null);
+
+  const handleUploadGallery = () => {
+    stopLiveStream();
+    galleryInputRef.current?.click();
+  };
+
+  const handleNativeCamera = () => {
+    stopLiveStream();
+    cameraInputRef.current?.click();
+  };
 
   const stopLiveStream = useCallback(() => {
     if (streamRef.current) {
@@ -400,7 +411,16 @@ export default function CameraMeterModal({
     setCandidates([]);
     setWarning(null);
     setAnalyzing(false);
-    fileInputRef.current?.click();
+    cameraInputRef.current?.click();
+  };
+
+  const handleRetakeGallery = () => {
+    setCapturedImage(null);
+    setDetectedReading('');
+    setCandidates([]);
+    setWarning(null);
+    setAnalyzing(false);
+    galleryInputRef.current?.click();
   };
 
   if (!isOpen) return null;
@@ -414,9 +434,18 @@ export default function CameraMeterModal({
       {/* Hidden Native Camera Input */}
       <input
         type="file"
-        ref={fileInputRef}
+        ref={cameraInputRef}
         accept="image/*"
         capture="environment"
+        onChange={handleFileChange}
+        className="hidden"
+      />
+
+      {/* Hidden Gallery / File Upload Input (No capture constraint so user can pick from files/photos) */}
+      <input
+        type="file"
+        ref={galleryInputRef}
+        accept="image/*"
         onChange={handleFileChange}
         className="hidden"
       />
@@ -447,6 +476,17 @@ export default function CameraMeterModal({
           </div>
 
           <div className="flex items-center gap-1.5">
+            {/* Quick Upload Button in Top Bar */}
+            <button
+              type="button"
+              onClick={handleUploadGallery}
+              title="อัพโหลดรูปภาพจากคลังรูปภาพหรือไฟล์ในเครื่อง"
+              className="px-2.5 py-1.5 rounded-xl bg-purple-600/30 hover:bg-purple-600/50 text-purple-200 hover:text-white border border-purple-400/40 text-xs font-bold transition-all flex items-center gap-1 cursor-pointer active:scale-95 shadow-xs"
+            >
+              <span>🖼️</span>
+              <span className="text-[11px]">อัพรูป</span>
+            </button>
+
             {/* Torch button */}
             {liveStreamActive && !capturedImage && hasTorch && (
               <button
@@ -592,24 +632,35 @@ export default function CameraMeterModal({
                 )}
               </div>
 
-              <div className="flex flex-col gap-2 pt-1">
+              <div className="flex flex-col gap-2.5 pt-1">
                 <button
                   type="button"
-                  onClick={() => fileInputRef.current?.click()}
-                  className="w-full py-2.5 px-3 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs flex items-center justify-center gap-2 cursor-pointer shadow-md"
+                  onClick={handleUploadGallery}
+                  className="w-full py-3 px-4 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-black text-xs sm:text-sm flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-purple-600/25 active:scale-98 transition-all"
                 >
-                  <span>📷</span>
-                  <span>เปิดกล้องมือถือถ่ายภาพ</span>
+                  <span className="text-base">🖼️</span>
+                  <span>อัพโหลดรูปภาพ (เลือกจากเครื่อง/คลังรูป)</span>
                 </button>
 
-                <button
-                  type="button"
-                  onClick={() => startLiveStream('environment')}
-                  className="w-full py-2 px-3 rounded-xl bg-purple-500/15 hover:bg-purple-500/25 text-purple-200 font-bold text-xs border border-purple-500/30 flex items-center justify-center gap-1.5 cursor-pointer"
-                >
-                  <span>🎥</span>
-                  <span>ลองเปิดกล้องสดอีกครั้ง</span>
-                </button>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={handleNativeCamera}
+                    className="py-2.5 px-3 rounded-xl bg-white/10 hover:bg-white/15 text-white font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer border border-white/15 transition-all active:scale-98"
+                  >
+                    <span>📷</span>
+                    <span>กล้องมือถือ</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => startLiveStream('environment')}
+                    className="py-2.5 px-3 rounded-xl bg-purple-500/15 hover:bg-purple-500/25 text-purple-200 font-bold text-xs border border-purple-500/30 flex items-center justify-center gap-1.5 cursor-pointer transition-all active:scale-98"
+                  >
+                    <span>🎥</span>
+                    <span>เปิดกล้องสด</span>
+                  </button>
+                </div>
               </div>
             </div>
           )}
@@ -618,42 +669,54 @@ export default function CameraMeterModal({
         {/* 3. Clean, Non-Overflowing Bottom Controls Panel */}
         <div className="p-3 sm:p-4 bg-[#180D2F] border-t border-purple-500/20 shrink-0 z-20">
           
-          {/* A. Live Stream Controls: Clean 3-part action */}
+          {/* A. Live Stream Controls: 4 actions */}
           {liveStreamActive && !capturedImage && (
-            <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center justify-between gap-2 sm:gap-3">
+              {/* Upload from Gallery / Device */}
               <button
                 type="button"
-                onClick={() => {
-                  stopLiveStream();
-                  fileInputRef.current?.click();
-                }}
-                className="flex-1 py-2.5 px-2 rounded-xl bg-white/5 hover:bg-white/10 text-white/80 font-bold text-xs border border-white/10 flex items-center justify-center gap-1.5 cursor-pointer"
+                onClick={handleUploadGallery}
+                className="flex-1 py-2.5 px-2 rounded-xl bg-purple-600/30 hover:bg-purple-600/50 text-purple-200 hover:text-white font-bold text-xs border border-purple-400/40 flex items-center justify-center gap-1.5 cursor-pointer transition-all active:scale-95 shadow-sm"
+                title="เลือกรูปภาพจากคลังรูปภาพหรือไฟล์ในเครื่อง"
               >
-                <span>📷</span>
-                <span>กล้องมือถือ</span>
+                <span className="text-sm">🖼️</span>
+                <span>อัพรูป</span>
               </button>
 
-              {/* Shutter Button */}
+              {/* Shutter Button (Live Capture) */}
               <button
                 type="button"
                 onClick={captureLiveFrame}
                 title="กดถ่ายภาพและอ่านตัวเลข"
-                className="w-15 h-15 rounded-full border-3 border-white/90 flex items-center justify-center p-1 cursor-pointer transition-transform active:scale-90 shrink-0 shadow-[0_0_15px_rgba(168,85,247,0.4)]"
+                className="w-14 h-14 sm:w-15 sm:h-15 rounded-full border-3 border-white/90 flex items-center justify-center p-1 cursor-pointer transition-transform active:scale-90 shrink-0 shadow-[0_0_15px_rgba(168,85,247,0.4)]"
               >
                 <div className="w-full h-full rounded-full bg-white hover:bg-purple-200 transition-colors flex items-center justify-center text-slate-950 text-lg">
                   📸
                 </div>
               </button>
 
+              {/* Native Camera */}
+              <button
+                type="button"
+                onClick={handleNativeCamera}
+                className="flex-1 py-2.5 px-2 rounded-xl bg-white/5 hover:bg-white/10 text-white/80 font-bold text-xs border border-white/10 flex items-center justify-center gap-1.5 cursor-pointer transition-all active:scale-95"
+                title="เปิดกล้องมือถือถ่ายภาพ"
+              >
+                <span className="text-sm">📷</span>
+                <span>กล้อง</span>
+              </button>
+
+              {/* Close Button */}
               <button
                 type="button"
                 onClick={() => {
                   stopLiveStream();
                   onClose();
                 }}
-                className="flex-1 py-2.5 px-2 rounded-xl bg-white/5 hover:bg-white/10 text-white/60 hover:text-white font-bold text-xs border border-white/10 flex items-center justify-center cursor-pointer"
+                className="py-2.5 px-3 rounded-xl bg-white/5 hover:bg-white/10 text-white/60 hover:text-white font-bold text-xs border border-white/10 flex items-center justify-center cursor-pointer transition-all"
+                title="ปิดหน้าต่าง"
               >
-                ✕ ปิด
+                ✕
               </button>
             </div>
           )}
@@ -661,9 +724,9 @@ export default function CameraMeterModal({
           {/* B. Review & Result Controls */}
           {capturedImage && (
             <div className="space-y-2.5">
-              {/* Header row: Retake buttons & cycle info */}
+              {/* Header row: Retake / Upload buttons & cycle info */}
               <div className="flex items-center justify-between gap-2">
-                <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-1.5 flex-wrap">
                   <button
                     type="button"
                     onClick={handleRetake}
@@ -673,14 +736,22 @@ export default function CameraMeterModal({
                   </button>
                   <button
                     type="button"
+                    onClick={handleRetakeGallery}
+                    className="px-2.5 py-1 rounded-lg bg-indigo-600/40 hover:bg-indigo-600/60 text-indigo-200 hover:text-white font-bold text-xs flex items-center gap-1 cursor-pointer border border-indigo-400/40 transition-all active:scale-95 shadow-sm"
+                    title="เลือกรูปภาพอื่นจากเครื่อง"
+                  >
+                    <span>🖼️ อัพรูปใหม่</span>
+                  </button>
+                  <button
+                    type="button"
                     onClick={handleRetakeNative}
-                    className="px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-white/70 font-bold text-xs flex items-center gap-1 cursor-pointer border border-white/10 transition-all"
+                    className="px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-white/70 font-bold text-xs flex items-center gap-1 cursor-pointer border border-white/10 transition-all active:scale-95"
                   >
                     <span>📷 กล้องมือถือ</span>
                   </button>
                 </div>
 
-                <span className="text-xs text-purple-300/80 font-mono">
+                <span className="text-xs text-purple-300/80 font-mono shrink-0">
                   งวดก่อน: <strong className="text-amber-400 font-black">{previousReading}</strong>
                 </span>
               </div>

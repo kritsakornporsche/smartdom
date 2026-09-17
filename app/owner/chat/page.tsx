@@ -139,12 +139,14 @@ export default function OwnerChatPage() {
                     </div>
                     <div className="flex items-center justify-between gap-2 mb-1">
                       <h3 className="font-bold text-sm text-foreground">{conv.guest_name}</h3>
-                      <span className={`text-[9px] font-black uppercase px-2 py-0.5 rounded-full ${
+                      <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${
                         conv.guest_role === 'tenant' 
-                          ? 'bg-primary text-primary-foreground' 
-                          : 'bg-muted text-muted-foreground'
+                          ? 'bg-primary/15 text-primary border border-primary/20' 
+                          : conv.guest_role === 'keeper'
+                          ? 'bg-blue-500/15 text-blue-600 dark:text-blue-400 border border-blue-500/20'
+                          : 'bg-muted text-muted-foreground border border-border'
                       }`}>
-                        {conv.guest_role === 'tenant' ? 'ลูกหอ' : 'ผู้สนใจ'}
+                        {(conv as any).role_label || (conv.guest_role === 'tenant' ? 'ลูกหอ' : (conv.guest_role === 'keeper' ? 'ผู้ดูแล' : 'ผู้สนใจ'))}
                       </span>
                     </div>
                     <p className="text-xs truncate text-muted-foreground font-medium">

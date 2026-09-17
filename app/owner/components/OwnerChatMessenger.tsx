@@ -8,6 +8,7 @@ interface Conversation {
   id: number;
   guest_name: string;
   guest_role?: string;
+  role_label?: string;
   dorm_name: string;
   last_message: string;
   updated_at: string;
@@ -348,9 +349,11 @@ export default function OwnerChatMessenger() {
                               <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-md shrink-0 ${
                                 conv.guest_role === 'tenant'
                                   ? 'bg-primary/15 text-primary'
+                                  : conv.guest_role === 'keeper'
+                                  ? 'bg-blue-500/15 text-blue-600 dark:text-blue-400'
                                   : 'bg-muted text-muted-foreground'
                               }`}>
-                                {conv.guest_role === 'tenant' ? 'ลูกหอ' : 'แขก'}
+                                {conv.role_label || (conv.guest_role === 'tenant' ? 'ลูกหอ' : (conv.guest_role === 'keeper' ? 'ผู้ดูแล' : 'แขก'))}
                               </span>
                             </div>
                             <span className="text-[10px] text-muted-foreground shrink-0 font-medium">
@@ -497,9 +500,11 @@ export default function OwnerChatMessenger() {
                             <span className={`text-[9px] font-black uppercase px-2 py-0.5 rounded-full w-fit mt-1 border ${
                               conv.guest_role === 'tenant' 
                                 ? 'bg-primary/15 text-primary border-primary/20' 
+                                : conv.guest_role === 'keeper'
+                                ? 'bg-blue-500/15 text-blue-600 dark:text-blue-400 border-blue-500/20'
                                 : 'bg-muted text-muted-foreground border-border'
                             }`}>
-                              {conv.guest_role === 'tenant' ? 'ลูกหอ' : 'แขกที่สนใจ'}
+                              {conv.role_label || (conv.guest_role === 'tenant' ? 'ลูกหอ' : (conv.guest_role === 'keeper' ? 'ผู้ดูแล' : 'แขกที่สนใจ'))}
                             </span>
                           </div>
                           <span className="text-[10px] text-muted-foreground font-medium shrink-0 ml-2">

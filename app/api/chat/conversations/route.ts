@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { getDormDbFromSession } from '@/lib/db';
 import { auth } from '@/auth';
 
-export async function GET() {
+export async function GET(request: Request) {
   const session = await auth();
   if (!session?.user?.email) {
     return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
@@ -10,6 +10,9 @@ export async function GET() {
 
   try {
     const sql = getDormDbFromSession(session);
+    const { searchParams } = new URL(request.url);
+    const targetDormIdParam = searchParams.get('dormId');
+
     const userResult = await sql`
       SELECT id, role, primary_role, name, email 
       FROM users 
@@ -23,11 +26,104 @@ export async function GET() {
     
     const user = userResult[0];
     const isOwner = user.role === 'owner' || user.primary_role === 'owner';
+    const isKeeper = user.role === 'keeper' || user.primary_role === 'keeper';
 
     let conversations: any[] = [];
 
     if (isOwner) {
-      // Owner sees all conversations where they are owner OR owning the dorm OR guest
+      // 1. Get all dorms owned by this owner
+      const ownerDorms = await sql`
+        SELECT id, dorm_name 
+        FROM dormitory_registry 
+        WHERE owner_id = ${user.id}
+      `;
+
+      if (ownerDorms.length === 0) {
+        return NextResponse.json({ success: true, data: [] });
+      }
+
+      let dormIds = ownerDorms.map((d: any) => d.id);
+      if (targetDormIdParam) {
+        const filteredId = parseInt(targetDormIdParam, 10);
+        if (dormIds.includes(filteredId)) {
+          dormIds = [filteredId];
+        }
+      }
+
+      // 2. Ensure conversations exist for all Keepers of the owner's dorm(s)
+      const keepers = await sql`
+        SELECT k.id, k.name, k.position, k.user_id, k.dorm_id, k.email 
+        FROM keepers k 
+        WHERE k.dorm_id IN ${sql(dormIds)}
+      `;
+
+      for (const k of keepers) {
+        let targetUserId = k.user_id;
+        if (!targetUserId && k.email) {
+          const matched = await sql`SELECT id FROM users WHERE email = ${k.email} LIMIT 1`;
+          if (matched.length > 0) targetUserId = matched[0].id;
+        }
+        if (!targetUserId) continue;
+
+        const existing = await sql`
+          SELECT id FROM conversations 
+          WHERE guest_id = ${targetUserId} AND owner_id = ${user.id} AND dorm_id = ${k.dorm_id}
+          LIMIT 1
+        `;
+
+        if (existing.length === 0) {
+          const initMsg = k.position === 'Maid' ? 'ติดต่อแม่บ้าน' : (k.position === 'Technician' ? 'ติดต่อช่างประจำหอ' : 'ติดต่อผู้ดูแลหอพัก');
+          await sql`
+            INSERT INTO conversations (guest_id, owner_id, dorm_id, last_message, updated_at)
+            VALUES (${targetUserId}, ${user.id}, ${k.dorm_id}, ${initMsg}, CURRENT_TIMESTAMP)
+          `;
+        }
+      }
+
+      // 3. Ensure conversations exist for active Tenants of the owner's dorm(s)
+      const activeTenants = await sql`
+        SELECT t.id, t.name, t.user_id, t.dorm_id, t.email, r.room_number
+        FROM tenants t
+        LEFT JOIN rooms r ON t.room_id = r.id
+        WHERE t.dorm_id IN ${sql(dormIds)}
+          AND (t.status = 'Active' OR t.status = 'Occupied')
+      `;
+
+      for (const t of activeTenants) {
+        let targetUserId = t.user_id;
+        if (!targetUserId && t.email) {
+          const matched = await sql`SELECT id FROM users WHERE email = ${t.email} LIMIT 1`;
+          if (matched.length > 0) targetUserId = matched[0].id;
+        }
+        if (!targetUserId) continue;
+
+        const existing = await sql`
+          SELECT id FROM conversations 
+          WHERE guest_id = ${targetUserId} AND owner_id = ${user.id} AND dorm_id = ${t.dorm_id}
+          LIMIT 1
+        `;
+
+        if (existing.length === 0) {
+          await sql`
+            INSERT INTO conversations (guest_id, owner_id, dorm_id, last_message, updated_at)
+            VALUES (${targetUserId}, ${user.id}, ${t.dorm_id}, 'ติดต่อลูกหอ', CURRENT_TIMESTAMP)
+          `;
+        }
+      }
+
+      // 4. Clean up any dummy/orphan conversations with 0 messages that are NOT tenants and NOT keepers
+      await sql`
+        DELETE FROM conversations 
+        WHERE (owner_id = ${user.id} OR dorm_id IN ${sql(dormIds)})
+          AND NOT EXISTS (SELECT 1 FROM chat_messages cm WHERE cm.conversation_id = conversations.id)
+          AND guest_id NOT IN (SELECT COALESCE(user_id, 0) FROM keepers WHERE dorm_id IN ${sql(dormIds)})
+          AND guest_id NOT IN (SELECT COALESCE(user_id, 0) FROM tenants WHERE dorm_id IN ${sql(dormIds)})
+      `;
+
+      // 5. Query ONLY the 3 approved groups:
+      //    a. ผู้ดูแลหอของตัวเอง (Keepers)
+      //    b. ลูกหอของตัวเอง (Tenants)
+      //    c. แขกที่เริ่มต้นทักมา (Guests who sent at least 1 message)
       conversations = await sql`
         SELECT 
           c.id,
@@ -37,19 +133,63 @@ export async function GET() {
           c.last_message,
           c.updated_at,
           c.created_at,
-          COALESCE(u.name, 'ผู้เช่า/แขก') as guest_name,
-          COALESCE(u.primary_role, u.role, 'guest') as guest_role,
+          COALESCE(k.name, t.name, u.name, 'ผู้ติดต่อ') as guest_name,
+          CASE 
+            WHEN k.id IS NOT NULL THEN 'keeper'
+            WHEN t.id IS NOT NULL THEN 'tenant'
+            ELSE 'guest'
+          END as guest_role,
+          CASE 
+            WHEN k.id IS NOT NULL AND k.position = 'Maid' THEN 'แม่บ้าน'
+            WHEN k.id IS NOT NULL AND k.position = 'Technician' THEN 'ช่างประจำหอ'
+            WHEN k.id IS NOT NULL THEN 'ผู้ดูแล'
+            WHEN t.id IS NOT NULL AND r.room_number IS NOT NULL THEN CONCAT('ลูกหอ ห้อง ', r.room_number)
+            WHEN t.id IS NOT NULL THEN 'ลูกหอ'
+            ELSE 'แขกที่สนใจ'
+          END as role_label,
+          COALESCE(dr.dorm_name, 'หอพัก') as dorm_name,
+          r.room_number
+        FROM conversations c
+        JOIN users u ON c.guest_id = u.id
+        LEFT JOIN dormitory_registry dr ON c.dorm_id = dr.id
+        LEFT JOIN keepers k ON (k.user_id = u.id OR k.email = u.email) AND k.dorm_id = c.dorm_id
+        LEFT JOIN tenants t ON (t.user_id = u.id OR t.email = u.email) AND t.dorm_id = c.dorm_id
+        LEFT JOIN rooms r ON t.room_id = r.id
+        WHERE (c.owner_id = ${user.id} OR c.dorm_id IN ${sql(dormIds)})
+          AND (
+            -- 1. ผู้ดูแลหอของตัวเอง
+            k.id IS NOT NULL
+            -- 2. ลูกหอของตัวเอง
+            OR t.id IS NOT NULL
+            -- 3. แขกที่เริ่มต้นทักมา (ต้องมีข้อความส่งมาจริงใน chat_messages)
+            OR EXISTS (SELECT 1 FROM chat_messages cm WHERE cm.conversation_id = c.id)
+          )
+        ORDER BY c.updated_at DESC
+      `;
+    } else if (isKeeper) {
+      // Keeper sees their dorm's owner and tenants
+      conversations = await sql`
+        SELECT 
+          c.id,
+          c.guest_id,
+          c.owner_id,
+          c.dorm_id,
+          c.last_message,
+          c.updated_at,
+          c.created_at,
+          COALESCE(u.name, dr.owner_name, 'เจ้าของหอพัก') as owner_name,
+          COALESCE(u.name, 'คู่สนทนา') as guest_name,
+          'owner' as guest_role,
+          'เจ้าของหอพัก' as role_label,
           COALESCE(dr.dorm_name, 'หอพัก') as dorm_name
         FROM conversations c
-        LEFT JOIN users u ON c.guest_id = u.id
+        LEFT JOIN users u ON c.owner_id = u.id
         LEFT JOIN dormitory_registry dr ON c.dorm_id = dr.id
-        WHERE c.owner_id = ${user.id} 
-           OR c.dorm_id IN (SELECT id FROM dormitory_registry WHERE owner_id = ${user.id})
-           OR c.guest_id = ${user.id}
+        WHERE c.guest_id = ${user.id}
         ORDER BY c.updated_at DESC
       `;
     } else {
-      // Tenant / Guest sees their conversations
+      // Tenant / Guest sees their conversations with the dorm owner
       conversations = await sql`
         SELECT 
           c.id,
@@ -64,7 +204,7 @@ export async function GET() {
         FROM conversations c
         LEFT JOIN users u ON c.owner_id = u.id
         LEFT JOIN dormitory_registry dr ON c.dorm_id = dr.id
-        WHERE c.guest_id = ${user.id} OR c.owner_id = ${user.id}
+        WHERE c.guest_id = ${user.id}
         ORDER BY c.updated_at DESC
       `;
 
@@ -93,7 +233,7 @@ export async function GET() {
             SELECT c.dorm_id, dr.owner_id, dr.dorm_name 
             FROM contracts c 
             JOIN dormitory_registry dr ON c.dorm_id = dr.id 
-            WHERE c.tenant_email = ${session.user.email} OR c.tenant_id = ${user.id}
+            WHERE c.tenant_id = ${user.id}
             LIMIT 1
           `;
           if (contractRows.length > 0) {
@@ -110,7 +250,6 @@ export async function GET() {
           `;
           const newId = (insertRes as any)?.insertId;
 
-          // Fetch owner details
           const ownerUser = await sql`SELECT name FROM users WHERE id = ${detectedOwnerId} LIMIT 1`;
           const ownerDisplayName = ownerUser[0]?.name || 'เจ้าของหอพัก';
 

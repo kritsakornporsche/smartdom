@@ -36,6 +36,7 @@ const navSections = [
       { href: '/owner/chat', label: 'แชทลูกหอ', icon: '💬' },
       { href: '/owner/keepers', label: 'ทีมผู้ดูแล', icon: '🧹' },
       { href: '/owner/settings', label: 'ตั้งค่าหอพัก', icon: '⚙️' },
+      { href: '/explore', label: 'หน้าสำรวจหอพักทั่วไป', icon: '🌐' },
     ],
   },
 ];
@@ -182,10 +183,25 @@ export default function OwnerSidebar({ isOpen, onClose }: OwnerSidebarProps) {
         }`}
       >
         <div className="h-14 flex items-center justify-between px-4 border-b border-border shrink-0 bg-card text-card-foreground">
-          <span className="text-xs font-bold text-foreground">เมนูจัดการหอพัก</span>
+          <div className="flex items-center gap-2.5 min-w-0">
+            <div className="w-8 h-8 rounded-xl bg-primary/10 text-primary flex items-center justify-center font-bold text-sm shrink-0 border border-primary/20">
+              👤
+            </div>
+            <div className="min-w-0">
+              <p className="text-xs font-bold text-foreground truncate max-w-[170px]">
+                {session?.user?.name || 'Owner'}
+              </p>
+              <p className="text-[10px] text-muted-foreground truncate max-w-[170px]">
+                {dormName || 'เจ้าของหอพัก'}
+              </p>
+            </div>
+          </div>
           <button
+            type="button"
             onClick={onClose}
-            className="p-1.5 text-muted-foreground hover:text-foreground rounded-lg text-sm"
+            className="p-2 text-muted-foreground hover:text-foreground hover:bg-secondary rounded-xl transition-colors text-sm cursor-pointer"
+            title="ปิดเมนู"
+            aria-label="ปิดเมนู"
           >
             ✕
           </button>

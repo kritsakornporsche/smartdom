@@ -93,7 +93,7 @@ export default function OwnerNavbar({ onToggleMobileMenu }: OwnerNavbarProps) {
           <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-white p-1 flex items-center justify-center shadow-md border border-border shrink-0 group-hover:scale-105 transition-transform">
             <img src="/up-logo.png" alt="ตรามหาวิทยาลัยพะเยา" className="w-full h-full object-contain" />
           </div>
-          <div>
+          <div className="hidden md:block">
             <h2 className="font-black text-foreground tracking-tight text-sm sm:text-base group-hover:text-primary transition-colors leading-none">
               SmartDom
             </h2>

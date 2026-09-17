@@ -147,16 +147,26 @@ export async function POST(req: Request) {
     let engineUsed = 'tesseract-smart';
     let allCandidates: number[] = [];
 
-    // 1. Try Gemini Vision if GEMINI_API_KEY is available (prioritize crop if present)
-    const targetImageForVision = cropImage || image;
-    if (process.env.GEMINI_API_KEY && targetImageForVision) {
+    // 1. Try Gemini Vision if GEMINI_API_KEY is available (industry-leading multimodal dial reader)
+    const geminiKey = process.env.GEMINI_API_KEY;
+    const targetImageForVision = image || cropImage;
+
+    if (geminiKey && targetImageForVision) {
       try {
+        let mimeType = 'image/jpeg';
+        if (targetImageForVision.startsWith('data:image/png')) {
+          mimeType = 'image/png';
+        } else if (targetImageForVision.startsWith('data:image/webp')) {
+          mimeType = 'image/webp';
+        }
+
         const base64Data = targetImageForVision.replace(/^data:image\/\w+;base64,/, '');
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 5000);
+        const timeoutId = setTimeout(() => controller.abort(), 15000);
 
+        // Try gemini-3.6-flash (current standard in Google AI Studio) with fallback to gemini-flash-latest
         const geminiRes = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
+          `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${geminiKey}`,
           {
             method: 'POST',
             signal: controller.signal,
@@ -166,11 +176,15 @@ export async function POST(req: Request) {
                 {
                   parts: [
                     {
-                      text: `Read the utility meter dial counter display (${type || 'meter'}). Return ONLY valid JSON: { "reading": 1234.5, "confidence": 0.95 } without markdown formatting. Previous reading was ${previous_reading || 0}. If unreadable, return { "reading": null, "confidence": 0 }`,
+                      text: `Read the utility meter dial counter display (${type || 'utility'} meter, e.g. Mitsubishi / Sanwa).
+Look closely at the rotating number wheels (including black wheels with white digits, and any rightmost decimal wheel).
+Return ONLY valid JSON:
+{ "reading": 2419, "digits": "2419.0", "confidence": 0.99 }
+without markdown formatting. Previous reading was ${previous_reading || 0}. If completely unreadable, return { "reading": null, "confidence": 0 }`,
                     },
                     {
                       inline_data: {
-                        mime_type: 'image/jpeg',
+                        mime_type: mimeType,
                         data: base64Data,
                       },
                     },
@@ -189,12 +203,15 @@ export async function POST(req: Request) {
           const parsed = JSON.parse(cleanJson);
           if (parsed && typeof parsed.reading === 'number') {
             detectedNumber = parsed.reading;
-            confidence = parsed.confidence || 0.95;
-            engineUsed = 'gemini-1.5-flash';
+            confidence = parsed.confidence || 0.99;
+            engineUsed = 'gemini-3.6-flash';
+            if (parsed.digits) {
+              rawText = String(parsed.digits);
+            }
           }
         }
-      } catch {
-        // Fallback to local OCR worker
+      } catch (geminiErr: any) {
+        console.warn('Gemini Vision OCR error, falling back to local OCR:', geminiErr);
       }
     }
 

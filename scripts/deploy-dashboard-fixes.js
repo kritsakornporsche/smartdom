@@ -25,6 +25,7 @@ const filesToUpload = [
   'app/owner/tenants/page.tsx',
   'app/api/owner/meters/ocr/route.ts',
   'app/api/owner/meters/route.ts',
+  '.env.local',
   'app/tenant/page.tsx',
   'app/tenant/components/TenantSidebar.tsx',
   'app/tenant/billing/page.tsx',

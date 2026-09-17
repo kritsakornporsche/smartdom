@@ -5,6 +5,7 @@ import { auth } from '@/auth';
 import { getDb } from '@/lib/db';
 
 import TenantSidebar from './components/TenantSidebar';
+import TenantBottomNav from './components/TenantBottomNav';
 
 export default async function TenantLayout({ children }: { children: ReactNode }) {
   const session = await auth();
@@ -34,16 +35,19 @@ export default async function TenantLayout({ children }: { children: ReactNode }
   }
 
   return (
-    <div className="flex flex-col h-screen bg-background text-foreground">
+    <div className="flex flex-col h-screen bg-background text-foreground font-sans overflow-hidden">
       <TenantSidebar roomInfo={roomInfo} userName={userName} />
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col overflow-hidden relative">
         {/* Scrollable Content */}
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto pb-[calc(4.5rem+env(safe-area-inset-bottom))] md:pb-0">
           {children}
         </div>
       </main>
+
+      {/* Mobile Bottom Navigation */}
+      <TenantBottomNav />
     </div>
   );
 }

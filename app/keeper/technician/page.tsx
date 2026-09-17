@@ -211,7 +211,7 @@ export default function TechnicianDashboardPage() {
         </header>
 
         {/* Scrollable Content */}
-        <div className="flex-1 overflow-y-auto p-8 lg:p-10">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-8 lg:p-10 pb-[calc(4.5rem+env(safe-area-inset-bottom))] md:pb-10">
           <div className="max-w-5xl mx-auto space-y-8">
 
             {/* Stats Row */}

@@ -39,6 +39,15 @@ export async function GET(request: Request) {
       return NextResponse.json({ success: false, message: 'Forbidden' }, { status: 403 });
     }
 
+    // Automatically mark all unread messages from the other party as read
+    await sql`
+      UPDATE chat_messages 
+      SET is_read = 1 
+      WHERE conversation_id = ${convId} 
+        AND sender_id != ${userId} 
+        AND is_read = 0
+    `;
+
     const messages = await sql`
       SELECT * FROM chat_messages 
       WHERE conversation_id = ${convId} 
@@ -48,6 +57,41 @@ export async function GET(request: Request) {
     return NextResponse.json({ success: true, data: messages });
   } catch (error: any) {
     console.error('[GET /api/chat/messages] Error:', error);
+    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+  }
+}
+
+export async function PATCH(request: Request) {
+  const session = await auth();
+  if (!session?.user?.email) {
+    return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
+  }
+
+  try {
+    const { conversationId } = await request.json();
+    if (!conversationId) {
+      return NextResponse.json({ success: false, message: 'conversationId is required' }, { status: 400 });
+    }
+
+    const sql = getDormDbFromSession(session);
+    const userResult = await sql`SELECT id FROM users WHERE email = ${session.user.email} LIMIT 1`;
+    if (userResult.length === 0) {
+      return NextResponse.json({ success: false, message: 'User not found' }, { status: 404 });
+    }
+    const userId = userResult[0].id;
+
+    // Mark all unread messages from other senders as read
+    await sql`
+      UPDATE chat_messages 
+      SET is_read = 1 
+      WHERE conversation_id = ${conversationId} 
+        AND sender_id != ${userId} 
+        AND is_read = 0
+    `;
+
+    return NextResponse.json({ success: true, message: 'Marked as read' });
+  } catch (error: any) {
+    console.error('[PATCH /api/chat/messages] Error:', error);
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
 }

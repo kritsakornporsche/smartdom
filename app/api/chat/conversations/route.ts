@@ -133,6 +133,13 @@ export async function GET(request: Request) {
           c.last_message,
           c.updated_at,
           c.created_at,
+          (
+            SELECT COUNT(*) 
+            FROM chat_messages cm 
+            WHERE cm.conversation_id = c.id 
+              AND cm.sender_id != ${user.id} 
+              AND cm.is_read = 0
+          ) as unread_count,
           COALESCE(k.name, t.name, u.name, 'ผู้ติดต่อ') as guest_name,
           CASE 
             WHEN k.id IS NOT NULL THEN 'keeper'
@@ -177,6 +184,13 @@ export async function GET(request: Request) {
           c.last_message,
           c.updated_at,
           c.created_at,
+          (
+            SELECT COUNT(*) 
+            FROM chat_messages cm 
+            WHERE cm.conversation_id = c.id 
+              AND cm.sender_id != ${user.id} 
+              AND cm.is_read = 0
+          ) as unread_count,
           COALESCE(u.name, dr.owner_name, 'เจ้าของหอพัก') as owner_name,
           COALESCE(u.name, 'คู่สนทนา') as guest_name,
           'owner' as guest_role,
@@ -199,6 +213,13 @@ export async function GET(request: Request) {
           c.last_message,
           c.updated_at,
           c.created_at,
+          (
+            SELECT COUNT(*) 
+            FROM chat_messages cm 
+            WHERE cm.conversation_id = c.id 
+              AND cm.sender_id != ${user.id} 
+              AND cm.is_read = 0
+          ) as unread_count,
           COALESCE(u.name, dr.owner_name, 'เจ้าของหอพัก') as owner_name,
           COALESCE(dr.dorm_name, 'หอพัก') as dorm_name
         FROM conversations c

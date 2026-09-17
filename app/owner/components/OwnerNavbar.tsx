@@ -40,20 +40,34 @@ export default function OwnerNavbar({ onToggleMobileMenu }: OwnerNavbarProps) {
         })
         .catch(console.error);
 
-      // Fetch chat badge count
+      // Fetch chat badge count (ONLY UNREAD MESSAGES!)
       const fetchChatCount = () => {
         fetch('/api/chat/conversations')
           .then(res => res.json())
           .then(data => {
             if (data.success && Array.isArray(data.data)) {
-              setChatCount(data.data.length);
+              const unreadTotal = data.data.reduce((sum: number, c: any) => sum + (Number(c.unread_count) || 0), 0);
+              setChatCount(unreadTotal);
             }
           })
           .catch(() => {});
       };
       fetchChatCount();
-      const interval = setInterval(fetchChatCount, 15000);
-      return () => clearInterval(interval);
+      const interval = setInterval(fetchChatCount, 10000);
+
+      const handleUnreadUpdate = (e: any) => {
+        if (typeof e.detail?.count === 'number') {
+          setChatCount(e.detail.count);
+        } else {
+          fetchChatCount();
+        }
+      };
+      window.addEventListener('chat-unread-updated', handleUnreadUpdate);
+
+      return () => {
+        clearInterval(interval);
+        window.removeEventListener('chat-unread-updated', handleUnreadUpdate);
+      };
     }
   }, [session]);
 

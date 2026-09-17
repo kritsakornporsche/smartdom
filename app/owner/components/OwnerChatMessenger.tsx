@@ -82,7 +82,13 @@ export default function OwnerChatMessenger() {
       try {
         const res = await fetch(`/api/chat/messages?convId=${activeConv.id}`);
         const data = await res.json();
-        if (data.success) setMessages(data.data);
+        if (data.success) {
+          setMessages(data.data);
+          if (Number(activeConv.unread_count) > 0) {
+            setConversations(prev => prev.map(c => c.id === activeConv.id ? { ...c, unread_count: 0 } : c));
+            window.dispatchEvent(new CustomEvent('chat-unread-updated'));
+          }
+        }
       } catch (e) { console.error(e); }
     };
 
@@ -119,12 +125,29 @@ export default function OwnerChatMessenger() {
         setMessages(prev => [...prev, data.data]);
         fetchConvs();
       }
-    } catch (e) { console.error(e); }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const openConversation = (conv: Conversation) => {
+    setActiveConv(conv);
+    if (Number(conv.unread_count) > 0) {
+      setConversations(prev => prev.map(c => c.id === conv.id ? { ...c, unread_count: 0 } : c));
+      fetch('/api/chat/messages', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ conversationId: conv.id })
+      }).catch(console.error);
+      window.dispatchEvent(new CustomEvent('chat-unread-updated'));
+    }
   };
 
   const pathname = usePathname();
   const isOwner = (session?.user as any)?.role === 'owner' || (session?.user as any)?.primary_role === 'owner';
   if (!session || !isOwner || pathname === '/owner/chat') return null;
+
+  const totalUnread = conversations.reduce((sum, c) => sum + (Number(c.unread_count) || 0), 0);
 
   // Filtered conversations by search query
   const filteredConversations = conversations.filter(c => {
@@ -326,7 +349,7 @@ export default function OwnerChatMessenger() {
                       <button
                         key={conv.id}
                         type="button"
-                        onClick={() => setActiveConv(conv)}
+                        onClick={() => openConversation(conv)}
                         className="w-full p-3 flex items-center gap-3.5 rounded-2xl hover:bg-secondary/70 transition-all text-left group active:bg-secondary"
                       >
                         {/* Avatar */}
@@ -343,7 +366,7 @@ export default function OwnerChatMessenger() {
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center justify-between gap-1">
                             <div className="flex items-center gap-1.5 min-w-0">
-                              <h4 className="text-sm font-bold text-foreground truncate">
+                              <h4 className={`text-sm truncate ${Number(conv.unread_count) > 0 ? 'font-black text-foreground' : 'font-bold text-foreground/90'}`}>
                                 {conv.guest_name}
                               </h4>
                               <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-md shrink-0 ${
@@ -362,10 +385,14 @@ export default function OwnerChatMessenger() {
                           </div>
 
                           <div className="flex items-center justify-between gap-2 mt-0.5">
-                            <p className="text-xs text-muted-foreground truncate leading-relaxed">
+                            <p className={`text-xs truncate leading-relaxed ${Number(conv.unread_count) > 0 ? 'text-foreground font-bold' : 'text-muted-foreground font-normal'}`}>
                               {conv.last_message || 'เริ่มการสนทนาใหม่...'}
                             </p>
-                            <span className="w-2 h-2 rounded-full bg-purple-600 shrink-0" />
+                            {Number(conv.unread_count) > 0 && (
+                              <span className="min-w-[18px] h-[18px] px-1 bg-purple-600 text-white text-[10px] font-black rounded-full flex items-center justify-center shrink-0 shadow-sm animate-pulse">
+                                {conv.unread_count}
+                              </span>
+                            )}
                           </div>
                         </div>
                       </button>
@@ -487,7 +514,7 @@ export default function OwnerChatMessenger() {
                   conversations.map(conv => (
                     <button
                       key={conv.id}
-                      onClick={() => setActiveConv(conv)}
+                      onClick={() => openConversation(conv)}
                       className="w-full p-3.5 flex items-center gap-3.5 rounded-2xl hover:bg-muted/60 transition-all group text-left border border-transparent hover:border-border"
                     >
                       <div className="w-11 h-11 rounded-2xl bg-purple-100 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-800/40 flex items-center justify-center font-bold text-primary text-base shadow-sm group-hover:scale-110 transition-transform shrink-0">
@@ -496,7 +523,7 @@ export default function OwnerChatMessenger() {
                       <div className="flex-1 min-w-0">
                         <div className="flex justify-between items-start">
                           <div className="flex flex-col min-w-0">
-                            <h4 className="text-sm font-bold text-foreground truncate">{conv.guest_name}</h4>
+                            <h4 className={`text-sm truncate ${Number(conv.unread_count) > 0 ? 'font-black text-foreground' : 'font-bold text-foreground/90'}`}>{conv.guest_name}</h4>
                             <span className={`text-[9px] font-black uppercase px-2 py-0.5 rounded-full w-fit mt-1 border ${
                               conv.guest_role === 'tenant' 
                                 ? 'bg-primary/15 text-primary border-primary/20' 
@@ -511,7 +538,14 @@ export default function OwnerChatMessenger() {
                             {formatRelativeTime(conv.updated_at)}
                           </span>
                         </div>
-                        <p className="text-xs text-muted-foreground truncate mt-1">{conv.last_message || 'รอการตอบกลับ...'}</p>
+                        <div className="flex items-center justify-between gap-2 mt-1">
+                          <p className={`text-xs truncate ${Number(conv.unread_count) > 0 ? 'text-foreground font-bold' : 'text-muted-foreground'}`}>{conv.last_message || 'รอการตอบกลับ...'}</p>
+                          {Number(conv.unread_count) > 0 && (
+                            <span className="min-w-[18px] h-[18px] px-1 bg-purple-600 text-white text-[10px] font-black rounded-full flex items-center justify-center shrink-0 shadow-sm animate-pulse">
+                              {conv.unread_count}
+                            </span>
+                          )}
+                        </div>
                       </div>
                     </button>
                   ))
@@ -584,7 +618,14 @@ export default function OwnerChatMessenger() {
         ) : (
           <div className="relative">
             <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" /></svg>
-            <div className="absolute -top-1 -right-1 w-3 h-3 bg-amber-400 rounded-full border-2 border-purple-800 animate-ping" />
+            {totalUnread > 0 && (
+              <>
+                <div className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-amber-400 rounded-full border-2 border-purple-800 animate-ping" />
+                <div className="absolute -top-2 -right-2 min-w-[20px] h-5 px-1 bg-amber-400 text-purple-950 font-black text-[10px] rounded-full flex items-center justify-center shadow-md border-2 border-purple-900">
+                  {totalUnread > 99 ? '99+' : totalUnread}
+                </div>
+              </>
+            )}
           </div>
         )}
       </button>

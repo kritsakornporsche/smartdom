@@ -10,6 +10,7 @@ interface Conversation {
   dorm_name: string;
   last_message: string;
   updated_at: string;
+  unread_count?: number;
 }
 
 interface Message {
@@ -58,12 +59,31 @@ export default function OwnerChatPage() {
     }
   };
 
+  const handleSelectConv = (conv: Conversation) => {
+    setSelectedConv(conv);
+    if (Number(conv.unread_count) > 0) {
+      setConversations(prev => prev.map(c => c.id === conv.id ? { ...c, unread_count: 0 } : c));
+      fetch('/api/chat/messages', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ conversationId: conv.id })
+      }).catch(console.error);
+      window.dispatchEvent(new CustomEvent('chat-unread-updated'));
+    }
+  };
+
   const fetchMessages = async () => {
     if (!selectedConv) return;
     try {
       const res = await fetch(`/api/chat/messages?convId=${selectedConv.id}`);
       const data = await res.json();
-      if (data.success) setMessages(data.data);
+      if (data.success) {
+        setMessages(data.data);
+        if (Number(selectedConv.unread_count) > 0) {
+          setConversations(prev => prev.map(c => c.id === selectedConv.id ? { ...c, unread_count: 0 } : c));
+          window.dispatchEvent(new CustomEvent('chat-unread-updated'));
+        }
+      }
     } catch (e) {
       console.error(e);
     }
@@ -119,10 +139,11 @@ export default function OwnerChatPage() {
             ) : (
               conversations.map((conv) => {
                 const isSelected = selectedConv?.id === conv.id;
+                const hasUnread = Number(conv.unread_count) > 0;
                 return (
                   <button
                     key={conv.id}
-                    onClick={() => setSelectedConv(conv)}
+                    onClick={() => handleSelectConv(conv)}
                     className={`w-full p-5 text-left border-b border-border/60 transition-all group ${
                       isSelected 
                         ? 'bg-primary/10 border-l-4 border-l-primary' 
@@ -138,7 +159,7 @@ export default function OwnerChatPage() {
                       </p>
                     </div>
                     <div className="flex items-center justify-between gap-2 mb-1">
-                      <h3 className="font-bold text-sm text-foreground">{conv.guest_name}</h3>
+                      <h3 className={`font-bold text-sm ${hasUnread ? 'font-black text-foreground' : 'text-foreground/90'}`}>{conv.guest_name}</h3>
                       <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${
                         conv.guest_role === 'tenant' 
                           ? 'bg-primary/15 text-primary border border-primary/20' 
@@ -149,9 +170,16 @@ export default function OwnerChatPage() {
                         {(conv as any).role_label || (conv.guest_role === 'tenant' ? 'ลูกหอ' : (conv.guest_role === 'keeper' ? 'ผู้ดูแล' : 'ผู้สนใจ'))}
                       </span>
                     </div>
-                    <p className="text-xs truncate text-muted-foreground font-medium">
-                      {conv.last_message || 'เริ่มการสนทนาใหม่'}
-                    </p>
+                    <div className="flex items-center justify-between gap-2">
+                      <p className={`text-xs truncate ${hasUnread ? 'text-foreground font-bold' : 'text-muted-foreground font-medium'}`}>
+                        {conv.last_message || 'เริ่มการสนทนาใหม่'}
+                      </p>
+                      {hasUnread && (
+                        <span className="min-w-[18px] h-[18px] px-1 bg-purple-600 text-white text-[10px] font-black rounded-full flex items-center justify-center shrink-0 shadow-sm animate-pulse">
+                          {conv.unread_count}
+                        </span>
+                      )}
+                    </div>
                   </button>
                 );
               })

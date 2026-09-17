@@ -14,7 +14,15 @@ async function getSharedOcrWorker() {
   if (!globalForOcr._ocrWorkerPromise) {
     globalForOcr._ocrWorkerPromise = (async () => {
       const { createWorker } = await import('tesseract.js');
-      const worker = await createWorker('eng');
+      const path = await import('path');
+      const localDir = path.resolve(process.cwd());
+      
+      // Load local eng.traineddata directly to ensure instant offline recognition and avoid CDN timeout
+      const worker = await createWorker('eng', 1, {
+        langPath: localDir,
+        cachePath: localDir,
+        gzip: false,
+      });
       // PSM 6 (single uniform block) handles multi-element dials, labels, and text reliably
       await worker.setParameters({
         tessedit_pageseg_mode: '6' as any,

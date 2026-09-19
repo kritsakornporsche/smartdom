@@ -18,7 +18,7 @@ export async function GET() {
     }
     
     const userResult = await sql`
-      SELECT id, email, name, role, created_at, image_url, phone, bio
+      SELECT id, email, name, role, primary_role, created_at, image_url, phone, bio
       FROM users
       WHERE email = ${session.user.email}
     `;
@@ -27,7 +27,11 @@ export async function GET() {
       return NextResponse.json({ success: false, message: 'User not found' }, { status: 404 });
     }
 
-    return NextResponse.json({ success: true, data: userResult[0] });
+    const user = userResult[0];
+    // Compute effective role same as auth.ts so Profile page shows correct badge
+    const effectiveRole = (session.user as any).role || user.role || user.primary_role || 'guest';
+    return NextResponse.json({ success: true, data: { ...user, role: effectiveRole } });
+
   } catch (error: any) {
     console.error('Profile GET Error:', error);
     return NextResponse.json({ success: false, message: 'Server Error' }, { status: 500 });

@@ -31,11 +31,13 @@ export async function GET(request: Request) {
     let conversations: any[] = [];
 
     if (isOwner) {
-      // 1. Get all dorms owned by this owner
+      // 1. Get all dorms owned by this owner (matching ID or email)
       const ownerDorms = await sql`
         SELECT id, dorm_name 
         FROM dormitory_registry 
         WHERE owner_id = ${user.id}
+           OR owner_email = ${user.email}
+           OR owner_id IN (SELECT id FROM users WHERE email = ${user.email})
       `;
 
       if (ownerDorms.length === 0) {

@@ -15,6 +15,7 @@ interface Booking {
   deposit_amount: number;
   booking_status: string;
   slip_url: string | null;
+  contract_file_url?: string | null;
   signature_data: string | null;
   owner_signature_data: string | null;
   booking_notes?: string | null;
@@ -60,13 +61,21 @@ export default function OwnerBookingsPage() {
   const [previewSlipUrl, setPreviewSlipUrl] = useState<string | null>(null);
   const [previewSlipTitle, setPreviewSlipTitle] = useState<string>('');
 
+  // Preview & Upload Contract Document Modal
+  const [contractDocBooking, setContractDocBooking] = useState<Booking | null>(null);
+  const [contractDocFile, setContractDocFile] = useState<{ dataUrl: string; name: string } | null>(null);
+  const [previewingContractDocUrl, setPreviewingContractDocUrl] = useState<string | null>(null);
+  const [previewingContractDocTitle, setPreviewingContractDocTitle] = useState<string>('');
+
   // 1. Approval Modal
   const [approvingBooking, setApprovingBooking] = useState<Booking | null>(null);
   const [approveForm, setApproveForm] = useState({
     createInitialBill: true,
     initialBillAmount: 0,
     customStartDate: '',
-    customRoomId: 0
+    customRoomId: 0,
+    contractFileUrl: '',
+    contractFileName: ''
   });
 
   // 2. Reject Modal
@@ -164,16 +173,47 @@ export default function OwnerBookingsPage() {
           createInitialBill: approveForm.createInitialBill,
           initialBillAmount: approveForm.initialBillAmount || approvingBooking.monthly_rent,
           customStartDate: approveForm.customStartDate || approvingBooking.start_date,
-          customRoomId: approveForm.customRoomId || approvingBooking.room_id
+          customRoomId: approveForm.customRoomId || approvingBooking.room_id,
+          contractFileUrl: approveForm.contractFileUrl || undefined
         })
       });
       const data = await res.json();
       if (data.success) {
-        alert('✓ อนุมัติการจองห้องพักเรียบร้อยแล้ว!');
+        alert('✓ อนุมัติการจองห้องพักและบันทึกเอกสารสัญญาเรียบร้อยแล้ว!');
         setApprovingBooking(null);
         fetchBookings();
       } else {
         alert(data.message || 'เกิดข้อผิดพลาดในการอนุมัติ');
+      }
+    } catch (e: any) {
+      alert('เกิดข้อผิดพลาดในการส่งข้อมูล');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  // Handle direct contract document upload / update
+  const handleSaveContractDoc = async () => {
+    if (!contractDocBooking || !contractDocFile) return;
+    setSubmitting(true);
+    try {
+      const res = await fetch('/api/owner/bookings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'upload_contract',
+          contractId: contractDocBooking.contract_id,
+          contractFileUrl: contractDocFile.dataUrl
+        })
+      });
+      const data = await res.json();
+      if (data.success) {
+        alert('✓ แนบไฟล์สัญญาเรียบร้อยแล้ว');
+        setContractDocBooking(null);
+        setContractDocFile(null);
+        fetchBookings();
+      } else {
+        alert(data.message || 'เกิดข้อผิดพลาดในการบันทึกสัญญา');
       }
     } catch (e: any) {
       alert('เกิดข้อผิดพลาดในการส่งข้อมูล');
@@ -306,7 +346,9 @@ export default function OwnerBookingsPage() {
       createInitialBill: true,
       initialBillAmount: Number(booking.monthly_rent || 0),
       customStartDate: booking.start_date ? new Date(booking.start_date).toISOString().split('T')[0] : '',
-      customRoomId: booking.room_id
+      customRoomId: booking.room_id,
+      contractFileUrl: booking.contract_file_url || '',
+      contractFileName: booking.contract_file_url ? 'เอกสารสัญญาเดิม' : ''
     });
   };
 
@@ -695,6 +737,22 @@ export default function OwnerBookingsPage() {
                         <span>→</span>
                       </Link>
 
+                      {/* View / Upload Contract Document Button */}
+                      <button
+                        onClick={() => {
+                          setContractDocBooking(booking);
+                          setContractDocFile(null);
+                        }}
+                        className={cn(
+                          "text-xs font-bold flex items-center gap-1.5 cursor-pointer py-1 px-2.5 rounded-lg border transition-all",
+                          booking.contract_file_url 
+                            ? "bg-emerald-500/15 border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/25" 
+                            : "bg-white/5 border-white/10 text-foreground/70 hover:text-white hover:bg-white/10"
+                        )}
+                      >
+                        <span>{booking.contract_file_url ? '📄 ดูไฟล์สัญญา' : '📎 แนบไฟล์สัญญา'}</span>
+                      </button>
+
                       <button
                         onClick={() => setPrintingBooking(booking)}
                         className="text-xs font-bold text-foreground/70 hover:text-white flex items-center gap-1 cursor-pointer py-1"
@@ -845,6 +903,46 @@ export default function OwnerBookingsPage() {
                   <p className="text-[11px] text-muted-foreground pl-8 leading-relaxed">
                     ระบบจะสร้างบิลค่าเช่าเดือนแรกให้ผู้เช่าอัตโนมัติ โดยผู้เช่าสามารถชำระเมื่อเข้าพักจริง
                   </p>
+                </div>
+
+                {/* Upload Contract Document (Image or PDF) */}
+                <div className="p-4 bg-slate-950/90 rounded-2xl border border-emerald-500/30 space-y-2.5">
+                  <div className="flex items-center justify-between">
+                    <label className="text-[11px] font-black text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
+                      <span>📄 แนบไฟล์สัญญาเป็นหลักฐาน (รูปภาพ หรือ PDF)</span>
+                    </label>
+                    <span className="text-[10px] text-muted-foreground font-normal">(ไม่บังคับ/แนบภายหลังได้)</span>
+                  </div>
+                  <input
+                    type="file"
+                    accept="image/*,application/pdf"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+                      const reader = new FileReader();
+                      reader.onloadend = () => {
+                        setApproveForm(prev => ({
+                          ...prev,
+                          contractFileUrl: reader.result as string,
+                          contractFileName: file.name
+                        }));
+                      };
+                      reader.readAsDataURL(file);
+                    }}
+                    className="w-full text-xs text-white/80 file:mr-3 file:py-2 file:px-3.5 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-emerald-500 file:text-slate-950 hover:file:bg-emerald-400 cursor-pointer bg-slate-900 p-2 rounded-xl border border-white/10"
+                  />
+                  {approveForm.contractFileName && (
+                    <div className="flex items-center justify-between text-xs text-emerald-400 bg-emerald-500/10 px-3 py-1.5 rounded-lg border border-emerald-500/20">
+                      <span className="truncate">✓ เลือกไฟล์: {approveForm.contractFileName}</span>
+                      <button
+                        type="button"
+                        onClick={() => setApproveForm(prev => ({ ...prev, contractFileUrl: '', contractFileName: '' }))}
+                        className="text-rose-400 hover:text-rose-300 ml-2 font-bold cursor-pointer"
+                      >
+                        ✕ ลบ
+                      </button>
+                    </div>
+                  )}
                 </div>
 
               </div>
@@ -1340,6 +1438,166 @@ export default function OwnerBookingsPage() {
               >
                 ปิดหน้าต่าง
               </button>
+            </div>
+          </div>
+        )}
+
+        {/* Modal: View & Upload Contract Document (รูปภาพ หรือ PDF) */}
+        {contractDocBooking && (
+          <div className="fixed inset-0 z-[200] bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-y-auto animate-in fade-in duration-200">
+            <div className="max-w-xl w-full bg-slate-900 rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 border border-primary/30 space-y-5 shadow-2xl my-auto max-h-[92dvh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+              <div className="flex justify-between items-start border-b border-border pb-3">
+                <div>
+                  <span className="text-[10px] font-black uppercase tracking-widest text-primary">เอกสารสัญญาเช่า</span>
+                  <h3 className="text-xl sm:text-2xl font-black text-foreground">ห้อง {contractDocBooking.room_number}</h3>
+                  <p className="text-xs text-muted-foreground">ผู้เช่า: คุณ{contractDocBooking.guest_name} ({contractDocBooking.booking_status === 'Active' ? 'สัญญาใช้งานอยู่' : 'รอตรวจสอบ'})</p>
+                </div>
+                <button onClick={() => { setContractDocBooking(null); setContractDocFile(null); }} className="text-muted-foreground hover:text-white text-2xl p-2 -mr-2">✕</button>
+              </div>
+
+              {/* Current Contract File Status */}
+              <div className="p-4 bg-slate-950 rounded-2xl border border-border space-y-3">
+                <span className="text-[10px] font-bold text-foreground/60 uppercase">สถานะเอกสารปัจจุบัน</span>
+                {contractDocBooking.contract_file_url ? (
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xl">📄</span>
+                      <div>
+                        <p className="text-xs font-bold text-emerald-400">✓ มีไฟล์สัญญาในระบบแล้ว</p>
+                        <p className="text-[10px] text-muted-foreground">สามารถเปิดดูหรือดาวน์โหลดได้</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setPreviewingContractDocUrl(contractDocBooking.contract_file_url!);
+                          setPreviewingContractDocTitle(`สัญญาห้อง ${contractDocBooking.room_number} (คุณ${contractDocBooking.guest_name})`);
+                        }}
+                        className="px-3.5 py-2 bg-primary/20 hover:bg-primary/30 text-primary text-xs font-bold rounded-xl transition-all cursor-pointer"
+                      >
+                        🔍 ดูเอกสาร
+                      </button>
+                      <a
+                        href={contractDocBooking.contract_file_url}
+                        download={`contract_room_${contractDocBooking.room_number}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="px-3.5 py-2 bg-white/10 hover:bg-white/20 text-white text-xs font-bold rounded-xl transition-all cursor-pointer"
+                      >
+                        📥 โหลด
+                      </a>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-xs text-amber-400 italic">⚠️ ยังไม่มีการแนบไฟล์สัญญาสำหรับห้องนี้</p>
+                )}
+              </div>
+
+              {/* Upload or Replace Contract File Input */}
+              <div className="p-4 bg-slate-950/80 rounded-2xl border border-white/10 space-y-3">
+                <label className="block text-xs font-bold text-white">
+                  📤 {contractDocBooking.contract_file_url ? 'อัพโหลดไฟล์สัญญาใหม่เพื่อแทนที่' : 'อัพโหลดไฟล์สัญญาใหม่ (รูปภาพ หรือ PDF)'}
+                </label>
+                <input
+                  type="file"
+                  accept="image/*,application/pdf"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+                    const reader = new FileReader();
+                    reader.onloadend = () => {
+                      setContractDocFile({
+                        dataUrl: reader.result as string,
+                        name: file.name
+                      });
+                    };
+                    reader.readAsDataURL(file);
+                  }}
+                  className="w-full text-xs text-white/80 file:mr-3 file:py-2 file:px-3.5 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-primary file:text-white hover:file:brightness-110 cursor-pointer bg-slate-900 p-2.5 rounded-xl border border-white/10"
+                />
+                {contractDocFile && (
+                  <div className="flex items-center justify-between text-xs text-emerald-400 bg-emerald-500/10 px-3 py-2 rounded-xl border border-emerald-500/20">
+                    <span className="truncate">✓ พร้อมบันทึก: {contractDocFile.name}</span>
+                    <button
+                      type="button"
+                      onClick={() => setContractDocFile(null)}
+                      className="text-rose-400 hover:text-rose-300 ml-2 font-bold cursor-pointer"
+                    >
+                      ✕ ยกเลิก
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Modal Buttons */}
+              <div className="flex gap-2.5 pt-2">
+                <button
+                  type="button"
+                  onClick={() => { setContractDocBooking(null); setContractDocFile(null); }}
+                  className="flex-1 min-h-[46px] py-3 bg-white/5 hover:bg-white/10 text-white rounded-2xl text-xs font-bold transition-all active:scale-95 cursor-pointer"
+                >
+                  ปิด
+                </button>
+                {contractDocFile && (
+                  <button
+                    type="button"
+                    onClick={handleSaveContractDoc}
+                    disabled={submitting}
+                    className="flex-[2] min-h-[46px] py-3 bg-primary hover:brightness-110 text-white rounded-2xl text-xs font-black transition-all shadow-lg active:scale-95 disabled:opacity-50 cursor-pointer"
+                  >
+                    {submitting ? 'กำลังบันทึก...' : '💾 บันทึกไฟล์สัญญาเข้าสู่ระบบ'}
+                  </button>
+                )}
+              </div>
+
+            </div>
+          </div>
+        )}
+
+        {/* Modal: Contract Document Full Preview (PDF iframe or Image) */}
+        {previewingContractDocUrl && (
+          <div 
+            onClick={() => setPreviewingContractDocUrl(null)}
+            className="fixed inset-0 z-[250] bg-black/90 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 cursor-pointer animate-in fade-in duration-200"
+          >
+            <div className="bg-slate-900 rounded-[2rem] w-full max-w-4xl max-h-[90vh] border border-border shadow-2xl flex flex-col overflow-hidden my-auto" onClick={(e) => e.stopPropagation()}>
+              <div className="bg-slate-950 border-b border-border p-4 sm:p-5 flex items-center justify-between shrink-0">
+                <h3 className="text-sm sm:text-base font-black text-foreground truncate">{previewingContractDocTitle || 'เอกสารสัญญา'}</h3>
+                <div className="flex items-center gap-2">
+                  <a
+                    href={previewingContractDocUrl}
+                    download="contract_document"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="px-3.5 py-1.5 bg-primary text-white text-xs font-bold rounded-xl shadow-lg hover:brightness-110 transition-all cursor-pointer"
+                  >
+                    📥 ดาวน์โหลด
+                  </a>
+                  <button
+                    onClick={() => setPreviewingContractDocUrl(null)}
+                    className="w-9 h-9 bg-white/5 hover:bg-white/10 rounded-xl text-muted-foreground hover:text-white flex items-center justify-center transition-all cursor-pointer text-lg font-bold"
+                  >
+                    ✕
+                  </button>
+                </div>
+              </div>
+
+              <div className="flex-1 overflow-y-auto p-4 sm:p-6 flex items-center justify-center bg-black/40">
+                {previewingContractDocUrl.startsWith('data:image') || previewingContractDocUrl.startsWith('http') && !previewingContractDocUrl.endsWith('.pdf') ? (
+                  <img
+                    src={previewingContractDocUrl}
+                    alt="Contract Document"
+                    className="max-w-full max-h-[70vh] object-contain rounded-xl shadow-2xl"
+                  />
+                ) : (
+                  <iframe
+                    src={previewingContractDocUrl}
+                    className="w-full h-[70vh] rounded-xl border border-border bg-white"
+                    title="Document Preview"
+                  />
+                )}
+              </div>
             </div>
           </div>
         )}

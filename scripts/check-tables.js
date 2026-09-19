@@ -25,14 +25,8 @@ conn.on('ready', async () => {
   const js = `
 const m = require('mysql2/promise');
 m.createConnection('mysql://smartdom:smartdom@localhost:3306/smartdomdb').then(async db => {
-  const [r] = await db.query("SELECT id, email, username, password, role FROM users WHERE role='platform_admin' OR email LIKE '%kaset%' LIMIT 5");
-  console.log('ADMINS:', JSON.stringify(r.map(u => ({ id: u.id, email: u.email, username: u.username, role: u.role, pwHash: u.password?.substring(0,20) }))));
-  
-  const [t] = await db.query("SELECT id, email, username, role FROM users WHERE email='pache@gmail.com' OR username='pache' LIMIT 3");
-  console.log('TENANT:', JSON.stringify(t));
-  
-  const [o] = await db.query("SELECT id, email, username, role FROM users WHERE email='kritsakorn801@gmail.com' LIMIT 3");
-  console.log('OWNER:', JSON.stringify(o));
+  const [r] = await db.query('SHOW TABLES');
+  console.log('TABLES:', JSON.stringify(r.map(t => Object.values(t)[0])));
   db.end();
 }).catch(e => console.log('ERR:' + e.message));
 `;

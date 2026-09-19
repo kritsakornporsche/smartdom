@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 
 
 interface Tenant {
@@ -35,15 +36,19 @@ export default function TenantsManagement() {
     }
   };
 
+  const { data: session, status: authStatus } = useSession();
+
   useEffect(() => {
     const init = async () => {
-      const email = localStorage.getItem('userEmail') || 'owner@kaset2.com';
+      const email = session?.user?.email || (typeof window !== 'undefined' ? localStorage.getItem('userEmail') : null) || 'kritsakorn801@gmail.com';
+      const savedDb = typeof window !== 'undefined' ? localStorage.getItem('selectedDormDbName') : null;
       try {
-        const res = await fetch(`/api/owner/onboarding?email=${email}`);
+        const res = await fetch(`/api/owner/onboarding?email=${encodeURIComponent(email)}${savedDb ? `&dormDbName=${savedDb}` : ''}`);
         const data = await res.json();
         if (data.success && data.hasDorm) {
-          setOwnerDormId(data.dorm.id);
-          fetchTenants(data.dorm.id);
+          const resolvedDormId = Number(data.selectedDormId || data.dorm?.id || data.dorm?.dorm_id || data.dorms?.[0]?.id || 1);
+          setOwnerDormId(resolvedDormId);
+          fetchTenants(resolvedDormId);
         } else {
           setOwnerDormId(1);
           fetchTenants(1);
@@ -54,7 +59,7 @@ export default function TenantsManagement() {
       }
     };
     init();
-  }, []);
+  }, [session]);
 
 
   return (

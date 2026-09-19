@@ -146,10 +146,11 @@ export default function OwnerBillingPage() {
         .then((data) => {
           if (data.success && data.hasDorm) {
             setDormsList(data.dorms || []);
-            const targetDorm = (urlDormId && data.dorms?.find((d: any) => String(d.id) === String(urlDormId) || d.db_name === urlDormId)) || data.dorm;
-            setOwnerDormId(targetDorm.id);
-            setDormProfile(targetDorm);
-            fetchBillData(targetDorm.id);
+            const targetDorm = (urlDormId && data.dorms?.find((d: any) => String(d.id) === String(urlDormId) || d.db_name === urlDormId)) || data.dorm || data.dorms?.[0];
+            const resolvedDormId = Number(targetDorm?.id || targetDorm?.dorm_id || data.selectedDormId || data.dorms?.[0]?.id || 1);
+            setOwnerDormId(resolvedDormId);
+            setDormProfile(targetDorm || { id: resolvedDormId, dorm_id: resolvedDormId });
+            fetchBillData(resolvedDormId);
           } else {
             setLoading(false);
           }

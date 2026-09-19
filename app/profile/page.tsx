@@ -120,8 +120,23 @@ export default function ProfilePage() {
                 <h1 className="text-2xl font-display font-bold text-foreground">{formData.name}</h1>
                 <p className="text-sm text-[#A08D74] font-medium flex items-center gap-2 mt-1">
                   <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-                  สถานะ: <span className="uppercase tracking-widest text-[10px] bg-background px-2 py-0.5 rounded-md border border-border">{formData.role}</span>
+                  บทบาท: <span className={`uppercase tracking-widest text-[10px] px-2 py-0.5 rounded-md border font-black ${
+                    formData.role === 'tenant' ? 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400 dark:border-emerald-700' :
+                    formData.role === 'owner' ? 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-700' :
+                    formData.role === 'platform_admin' ? 'bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-900/30 dark:text-purple-400 dark:border-purple-700' :
+                    formData.role === 'keeper' ? 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:text-amber-400 dark:border-amber-700' :
+                    'bg-background text-muted-foreground border-border'
+                  }`}>
+                    {formData.role === 'tenant' ? '🏠 ลูกหอ / ผู้เช่า' :
+                     formData.role === 'owner' ? '🏢 เจ้าของหอพัก' :
+                     formData.role === 'platform_admin' ? '⚙️ แพลตฟอร์ม Admin' :
+                     formData.role === 'keeper' ? '🔑 ผู้ดูแลหอพัก' :
+                     formData.role === 'researcher' ? '🔬 นักวิจัย' :
+                     formData.role === 'guest' ? '👤 แขก (ยังไม่ได้เช่าห้อง)' :
+                     formData.role || 'ไม่ระบุ'}
+                  </span>
                 </p>
+
               </div>
             </div>
 

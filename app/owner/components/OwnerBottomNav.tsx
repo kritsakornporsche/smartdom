@@ -215,12 +215,18 @@ export default function OwnerBottomNav() {
       label: 'จัดการ',
       icon: '⚙️',
       activeIcon: '✨',
-      matchPaths: ['/owner/settings'],
+      matchPaths: ['/owner/rules', '/owner/settings'],
       subActions: [
+        {
+          href: '/owner/rules',
+          label: 'กฎและระเบียบหอพัก',
+          sublabel: 'กำหนดข้อบังคับ อัตราค่าปรับ และคัดลอกระเบียบ',
+          icon: '⚖️',
+        },
         {
           href: '/owner/settings',
           label: 'ตั้งค่าหอพัก',
-          sublabel: 'กำหนดค่าน้ำ ค่าไฟ บัญชีธนาคาร และกฎระเบียบ',
+          sublabel: 'กำหนดค่าน้ำ ค่าไฟ บัญชีธนาคาร และข้อมูลหอ',
           icon: '⚙️',
         },
         {

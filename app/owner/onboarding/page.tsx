@@ -157,6 +157,20 @@ export default function OwnerOnboarding() {
     '🚗 ที่จอดรถยนต์',
   ]);
 
+  // Template & Dorm Rules States
+  const [existingDorms, setExistingDorms] = useState<{ id: number; dorm_name: string }[]>([]);
+  const [selectedTemplateId, setSelectedTemplateId] = useState<number | null>(null);
+  const [rules, setRules] = useState<{ title: string; description: string; category: string; fine_amount: number }[]>([
+    { title: 'ห้ามส่งเสียงดังยามวิกาล', description: 'งดใช้เสียงดังหลังเวลา 22.00 น. เพื่อความสงบเรียบร้อยของผู้พักอาศัย', category: 'การใช้เสียง', fine_amount: 500 },
+    { title: 'ห้ามสูบบุหรี่ในห้องพักและทางเดิน', description: 'ห้ามสูบบุหรี่ภายในอาคารเด็ดขาด ให้สูบในจุดที่กำหนดเท่านั้น', category: 'ความปลอดภัย', fine_amount: 1000 },
+    { title: 'การเข้า-ออกอาคาร', description: 'ต้องพกคีย์การ์ดและปิดประตูกลางทุกครั้ง ห้ามนำบุคคลภายนอกเข้าพักค้างคืนโดยไม่แจ้ง', category: 'การเข้า-ออก', fine_amount: 500 },
+    { title: 'การรักษาความสะอาด', description: 'ทิ้งขยะในจุดทิ้งขยะส่วนกลางให้เรียบร้อย และห้ามวางสิ่งของกีดขวางทางเดินส่วนกลาง', category: 'ความสะอาด', fine_amount: 300 }
+  ]);
+  const [newRuleTitle, setNewRuleTitle] = useState('');
+  const [newRuleDesc, setNewRuleDesc] = useState('');
+  const [newRuleCategory, setNewRuleCategory] = useState('ทั่วไป');
+  const [newRuleFine, setNewRuleFine] = useState(0);
+
   useEffect(() => {
     const email = session?.user?.email || (typeof window !== 'undefined' ? localStorage.getItem('userEmail') : null) || 'owner@smartdom.com';
     setOwnerEmail(email);
@@ -173,6 +187,10 @@ export default function OwnerOnboarding() {
         } else if (data.success && force && !data.canAddDorm) {
           alert(`คุณไม่สามารถเพิ่มหอพักได้ เนื่องจากขีดจำกัดการสร้างหอพักของแพ็กเกจปัจจุบันเต็มแล้ว (สูงสุด ${data.maxAllowedDorms || 1} หอพัก) กรุณาอัปเกรดแพ็กเกจของคุณ`);
           router.push('/owner');
+        }
+
+        if (data.success && Array.isArray(data.dorms) && data.dorms.length > 0) {
+          setExistingDorms(data.dorms);
         }
       } catch (err) {
         console.error('Error checking onboarding status:', err);
@@ -283,6 +301,8 @@ export default function OwnerOnboarding() {
       has_air_con: selectedAmenities.some(a => a.includes('ปรับอากาศ') || a.includes('แอร์')),
       selectedAmenities,
       facilities: selectedAmenities.join(', '),
+      templateDormId: selectedTemplateId || undefined,
+      rules: rules
     };
 
     try {
@@ -585,6 +605,56 @@ export default function OwnerOnboarding() {
              </div>
 
              <form onSubmit={handleFinalSubmit} className="space-y-8 max-w-2xl mx-auto">
+                
+                {/* 0. Template Dormitory Selector (If Owner Already Has Dorms) */}
+                {existingDorms.length > 0 && (
+                  <div className="p-5 sm:p-6 bg-gradient-to-r from-primary/10 via-slate-900 to-primary/5 rounded-3xl border border-primary/30 space-y-3">
+                    <div className="flex items-center gap-2.5">
+                      <span className="text-xl">📋</span>
+                      <div>
+                        <h4 className="text-sm font-black text-white">ใช้หอพักเดิมเป็นแม่แบบ (Template)</h4>
+                        <p className="text-[11px] text-white/60">คัดลอกกฎระเบียบ อัตราค่าน้ำค่าไฟ และสิ่งอำนวยความสะดวกจากหอพักแรกอัตโนมัติ</p>
+                      </div>
+                    </div>
+                    <select
+                      value={selectedTemplateId || ''}
+                      onChange={async (e) => {
+                        const val = e.target.value ? Number(e.target.value) : null;
+                        setSelectedTemplateId(val);
+                        if (val) {
+                          try {
+                            const [rulesRes, dormRes] = await Promise.all([
+                              fetch(`/api/owner/rules?dormId=${val}`),
+                              fetch(`/api/owner/onboarding?dormDbName=${val}&email=${ownerEmail}`)
+                            ]);
+                            const rulesData = await rulesRes.json();
+                            const dormData = await dormRes.json();
+                            if (rulesData.success && Array.isArray(rulesData.data) && rulesData.data.length > 0) {
+                              setRules(rulesData.data);
+                            }
+                            if (dormData.success && dormData.dorm) {
+                              setWaterRate(Number(dormData.dorm.water_rate) || 18);
+                              setElectricityRate(Number(dormData.dorm.electricity_rate) || 8);
+                              if (dormData.dorm.facilities) {
+                                const facilitiesArr = dormData.dorm.facilities.split(',').map((f: string) => f.trim());
+                                setSelectedAmenities(facilitiesArr);
+                              }
+                            }
+                          } catch (err) {
+                            console.error('Error fetching template details:', err);
+                          }
+                        }
+                      }}
+                      className="w-full px-4 py-3 bg-[#080F1E] border border-primary/30 rounded-xl text-white font-bold text-xs focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer"
+                    >
+                      <option value="">-- ไม่ใช้แม่แบบ (กรอกข้อมูลใหม่ทั้งหมด) --</option>
+                      {existingDorms.map(d => (
+                        <option key={d.id} value={d.id}>คัดลอกจาก: {d.dorm_name} (หอพัก #{d.id})</option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+
                 <div className="space-y-2">
                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-white/60 ml-1">
                      ชื่อหอพัก / กิจการ <span className="text-destructive">*</span>

@@ -20,12 +20,15 @@ export async function GET(req: Request) {
     }
     const ownerId = users[0].id;
 
-    // Get all active dormitories registered to this owner
+    // Get all active dormitories registered to this owner (via owner_id, owner_email, or user_dorm_roles)
     // We map id to db_name so the frontend OwnerSidebar doesn't break
     const ownedDorms = await sql`
-      SELECT id, dorm_name, CAST(id AS CHAR) as db_name 
-      FROM dormitory_registry 
-      WHERE (owner_id = ${ownerId} OR owner_email = ${email}) AND status = 'Active'
+      SELECT DISTINCT dr.id, dr.dorm_name, CAST(dr.id AS CHAR) as db_name 
+      FROM dormitory_registry dr
+      LEFT JOIN user_dorm_roles udr ON dr.id = udr.dorm_id AND udr.user_id = ${ownerId} AND udr.role = 'owner'
+      WHERE (dr.owner_id = ${ownerId} OR dr.owner_email = ${email} OR udr.id IS NOT NULL) 
+        AND dr.status = 'Active'
+      ORDER BY dr.id ASC
     `;
 
     const canAddDorm = true;
@@ -39,7 +42,8 @@ export async function GET(req: Request) {
     let selectedDormId = dormDbName ? parseInt(dormDbName) : ownedDorms[0].id;
     if (isNaN(selectedDormId)) selectedDormId = ownedDorms[0].id;
 
-    const dorm = await sql`SELECT * FROM dormitory_profile WHERE dorm_id = ${selectedDormId} LIMIT 1`;
+    const dormProfiles = await sql`SELECT * FROM dormitory_profile WHERE dorm_id = ${selectedDormId} LIMIT 1`;
+    const dorm = dormProfiles[0] ? { ...dormProfiles[0], id: dormProfiles[0].dorm_id } : null;
 
     return NextResponse.json({
       success: true,
@@ -47,9 +51,10 @@ export async function GET(req: Request) {
       dorms: ownedDorms,
       canAddDorm,
       maxAllowedDorms,
-      dorm: dorm[0] || null,
+      dorm: dorm || null,
       subscription: null,
       dormDbName: selectedDormId.toString(),
+      selectedDormId,
     });
   } catch (err: any) {
     console.error('GET Onboarding Error:', err);
@@ -139,6 +144,66 @@ export async function POST(req: Request) {
         ${dormData.promptpay_name || dormData.promptpayName || ''}
       )
     `;
+
+    // Process Rules (from templateDormId or custom rules array)
+    const templateDormId = dormData.templateDormId;
+    const customRules = dormData.rules;
+
+    if (templateDormId) {
+      // Clone rules from template dorm
+      const tplRules = await sql`
+        SELECT title, description, category, fine_amount, is_active, sort_order 
+        FROM dormitory_rules 
+        WHERE dorm_id = ${templateDormId}
+        ORDER BY sort_order ASC, id ASC
+      `;
+      for (const r of tplRules) {
+        await sql`
+          INSERT INTO dormitory_rules (
+            dorm_id, title, description, category, fine_amount, is_active, sort_order
+          ) VALUES (
+            ${dormRegistryId}, ${r.title}, ${r.description}, ${r.category}, ${r.fine_amount}, ${r.is_active}, ${r.sort_order}
+          )
+        `;
+      }
+    } else if (Array.isArray(customRules) && customRules.length > 0) {
+      for (let i = 0; i < customRules.length; i++) {
+        const r = customRules[i];
+        if (r.title && r.description) {
+          await sql`
+            INSERT INTO dormitory_rules (
+              dorm_id, title, description, category, fine_amount, is_active, sort_order
+            ) VALUES (
+              ${dormRegistryId}, 
+              ${r.title}, 
+              ${r.description}, 
+              ${r.category || 'ทั่วไป'}, 
+              ${r.fine_amount !== undefined ? Number(r.fine_amount) : 0}, 
+              1, 
+              ${i}
+            )
+          `;
+        }
+      }
+    } else {
+      // Seed default baseline rules
+      const defaultRules = [
+        { title: 'ห้ามส่งเสียงดังยามวิกาล', description: 'งดใช้เสียงดังหลังเวลา 22.00 น. เพื่อความสงบเรียบร้อยของผู้พักอาศัย', category: 'การใช้เสียง', fine: 500 },
+        { title: 'ห้ามสูบบุหรี่ในห้องพักและทางเดิน', description: 'ห้ามสูบบุหรี่ภายในอาคารเด็ดขาด ให้สูบในจุดที่กำหนดเท่านั้น', category: 'ความปลอดภัย', fine: 1000 },
+        { title: 'การเข้า-ออกอาคาร', description: 'ต้องพกคีย์การ์ดและปิดประตูกลางทุกครั้ง ห้ามนำบุคคลภายนอกเข้าพักค้างคืนโดยไม่แจ้ง', category: 'การเข้า-ออก', fine: 500 },
+        { title: 'การรักษาความสะอาด', description: 'ทิ้งขยะในจุดทิ้งขยะส่วนกลางให้เรียบร้อย และห้ามวางสิ่งของกีดขวางทางเดินส่วนกลาง', category: 'ความสะอาด', fine: 300 }
+      ];
+      for (let i = 0; i < defaultRules.length; i++) {
+        const r = defaultRules[i];
+        await sql`
+          INSERT INTO dormitory_rules (
+            dorm_id, title, description, category, fine_amount, is_active, sort_order
+          ) VALUES (
+            ${dormRegistryId}, ${r.title}, ${r.description}, ${r.category}, ${r.fine}, 1, ${i}
+          )
+        `;
+      }
+    }
 
     return NextResponse.json({
       success: true,

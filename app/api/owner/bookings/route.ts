@@ -82,6 +82,7 @@ export async function GET(req: Request) {
         c.deposit_amount, 
         c.status as booking_status, 
         c.slip_url,
+        c.contract_file_url,
         c.signature_data,
         c.owner_signature_data,
         c.renewal_note as booking_notes,
@@ -152,7 +153,7 @@ export async function POST(req: Request) {
         return NextResponse.json({ success: false, message: 'Missing contractId' }, { status: 400 });
       }
 
-      const { createInitialBill, initialBillAmount, customStartDate, customRoomId } = body;
+      const { createInitialBill, initialBillAmount, customStartDate, customRoomId, contractFileUrl } = body;
 
       const contractRes = await sql`
         SELECT c.*, t.user_id, t.email as tenant_email, r.price as room_price, r.dorm_id, r.room_number
@@ -172,16 +173,29 @@ export async function POST(req: Request) {
       const tenantEmail = contract.tenant_email;
       const startDate = customStartDate || contract.start_date;
 
-      // 1. Update contract to Active
-      await sql`
-        UPDATE contracts 
-        SET status = 'Active', 
-            room_id = ${targetRoomId},
-            start_date = ${startDate},
-            owner_signature_data = 'APPROVED_DIGITALLY', 
-            signed_at = NOW() 
-        WHERE id = ${contractId}
-      `;
+      // 1. Update contract to Active with optional contractFileUrl
+      if (contractFileUrl) {
+        await sql`
+          UPDATE contracts 
+          SET status = 'Active', 
+              room_id = ${targetRoomId},
+              start_date = ${startDate},
+              contract_file_url = ${contractFileUrl},
+              owner_signature_data = 'APPROVED_DIGITALLY', 
+              signed_at = NOW() 
+          WHERE id = ${contractId}
+        `;
+      } else {
+        await sql`
+          UPDATE contracts 
+          SET status = 'Active', 
+              room_id = ${targetRoomId},
+              start_date = ${startDate},
+              owner_signature_data = 'APPROVED_DIGITALLY', 
+              signed_at = NOW() 
+          WHERE id = ${contractId}
+        `;
+      }
 
       // 2. Update room to Occupied (and if changed room, free the old one)
       if (customRoomId && customRoomId !== contract.room_id) {
@@ -231,6 +245,30 @@ export async function POST(req: Request) {
       return NextResponse.json({ 
         success: true, 
         message: 'อนุมัติการจองห้องพักและเปิดสัญญาเช่าเรียบร้อยแล้ว' 
+      });
+
+    // ==========================================
+    // ACTION: UPLOAD / UPDATE CONTRACT FILE (อัพโหลดไฟล์สัญญา)
+    // ==========================================
+    } else if (action === 'upload_contract') {
+      if (!contractId) {
+        return NextResponse.json({ success: false, message: 'Missing contractId' }, { status: 400 });
+      }
+      const { contractFileUrl } = body;
+      if (!contractFileUrl) {
+        return NextResponse.json({ success: false, message: 'Missing contractFileUrl' }, { status: 400 });
+      }
+
+      await sql`
+        UPDATE contracts 
+        SET contract_file_url = ${contractFileUrl},
+            updated_at = NOW()
+        WHERE id = ${contractId}
+      `;
+
+      return NextResponse.json({ 
+        success: true, 
+        message: 'บันทึกเอกสารสัญญาเข้าสู่ระบบเรียบร้อยแล้ว' 
       });
 
     // ==========================================

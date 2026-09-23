@@ -53,7 +53,16 @@ export default function OwnerBookingsPage() {
   const [selectedDormFilter, setSelectedDormFilter] = useState<string>('ALL');
   const [dormId, setDormId] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'Pending' | 'Active' | 'Cancelled' | 'All'>('Pending');
+  const [activeTab, setActiveTab] = useState<'Pending' | 'Active' | 'Cancelled' | 'All' | 'Refund'>('Pending');
+
+  // Refund Requests state
+  const [refundRequests, setRefundRequests] = useState<any[]>([]);
+  const [refundLoading, setRefundLoading] = useState(false);
+  const [approvingRefund, setApprovingRefund] = useState<any | null>(null);
+  const [rejectingRefund, setRejectingRefund] = useState<any | null>(null);
+  const [refundOwnerNote, setRefundOwnerNote] = useState('');
+  const [refundSlipUrl, setRefundSlipUrl] = useState('');
+  const [rejectRefundNote, setRejectRefundNote] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedFloor, setSelectedFloor] = useState<string>('ALL');
 
@@ -115,6 +124,23 @@ export default function OwnerBookingsPage() {
 
   const [submitting, setSubmitting] = useState(false);
 
+  // Fetch refund requests
+  const fetchRefundRequests = async () => {
+    setRefundLoading(true);
+    try {
+      const email = session?.user?.email || (typeof window !== 'undefined' ? localStorage.getItem('userEmail') : null);
+      const params = new URLSearchParams();
+      if (email) params.append('email', email);
+      const res = await fetch(`/api/owner/refund-requests?${params.toString()}`);
+      const data = await res.json();
+      if (data.success) setRefundRequests(data.data || []);
+    } catch (err) {
+      console.error('Fetch refund requests error:', err);
+    } finally {
+      setRefundLoading(false);
+    }
+  };
+
   const fetchBookings = async (dormParam?: string) => {
     setLoading(true);
     try {
@@ -148,10 +174,11 @@ export default function OwnerBookingsPage() {
 
   useEffect(() => {
     const urlTab = searchParams.get('tab');
-    if (urlTab && ['Pending', 'Active', 'Cancelled', 'All'].includes(urlTab)) {
+    if (urlTab && ['Pending', 'Active', 'Cancelled', 'All', 'Refund'].includes(urlTab)) {
       setActiveTab(urlTab as any);
     }
     fetchBookings();
+    fetchRefundRequests();
   }, [authStatus, session, searchParams]);
 
   const handleDormChange = (newDormVal: string) => {
@@ -352,6 +379,62 @@ export default function OwnerBookingsPage() {
     });
   };
 
+  // Refund approve/reject handlers
+  const handleApproveRefund = async () => {
+    if (!approvingRefund) return;
+    setSubmitting(true);
+    try {
+      const res = await fetch('/api/owner/refund-requests', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'approve_refund',
+          requestId: approvingRefund.id,
+          ownerNote: refundOwnerNote || 'อนุมัติคืนเงินมัดจำ',
+          refundSlipUrl: refundSlipUrl || null,
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        alert('✓ ' + data.message);
+        setApprovingRefund(null);
+        setRefundOwnerNote('');
+        setRefundSlipUrl('');
+        fetchRefundRequests();
+        fetchBookings();
+      } else {
+        alert(data.message || 'เกิดข้อผิดพลาด');
+      }
+    } catch { alert('เกิดข้อผิดพลาดในการส่งข้อมูล'); }
+    finally { setSubmitting(false); }
+  };
+
+  const handleRejectRefund = async () => {
+    if (!rejectingRefund) return;
+    setSubmitting(true);
+    try {
+      const res = await fetch('/api/owner/refund-requests', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'reject_refund',
+          requestId: rejectingRefund.id,
+          ownerNote: rejectRefundNote || 'ปฏิเสธคำร้องคืนเงินมัดจำ',
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        alert('✕ ' + data.message);
+        setRejectingRefund(null);
+        setRejectRefundNote('');
+        fetchRefundRequests();
+      } else {
+        alert(data.message || 'เกิดข้อผิดพลาด');
+      }
+    } catch { alert('เกิดข้อผิดพลาดในการส่งข้อมูล'); }
+    finally { setSubmitting(false); }
+  };
+
   // Stats Calculations
   const pendingCount = bookings.filter(b => b.booking_status === 'PendingOwnerSignature').length;
   const approvedCount = bookings.filter(b => b.booking_status === 'Active').length;
@@ -359,6 +442,7 @@ export default function OwnerBookingsPage() {
     .filter(b => b.booking_status === 'PendingOwnerSignature')
     .reduce((sum, b) => sum + Number(b.deposit_amount || 0), 0);
   const totalBookingsCount = bookings.length;
+  const pendingRefundCount = refundRequests.filter(r => r.status === 'pending').length;
 
   // Filter Bookings
   const filteredBookings = bookings.filter(b => {
@@ -530,6 +614,22 @@ export default function OwnerBookingsPage() {
               ✕ ยกเลิก
             </button>
             <button
+              onClick={() => { setActiveTab('Refund'); fetchRefundRequests(); }}
+              className={cn(
+                "min-h-[40px] px-3.5 sm:px-5 py-2 rounded-xl sm:rounded-2xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer relative",
+                activeTab === 'Refund'
+                  ? "bg-amber-600 text-white shadow-md shadow-amber-600/20"
+                  : "text-muted-foreground hover:text-white hover:bg-white/5"
+              )}
+            >
+              💰 คำร้องคืนมัดจำ
+              {pendingRefundCount > 0 && (
+                <span className="absolute -top-1 -right-1 w-4.5 h-4.5 bg-rose-500 text-white text-[9px] font-black rounded-full flex items-center justify-center min-w-[18px] px-1">
+                  {pendingRefundCount}
+                </span>
+              )}
+            </button>
+            <button
               onClick={() => setActiveTab('All')}
               className={cn(
                 "min-h-[40px] px-3.5 sm:px-5 py-2 rounded-xl sm:rounded-2xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer",
@@ -571,12 +671,122 @@ export default function OwnerBookingsPage() {
 
         </div>
 
+        {/* ── Refund Requests Tab ── */}
+        {activeTab === 'Refund' ? (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-black text-foreground flex items-center gap-2">
+                <span>💰</span>
+                <span>คำร้องขอคืนเงินมัดจำ</span>
+                {pendingRefundCount > 0 && (
+                  <span className="px-2 py-0.5 bg-rose-500 text-white text-[10px] font-black rounded-full">
+                    {pendingRefundCount} รอดำเนินการ
+                  </span>
+                )}
+              </h2>
+              <button
+                onClick={() => fetchRefundRequests()}
+                className="text-xs text-muted-foreground hover:text-white transition-colors flex items-center gap-1 cursor-pointer"
+              >
+                🔄 รีเฟรช
+              </button>
+            </div>
+
+            {refundLoading ? (
+              <div className="flex items-center justify-center min-h-[20vh]">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-500" />
+              </div>
+            ) : refundRequests.length === 0 ? (
+              <div className="bg-card border-2 border-dashed border-border rounded-[2rem] p-12 text-center space-y-3">
+                <div className="w-14 h-14 rounded-full bg-white/5 flex items-center justify-center text-2xl mx-auto">💰</div>
+                <h3 className="text-base font-bold text-foreground">ไม่มีคำร้องขอคืนเงินมัดจำ</h3>
+                <p className="text-xs text-muted-foreground">เมื่อผู้จองยื่นคำร้องขอคืนเงิน รายการจะปรากฏที่นี่</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 gap-4">
+                {refundRequests.map((req: any) => {
+                  const isPending = req.status === 'pending';
+                  const isApproved = req.status === 'approved';
+                  return (
+                    <div
+                      key={req.id}
+                      className={`bg-card rounded-[1.75rem] border p-5 sm:p-6 space-y-4 transition-all ${
+                        isPending ? 'border-amber-500/40 shadow-lg shadow-amber-500/5' : 'border-border opacity-75'
+                      }`}
+                    >
+                      <div className="flex items-start justify-between gap-3 flex-wrap">
+                        <div>
+                          <p className="font-black text-foreground text-base">
+                            {req.requester_name || 'ไม่ระบุชื่อ'}
+                          </p>
+                          <p className="text-xs text-muted-foreground mt-0.5">
+                            {req.requester_email} • ห้อง {req.room_number} ({req.dorm_name})
+                          </p>
+                          <p className="text-[10px] text-muted-foreground mt-0.5">
+                            ยื่นเมื่อ {new Date(req.created_at).toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                          </p>
+                        </div>
+                        <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full border text-xs font-bold shrink-0 ${
+                          isPending ? 'bg-amber-500/15 border-amber-500/30 text-amber-400'
+                          : isApproved ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-400'
+                          : 'bg-rose-500/15 border-rose-500/30 text-rose-400'
+                        }`}>
+                          <span className={`w-2 h-2 rounded-full ${
+                            isPending ? 'bg-amber-400 animate-pulse' : isApproved ? 'bg-emerald-400' : 'bg-rose-400'
+                          }`} />
+                          {isPending ? 'รอดำเนินการ' : isApproved ? 'อนุมัติแล้ว' : 'ไม่อนุมัติ'}
+                        </div>
+                      </div>
+
+                      <div className="flex items-center justify-between text-sm bg-secondary/50 rounded-2xl px-4 py-3">
+                        <span className="text-muted-foreground">จำนวนเงินที่ขอคืน</span>
+                        <span className="font-black text-amber-400 text-lg">฿{Number(req.deposit_amount).toLocaleString()}</span>
+                      </div>
+
+                      {req.reason && (
+                        <div className="text-xs text-muted-foreground bg-secondary/30 rounded-xl px-3 py-2">
+                          <span className="font-semibold text-foreground">เหตุผล: </span>{req.reason}
+                        </div>
+                      )}
+
+                      {req.owner_note && (
+                        <div className={`text-xs rounded-xl px-3 py-2 ${
+                          isApproved ? 'bg-emerald-500/10 text-emerald-300' : 'bg-rose-500/10 text-rose-300'
+                        }`}>
+                          <span className="font-semibold">หมายเหตุของคุณ: </span>{req.owner_note}
+                        </div>
+                      )}
+
+                      {isPending && (
+                        <div className="flex gap-3 pt-1">
+                          <button
+                            onClick={() => { setApprovingRefund(req); setRefundOwnerNote(''); setRefundSlipUrl(''); }}
+                            className="flex-1 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-2xl text-xs transition-all active:scale-[0.98] cursor-pointer shadow-sm"
+                          >
+                            ✓ อนุมัติคืนเงิน
+                          </button>
+                          <button
+                            onClick={() => { setRejectingRefund(req); setRejectRefundNote(''); }}
+                            className="flex-1 py-2.5 bg-rose-500/15 hover:bg-rose-500/25 text-rose-400 font-bold rounded-2xl text-xs transition-all border border-rose-500/30 active:scale-[0.98] cursor-pointer"
+                          >
+                            ✕ ปฏิเสธคำร้อง
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        ) : null}
+
         {/* Bookings List */}
-        {loading ? (
+        {activeTab !== 'Refund' && loading ? (
           <div className="flex items-center justify-center min-h-[30vh]">
             <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary" />
           </div>
-        ) : filteredBookings.length === 0 ? (
+        ) : activeTab !== 'Refund' && filteredBookings.length === 0 ? (
           <div className="bg-card border-2 border-dashed border-border rounded-[2rem] sm:rounded-[3rem] p-10 sm:p-16 text-center space-y-3">
             <div className="w-14 h-14 rounded-full bg-white/5 flex items-center justify-center text-2xl mx-auto text-muted-foreground">
               🛎️

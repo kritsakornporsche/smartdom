@@ -31,8 +31,8 @@ conn.on('ready', async () => {
 
   // ── STEP 1: Git Pull ──────────────────────────────────────────────────────
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-  console.log('[1/5] Git Pull...');
-  const gitCmd = `set "PATH=%PATH%;C:\\Program Files\\Git\\bin;C:\\Program Files\\Git\\cmd;C:\\Program Files (x86)\\Git\\cmd;C:\\Users\\buain\\AppData\\Local\\Programs\\Git\\cmd" && cd /d "${PROJECT_DIR}" && git pull origin main 2>&1`;
+  console.log('[1/5] Git Sync (fetch & reset to origin/main)...');
+  const gitCmd = `set "PATH=%PATH%;C:\\tools\\git\\cmd;C:\\tools;C:\\tools\\git\\mingw64\\bin" && cd /d "${PROJECT_DIR}" && git fetch origin main 2>&1 && git reset --hard origin/main 2>&1`;
   const pull = await run(gitCmd, 60000);
   console.log(pull.out || pull.err || '[no output]');
 

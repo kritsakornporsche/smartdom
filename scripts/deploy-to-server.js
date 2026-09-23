@@ -32,7 +32,8 @@ conn.on('ready', async () => {
   // ── STEP 1: Git Pull ──────────────────────────────────────────────────────
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
   console.log('[1/5] Git Pull...');
-  const pull = await run(`cd /d "${PROJECT_DIR}" && git pull origin main 2>&1`, 60000);
+  const gitCmd = `set "PATH=%PATH%;C:\\Program Files\\Git\\bin;C:\\Program Files\\Git\\cmd;C:\\Program Files (x86)\\Git\\cmd;C:\\Users\\buain\\AppData\\Local\\Programs\\Git\\cmd" && cd /d "${PROJECT_DIR}" && git pull origin main 2>&1`;
+  const pull = await run(gitCmd, 60000);
   console.log(pull.out || pull.err || '[no output]');
 
   // ── STEP 2: npm install ───────────────────────────────────────────────────
